@@ -15,7 +15,7 @@ Each comes in two forms:
 
 0. **Protect sensitive data**: work containing client, customer or personal data is reviewed only on models and endpoints approved for it.
 1. **Reconstruct**: restates what the work claims and lists the load-bearing assumptions.
-2. **Attack**: Track A for decisions and analysis (facts, logic, alternatives, counter-case, pre-mortem, bias, reversibility); Track B for code (correctness, requirement fit, hallucinated APIs, failure handling, security, data integrity, tests, operations, blast radius); Track R for regulated and customer-facing surfaces (practice written as requirement, promises, consistency with filed documents, personal data, records, stale published lists, invented controls, required statements).
+2. **Attack**: Track A for decisions and analysis (logic, assumptions, alternatives, counter-case, pre-mortem, bias, reversibility); Track B for code (correctness, requirement fit, hallucinated APIs, failure handling, security, data integrity, tests, operations, blast radius); Track C for factual claims (sources say what is claimed, verbatim quotes, recomputed numbers, freshness); Track D for ideas and proposals (need, burden, cheaper alternative, adoption, fit); Track R for regulated and customer-facing surfaces (practice written as requirement, promises, consistency with filed documents, personal data, records, stale published lists, invented controls, required statements).
 3. **Self-check**: drops findings that lack a location and a concrete failure scenario.
 
 Three rules guard against evidence that cannot fail: a zero needs a positive control, a green check is not a review, and a test that has never failed proves nothing.
