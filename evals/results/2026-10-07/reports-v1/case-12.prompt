@@ -1,0 +1,217 @@
+You are running the following skill. Follow it exactly.
+
+=== SKILL ===
+---
+name: redteam
+description: Adversarial review of AI-produced work (decisions, analysis, plans, code, diffs). Use when asked to red team, double-check, challenge, audit, or stress-test an output before relying on it.
+---
+
+# Redteam: Adversarial Diagnostic Review
+
+Act as an independent adversarial reviewer. The job is to find what is wrong, unsupported, or missing in a piece of work before someone relies on it. Assume the author (human or AI, including yourself earlier in this conversation) was competent but overconfident, optimized for sounding finished, and may have reported things as done or verified that were not.
+
+## Step 0: Establish the target and the independence of the review
+
+1. Identify the three inputs. Take them from the invocation arguments, attached files, or the conversation; ask one short question only if the target is truly ambiguous.
+   - ORIGINAL REQUEST: what was actually asked for, verbatim where possible.
+   - WORK UNDER REVIEW: the output, analysis, recommendation, plan, code, or diff. If no target is named, review the most recent substantive output in the conversation.
+   - CONTEXT: constraints, stakes, environment, cost of being wrong. If absent, proceed and note it as a limit on confidence.
+2. Independence. A reviewer sharing the author's context inherits its blind spots.
+   - If the work was produced in this same conversation and a subagent tool (Agent or Task) is available, delegate the review to a fresh subagent. Pass it only the three inputs and this skill's instructions; do not pass your own reasoning, summaries, or defense of the work. Relay its report.
+   - If no subagent is available, do the review yourself, state at the top that this is a same-context review with anchoring risk, and recommend re-running it in a fresh session or a different model for anything high-stakes.
+3. If you have tools (shell, file access, search), use them to verify rather than infer: run the code and tests, read the actual files, check that cited sources and APIs exist.
+
+## Rules of engagement
+
+1. Trust nothing on assertion. Claims like "tested", "verified", "this handles X", or "the data shows" are unverified until the evidence is seen. If something can be run or checked, do it; if not, say so.
+2. Label every finding by how it is known:
+   - CONFIRMED: traced, run, or tied to an exact line or statement.
+   - PROBABLE: strong inference from what is present.
+   - UNVERIFIED: could not check; state what evidence would settle it.
+3. Every finding needs a location (quote, line, section), a concrete failure scenario (inputs or conditions, then what goes wrong), and a fix or a test that would resolve it. No vague concerns.
+4. Do not manufacture findings. If an area holds up under attack, say it holds and why. A review padded with trivia is a failed review; so is one that rubber-stamps.
+5. Review against the original request, not against the work's own framing of the request. Check for drift: did it answer a different, easier question?
+6. Diagnose; do not rewrite. Do not modify the work or apply fixes unless the user asks after seeing the report.
+
+## Pass 1: Reconstruct
+
+In 3 to 5 sentences: what does the work claim, what does it recommend or do, and what must be true for it to be correct? List the load-bearing assumptions, including unstated ones.
+
+## Pass 2: Attack
+
+Apply the track that fits; apply both if the work mixes them.
+
+### Track A: Decisions, analysis, recommendations
+
+- Facts: which factual claims are sourced, which are plausible but unsourced, which look fabricated or stale (numbers, citations, quotes, dates, laws, product details)?
+- Logic: does each conclusion follow from its premises? Find leaps, circular reasoning, correlation treated as cause, and single examples treated as proof.
+- Assumptions: which one, if false, collapses the recommendation? How likely is it to be false?
+- Alternatives: what options were never considered, including doing nothing, doing less, or delaying? Was the comparison fair or was a strawman used?
+- Counter-case: write the strongest argument for the opposite conclusion. Does the work survive it?
+- Pre-mortem: it is one year later and this decision failed badly. What are the three most likely reasons?
+- Incentives and bias: where does the work tell the reader what they want to hear, anchor on the framing it was given, or show confidence the evidence does not earn?
+- Costs and reversibility: second-order effects, who bears the downside, what is irreversible, what the exit looks like.
+- Missing information: what would a careful expert demand to see before signing off?
+
+### Track B: Code and technical work
+
+- Correctness: trace the main path and at least three hostile inputs (empty, null, huge, malformed, duplicate, concurrent, out of order). Where does it break?
+- Requirement fit: does it do what was asked, all of it, and nothing extra? Flag silent scope cuts and stubbed, mocked, or hardcoded paths presented as complete.
+- Hallucination check: do the APIs, functions, flags, packages, and versions used actually exist and behave as assumed?
+- Failure handling: swallowed errors, missing timeouts and retries, partial writes, non-idempotent operations, no rollback path.
+- Security: injection, authn and authz gaps, secrets in code or logs, unsafe deserialization, over-broad permissions, untrusted input reaching sensitive sinks, dependency risk.
+- Data integrity: migrations, race conditions, transaction boundaries, precision and rounding, time zones, encoding.
+- Tests: do the tests assert real behavior or just pass? Were tests weakened, skipped, or written to match the bug? What critical case has no test?
+- Operations: performance at 10x and 100x load, resource leaks, observability, config and environment assumptions, backward compatibility.
+- Blast radius: what else does this change touch that the author did not mention?
+
+## Pass 3: Self-check
+
+Review your own findings. Drop any that cannot be tied to a specific location and failure scenario. Downgrade any where the worst was assumed without evidence. Then ask: what is the most serious problem that might still be missed, and where would it hide?
+
+## Output format
+
+VERDICT: one of SHIP / SHIP WITH FIXES / REWORK / REJECT, plus one sentence on why.
+CONFIDENCE IN VERDICT: high / medium / low, and what limits it (including same-context review, if applicable).
+
+FINDINGS, ordered by severity:
+
+| # | Severity | Evidence level | Location | What is wrong | Failure scenario | Fix or test |
+|---|---|---|---|---|---|---|
+
+WHAT HOLDS UP: the parts that survived attack, briefly.
+
+UNVERIFIED CLAIMS: everything the work asserts that could not be confirmed, and how to confirm each.
+
+QUESTIONS FOR THE AUTHOR: the smallest set of questions whose answers would change the verdict.
+
+DECISION-MAKER SUMMARY: three sentences maximum; what to do next and what risk remains if they proceed anyway.
+
+Severity guide: Critical = wrong outcome, data loss, security breach, or legal exposure if used as is. High = likely to fail under realistic conditions. Medium = real weakness with a workaround. Low = worth fixing, will not hurt anyone soon.
+
+## After the report
+
+- If the user asks to act on findings, address Critical and High first, and re-verify each fix against its stated failure scenario.
+- If the user disputes a finding, re-examine it with evidence; hold it if it survives, withdraw it plainly if it does not.
+
+=== INPUTS ===
+--- ORIGINAL REQUEST (request.md) ---
+Write a retry helper: call a function, retry on chosen exceptions with exponential backoff and full jitter, cap the delay,
+stop after N attempts and re-raise the last error. The clock and the random source must be injectable for tests.
+--- CONTEXT (context.md) ---
+Review requested: deep adversarial review, standard seats only (no cross-vendor seats). Stakes: a shared library used by
+production jobs. Tests: 6 tests, all pass.
+--- WORK UNDER REVIEW ---
+### file: __pycache__/retry.cpython-312.pyc
+Ë
+     ÍÆj)  ã                   óX   — d Z ddlZddlZdddefej                  ej                  dœd„Zy)z/Retry with exponential backoff and full jitter.é    Né   gš™™™™™¹?g      @)ÚattemptsÚbaseÚcapÚretry_onÚsleepÚrngc                óâ   — |dk  rt        d«      ‚d}t        |«      D ]  }	  | «       c S  |‚# |$ r;}	|	}||dz
+  k(  rY d}	~	 |‚ | |«       t        ||d|z  z  «      z  «       Y d}	~	ŒKd}	~	ww xY w)zÿCall fn() until it returns; re-raise the last error after `attempts` tries.
+
+    Only exceptions in `retry_on` are retried; anything else propagates at once. The delay before try k+1 is a random
+    number in [0, min(cap, base * 2**k)] (full jitter).
+    é   zattempts must be at least 1Né   )Ú
+ValueErrorÚrangeÚmin)
+Úfnr   r   r   r   r   r	   ÚlastÚkÚes
+             úA/tmp/claude-1000/pub/ai-redteam/evals/cases/case-12/work/retry.pyÚretryr      s   € ğ !‚|ÜĞ6Ó7Ğ7Ø€DÜ8‹_ò 5ˆğ	5Ù“4ŠKğ5ğ €Jøğ ò 	5ØˆDØH˜q‘LÒ Üà
+€Jñ ‘#“%œ#˜c 4¨1°©6¡?Ó3Ñ3×4Ñ4ûğ		5ús   ¢.®A.³
+A)Á A)Á)A.)Ú__doc__ÚrandomÚtimeÚ	Exceptionr   r   © ó    r   ú<module>r      s/   ğÙ 5Û Û ğ  #¨3¸)¸ÈTÏZÉZĞ]c×]jÑ]jõ r   
+### file: __pycache__/test_retry.cpython-312.pyc
+Ë
+     ÍÆjö  ã                   ó„   — d dl Z d dlmZ  G d„ d«      Z G d„ de j                  «      Zedk(  r e j                  «        yy)é    N)Úretryc                   ó   — e Zd Zefd„Zd„ Zy)ÚFlakyc                 ó0   — d||c| _         | _        | _        y )Nr   ©ÚcallsÚ
+fail_timesÚexc)Úselfr	   r
+   s      úF/tmp/claude-1000/pub/ai-redteam/evals/cases/case-12/work/test_retry.pyÚ__init__zFlaky.__init__   s   € Ø01°:¸sĞ-ˆŒ
+D”O T¥Xó    c                 óœ   — | xj                   dz  c_         | j                   | j                  k  r| j                  d| j                   z  «      ‚y)Né   zboom %dÚokr   ©r   s    r   Ú__call__zFlaky.__call__	   s:   € Ø
+Š
+a‰
+Ø:‰:˜Ÿ™Ò(Ø—(‘(˜9 t§z¡zÑ1Ó2Ğ2Ør   N)Ú__name__Ú
+__module__Ú__qualname__ÚConnectionErrorr   r   © r   r   r   r      s   „ Ø'6ó Cór   r   c                   ó0   — e Zd Zd„ Zd„ Zd„ Zd„ Zd„ Zd„ Zy)Ú
+RetryTestsc           	      óœ   — t        d«      g }}| j                  t        ||j                  d„ dd¬«      d«       | j                  |ddg«       y )Né   c                   ó   — y©Ng      ğ?r   r   r   r   ú<lambda>z9RetryTests.test_succeeds_after_failures.<locals>.<lambda>   ó    r   r   éd   )ÚsleepÚrngÚbaseÚcapr   )r   ÚassertEqualr   Úappend)r   ÚfÚslepts      r   Útest_succeeds_after_failuresz'RetryTests.test_succeeds_after_failures   sF   € Ü˜“8˜Rˆ5ˆØ×Ñœ˜q¨¯©¹+ÈAĞSVÔWĞY]Ô^Ø×Ñ˜  A Õ'r   c                 ó  — t        d«      }| j                  t        «      5 }t        |dd„ ¬«       d d d «       | j	                  |j
+                  d«       | j                  dt        j                  «      «       y # 1 sw Y   ŒKxY w)Né
+   é   c                  ó   — y ©Nr   ©Úss    r   r   z@RetryTests.test_gives_up_and_raises_last_error.<locals>.<lambda>   r    r   )Úattemptsr"   zboom 3)	r   ÚassertRaisesr   r   r&   r   ÚassertInÚstrÚ	exception)r   r(   Úcms      r   Ú#test_gives_up_and_raises_last_errorz.RetryTests.test_gives_up_and_raises_last_error   sg   € Ü"‹IˆØ×ÑœÓ/ğ 	7°2Ü!˜a¡~Õ6÷	7à×Ñ˜Ÿ™ !Ô$Ø‰h¤ B§L¡LÓ 1Õ2÷	7ğ 	7ús   ¡A;Á;Bc                 óØ   — g }| j                  t        «      5  t        t        d«      d|j                  d„ ¬«       d d d «       | j                  t        |«      d«       y # 1 sw Y   Œ%xY w)Nr,   r-   c                   ó   — yr   r   r   r   r   r   zGRetryTests.test_does_not_sleep_after_the_last_attempt.<locals>.<lambda>    r    r   )r2   r"   r#   r   )r3   r   r   r   r'   r&   Úlen©r   r)   s     r   Ú*test_does_not_sleep_after_the_last_attemptz5RetryTests.test_does_not_sleep_after_the_last_attempt   sX   € ØˆØ×ÑœÓ/ñ 	NÜ”%˜“) a¨u¯|©|ÁÕM÷	Nà×Ñœ˜U› QÕ'÷	Nğ 	Nús   ˜$A Á A)c                 óÚ   — t        dt        ¬«      }| j                  t        «      5  t        |t        fd„ ¬«       d d d «       | j                  |j                  d«       y # 1 sw Y   Œ&xY w)Né   )r
+   c                  ó   — y r/   r   r0   s    r   r   zORetryTests.test_non_matching_exception_propagates_immediately.<locals>.<lambda>&   r    r   )Úretry_onr"   r   )r   ÚKeyErrorr3   r   r   r&   r   )r   r(   s     r   Ú2test_non_matching_exception_propagates_immediatelyz=RetryTests.test_non_matching_exception_propagates_immediately#   sX   € Ü!œÔ"ˆØ×ÑœxÓ(ñ 	HÜ!œĞ0¹ÕG÷	Hà×Ñ˜Ÿ™ !Õ$÷	Hğ 	Hús   §A!Á!A*c           	      óÎ   — g }| j                  t        «      5  t        t        d«      ddd|j                  d„ ¬«       d d d «       | j                  |g d¢«       y # 1 sw Y   ŒxY w)Nr,   é   r   r-   c                   ó   — yr   r   r   r   r   r   z-RetryTests.test_cap_applies.<locals>.<lambda>,   r    r   )r2   r$   r%   r"   r#   )r   r   r-   r-   r-   )r3   r   r   r   r'   r&   r<   s     r   Útest_cap_applieszRetryTests.test_cap_applies)   sY   € ØˆØ×ÑœÓ/ñ 	]Ü”%˜“) a¨a°Q¸e¿l¹lÑP[Õ\÷	]à×Ñ˜¢Õ0÷	]ğ 	]ús   ˜&AÁA$c                 ót   — | j                  t        «      5  t        d„ d¬«       d d d «       y # 1 sw Y   y xY w)Nc                   ó   — y)Nr   r   r   r   r   r   z8RetryTests.test_zero_attempts_rejected.<locals>.<lambda>1   r    r   r   )r2   )r3   Ú
+ValueErrorr   r   s    r   Útest_zero_attempts_rejectedz&RetryTests.test_zero_attempts_rejected/   s/   € Ø×ÑœzÓ*ñ 	)Ü‘) aÕ(÷	)÷ 	)ñ 	)ús   –.®7N)	r   r   r   r*   r8   r=   rC   rG   rK   r   r   r   r   r      s    „ ò(ò
+3ò(ò%ò1ó)r   r   Ú__main__)Úunittestr   r   ÚTestCaser   r   Úmainr   r   r   ú<module>rP      sB   ğÛ İ ÷ñ ô!)×"Ñ"ô !)ğH ˆzÒØ€H‡MM…Oğ r   
+### file: retry.py
+"""Retry with exponential backoff and full jitter."""
+import random
+import time
+
+
+def retry(fn, *, attempts=5, base=0.1, cap=5.0, retry_on=(Exception,), sleep=time.sleep, rng=random.random):
+    """Call fn() until it returns; re-raise the last error after `attempts` tries.
+
+    Only exceptions in `retry_on` are retried; anything else propagates at once. The delay before try k+1 is a random
+    number in [0, min(cap, base * 2**k)] (full jitter).
+    """
+    if attempts < 1:
+        raise ValueError("attempts must be at least 1")
+    last = None
+    for k in range(attempts):
+        try:
+            return fn()
+        except retry_on as e:  # noqa: PERF203
+            last = e
+            if k == attempts - 1:
+                break
+            sleep(rng() * min(cap, base * (2 ** k)))
+    raise last
+
+### file: test_retry.py
+import unittest
+from retry import retry
+
+
+class Flaky:
+    def __init__(self, fail_times, exc=ConnectionError):
+        self.calls, self.fail_times, self.exc = 0, fail_times, exc
+
+    def __call__(self):
+        self.calls += 1
+        if self.calls <= self.fail_times:
+            raise self.exc("boom %d" % self.calls)
+        return "ok"
+
+
+class RetryTests(unittest.TestCase):
+    def test_succeeds_after_failures(self):
+        f, slept = Flaky(2), []
+        self.assertEqual(retry(f, sleep=slept.append, rng=lambda: 1.0, base=1, cap=100), "ok")
+        self.assertEqual(slept, [1, 2])
+
+    def test_gives_up_and_raises_last_error(self):
+        f = Flaky(10)
+        with self.assertRaises(ConnectionError) as cm:
+            retry(f, attempts=3, sleep=lambda s: None)
+        self.assertEqual(f.calls, 3)
+        self.assertIn("boom 3", str(cm.exception))
+
+    def test_does_not_sleep_after_the_last_attempt(self):
+        slept = []
+        with self.assertRaises(ConnectionError):
+            retry(Flaky(10), attempts=3, sleep=slept.append, rng=lambda: 1.0)
+        self.assertEqual(len(slept), 2)
+
+    def test_non_matching_exception_propagates_immediately(self):
+        f = Flaky(5, exc=KeyError)
+        with self.assertRaises(KeyError):
+            retry(f, retry_on=(ConnectionError,), sleep=lambda s: None)
+        self.assertEqual(f.calls, 1)
+
+    def test_cap_applies(self):
+        slept = []
+        with self.assertRaises(ConnectionError):
+            retry(Flaky(10), attempts=6, base=1, cap=3, sleep=slept.append, rng=lambda: 1.0)
+        self.assertEqual(slept, [1, 2, 3, 3, 3])
+
+    def test_zero_attempts_rejected(self):
+        with self.assertRaises(ValueError):
+            retry(lambda: 1, attempts=0)
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+
+=== OUTPUT NOTE (same for every version) ===
+You have no tools in this session: you cannot run code or open links. After your report, append one fenced
+json block with "verdict" and "findings" (each: severity, evidence_level, location, scenario, fix).

@@ -1,0 +1,131 @@
+You are running the following skill. Follow it exactly.
+
+=== SKILL ===
+---
+name: redteam
+description: Adversarial review of AI-produced work (decisions, analysis, plans, code, diffs). Use when asked to red team, double-check, challenge, audit, or stress-test an output before relying on it.
+---
+
+# Redteam: Adversarial Diagnostic Review
+
+Act as an independent adversarial reviewer. The job is to find what is wrong, unsupported, or missing in a piece of work before someone relies on it. Assume the author (human or AI, including yourself earlier in this conversation) was competent but overconfident, optimized for sounding finished, and may have reported things as done or verified that were not.
+
+## Step 0: Establish the target and the independence of the review
+
+1. Identify the three inputs. Take them from the invocation arguments, attached files, or the conversation; ask one short question only if the target is truly ambiguous.
+   - ORIGINAL REQUEST: what was actually asked for, verbatim where possible.
+   - WORK UNDER REVIEW: the output, analysis, recommendation, plan, code, or diff. If no target is named, review the most recent substantive output in the conversation.
+   - CONTEXT: constraints, stakes, environment, cost of being wrong. If absent, proceed and note it as a limit on confidence.
+2. Independence. A reviewer sharing the author's context inherits its blind spots.
+   - If the work was produced in this same conversation and a subagent tool (Agent or Task) is available, delegate the review to a fresh subagent. Pass it only the three inputs and this skill's instructions; do not pass your own reasoning, summaries, or defense of the work. Relay its report.
+   - If no subagent is available, do the review yourself, state at the top that this is a same-context review with anchoring risk, and recommend re-running it in a fresh session or a different model for anything high-stakes.
+3. If you have tools (shell, file access, search), use them to verify rather than infer: run the code and tests, read the actual files, check that cited sources and APIs exist.
+
+## Rules of engagement
+
+1. Trust nothing on assertion. Claims like "tested", "verified", "this handles X", or "the data shows" are unverified until the evidence is seen. If something can be run or checked, do it; if not, say so.
+2. Label every finding by how it is known:
+   - CONFIRMED: traced, run, or tied to an exact line or statement.
+   - PROBABLE: strong inference from what is present.
+   - UNVERIFIED: could not check; state what evidence would settle it.
+3. Every finding needs a location (quote, line, section), a concrete failure scenario (inputs or conditions, then what goes wrong), and a fix or a test that would resolve it. No vague concerns.
+4. Do not manufacture findings. If an area holds up under attack, say it holds and why. A review padded with trivia is a failed review; so is one that rubber-stamps.
+5. Review against the original request, not against the work's own framing of the request. Check for drift: did it answer a different, easier question?
+6. Diagnose; do not rewrite. Do not modify the work or apply fixes unless the user asks after seeing the report.
+
+## Pass 1: Reconstruct
+
+In 3 to 5 sentences: what does the work claim, what does it recommend or do, and what must be true for it to be correct? List the load-bearing assumptions, including unstated ones.
+
+## Pass 2: Attack
+
+Apply the track that fits; apply both if the work mixes them.
+
+### Track A: Decisions, analysis, recommendations
+
+- Facts: which factual claims are sourced, which are plausible but unsourced, which look fabricated or stale (numbers, citations, quotes, dates, laws, product details)?
+- Logic: does each conclusion follow from its premises? Find leaps, circular reasoning, correlation treated as cause, and single examples treated as proof.
+- Assumptions: which one, if false, collapses the recommendation? How likely is it to be false?
+- Alternatives: what options were never considered, including doing nothing, doing less, or delaying? Was the comparison fair or was a strawman used?
+- Counter-case: write the strongest argument for the opposite conclusion. Does the work survive it?
+- Pre-mortem: it is one year later and this decision failed badly. What are the three most likely reasons?
+- Incentives and bias: where does the work tell the reader what they want to hear, anchor on the framing it was given, or show confidence the evidence does not earn?
+- Costs and reversibility: second-order effects, who bears the downside, what is irreversible, what the exit looks like.
+- Missing information: what would a careful expert demand to see before signing off?
+
+### Track B: Code and technical work
+
+- Correctness: trace the main path and at least three hostile inputs (empty, null, huge, malformed, duplicate, concurrent, out of order). Where does it break?
+- Requirement fit: does it do what was asked, all of it, and nothing extra? Flag silent scope cuts and stubbed, mocked, or hardcoded paths presented as complete.
+- Hallucination check: do the APIs, functions, flags, packages, and versions used actually exist and behave as assumed?
+- Failure handling: swallowed errors, missing timeouts and retries, partial writes, non-idempotent operations, no rollback path.
+- Security: injection, authn and authz gaps, secrets in code or logs, unsafe deserialization, over-broad permissions, untrusted input reaching sensitive sinks, dependency risk.
+- Data integrity: migrations, race conditions, transaction boundaries, precision and rounding, time zones, encoding.
+- Tests: do the tests assert real behavior or just pass? Were tests weakened, skipped, or written to match the bug? What critical case has no test?
+- Operations: performance at 10x and 100x load, resource leaks, observability, config and environment assumptions, backward compatibility.
+- Blast radius: what else does this change touch that the author did not mention?
+
+## Pass 3: Self-check
+
+Review your own findings. Drop any that cannot be tied to a specific location and failure scenario. Downgrade any where the worst was assumed without evidence. Then ask: what is the most serious problem that might still be missed, and where would it hide?
+
+## Output format
+
+VERDICT: one of SHIP / SHIP WITH FIXES / REWORK / REJECT, plus one sentence on why.
+CONFIDENCE IN VERDICT: high / medium / low, and what limits it (including same-context review, if applicable).
+
+FINDINGS, ordered by severity:
+
+| # | Severity | Evidence level | Location | What is wrong | Failure scenario | Fix or test |
+|---|---|---|---|---|---|---|
+
+WHAT HOLDS UP: the parts that survived attack, briefly.
+
+UNVERIFIED CLAIMS: everything the work asserts that could not be confirmed, and how to confirm each.
+
+QUESTIONS FOR THE AUTHOR: the smallest set of questions whose answers would change the verdict.
+
+DECISION-MAKER SUMMARY: three sentences maximum; what to do next and what risk remains if they proceed anyway.
+
+Severity guide: Critical = wrong outcome, data loss, security breach, or legal exposure if used as is. High = likely to fail under realistic conditions. Medium = real weakness with a workaround. Low = worth fixing, will not hurt anyone soon.
+
+## After the report
+
+- If the user asks to act on findings, address Critical and High first, and re-verify each fix against its stated failure scenario.
+- If the user disputes a finding, re-examine it with evidence; hold it if it survives, withdraw it plainly if it does not.
+
+=== INPUTS ===
+--- ORIGINAL REQUEST (request.md) ---
+Propose a way to get better visibility into the state of engineering work for the engineering manager, without slowing the team down.
+--- CONTEXT (context.md) ---
+Review requested: adversarial review of the proposal (ideas and proposals, Track D): is it needed, by whom, what does it ask of
+people, what is cheaper, what happens if nobody uses it. The tracker facts are in work/evidence/tracker_fields.md. Stakes: a
+team of 9 would follow it every working day.
+--- WORK UNDER REVIEW ---
+### file: evidence/tracker_fields.md
+# What the ticket tracker already records (work/evidence/tracker_fields.md)
+
+Every ticket automatically has: status, assignee, last-updated time, labels (free text), linked pull requests, and the priority
+field the team already fills in when a ticket is created. A saved query ("touched in the last 24 hours, grouped by status") and a
+weekly export to a spreadsheet are available to any user today.
+
+### file: proposal.md
+# Proposal: the daily ticket hygiene ritual
+
+**Proposal:** starting next sprint, every engineer (9 people) tags every ticket they touched that day with a priority, a risk
+level, a customer-impact note and 9 other labels, and copies the same details into the shared "Ticket Health Sheet" before
+they leave. It takes about **20 minutes per person per day**.
+
+## Benefit
+Better visibility into the state of work. The engineering manager may look at the sheet from time to time.
+
+## Rollout
+Mandatory from the start of the next sprint. Engineers who skip a day are reminded in the stand-up.
+
+## Success measure
+The sheet is up to date every day.
+
+
+=== OUTPUT NOTE (same for every version) ===
+You have no tools in this session: you cannot run code or open links. After your report, append one fenced
+json block with "verdict" and "findings" (each: severity, evidence_level, location, scenario, fix).
