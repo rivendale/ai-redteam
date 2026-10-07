@@ -25,11 +25,11 @@ def main():
         dst.mkdir(parents=True)
         for f in ("request.md", "context.md"):
             shutil.copy2(d / f, dst / f)
-        shutil.copytree(d / "work", dst / "work")
+        shutil.copytree(d / "work", dst / "work", ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "*.pyo"))
         n += 1
-    left = [p for p in out.rglob("expected.json")]
+    left = [p for p in out.rglob("expected.json")] + [p for p in out.rglob("*.pyc")] + [p for p in out.rglob("__pycache__")]
     if left:
-        print("expected.json leaked into", left[0]); return 1
+        print("not for reviewers, found in the output:", left[0]); return 1
     print(f"{n} case(s) prepared in {out} (no expected.json)")
     return 0
 
