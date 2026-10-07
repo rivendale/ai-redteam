@@ -110,4 +110,4 @@ Severity guide: Critical = wrong outcome, data loss, security breach, regulatory
 ## Where it fits
 
 - Use this for decisions, plans, analysis, owner or executive write-ups, regulated wording, and small or low-risk diffs. For substantive code changes, use `prompts/pr-review.md` or your normal code review; for high-risk changes use both. This is a second read, not a replacement for code review.
-- Independence means a separate instance with only the request, the work and the context, not a different model. The session that wrote the work does not review it.
+- Independence means a separate instance with only the request, the work and the context, not a different model. Paste it into a session that did not write the work.

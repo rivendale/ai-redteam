@@ -15,13 +15,13 @@ Review one pull request at one exact commit, find what would break, and close it
 
 ## Step 2: Size the review by risk
 
-Pick the tier from what the change touches, not from its size.
+Pick the tier from what the change touches, not from its size or file type: a one-line config change that alters who can access what is High.
 
 | Tier | What it covers | Review |
 |---|---|---|
-| Low | Docs, config, version pins, tests only | One independent read; the `redteam` skill is enough |
+| Low | Docs, version pins, tests only, and config that does not touch auth, permissions, secrets, network exposure or data handling | One independent read; the `redteam` skill is enough |
 | Standard | Ordinary code changes | One model round |
-| High | Authentication and permissions, migrations, money movement, personal data, regulated text | Two rounds, ideally on two different vendors |
+| High | Authentication and permissions (including their configuration), migrations, money movement, personal data, regulated text | Two rounds, ideally on two different vendors |
 
 When unsure, take the higher tier. Record the tier and the reason in the report. The tier's rounds are the review; a High-tier PR whose second round has not run is not reviewed.
 

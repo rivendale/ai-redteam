@@ -7,7 +7,7 @@ Each comes in two forms:
 | File | Use |
 |---|---|
 | [`skills/redteam/SKILL.md`](skills/redteam/SKILL.md) | Claude skill; invoke with `/redteam` |
-| [`prompts/adversarial-review.md`](prompts/adversarial-review.md) | Paste-in prompt for any model |
+| [`prompts/adversarial-review.md`](prompts/adversarial-review.md) | Paste-in prompt for any model (Tracks A, B and R; Tracks C and D, the inputs ledger and the confirm-or-refute round are in the skill only) |
 | [`skills/pr-review/SKILL.md`](skills/pr-review/SKILL.md) | Claude skill; invoke with `/pr-review` |
 | [`prompts/pr-review.md`](prompts/pr-review.md) | Paste-in PR review prompt for any model |
 
@@ -26,7 +26,7 @@ Output is a verdict (SHIP / SHIP WITH FIXES / REWORK / REJECT), a severity-ranke
 
 ## What pr-review does
 
-One pull request, one exact head commit, reviewed in a throwaway checkout against its merge base. The review is sized by risk (Low: one read; Standard: one round; High, for auth, migrations, money, personal data or regulated text: two rounds on two vendors), run by an instance with no memory of writing the change, and bounded to the runs its tier requires unless the owner approves more. Every finding (P0 to P3, `file:line`, a failure scenario, a suggested test) is adjudicated in writing as accepted with a regression test or rejected with evidence, and merge is recommended only when the tier's rounds have run and every expected check is present and green. It is named `pr-review`, not `review`, because Claude Code's built-in code-review command already answers to `/review`.
+One pull request, one exact head commit, reviewed in a throwaway checkout against its merge base. The review is sized by risk (Low: one read; Standard: one round; High, for auth and permissions including their configuration, migrations, money, personal data or regulated text: two rounds, ideally on two vendors where an endpoint is approved for the data), run by an instance with no memory of writing the change, and bounded to the runs its tier requires unless the owner approves more. Every finding (P0 to P3, `file:line`, a failure scenario, a suggested test) is adjudicated in writing as accepted with a regression test or rejected with evidence, and merge is recommended only when the tier's rounds have run and every expected check is present and green. It is named `pr-review`, not `review`, because Claude Code's built-in code-review command already answers to `/review`.
 
 ## redteam vs pr-review: when to use which
 

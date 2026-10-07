@@ -196,7 +196,8 @@ harms no one soon.
   diffs. For substantive code changes, use the sibling `pr-review` skill or your normal code review; for high-risk
   changes use both. This is a second read, not a replacement for code review.
 - Independence means a separate instance with only the request, the work and the context, not a different model.
-  The session that wrote the work does not review it.
+  The session that wrote the work should not review it; when no fresh instance exists, Step 0 item 5's same-context
+  disclaimer applies.
 - Reviewers over-flag. The confirm-or-refute round in Pass 3 is that check; record each outcome in writing: accepted
   and fixed, or rejected with the evidence.
 
