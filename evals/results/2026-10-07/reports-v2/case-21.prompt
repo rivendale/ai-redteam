@@ -1,3 +1,6 @@
+You are running the following skill. Follow it exactly.
+
+=== SKILL ===
 ---
 name: redteam
 description: Adversarial review of work before anyone relies on it - decisions and analysis, code and diffs, factual claims, and ideas or proposals. Use when asked to red team, double-check, challenge, audit, fact-check or stress-test an output, a plan, a claim or a proposal.
@@ -157,3 +160,39 @@ harms no one soon.
 
 - If asked to act, fix Critical and High first and re-verify each fix against its own failure scenario.
 - If a finding is disputed, re-examine it with evidence; hold it if it survives, withdraw it plainly if not.
+
+=== INPUTS ===
+--- ORIGINAL REQUEST (request.md) ---
+Propose what to do about how the data team looks at its weekly metrics.
+--- CONTEXT (context.md) ---
+Review requested: adversarial review of the proposal (ideas and proposals, Track D): is it needed, by whom, what does it ask of
+people, what is cheaper, what happens if nobody uses it. The team's own words are in work/evidence/team_notes.md.
+Stakes: six engineer-weeks plus maintenance.
+--- WORK UNDER REVIEW ---
+### file: evidence/team_notes.md
+# Notes from the conversation with the data team (2 people), 1 October 2026
+
+- "We look at the numbers once a week, on Monday. It takes about ten minutes."
+- "The spreadsheet is fine. It refreshes itself overnight from the warehouse."
+- Nobody outside the two of us looks at it. Nobody has asked for more.
+- A scheduled email of the twelve numbers on Monday morning would be enough, if anything.
+
+### file: proposal.md
+# Proposal: an internal metrics dashboard for the data team
+
+**Proposal:** build a web dashboard that shows the data team's twelve weekly metrics, with filters, charts and a login. Estimated
+effort: **6 engineer-weeks** (one engineer for six weeks), then maintenance.
+
+## Why
+Dashboards are the modern way to look at metrics, and the current spreadsheet looks dated.
+
+## Scope
+Twelve metrics, role-based login, date filters, export to PDF, dark mode.
+
+## Risks
+The schedule could slip if the metric definitions change.
+
+
+=== OUTPUT NOTE (same for every version) ===
+You have no tools in this session: you cannot run code or open links. After your report, append one fenced
+json block with "verdict" and "findings" (each: severity, evidence_level, location, scenario, fix).

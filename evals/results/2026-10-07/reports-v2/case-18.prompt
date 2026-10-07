@@ -1,3 +1,6 @@
+You are running the following skill. Follow it exactly.
+
+=== SKILL ===
 ---
 name: redteam
 description: Adversarial review of work before anyone relies on it - decisions and analysis, code and diffs, factual claims, and ideas or proposals. Use when asked to red team, double-check, challenge, audit, fact-check or stress-test an output, a plan, a claim or a proposal.
@@ -157,3 +160,43 @@ harms no one soon.
 
 - If asked to act, fix Critical and High first and re-verify each fix against its own failure scenario.
 - If a finding is disputed, re-examine it with evidence; hold it if it survives, withdraw it plainly if not.
+
+=== INPUTS ===
+--- ORIGINAL REQUEST (request.md) ---
+Compare Alder and Birch for the summarisation job (40 million input tokens and 4 million output tokens a month, public filings only).
+Use the vendors' own pricing pages in sources/. Show the arithmetic.
+--- CONTEXT (context.md) ---
+Review requested: claims review (Track C). Sources are in work/sources/. Stakes: standard, a monthly cost of $90 to $180.
+--- WORK UNDER REVIEW ---
+### file: comparison.md
+# Provider cost comparison for the summarisation job
+
+The job reads 40 million input tokens and writes 4 million output tokens per month.
+
+| provider | input cost | output cost | total per month |
+|---|---|---|---|
+| Alder | 40 x $3.00 = $120.00 | 4 x $15.00 = $60.00 | **$180.00** |
+| Birch | 40 x $1.25 = $50.00 | 4 x $10.00 = $40.00 | **$90.00** |
+
+Prices are from each provider's pricing page [1][2]. Birch is $90.00 a month cheaper (half the cost). Alder's context window is
+200,000 tokens and Birch's is 128,000 tokens [1][2]; our longest document is 70,000 tokens, so both fit. Birch retains inputs for
+30 days for abuse monitoring [2]; this job uses public filings only, so that does not matter here.
+
+Sources: [1] sources/alder-pricing.md, [2] sources/birch-pricing.md. Prompt caching was not modelled because the inputs do not repeat.
+
+### file: sources/alder-pricing.md
+# Provider Alder: pricing (vendor page, retrieved 5 October 2026)
+
+Input tokens: $3.00 per million. Output tokens: $15.00 per million. Prompt caching reads: $0.30 per million.
+Context window: 200,000 tokens.
+
+### file: sources/birch-pricing.md
+# Provider Birch: pricing (vendor page, retrieved 5 October 2026)
+
+Input tokens: $1.25 per million. Output tokens: $10.00 per million. Context window: 128,000 tokens.
+Retention: inputs and outputs are retained for 30 days for abuse monitoring.
+
+
+=== OUTPUT NOTE (same for every version) ===
+You have no tools in this session: you cannot run code or open links. After your report, append one fenced
+json block with "verdict" and "findings" (each: severity, evidence_level, location, scenario, fix).

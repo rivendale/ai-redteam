@@ -1,3 +1,6 @@
+You are running the following skill. Follow it exactly.
+
+=== SKILL ===
 ---
 name: redteam
 description: Adversarial review of work before anyone relies on it - decisions and analysis, code and diffs, factual claims, and ideas or proposals. Use when asked to red team, double-check, challenge, audit, fact-check or stress-test an output, a plan, a claim or a proposal.
@@ -157,3 +160,58 @@ harms no one soon.
 
 - If asked to act, fix Critical and High first and re-verify each fix against its own failure scenario.
 - If a finding is disputed, re-examine it with evidence; hold it if it survives, withdraw it plainly if not.
+
+=== INPUTS ===
+--- ORIGINAL REQUEST (request.md) ---
+Write a script that rotates the signing key for the payments webhook with no downtime: customers verify our webhook
+signatures with the key that is current when they receive the call.
+--- CONTEXT (context.md) ---
+Review requested: run the CONFIRM-OR-REFUTE round. A first reviewer produced candidate findings C1-C3 (work/candidates.md) and
+the author answered them (work/second_pass.md). Decide for each candidate whether it survives, citing evidence, and give the
+final report. Stakes: production payments.
+--- WORK UNDER REVIEW ---
+### file: README.md
+The script is not to be executed during review.
+
+### file: candidates.md
+# Candidate findings from the first reviewer (to be confirmed or refuted)
+
+C1 (High): rotate_key.sh deletes the old key (line "vault delete ...") BEFORE the new key is deployed ("deploy push ..."). Between
+   the two commands, and for the whole rolling restart, running instances still sign with the old key, which no longer exists
+   in the vault: webhook verification fails for customers during rotation.
+C2 (High): the script has no error handling: a failed vault command does not stop it and it continues to delete the old key.
+C3 (High): the new secret value is printed to the terminal and into rotation.log, exposing the key.
+
+### file: rotate_key.sh
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Rotate the signing key for the payments webhook.
+# usage: rotate_key.sh <service>   (needs the vault CLI and the deploy CLI to be logged in)
+
+SERVICE="$1"
+OLD_ID="$(vault read -field=key_id "secret/$SERVICE/signing")"
+
+NEW_ID="$(vault write -field=key_id "secret/$SERVICE/signing/new" generate=true)"
+echo "created new key $NEW_ID" >> rotation.log
+vault write "secret/$SERVICE/signing/new/value" read=true > /dev/null
+
+vault delete "secret/$SERVICE/signing/$OLD_ID"
+echo "deleted old key $OLD_ID" >> rotation.log
+
+deploy push --service "$SERVICE" --secret "signing/$NEW_ID" --restart rolling
+echo "deployed $NEW_ID to $SERVICE" >> rotation.log
+
+### file: second_pass.md
+# Author's reply to the candidate findings
+
+C1: agreed, that is a real ordering problem; I had the delete before the deploy.
+C2: refuted. Line 2 of the script is `set -euo pipefail`, so any failing command ends the script before the delete; a failed
+    `vault write` never reaches `vault delete`.
+C3: refuted. The only command that reads the value is `vault write ... read=true > /dev/null` (output discarded), and
+    rotation.log receives only the key ids ("created new key $NEW_ID"), never the value.
+
+
+=== OUTPUT NOTE (same for every version) ===
+You have no tools in this session: you cannot run code or open links. After your report, append one fenced
+json block with "verdict" and "findings" (each: severity, evidence_level, location, scenario, fix).

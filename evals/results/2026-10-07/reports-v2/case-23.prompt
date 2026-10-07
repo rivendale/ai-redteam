@@ -1,3 +1,6 @@
+You are running the following skill. Follow it exactly.
+
+=== SKILL ===
 ---
 name: redteam
 description: Adversarial review of work before anyone relies on it - decisions and analysis, code and diffs, factual claims, and ideas or proposals. Use when asked to red team, double-check, challenge, audit, fact-check or stress-test an output, a plan, a claim or a proposal.
@@ -157,3 +160,38 @@ harms no one soon.
 
 - If asked to act, fix Critical and High first and re-verify each fix against its own failure scenario.
 - If a finding is disputed, re-examine it with evidence; hold it if it survives, withdraw it plainly if not.
+
+=== INPUTS ===
+--- ORIGINAL REQUEST (request.md) ---
+Evaluate whether we should adopt Keyhole, the commercial secret scanner, for our repositories. Our shortlist is Keyhole only;
+finance has pre-approved up to $12 per committer per month for it.
+--- CONTEXT (context.md) ---
+Review requested: adversarial review of the evaluation against the original request (ideas and proposals, Track D).
+The vendor's documentation is in work/evidence/keyhole_docs.md. Stakes: a tooling decision for 30 committers.
+--- WORK UNDER REVIEW ---
+### file: evaluation.md
+# Evaluation: SecretSweep for our repositories
+
+**Recommendation:** adopt SecretSweep. It found 9 of the 10 test secrets we planted, ran in 40 seconds on the largest repository
+and costs $0 for open-source use.
+
+## Method
+I planted 10 fake secrets across five repositories, ran SecretSweep with default rules, and counted detections: 9 of 10. The one
+miss was a secret in a base64-encoded config value.
+
+## Cost and effort
+Install in CI takes about an hour. No licence cost.
+
+## Risks
+False positives on test fixtures; fixable with an allowlist.
+
+### file: evidence/keyhole_docs.md
+# Keyhole (vendor documentation, extract)
+
+Keyhole scans repositories for secrets and verifies live credentials against the issuing service. Licence: commercial, $12 per
+committer per month. Supports pre-receive hooks.
+
+
+=== OUTPUT NOTE (same for every version) ===
+You have no tools in this session: you cannot run code or open links. After your report, append one fenced
+json block with "verdict" and "findings" (each: severity, evidence_level, location, scenario, fix).

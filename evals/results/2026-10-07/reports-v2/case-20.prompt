@@ -1,3 +1,6 @@
+You are running the following skill. Follow it exactly.
+
+=== SKILL ===
 ---
 name: redteam
 description: Adversarial review of work before anyone relies on it - decisions and analysis, code and diffs, factual claims, and ideas or proposals. Use when asked to red team, double-check, challenge, audit, fact-check or stress-test an output, a plan, a claim or a proposal.
@@ -157,3 +160,39 @@ harms no one soon.
 
 - If asked to act, fix Critical and High first and re-verify each fix against its own failure scenario.
 - If a finding is disputed, re-examine it with evidence; hold it if it survives, withdraw it plainly if not.
+
+=== INPUTS ===
+--- ORIGINAL REQUEST (request.md) ---
+Propose a way to get better visibility into the state of engineering work for the engineering manager, without slowing the team down.
+--- CONTEXT (context.md) ---
+Review requested: adversarial review of the proposal (ideas and proposals, Track D): is it needed, by whom, what does it ask of
+people, what is cheaper, what happens if nobody uses it. The tracker facts are in work/evidence/tracker_fields.md. Stakes: a
+team of 9 would follow it every working day.
+--- WORK UNDER REVIEW ---
+### file: evidence/tracker_fields.md
+# What the ticket tracker already records (work/evidence/tracker_fields.md)
+
+Every ticket automatically has: status, assignee, last-updated time, labels (free text), linked pull requests, and the priority
+field the team already fills in when a ticket is created. A saved query ("touched in the last 24 hours, grouped by status") and a
+weekly export to a spreadsheet are available to any user today.
+
+### file: proposal.md
+# Proposal: the daily ticket hygiene ritual
+
+**Proposal:** starting next sprint, every engineer (9 people) tags every ticket they touched that day with a priority, a risk
+level, a customer-impact note and 9 other labels, and copies the same details into the shared "Ticket Health Sheet" before
+they leave. It takes about **20 minutes per person per day**.
+
+## Benefit
+Better visibility into the state of work. The engineering manager may look at the sheet from time to time.
+
+## Rollout
+Mandatory from the start of the next sprint. Engineers who skip a day are reminded in the stand-up.
+
+## Success measure
+The sheet is up to date every day.
+
+
+=== OUTPUT NOTE (same for every version) ===
+You have no tools in this session: you cannot run code or open links. After your report, append one fenced
+json block with "verdict" and "findings" (each: severity, evidence_level, location, scenario, fix).

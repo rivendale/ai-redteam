@@ -1,3 +1,6 @@
+You are running the following skill. Follow it exactly.
+
+=== SKILL ===
 ---
 name: redteam
 description: Adversarial review of work before anyone relies on it - decisions and analysis, code and diffs, factual claims, and ideas or proposals. Use when asked to red team, double-check, challenge, audit, fact-check or stress-test an output, a plan, a claim or a proposal.
@@ -157,3 +160,82 @@ harms no one soon.
 
 - If asked to act, fix Critical and High first and re-verify each fix against its own failure scenario.
 - If a finding is disputed, re-examine it with evidence; hold it if it survives, withdraw it plainly if not.
+
+=== INPUTS ===
+--- ORIGINAL REQUEST (request.md) ---
+Add rate limiting to the API: each authenticated user gets 100 requests per minute, counted per user. Users behind the same
+office network must not be limited by each other's traffic.
+--- CONTEXT (context.md) ---
+Review requested: adversarial review of the PR below against the request above.
+Stakes: production. PR description (from the author): "Adds a sliding-window rate limiter middleware: 100 requests per
+60 seconds. Tests added and passing."
+--- WORK UNDER REVIEW ---
+### file: PR.md
+Adds a sliding-window rate limiter middleware: 100 requests per 60 seconds. Tests added and passing.
+
+### file: __pycache__/rate_limit.cpython-312.pyc
+Ë
+     ÍÆj~  ã                   ó$   — d Z ddlZ G d„ d«      Zy)zRate limiting middleware.é    Nc                   ó4   — e Zd Zddej                  fd„Zd„ Zy)ÚRateLimiteréd   é<   c                 ó>   — |||c| _         | _        | _        i | _        y )N)ÚlimitÚwindowÚclockÚ_hits)Úselfr   r	   r
+   s       úF/tmp/claude-1000/pub/ai-redteam/evals/cases/case-11/work/rate_limit.pyÚ__init__zRateLimiter.__init__   s   € Ø.3°V¸UĞ+ˆŒ
+D”K ¤Øˆ
+ó    c                 óN  — |j                   }| j                  «       }| j                  j                  |g «      D cg c]  }||z
+  | j                  k  sŒ|‘Œ }}t        |«      | j                  k\  r|| j                  |<   y|j                  |«       || j                  |<   yc c}w )z:request has .remote_addr (str) and .user_id (str or None).FT)Úremote_addrr
+   r   Úgetr	   Úlenr   Úappend)r   ÚrequestÚkeyÚnowÚtÚhitss         r   ÚallowzRateLimiter.allow
+   s‹   € à×!Ñ!ˆØj‰j‹lˆØŸ:™:Ÿ>™>¨#¨rÓ2ÖLa°c¸A±gÀÇÁÓ6K’ĞLˆĞLÜˆt‹9˜Ÿ
+™
+Ò"Ø"ˆDJ‰Js‰OØØ‰CÔØˆ
+‰
+3‰Øùò Ms   »B"ÁB"N)Ú__name__Ú
+__module__Ú__qualname__ÚtimeÚ	monotonicr   r   © r   r   r   r      s   „ Ø ¨°4·>±>ó ó
+r   r   )Ú__doc__r   r   r    r   r   ú<module>r"      s   ğÙ Û ÷ò r   
+### file: rate_limit.py
+"""Rate limiting middleware."""
+import time
+
+
+class RateLimiter:
+    def __init__(self, limit=100, window=60, clock=time.monotonic):
+        self.limit, self.window, self.clock = limit, window, clock
+        self._hits = {}
+
+    def allow(self, request):
+        """request has .remote_addr (str) and .user_id (str or None)."""
+        key = request.remote_addr
+        now = self.clock()
+        hits = [t for t in self._hits.get(key, []) if now - t < self.window]
+        if len(hits) >= self.limit:
+            self._hits[key] = hits
+            return False
+        hits.append(now)
+        self._hits[key] = hits
+        return True
+
+### file: test_rate_limit.py
+import unittest
+from types import SimpleNamespace
+from rate_limit import RateLimiter
+
+
+class T(unittest.TestCase):
+    def test_blocks_after_limit(self):
+        clock = [0.0]
+        rl = RateLimiter(limit=3, window=60, clock=lambda: clock[0])
+        r = SimpleNamespace(remote_addr="10.0.0.1", user_id="u1")
+        self.assertEqual([rl.allow(r) for _ in range(4)], [True, True, True, False])
+
+    def test_window_expires(self):
+        clock = [0.0]
+        rl = RateLimiter(limit=1, window=60, clock=lambda: clock[0])
+        r = SimpleNamespace(remote_addr="10.0.0.1", user_id="u1")
+        rl.allow(r)
+        clock[0] = 61
+        self.assertTrue(rl.allow(r))
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+
+=== OUTPUT NOTE (same for every version) ===
+You have no tools in this session: you cannot run code or open links. After your report, append one fenced
+json block with "verdict" and "findings" (each: severity, evidence_level, location, scenario, fix).

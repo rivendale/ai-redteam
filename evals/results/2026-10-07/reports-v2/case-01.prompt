@@ -1,3 +1,6 @@
+You are running the following skill. Follow it exactly.
+
+=== SKILL ===
 ---
 name: redteam
 description: Adversarial review of work before anyone relies on it - decisions and analysis, code and diffs, factual claims, and ideas or proposals. Use when asked to red team, double-check, challenge, audit, fact-check or stress-test an output, a plan, a claim or a proposal.
@@ -157,3 +160,50 @@ harms no one soon.
 
 - If asked to act, fix Critical and High first and re-verify each fix against its own failure scenario.
 - If a finding is disputed, re-examine it with evidence; hold it if it survives, withdraw it plainly if not.
+
+=== INPUTS ===
+--- ORIGINAL REQUEST (request.md) ---
+Write a decision memo on whether to move our nightly batch job from the cron VM to the managed workflow service Stepwise.
+Base the cost comparison on our real usage, which is in evidence/run_counts.csv.
+--- CONTEXT (context.md) ---
+Review requested: adversarial review of the decision memo (decisions and analysis).
+Stakes: about $2,640 per year if the memo is right; the batch feeds next-morning reports. evidence/run_counts.csv holds the
+monthly workflow run counts for the last six months (supplied, in work/evidence/).
+--- WORK UNDER REVIEW ---
+### file: evidence/run_counts.csv
+month,runs
+2026-04,30210
+2026-05,31050
+2026-06,31840
+2026-07,32490
+2026-08,31970
+2026-09,32760
+
+### file: memo.md
+# Decision memo: move the nightly batch to Stepwise (managed workflow service)
+
+**Recommendation:** move the nightly batch from cron on a VM to Stepwise this quarter.
+
+## Why
+- The VM costs **$400 per month** (instance, disk, backups) and needs patching and a person on call for stuck jobs.
+- Stepwise bills **$0.06 per workflow run**. Our batch is about **3,000 runs per month**, so the bill is **$180 per month**,
+  a saving of $220 per month ($2,640 per year).
+- Stepwise retries failed steps on its own and keeps a run history for 90 days, which removes our hand-written retry code.
+
+## Alternatives considered
+1. Stay on cron and add the retry helper (cost: two days of work, no change to the $400).
+2. Move to Stepwise (this memo).
+3. Run the batch as a scheduled container job on the existing cluster (cost: about $60 per month of extra node capacity).
+
+## Plan
+1. Week 1: port the three batch scripts into Stepwise definitions.
+2. Week 2: run both systems in parallel and compare outputs.
+3. Week 3: cut over. **Decommission the VM the same day**, so we stop paying for it.
+
+## Risks
+- Vendor outage. Stepwise publishes 99.9% availability.
+
+
+=== OUTPUT NOTE (same for every version) ===
+You have no tools in this session: you cannot run code or open links. After your report, append one fenced
+json block with "verdict" and "findings" (each: severity, evidence_level, location, scenario, fix).

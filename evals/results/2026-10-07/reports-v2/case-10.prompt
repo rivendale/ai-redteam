@@ -1,3 +1,6 @@
+You are running the following skill. Follow it exactly.
+
+=== SKILL ===
 ---
 name: redteam
 description: Adversarial review of work before anyone relies on it - decisions and analysis, code and diffs, factual claims, and ideas or proposals. Use when asked to red team, double-check, challenge, audit, fact-check or stress-test an output, a plan, a claim or a proposal.
@@ -157,3 +160,39 @@ harms no one soon.
 
 - If asked to act, fix Critical and High first and re-verify each fix against its own failure scenario.
 - If a finding is disputed, re-examine it with evidence; hold it if it survives, withdraw it plainly if not.
+
+=== INPUTS ===
+--- ORIGINAL REQUEST (request.md) ---
+Review PR #214, "Prorate mid-month upgrades". Customers who upgrade on day D of a calendar month should pay for the days
+from D to the end of that month, at the new plan's price, plus tax for their region.
+--- CONTEXT (context.md) ---
+Review requested: adversarial code review.
+Stakes: production billing. Files changed in the PR: billing/proration.py (supplied). The PR description says:
+"Tax rates come from billing/tax_table.json (see the update in commit a1b2c3d4e5). Rounding follows the fix in that commit."
+Neither billing/tax_table.json nor commit a1b2c3d4e5 is part of what you were given.
+--- WORK UNDER REVIEW ---
+### file: proration.py
+"""Proration for mid-month plan upgrades."""
+import json
+from datetime import date
+from decimal import Decimal, ROUND_HALF_UP
+from pathlib import Path
+
+TAX_TABLE = json.loads((Path(__file__).parent / "tax_table.json").read_text())
+DAYS_IN_BILLING_MONTH = 30
+
+
+def prorated_cents(monthly_price_cents, upgrade_on, region="default"):
+    """Charge for the rest of the month when a plan is upgraded on `upgrade_on` (a date)."""
+    remaining_days = DAYS_IN_BILLING_MONTH - upgrade_on.day + 1
+    if remaining_days < 0:
+        remaining_days = 0
+    share = Decimal(remaining_days) / Decimal(DAYS_IN_BILLING_MONTH)
+    net = (Decimal(monthly_price_cents) * share).quantize(Decimal("1"), rounding=ROUND_HALF_UP)
+    tax_rate = Decimal(str(TAX_TABLE.get(region, TAX_TABLE["default"])))
+    return int((net * (Decimal(1) + tax_rate)).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+
+
+=== OUTPUT NOTE (same for every version) ===
+You have no tools in this session: you cannot run code or open links. After your report, append one fenced
+json block with "verdict" and "findings" (each: severity, evidence_level, location, scenario, fix).

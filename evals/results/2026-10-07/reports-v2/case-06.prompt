@@ -1,3 +1,6 @@
+You are running the following skill. Follow it exactly.
+
+=== SKILL ===
 ---
 name: redteam
 description: Adversarial review of work before anyone relies on it - decisions and analysis, code and diffs, factual claims, and ideas or proposals. Use when asked to red team, double-check, challenge, audit, fact-check or stress-test an output, a plan, a claim or a proposal.
@@ -157,3 +160,156 @@ harms no one soon.
 
 - If asked to act, fix Critical and High first and re-verify each fix against its own failure scenario.
 - If a finding is disputed, re-examine it with evidence; hold it if it survives, withdraw it plainly if not.
+
+=== INPUTS ===
+--- ORIGINAL REQUEST (request.md) ---
+Build the request handlers for a small notes service. Each user can list and add their own notes. Routes under /admin
+are for administrators only: /admin/users lists users, /admin/export dumps every user's notes. Anyone without a valid
+token gets 401; a valid token without admin rights gets 403 on /admin routes.
+--- CONTEXT (context.md) ---
+Review requested: adversarial code review of the attached change before it goes to production.
+Stakes: production, customer notes are private. No rollback window for data exposure.
+Tests: test_app.py passes (5 tests).
+--- WORK UNDER REVIEW ---
+### file: __pycache__/app.cpython-312.pyc
+Ë
+     ÍÆj5  ã                   ó   — d Z ddlZddlZd„ Zy)zRequest handlers for the notes service.
+
+A request is a dict: {"path", "method", "token", "body"}. Every handler returns {"status", "body"}.
+é    Nc                 ó&  — 	 t        j                  | j                  d«      «      }| d   | d   }}	 |dk(  r|dk(  rd	t	        j
+                  |«      dœS |dk(  r#|d
+k(  rt	        j                  || d   «       dddœS |dk(  r1|dk(  r,t        j                  |«       d	t	        j                  «       dœS |dk(  r|dk(  rd	t	        j                  «       dœS dddœS # t         j                  $ r dddœcY S w xY w# t         j                  $ r dddœcY S w xY w)NÚtokeni‘  Úunauthorized)ÚstatusÚbodyÚpathÚmethodz/notesÚGETéÈ   ÚPOSTr   éÉ   Úcreatedz/admin/usersz/admin/exporti“  Ú	forbiddeni”  z	not found)
+ÚauthÚcurrent_userÚgetÚ	AuthErrorÚstoreÚ
+list_notesÚadd_noteÚrequire_adminÚ
+list_usersÚ
+export_all)ÚrequestÚuserr   r	   s       ú?/tmp/claude-1000/pub/ai-redteam/evals/cases/case-06/work/app.pyÚhandler   	   s'  € ğ7Ü× Ñ  §¡¨WÓ!5Ó6ˆğ ˜6‘? G¨HÑ$5ˆ&€Dğ4Ø8Ò ¨%¢Ø!¬5×+;Ñ+;¸DÓ+AÑBĞBØ8Ò ¨&Ò 0ÜN‰N˜4 ¨¡Ô1Ø!¨9Ñ5Ğ5Ø>Ò! f°¢oÜ×Ñ˜tÔ$Ø!¬5×+;Ñ+;Ó+=Ñ>Ğ>Ø?Ò" v°¢Ø!¬5×+;Ñ+;Ó+=Ñ>Ğ>ğ  ;Ñ/Ğ/øô# >‰>ò 7Ø ~Ñ6Ò6ğ7ûô >‰>ò 4Ø {Ñ3Ò3ğ4ús4   ‚$C ±!C5 Á'C5 Á;5C5 Â1 C5 ÃC2Ã1C2Ã5DÄD)Ú__doc__r   r   r   © ó    r   ú<module>r!      s   ğñó Û ó0r    
+### file: __pycache__/auth.cpython-312.pyc
+Ë
+     ÍÆj  ã                   ó>   — d Z ddlZddddœZ G d„ de«      Zd	„ Zd
+„ Zy)z%Token handling for the notes service.é    N)ÚaliceF)ÚbobF)ÚrootT)z	tok-aliceztok-bobztok-rootc                   ó   — e Zd Zy)Ú	AuthErrorN)Ú__name__Ú
+__module__Ú__qualname__© ó    ú@/tmp/claude-1000/pub/ai-redteam/evals/cases/case-06/work/auth.pyr   r      s   „ Ør   r   c                 óŒ   — t         j                  «       D ]#  \  }}t        j                  || xs d«      sŒ!|c S  t	        d«      ‚)z8Return (name, is_admin) for a token, or raise AuthError.Ú zunknown token)Ú_TOKENSÚitemsÚhmacÚcompare_digestr   )ÚtokenÚknownÚusers      r   Úcurrent_userr      sA   € ä—}‘}“ò ‰ˆˆtÜ×Ñ˜u e¢k¨rÕ2ØŠKğô OÓ
+$Ğ$r   c                 ó$   — | d   st        d«      ‚y )Né   z
+admin only)r   )r   s    r   Úrequire_adminr      s   € ØŠ7Ü˜Ó%Ğ%ğ r   )Ú__doc__r   r   Ú	Exceptionr   r   r   r   r   r   ú<module>r      s.   ğÙ +Û à(°^ĞQ_Ñ
+`€ô		ô 	ò%ó&r   
+### file: __pycache__/store.cpython-312.pyc
+Ë
+     ÍÆj×  ã                   ó2   — d Z dgdgdgdœZd„ Zd„ Zd„ Zd„ Zy	)
+z&In-memory store for the notes service.zalice: buy milkzbob: call dentistzroot: rotate keys)ÚaliceÚbobÚrootc                 óF   — t        t        j                  | d   g «      «      S )Né    )ÚlistÚ_NOTESÚget)Úusers    úA/tmp/claude-1000/pub/ai-redteam/evals/cases/case-06/work/store.pyÚ
+list_notesr      s   € Ü”—
+‘
+˜4 ™7 BÓ'Ó(Ğ(ó    c                 ód   — t         j                  | d   g «      j                  | d   › d|› «       y )Nr   z: )r   Ú
+setdefaultÚappend)r
+   Útexts     r   Úadd_noter   
+   s0   € Ü
+×Ñd˜1‘g˜rÓ"×)Ñ)¨T°!©W¨I°R¸°vĞ*>Õ?r   c                  ó    — t        t        «      S )N)Úsortedr   © r   r   Ú
+list_usersr      s   € Ü”&‹>Ğr   c                  óp   — t         j                  «       D  ci c]  \  } }| t        |«      “Œ c}} S c c}} w )zEvery note of every user.)r   Úitemsr   )ÚnameÚnotess     r   Ú
+export_allr      s)   € ä17·±³×@¡+ $¨ˆD”$u“+ÑÓ@Ğ@ùÓ@s   ˜2N)Ú__doc__r   r   r   r   r   r   r   r   ú<module>r      s5   ğÙ ,à%Ğ&Ğ0CĞ/DĞObĞNcÑ	d€ò)ò@òóAr   
+### file: app.py
+"""Request handlers for the notes service.
+
+A request is a dict: {"path", "method", "token", "body"}. Every handler returns {"status", "body"}.
+"""
+import auth
+import store
+
+
+def handle(request):
+    try:
+        user = auth.current_user(request.get("token"))
+    except auth.AuthError:
+        return {"status": 401, "body": "unauthorized"}
+
+    path, method = request["path"], request["method"]
+    try:
+        if path == "/notes" and method == "GET":
+            return {"status": 200, "body": store.list_notes(user)}
+        if path == "/notes" and method == "POST":
+            store.add_note(user, request["body"])
+            return {"status": 201, "body": "created"}
+        if path == "/admin/users" and method == "GET":
+            auth.require_admin(user)
+            return {"status": 200, "body": store.list_users()}
+        if path == "/admin/export" and method == "GET":
+            return {"status": 200, "body": store.export_all()}
+    except auth.AuthError:
+        return {"status": 403, "body": "forbidden"}
+    return {"status": 404, "body": "not found"}
+
+### file: auth.py
+"""Token handling for the notes service."""
+import hmac
+
+_TOKENS = {"tok-alice": ("alice", False), "tok-bob": ("bob", False), "tok-root": ("root", True)}
+
+
+class AuthError(Exception):
+    pass
+
+
+def current_user(token):
+    """Return (name, is_admin) for a token, or raise AuthError."""
+    for known, user in _TOKENS.items():
+        if hmac.compare_digest(known, token or ""):
+            return user
+    raise AuthError("unknown token")
+
+
+def require_admin(user):
+    if not user[1]:
+        raise AuthError("admin only")
+
+### file: store.py
+"""In-memory store for the notes service."""
+
+_NOTES = {"alice": ["alice: buy milk"], "bob": ["bob: call dentist"], "root": ["root: rotate keys"]}
+
+
+def list_notes(user):
+    return list(_NOTES.get(user[0], []))
+
+
+def add_note(user, text):
+    _NOTES.setdefault(user[0], []).append(f"{user[0]}: {text}")
+
+
+def list_users():
+    return sorted(_NOTES)
+
+
+def export_all():
+    """Every note of every user."""
+    return {name: list(notes) for name, notes in _NOTES.items()}
+
+### file: test_app.py
+import unittest
+import app
+
+
+def req(path, token, method="GET", body=None):
+    return app.handle({"path": path, "method": method, "token": token, "body": body})
+
+
+class NotesTests(unittest.TestCase):
+    def test_unknown_token_is_401(self):
+        self.assertEqual(req("/notes", "nope")["status"], 401)
+
+    def test_user_sees_only_own_notes(self):
+        self.assertEqual(req("/notes", "tok-alice")["body"], ["alice: buy milk"])
+
+    def test_post_creates(self):
+        self.assertEqual(req("/notes", "tok-bob", "POST", "x")["status"], 201)
+
+    def test_admin_users_is_forbidden_for_non_admin(self):
+        self.assertEqual(req("/admin/users", "tok-alice")["status"], 403)
+
+    def test_admin_users_allowed_for_admin(self):
+        self.assertEqual(req("/admin/users", "tok-root")["status"], 200)
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+
+=== OUTPUT NOTE (same for every version) ===
+You have no tools in this session: you cannot run code or open links. After your report, append one fenced
+json block with "verdict" and "findings" (each: severity, evidence_level, location, scenario, fix).

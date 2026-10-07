@@ -1,3 +1,6 @@
+You are running the following skill. Follow it exactly.
+
+=== SKILL ===
 ---
 name: redteam
 description: Adversarial review of work before anyone relies on it - decisions and analysis, code and diffs, factual claims, and ideas or proposals. Use when asked to red team, double-check, challenge, audit, fact-check or stress-test an output, a plan, a claim or a proposal.
@@ -157,3 +160,65 @@ harms no one soon.
 
 - If asked to act, fix Critical and High first and re-verify each fix against its own failure scenario.
 - If a finding is disputed, re-examine it with evidence; hold it if it survives, withdraw it plainly if not.
+
+=== INPUTS ===
+--- ORIGINAL REQUEST (request.md) ---
+Propose whether and how to cut the formatting-only noise in our code reviews.
+--- CONTEXT (context.md) ---
+Review requested: adversarial review of the proposal (ideas and proposals, Track D): is it needed, by whom, what does it ask of
+people, what is cheaper, what happens if nobody uses it. The measurement is in work/evidence/pr_review_sample.csv.
+Stakes: low, reversible.
+--- WORK UNDER REVIEW ---
+### file: evidence/pr_review_sample.csv
+pr,format_only_comments,minutes_on_format_comments
+1,1,14
+2,0,0
+3,0,0
+4,2,9
+5,0,0
+6,0,0
+7,1,16
+8,0,0
+9,0,0
+10,0,0
+11,0,0
+12,3,11
+13,0,0
+14,0,0
+15,0,0
+16,0,0
+17,2,10
+18,0,0
+19,0,0
+20,0,0
+
+### file: proposal.md
+# Proposal: a pre-commit formatter hook, with the same check in CI
+
+**Proposal:** add the formatter to the repository's pre-commit configuration, and keep the CI check that already fails unformatted
+code. Engineers install the hook once (`pre-commit install`, about 5 minutes) and then do nothing further.
+
+## Need (measured)
+I read the last 20 merged pull requests (evidence/pr_review_sample.csv): **5 of 20 (25%)** had at least one review comment that was
+only about formatting, and the reviewers recorded an average of **12 minutes** spent on those comments. That is about 60 minutes
+of reviewer time in 20 pull requests.
+
+## Who benefits
+Reviewers (fewer formatting comments) and authors (no extra review round trip). Nobody has to do anything daily.
+
+## Alternatives considered
+- **CI check only (what we have).** It already exists, but it fails after the push, so the formatting round trip still happens
+  (that is the 5 of 20). Rejected as insufficient on its own.
+- **A team formatting guide.** Costs reading time, changes nothing mechanically. Rejected.
+
+## If nobody installs the hook
+Nothing breaks: CI still fails unformatted code exactly as today. The proposal costs 5 minutes per person and is reversible by
+deleting one config block.
+
+## Success measure
+Formatting-only review comments in the next 20 merged pull requests: expected fewer than 2.
+
+
+=== OUTPUT NOTE (same for every version) ===
+You have no tools in this session: you cannot run code or open links. After your report, append one fenced
+json block with "verdict" and "findings" (each: severity, evidence_level, location, scenario, fix).

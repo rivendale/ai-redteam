@@ -1,3 +1,6 @@
+You are running the following skill. Follow it exactly.
+
+=== SKILL ===
 ---
 name: redteam
 description: Adversarial review of work before anyone relies on it - decisions and analysis, code and diffs, factual claims, and ideas or proposals. Use when asked to red team, double-check, challenge, audit, fact-check or stress-test an output, a plan, a claim or a proposal.
@@ -157,3 +160,41 @@ harms no one soon.
 
 - If asked to act, fix Critical and High first and re-verify each fix against its own failure scenario.
 - If a finding is disputed, re-examine it with evidence; hold it if it survives, withdraw it plainly if not.
+
+=== INPUTS ===
+--- ORIGINAL REQUEST (request.md) ---
+Analyze whether the new onboarding checklist improved 30-day retention, and recommend whether to roll it out more widely.
+The data is in evidence/cohorts.csv (accounts created in June and July).
+--- CONTEXT (context.md) ---
+Review requested: adversarial review of the analysis (decisions and analysis).
+Stakes: standard, but the recommendation would change onboarding for all new accounts. The percentages in the table
+are correct arithmetic for the counts shown.
+--- WORK UNDER REVIEW ---
+### file: analysis.md
+# Did the new onboarding checklist work?
+
+**Finding:** the checklist raised 30-day retention from 40% to 52%, a gain of **12 percentage points**. We should make it
+mandatory for every new account and add similar checklists to the other products.
+
+## Data (accounts created 1 June to 31 July 2026; see evidence/cohorts.csv)
+
+| group | accounts | still active at day 30 | retention |
+|---|---|---|---|
+| completed the checklist | 1,200 | 624 | 52% |
+| did not complete the checklist | 3,800 | 1,520 | 40% |
+
+The checklist is shown to every new account on first login, as an optional panel. Completion takes about ten minutes over the
+first week. The difference is large and the groups are large (1,200 and 3,800), so it cannot be chance.
+
+## Recommendation
+Make the checklist mandatory, and build the same panel for the other two products next quarter.
+
+### file: evidence/cohorts.csv
+group,accounts,active_day30
+completed,1200,624
+not_completed,3800,1520
+
+
+=== OUTPUT NOTE (same for every version) ===
+You have no tools in this session: you cannot run code or open links. After your report, append one fenced
+json block with "verdict" and "findings" (each: severity, evidence_level, location, scenario, fix).

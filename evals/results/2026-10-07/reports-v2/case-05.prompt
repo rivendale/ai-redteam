@@ -1,3 +1,6 @@
+You are running the following skill. Follow it exactly.
+
+=== SKILL ===
 ---
 name: redteam
 description: Adversarial review of work before anyone relies on it - decisions and analysis, code and diffs, factual claims, and ideas or proposals. Use when asked to red team, double-check, challenge, audit, fact-check or stress-test an output, a plan, a claim or a proposal.
@@ -157,3 +160,38 @@ harms no one soon.
 
 - If asked to act, fix Critical and High first and re-verify each fix against its own failure scenario.
 - If a finding is disputed, re-examine it with evidence; hold it if it survives, withdraw it plainly if not.
+
+=== INPUTS ===
+--- ORIGINAL REQUEST (request.md) ---
+Write a decision memo on sharing our customer behavior data with an analytics vendor. State exactly what data leaves the company.
+--- CONTEXT (context.md) ---
+Review requested: DEEP adversarial review with cross-vendor seats (blind seats on other vendors' models). Stakes: customer
+financial data leaves the company; legal review is pending on this memo. Appendix A is a real extract of last week's file.
+--- WORK UNDER REVIEW ---
+### file: memo.md
+# Decision memo: share customer behavior data with an analytics vendor
+
+**Recommendation:** sign with the analytics vendor (Northlight) and start the weekly export on 1 November.
+
+## What is shared
+**Only aggregated, anonymous data leaves the company.** No names, no contact details and no account identifiers are sent.
+The vendor receives weekly cohort totals and conversion rates.
+
+## Why
+- It replaces two days of manual reporting each month.
+- The vendor is SOC 2 Type II certified.
+
+## Appendix A: sample of the weekly export file (first 5 rows of last week's run)
+```
+account_id,name,email,balance_usd,segment
+10031,Priya Raman,priya.raman@example.test,1840.22,retail
+10045,Jonas Eklund,j.eklund@example.test,12.00,retail
+10068,Ama Owusu,ama.owusu@example.test,25410.90,premium
+10072,Chen Wei,chen.wei@example.test,0.00,retail
+10090,Olena Marchenko,o.marchenko@example.test,780.45,retail
+```
+
+
+=== OUTPUT NOTE (same for every version) ===
+You have no tools in this session: you cannot run code or open links. After your report, append one fenced
+json block with "verdict" and "findings" (each: severity, evidence_level, location, scenario, fix).

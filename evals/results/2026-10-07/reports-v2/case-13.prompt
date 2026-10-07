@@ -1,3 +1,6 @@
+You are running the following skill. Follow it exactly.
+
+=== SKILL ===
 ---
 name: redteam
 description: Adversarial review of work before anyone relies on it - decisions and analysis, code and diffs, factual claims, and ideas or proposals. Use when asked to red team, double-check, challenge, audit, fact-check or stress-test an output, a plan, a claim or a proposal.
@@ -157,3 +160,64 @@ harms no one soon.
 
 - If asked to act, fix Critical and High first and re-verify each fix against its own failure scenario.
 - If a finding is disputed, re-examine it with evidence; hold it if it survives, withdraw it plainly if not.
+
+=== INPUTS ===
+--- ORIGINAL REQUEST (request.md) ---
+Write the import job that reads the customers CSV (id, name, email, phone, ssn, plan) and loads each valid row into the billing
+system; invalid rows are counted and reported.
+--- CONTEXT (context.md) ---
+Review requested: DEEP adversarial review with cross-vendor seats (a second and third vendor's model as blind seats), as
+agreed for this team's changes. Stakes: production, runs nightly. fixtures/customers.csv is the test fixture: a copy of
+real-format customer records (names, emails, phone numbers, national ID numbers).
+--- WORK UNDER REVIEW ---
+### file: __pycache__/import_customers.cpython-312.pyc
+Ë
+     ÍÆjE  ã                   óP   — d Z ddlZddlZ ej                  d«      Zh d£Zd„ Zd„ Zy)z4Import customers from a CSV into the billing system.é    NÚcustomer_import>   ÚproÚteamÚbasicc                 ó¸   — | d   rd| d   vrt        d«      ‚| d   t        vrt        d«      ‚t        | d   «      | d   j                  «       | d   | d   xs d dœS )	NÚemailú@z	bad emailÚplanzunknown planÚidÚssn)r   r   r
+   r   )Ú
+ValueErrorÚPLANSÚintÚlower)Úrows    úL/tmp/claude-1000/pub/ai-redteam/evals/cases/case-13/work/import_customers.pyÚ	parse_rowr   	   sk   € ØˆwŠ<˜3 c¨'¡lÑ2Ü˜Ó%Ğ%Ø
+ˆ6{œ%ÑÜ˜Ó(Ğ(Üc˜$‘i“.¨3¨w©<×+=Ñ+=Ó+?ÈÈVÉĞ]`ĞafÑ]gÒ]oĞkoÑpĞpó    c           	      óD  — d\  }}t        | d¬«      5 }t        j                  |«      D ]  }	  |t        |«      «       |dz  }Œ 	 d d d «       ||fS # t        t
+        f$ r/}t        j                  dt        |«      |«       |dz  }Y d }~Œbd }~ww xY w# 1 sw Y   ||fS xY w)N)r   r   Ú )Únewlineé   zcould not import row %s: %s)	ÚopenÚcsvÚ
+DictReaderr   r   ÚKeyErrorÚlogÚerrorÚdict)ÚpathÚsinkÚokÚfailedÚfr   Úes          r   Úimport_filer&      s¦   € ØJ€BˆÜ	ˆd˜BÔ	ğ  1Ü—>‘> !Ó$ò 	ˆCğÙ”Y˜s“^Ô$Øa‘‘ñ	÷ğ ˆvˆ:Ğøô ¤Ğ)ò Ü—	‘	Ğ7¼¸c»ÀAÔFØ˜!‘•ûğú÷ğ ˆvˆ:Ğús4   “B­AÁBÁBÁ!%BÂBÂBÂBÂB)Ú__doc__r   ÚloggingÚ	getLoggerr   r   r   r&   © r   r   ú<module>r+      s1   ğÙ :Û 
+Û à€g×ÑĞ)Ó*€Ú €òqó
+r   
+### file: fixtures/customers.csv
+id,name,email,phone,ssn,plan
+1,Maria Gonzales,maria.gonzales@example.test,555-0114,900-12-3456,pro
+2,Terrence Boyd,t.boyd@example.test,555-0127,900-45-7789,basic
+3,Ingrid Halvorsen,ingrid.h@example.test,555-0139,900-67-1203,pro
+4,Dev Patel,dev.patel@example.test,555-0148,,basic
+5,Lucille Archambault,l.archambault@example.test,555-0153,900-88-4521,team
+
+### file: import_customers.py
+"""Import customers from a CSV into the billing system."""
+import csv
+import logging
+
+log = logging.getLogger("customer_import")
+PLANS = {"basic", "pro", "team"}
+
+
+def parse_row(row):
+    if not row["email"] or "@" not in row["email"]:
+        raise ValueError("bad email")
+    if row["plan"] not in PLANS:
+        raise ValueError("unknown plan")
+    return {"id": int(row["id"]), "email": row["email"].lower(), "plan": row["plan"], "ssn": row["ssn"] or None}
+
+
+def import_file(path, sink):
+    ok, failed = 0, 0
+    with open(path, newline="") as f:
+        for row in csv.DictReader(f):
+            try:
+                sink(parse_row(row))
+                ok += 1
+            except (ValueError, KeyError) as e:
+                log.error("could not import row %s: %s", dict(row), e)
+                failed += 1
+    return ok, failed
+
+
+=== OUTPUT NOTE (same for every version) ===
+You have no tools in this session: you cannot run code or open links. After your report, append one fenced
+json block with "verdict" and "findings" (each: severity, evidence_level, location, scenario, fix).
