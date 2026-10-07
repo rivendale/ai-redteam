@@ -64,7 +64,10 @@ def norm_findings(rep):
             continue
         loc = first(f, "location", "loc", "where", "file")
         if isinstance(loc, dict):
-            loc = " ".join(s(v) for v in loc.values())
+            ln = first(loc, "line", "lines", "line_start", "start", "start_line")
+            end = first(loc, "line_end", "end", "end_line")
+            fl = s(first(loc, "file", "path", "name"))
+            loc = f"{fl}:{ln}" + (f"-{end}" if end and ln else "") if ln else " ".join(s(v) for v in loc.values())
         elif isinstance(loc, list):
             loc = " ".join(s(v) for v in loc)
         sev = s(first(f, "severity", "sev", "level")).strip().lower()
@@ -88,22 +91,22 @@ def is_open_high(f):
 
 
 # ----------------------------------------------------------------------------------------------------------- matching
+LINE_REFS = re.compile(r"(?:[:#]\s*L?|\blines?\s*|\bll?\.?\s*|\bL)(\d+)(?:\s*[-\u2013]\s*L?(\d+))?", re.I)
+
+
 def loc_dist(floc, planted):
-    """None if the finding's location does not name the planted file; else the line distance (0 = on the lines, 999 = no line numbers)."""
+    """None if the finding's location does not name the planted file; else the line distance (0 = on the lines,
+    999 = no line numbers). Only numbers written as line numbers count (file.py:29, lines 29-31, line 29, L29); digits in
+    quoted text, page numbers, prices or section numbers are not line numbers."""
     base = pathlib.PurePosixPath(planted["file"]).name
     m = re.search(r"(?<![\w.-])" + re.escape(base), floc)
     if not m:
         return None
     lo, hi = planted["lines"] or (None, None)
-    tail = floc[m.end():]
-    nums = [int(n) for n in re.findall(r"\d+", tail)]
-    if lo is None or not nums:
+    spans = [(int(x), int(y or x)) for x, y in LINE_REFS.findall(floc[m.end():])]
+    if lo is None or not spans:
         return 999
-    best = min(0 if lo <= n <= hi else min(abs(n - lo), abs(n - hi)) for n in nums)
-    for x, y in re.findall(r"(\d+)\s*[-\u2013]\s*(\d+)", tail):
-        x, y = int(x), int(y)
-        best = min(best, 0 if (x <= hi and y >= lo) else min(abs(x - hi), abs(y - lo)))
-    return best
+    return min(0 if (x <= hi and y >= lo) else min(abs(x - hi), abs(y - lo)) for x, y in spans)
 
 
 def words_hit(f, planted):
@@ -236,28 +239,26 @@ def score_case(exp, rep):
         v.append("FL6 verdict SHIP with an open Critical/High")
     if verdict == "SHIP WITH FIXES" and any((not f["refuted"]) and f["sev"] == "critical" for f in fs):
         v.append("FL6 verdict SHIP WITH FIXES with an open Critical")
-    # planted defects: each finding is credited to at most one planted defect. First by line distance (within 3 lines, the closest
-    # pair first), then by the planted defect's wording in the right file.
-    matched, owner = set(), {}
+    # planted defects: each finding is credited to at most one planted defect. A finding is eligible when it names the planted
+    # file and is within 3 lines of it or uses its wording. Pairs are taken best first: on the lines AND in the wording, then
+    # either; within that the highest severity (a defect reported twice is credited to the stronger report), then the closer one.
+    owner, matched = {}, set()
     live = [f for f in fs if not f["refuted"]]
     pairs = []
     for p in exp["planted"]:
         for f in live:
             d = loc_dist(f["loc"], p)
-            if d is not None and d <= 3 and all(w.lower() in f["text"].lower() for w in p.get("all_words", [])):
-                pairs.append((d, -SEV.get(f["sev"], -1), p["id"], f["id"], p, f))
-    for _, _, pid, fid, p, f in sorted(pairs, key=lambda x: x[:4]):
+            if d is None:
+                continue
+            near, wd = d <= 3, words_hit(f, p)
+            if near and not all(w.lower() in f["text"].lower() for w in p.get("all_words", [])):
+                near = False
+            if near or wd:
+                pairs.append((-(int(near) + int(wd)), -SEV.get(f["sev"], -1), d, p["id"], f["id"], f))
+    for _, _, _, pid, fid, f in sorted(pairs, key=lambda x: x[:5]):
         if pid not in owner and fid not in matched:
             owner[pid] = f
             matched.add(fid)
-    for p in exp["planted"]:
-        if p["id"] in owner:
-            continue
-        cands = [f for f in live if f["id"] not in matched and loc_dist(f["loc"], p) is not None and words_hit(f, p)]
-        if cands:
-            best = max(cands, key=lambda f: SEV.get(f["sev"], -1))
-            owner[p["id"]] = best
-            matched.add(best["id"])
     for p in exp["planted"]:
         f = owner.get(p["id"])
         if f is None:
@@ -481,6 +482,24 @@ def self_check(cases_dir):
         r["inputs_ledger"] = {"seen": ["request", "work"], "not_seen": []}
         ok &= any("FL10" in x for x in score_case(e, r)["violations"])
     expect("an empty ledger when an input is missing is a violation", ok and bool(led), f"{len(led)} missing-input cases")
+    # a defect reported twice, weakly on the planted line and strongly elsewhere in the file, is credited to the strong report; digits in
+    # quoted text or page numbers are not line numbers (both were scorer bugs found when scoring the first v1/v2 run)
+    ok_dup = ok_digits = True
+    for e in defect:
+        for p in e["planted"]:
+            if SEV[p["min_severity"].lower()] < SEV["high"] or not p["lines"]:
+                continue
+            f0 = p["file"].replace("work/", "")
+            strong = finding("S", "Critical", f0 + " the summary section", p["why"] + " " + " ".join(p["any_words"][:2]))
+            weak = finding("W", "Low", f"{f0}:{p['lines'][0]}", "a minor wording point")
+            r = {"verdict": "REWORK", "findings": [weak, strong], "inputs_ledger": {}}
+            one = dict(e, planted=[p], must=[], must_not=[])
+            ok_dup &= score_case(one, r)["recall_hits"] == 1
+            decoy = finding("D", "Low", f"{f0} 'quoted text' p. {p['lines'][0]}, item {p['lines'][0]}", "a minor wording point")
+            r = {"verdict": "REWORK", "findings": [decoy, strong], "inputs_ledger": {}}
+            ok_digits &= score_case(one, r)["recall_hits"] == 1
+    expect("a defect reported weakly on its line and strongly elsewhere is credited at the strong severity", ok_dup, "every High+ planted defect")
+    expect("numbers in quoted text, page numbers and item numbers are not read as line numbers", ok_digits, "every High+ planted defect")
     # hand-written reports (different key names, read through the real file loader), not derived from expected.json
     hand = pathlib.Path(__file__).resolve().parent / "selfcheck" / "reports"
     if hand.exists():
