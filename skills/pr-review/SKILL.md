@@ -21,7 +21,7 @@ Pick the tier from what the change touches, not from its size or file type: a on
 |---|---|---|
 | Low | Docs, version pins, tests only, and config that does not touch auth, permissions, secrets, network exposure or data handling | One independent read; the `redteam` skill is enough |
 | Standard | Ordinary code changes | One model round |
-| High | Authentication and permissions (including their configuration), migrations, money movement, personal data, regulated text | Two rounds, ideally on two different vendors |
+| High | Authentication and permissions, secrets and network exposure (including their configuration), migrations, money movement, personal data, regulated text | Two rounds, ideally on two different vendors |
 
 When unsure, take the higher tier. Record the tier and the reason in the report. The tier's rounds are the review; a High-tier PR whose second round has not run is not reviewed.
 
@@ -63,6 +63,7 @@ A finding without a location and a concrete failure scenario is not a finding. D
 Every finding gets a decision:
 
 - **Accepted**: fixed, with a regression test that fails without the fix. Name the fix commit. Where no test can apply (docs, config, a version pin), say so and give the evidence the fix is right instead.
+- **Deferred** (P2 and P3 only): agreed, not fixed in this PR, with a link to the issue that tracks it. A P0 or P1 cannot be deferred.
 - **Rejected**: with the evidence (a line of code, a test result, a spec reference) that shows the finding is wrong or out of scope.
 
 Post the adjudication on the PR with the reviewed SHA. If fixes moved the head, say which lines changed after the review and how each change was verified.
