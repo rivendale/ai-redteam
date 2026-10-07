@@ -39,4 +39,8 @@ Limits, stated plainly:
   rules it was never written to follow.
 - The extra Critical/High findings (44 vs 25) are not adjudicated; "0 false alarms" covers the 6 clean controls only.
 - The three apparent v2 misses in the first scoring were a scorer fault (see above), not severity calibration.
-- The 22 extra Critical/High on v2 are being spot-checked (10 sampled) by an independent reviewer.
+- Spot check of v2's 22 extra findings (all High, none Critical), by the eval-set author (same vendor, knows the key):
+  10 sampled by a rule fixed in advance (even indexes, 9 cases). Real 7 (5 restate a planted defect from another
+  angle; 2 are real defects the key misses: case-13 `parse_row` drops name and phone, case-19 "fixed all findings"
+  versus the source's "high or critical"); defensible but over-rated 3 (Medium rather than High; no verdict changes);
+  invented 0. v1's 43 extras were not checked, so v2 being better than v1 on extras is not shown.
