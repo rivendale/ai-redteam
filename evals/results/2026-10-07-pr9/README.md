@@ -43,6 +43,10 @@ the paste-in prompt, not the skill, and is not scored here. Gate: pass.
 
 ## Limits
 
+- Extras on the amended redteam rose from 22 to 28 and are not adjudicated.
+- pr-review's injection, personal-data and inputs-ledger behavior was not tested here (code cases only): untested, not passed.
+- Reruns after the tooling fix in #11 will not carry the `__pycache__` noise described below.
+
 One run each; the same vendor throughout; pr-review was scored on 8 code cases only (it has no tracks for the others).
 The case folders contained `__pycache__` files left by `tools/verify_cases.py` (one carries a local build path); every
 run so far (v1, v2, #9, pr-review) saw them equally. `prepare.py` should exclude them.
