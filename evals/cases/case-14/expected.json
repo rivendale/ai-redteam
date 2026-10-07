@@ -1,0 +1,101 @@
+{
+  "id": "case-14",
+  "track": "C",
+  "title": "Market note: a citation that does not exist, a quote that changes 'may' to 'must', and a percentage that does not recompute",
+  "failure_list": [
+    2,
+    5
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "fabricated-citation",
+      "file": "work/note.md",
+      "lines": [
+        16,
+        16
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "okafor",
+        "lindqvist",
+        "[4]",
+        "source 4",
+        "not supplied",
+        "cannot be found",
+        "fabricat",
+        "does not exist",
+        "unverif"
+      ],
+      "all_words": [],
+      "why": "source [4] is not among the supplied sources and the journal and article are invented; the 62% figure rests on nothing"
+    },
+    {
+      "id": "P2",
+      "kind": "misquote",
+      "file": "work/note.md",
+      "lines": [
+        13,
+        13
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "may",
+        "must",
+        "misquot",
+        "verbatim",
+        "30 days",
+        "[1]",
+        "unless"
+      ],
+      "all_words": [],
+      "why": "the source says providers MAY delete within 30 days unless a legal hold applies; the note quotes it as MUST and presents it as a duty"
+    },
+    {
+      "id": "P3",
+      "kind": "wrong-number",
+      "file": "work/note.md",
+      "lines": [
+        6,
+        6
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "18",
+        "16.7",
+        "17%",
+        "percent",
+        "growth",
+        "recompute",
+        "2.4",
+        "2.8"
+      ],
+      "all_words": [],
+      "why": "2.4 to 2.8 million is 16.7% growth, not 18%"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import pathlib\ng = (2.8 - 2.4) / 2.4\nassert abs(g - 0.1667) < 0.001 and round(g * 100) != 18\nassert '**may** delete' in pathlib.Path('sources/S1-regulator-guidance.md').read_text()\nassert not any('Okafor' in p.read_text() for p in pathlib.Path('sources').iterdir())"
+  },
+  "slug": "C01-fabricated-citation-misquote-wrong-percentage"
+}

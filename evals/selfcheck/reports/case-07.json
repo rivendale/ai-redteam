@@ -1,0 +1,5 @@
+{"verdict": "REJECT",
+ "findings": [
+  {"id": "1", "severity": "Critical", "evidence_level": "PROBABLE", "location": "token_bucket.py:20",
+   "scenario": "a race between refill and acquire could over-issue tokens", "fix": "use a lock"}],
+ "inputs_ledger": {"seen": ["all"], "not_seen": []}}

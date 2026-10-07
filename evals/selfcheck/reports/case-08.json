@@ -1,0 +1,5 @@
+{"verdict": "SHIP",
+ "findings": [
+  {"id": "1", "severity": "High", "evidence_level": "CONFIRMED", "location": "search.py:23",
+   "scenario": "term containing a quote reads other users' notes", "fix": "use parameters"}],
+ "inputs_ledger": {"seen": ["all"], "not_seen": []}}

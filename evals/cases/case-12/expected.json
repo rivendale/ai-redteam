@@ -1,0 +1,28 @@
+{
+  "id": "case-12",
+  "track": "B",
+  "title": "Retry helper with backoff and jitter: correct and tested (clean control, deep stakes)",
+  "failure_list": [
+    4
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "shell": "python3 -m unittest -q test_retry"
+  },
+  "slug": "B07-control-retry-helper"
+}

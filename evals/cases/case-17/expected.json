@@ -1,0 +1,57 @@
+{
+  "id": "case-17",
+  "track": "C",
+  "title": "Vendor assessment: 'zero-retention' asserted while the cited vendor page says 30 days (and ZDR only on an enterprise addendum)",
+  "failure_list": [
+    2,
+    9
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "claim-contradicted-by-source",
+      "file": "work/assessment.md",
+      "lines": [
+        4,
+        4
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "retention",
+        "30 days",
+        "zero",
+        "zdr",
+        "enterprise",
+        "addendum",
+        "contradict",
+        "standard plan"
+      ],
+      "all_words": [],
+      "why": "the cited page says inputs are retained 30 days and ZDR needs an enterprise agreement; the account is on the standard plan, so the safety conclusion is unsupported"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "p = open('sources/lumen-privacy.md').read()\nassert 'retained for 30 days' in p and 'enterprise agreement' in p\nassert 'Lumen is zero-retention' in open('assessment.md').read()"
+  },
+  "slug": "C04-provider-claim-contradicted-by-its-page"
+}

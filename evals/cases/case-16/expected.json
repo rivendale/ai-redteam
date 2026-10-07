@@ -1,0 +1,58 @@
+{
+  "id": "case-16",
+  "track": "C",
+  "title": "Hiring plan: a survey the reviewer cannot read must be marked unverified; the budget total does not add up",
+  "failure_list": [
+    2,
+    9,
+    10
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "wrong-total",
+      "file": "work/plan.md",
+      "lines": [
+        14,
+        14
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "total",
+        "138,900",
+        "sum",
+        "add up",
+        "recompute",
+        "127,900",
+        "arithmetic"
+      ],
+      "all_words": [],
+      "why": "the items add up to $127,900, not $138,900; the plan states a total that is $11,000 too high (and the salary line itself uses $84,000 for 2 x $84,000 prorated 6 months, which is also $84,000, correct)"
+    }
+  ],
+  "must": [
+    {
+      "rule": "unverified",
+      "words": [
+        "survey",
+        "median",
+        "84,000",
+        "signing bonus",
+        "70%"
+      ]
+    },
+    {
+      "rule": "ledger_lists",
+      "items": [
+        "Industry Survey"
+      ]
+    }
+  ],
+  "must_not": [],
+  "proof": {
+    "cwd": "work",
+    "python": "items = [84000, 19750, 11400, 12750]\nassert sum(items) == 127900 and sum(items) != 138900\nassert 2 * 84000 * 6 / 12 == 84000"
+  },
+  "slug": "C03-unreachable-source-and-bad-total"
+}

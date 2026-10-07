@@ -1,0 +1,79 @@
+{
+  "id": "case-21",
+  "track": "D",
+  "title": "Proposal for six engineer-weeks of dashboard that the only users say they do not need",
+  "failure_list": [
+    3
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "need-not-established",
+      "file": "work/proposal.md",
+      "lines": [
+        7,
+        7
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "need",
+        "nobody",
+        "no one",
+        "team_notes",
+        "fine",
+        "evidence",
+        "demand",
+        "justif",
+        "users",
+        "who asked"
+      ],
+      "all_words": [],
+      "why": "the two users say the spreadsheet is fine and refreshes itself, nobody asked for more; the stated reason is that dashboards are modern"
+    },
+    {
+      "id": "P2",
+      "kind": "cheaper-alternative-ignored",
+      "file": "work/proposal.md",
+      "lines": [
+        4,
+        4
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "email",
+        "scheduled",
+        "cheaper",
+        "alternative",
+        "weeks",
+        "cost",
+        "adoption",
+        "nobody uses"
+      ],
+      "all_words": [],
+      "why": "a scheduled email of the twelve numbers (which the team named) costs a fraction; the proposal never says what happens if nobody uses the dashboard"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "n = open('evidence/team_notes.md').read()\nassert 'The spreadsheet is fine' in n and 'scheduled email' in n\nassert '6 engineer-weeks' in open('proposal.md').read()"
+  },
+  "slug": "D02-nobody-needs-it"
+}

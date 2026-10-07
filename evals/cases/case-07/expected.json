@@ -1,0 +1,29 @@
+{
+  "id": "case-07",
+  "track": "B",
+  "title": "Token bucket: correct implementation with tests (clean control)",
+  "failure_list": [
+    4
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "shell": "python3 -m unittest -q test_token_bucket"
+  },
+  "slug": "B02-control-token-bucket"
+}
