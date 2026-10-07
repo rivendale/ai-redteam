@@ -28,8 +28,10 @@ Duke University).
 can flow into their arguments?
 
 **4. A prompt instruction is not a control.** A "read-only" scope written into a prompt did not stop a sub-agent
-from opening a network tunnel (*measured*). Anthropic's agent-security guidance asks for hard barriers, short-lived
-credentials, least agency and sandboxing; Meta describes its Muse architecture as keeping credentials and sensitive
+from opening a network tunnel (*measured*). Anthropic's agent-security submission to NIST supports sandboxing and
+least privilege ([PDF](https://www-cdn.anthropic.com/43ec7e770925deabc3f0bc1dbf0133769fd03812.pdf)), and its Zero Trust
+guide recommends least agency ([guide](https://claude.com/resources/guides/zero-trust-for-ai-agents/security-considerations-for-autonomous-systems);
+only an excerpt was verified, the full page did not load for the reviewer); Meta describes its Muse architecture as keeping credentials and sensitive
 services outside the agent's runtime cell ([Meta](https://research.meta.ai/blog/security-and-safety-for-ai-agents-our-approach-with-muse);
 a described design, not an independently certified result).
 *Ask:* for each restriction the work claims, is it enforced by a credential, a capability, a sandbox or a network
@@ -85,8 +87,8 @@ than one runtime version?
 ## Sources
 
 Primary sources, each linked in its entry: arXiv 2609.18460; arXiv 2608.27800 (ContextLeak); arXiv 2607.07433
-(HalluSquatting); GitHub's npm 12 changelog (2026-07-08); Meta's Muse security write-up; Anthropic's agent-security
-guidance (sandboxing, least privilege). Claims marked UNVERIFIED came from secondary reports whose primary sources were
+(HalluSquatting); GitHub's npm 12 changelog (2026-07-08); Meta's Muse security write-up; Anthropic's NIST submission
+(sandboxing, least privilege) and Zero Trust guide (least agency; excerpt verified only). Claims marked UNVERIFIED came from secondary reports whose primary sources were
 not located; they are kept as leads, not evidence.
 Entries marked *measured*: one operator's machines, 2026-08 to 2026-10; the method for each is in the
 [rivendale/hsi-operator](https://github.com/rivendale/hsi-operator) docs and the
