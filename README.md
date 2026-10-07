@@ -17,6 +17,19 @@ Two forms of the same review:
 
 Output is a verdict (SHIP / SHIP WITH FIXES / REWORK / REJECT), a severity-ranked findings table with evidence levels (CONFIRMED / PROBABLE / UNVERIFIED), what held up, unverified claims, and questions for the author.
 
+## Reference material
+
+| File | Use |
+|---|---|
+| [`docs/SPEC.md`](docs/SPEC.md) | v2 design and failure list (written before the v2 skill text) |
+| [`docs/attack-catalog.md`](docs/attack-catalog.md) | Eleven ways AI-built systems fail under attack, each with the question a reviewer should ask |
+| [`docs/why-reviews-fail.md`](docs/why-reviews-fail.md) | How reviews of AI work go wrong, and the habit that prevents each |
+| [`docs/privacy-checklist.md`](docs/privacy-checklist.md) | Questions for any work that touches personal information |
+
+Companion repos: [hsi-operator](https://github.com/rivendale/hsi-operator) (keeping a person at the strategic level of agent work),
+[opensource](https://github.com/rivendale/opensource) (including `tools/web`, safe page readers), and
+[local-ai](https://github.com/rivendale/local-ai) (private, on-device models).
+
 ## Install the skill
 
 Claude Code, personal (all projects):
