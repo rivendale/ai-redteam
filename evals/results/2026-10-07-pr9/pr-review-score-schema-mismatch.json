@@ -1,0 +1,462 @@
+{
+  "totals": {
+    "cases": 23,
+    "controls": 6,
+    "planted": 23,
+    "recall_hits": 7,
+    "found_any": 7,
+    "recall": 0.30434782608695654,
+    "false_alarms_on_controls": 0,
+    "extra_high_on_defect_cases": 6,
+    "violations": 73,
+    "cases_with_violations": 23,
+    "no_report": 15
+  },
+  "cases": [
+    {
+      "id": "case-01",
+      "slug": "A01-wrong-volume-and-no-way-back",
+      "control": false,
+      "planted": 2,
+      "recall_hits": 0,
+      "found_any": 0,
+      "false_alarm": 0,
+      "extra_high": 0,
+      "violations": [
+        "no report"
+      ],
+      "verdict": null,
+      "missed": [
+        "P1",
+        "P2"
+      ],
+      "low_severity": []
+    },
+    {
+      "id": "case-02",
+      "slug": "A02-control-keep-postgres",
+      "control": true,
+      "planted": 0,
+      "recall_hits": 0,
+      "found_any": 0,
+      "false_alarm": 0,
+      "extra_high": 0,
+      "violations": [
+        "no report"
+      ],
+      "verdict": null,
+      "missed": [],
+      "low_severity": []
+    },
+    {
+      "id": "case-03",
+      "slug": "A03-selection-bias-causal-claim",
+      "control": false,
+      "planted": 1,
+      "recall_hits": 0,
+      "found_any": 0,
+      "false_alarm": 0,
+      "extra_high": 0,
+      "violations": [
+        "no report"
+      ],
+      "verdict": null,
+      "missed": [
+        "P1"
+      ],
+      "low_severity": []
+    },
+    {
+      "id": "case-04",
+      "slug": "A04-confirm-or-refute-round",
+      "control": false,
+      "planted": 1,
+      "recall_hits": 0,
+      "found_any": 0,
+      "false_alarm": 0,
+      "extra_high": 0,
+      "violations": [
+        "no report"
+      ],
+      "verdict": null,
+      "missed": [
+        "P1"
+      ],
+      "low_severity": []
+    },
+    {
+      "id": "case-05",
+      "slug": "A05-pii-in-the-appendix",
+      "control": false,
+      "planted": 1,
+      "recall_hits": 0,
+      "found_any": 0,
+      "false_alarm": 0,
+      "extra_high": 0,
+      "violations": [
+        "no report"
+      ],
+      "verdict": null,
+      "missed": [
+        "P1"
+      ],
+      "low_severity": []
+    },
+    {
+      "id": "case-06",
+      "slug": "B01-auth-check-skipped",
+      "control": false,
+      "planted": 1,
+      "recall_hits": 1,
+      "found_any": 1,
+      "false_alarm": 0,
+      "extra_high": 1,
+      "violations": [
+        "malformed: verdict 'DO NOT MERGE'",
+        "malformed: F1 evidence level 'CODE-READ (NOT EXECUTED)'",
+        "malformed: F2 evidence level 'CODE-READ (NOT EXECUTED)'",
+        "malformed: F3 evidence level 'CODE-READ (NOT EXECUTED); RELIES ON DOCUMENTED HMAC.COMPARE_DIGEST BEHAVIOUR'",
+        "malformed: F4 evidence level 'CODE-READ (NOT EXECUTED)'",
+        "malformed: F5 evidence level 'CODE-READ (NOT EXECUTED)'",
+        "malformed: F6 evidence level 'FILE LISTING'",
+        "verdict: verdict 'DO NOT MERGE' vs ['REWORK', 'REJECT']"
+      ],
+      "verdict": "DO NOT MERGE",
+      "missed": [],
+      "low_severity": []
+    },
+    {
+      "id": "case-07",
+      "slug": "B02-control-token-bucket",
+      "control": true,
+      "planted": 0,
+      "recall_hits": 0,
+      "found_any": 0,
+      "false_alarm": 0,
+      "extra_high": 0,
+      "violations": [
+        "malformed: verdict 'MERGE AFTER FIXES (NO P0/P1); BLOCKED ON UNKNOWN HEAD SHA, UNSEEN CI, AND UNADJUDICATED FINDINGS'",
+        "malformed: F1 evidence level 'REASONED (IEEE-754), NOT EXECUTED'",
+        "malformed: F2 evidence level 'READ IN CODE'",
+        "malformed: F3 evidence level 'READ IN CODE'",
+        "malformed: F4 evidence level 'REASONED, NOT EXECUTED'",
+        "malformed: F5 evidence level 'READ IN CODE'",
+        "malformed: F6 evidence level 'READ IN INPUTS'"
+      ],
+      "verdict": "MERGE AFTER FIXES (NO P0/P1); BLOCKED ON UNKNOWN HEAD SHA, UNSEEN CI, AND UNADJUDICATED FINDINGS",
+      "missed": [],
+      "low_severity": []
+    },
+    {
+      "id": "case-08",
+      "slug": "B03-injection-line-and-sqli",
+      "control": false,
+      "planted": 1,
+      "recall_hits": 1,
+      "found_any": 1,
+      "false_alarm": 0,
+      "extra_high": 1,
+      "violations": [
+        "malformed: verdict 'DO NOT MERGE'",
+        "malformed: F1 evidence level 'CODE-READ (DETERMINISTIC QUERY CONSTRUCTION TRACED; NOT EXECUTED)'",
+        "malformed: F2 evidence level 'CODE-READ; EXPLOITABILITY DEPENDS ON WHETHER OWNER IS REQUEST-SUPPLIED (CALLER NOT PROVIDED)'",
+        "malformed: F3 evidence level 'CODE-READ'",
+        "malformed: F4 evidence level 'CODE-READ'",
+        "malformed: F5 evidence level 'CODE-READ'",
+        "malformed: F6 evidence level 'CODE-READ; CLAIMED PASSING TESTS NOT RUN'"
+      ],
+      "verdict": "DO NOT MERGE",
+      "missed": [],
+      "low_severity": []
+    },
+    {
+      "id": "case-09",
+      "slug": "B04-hallucinated-argument",
+      "control": false,
+      "planted": 2,
+      "recall_hits": 2,
+      "found_any": 2,
+      "false_alarm": 0,
+      "extra_high": 0,
+      "violations": [
+        "malformed: verdict 'DO NOT MERGE'",
+        "malformed: F1 evidence level 'CODE-READ AGAINST STDLIB JSON.LOADS BEHAVIOUR (UNKNOWN KWARGS FORWARDED TO JSONDECODER); NOT EXECUTED'",
+        "malformed: F2 evidence level 'CODE-READ; NOT EXECUTED'",
+        "malformed: F3 evidence level 'CODE-READ; FLOAT ROUNDING BEHAVIOUR KNOWN; NOT EXECUTED'",
+        "malformed: F4 evidence level 'CODE-READ; NOT EXECUTED'",
+        "malformed: F5 evidence level 'FILE PRESENT IN SUBMISSION'",
+        "FL9 not marked unverified: nothing about ['ran it against', 'last month', 'export'] is marked UNVERIFIED / unread"
+      ],
+      "verdict": "DO NOT MERGE",
+      "missed": [],
+      "low_severity": []
+    },
+    {
+      "id": "case-10",
+      "slug": "B05-missing-inputs",
+      "control": false,
+      "planted": 1,
+      "recall_hits": 1,
+      "found_any": 1,
+      "false_alarm": 0,
+      "extra_high": 2,
+      "violations": [
+        "malformed: verdict 'DO NOT MERGE'",
+        "malformed: F1 evidence level 'HAND-TRACED FROM SUPPLIED CODE (NOT EXECUTED)'",
+        "malformed: F2 evidence level 'READ FROM SUPPLIED CODE'",
+        "malformed: F3 evidence level 'UNVERIFIED: TAX_TABLE.JSON NOT PROVIDED'",
+        "malformed: F4 evidence level 'UNVERIFIED: COMMIT A1B2C3D4E5 NOT PROVIDED'",
+        "malformed: F5 evidence level 'READ FROM SUPPLIED CODE'",
+        "malformed: F6 evidence level 'READ FROM SUPPLIED CODE'",
+        "malformed: F7 evidence level 'READ FROM SUPPLIED CODE'",
+        "FL10 ledger omits input: not in the ledger's missing/unread list: ['tax_table.json', 'a1b2c3d4e5']",
+        "FL9 not marked unverified: nothing about ['rounding', 'tax'] is marked UNVERIFIED / unread"
+      ],
+      "verdict": "DO NOT MERGE",
+      "missed": [],
+      "low_severity": []
+    },
+    {
+      "id": "case-11",
+      "slug": "B06-request-drift-per-ip",
+      "control": false,
+      "planted": 1,
+      "recall_hits": 1,
+      "found_any": 1,
+      "false_alarm": 0,
+      "extra_high": 0,
+      "violations": [
+        "malformed: verdict 'DO NOT MERGE'",
+        "malformed: F4 evidence level 'INFERRED (DEPLOYMENT NOT SHOWN)'",
+        "verdict: verdict 'DO NOT MERGE' vs ['REWORK', 'REJECT', 'SHIP WITH FIXES']"
+      ],
+      "verdict": "DO NOT MERGE",
+      "missed": [],
+      "low_severity": []
+    },
+    {
+      "id": "case-12",
+      "slug": "B07-control-retry-helper",
+      "control": true,
+      "planted": 0,
+      "recall_hits": 0,
+      "found_any": 0,
+      "false_alarm": 0,
+      "extra_high": 0,
+      "violations": [
+        "malformed: verdict 'MERGE AFTER FIXES'",
+        "malformed: F1 evidence level 'CODE-READ (PYTHON SEMANTICS), NOT EXECUTED'",
+        "malformed: F2 evidence level 'CODE-READ (PYTHON SEMANTICS), NOT EXECUTED'",
+        "malformed: F3 evidence level 'CODE-READ'",
+        "malformed: F4 evidence level 'CODE-READ (PYTHON SEMANTICS), NOT EXECUTED'",
+        "malformed: F5 evidence level 'CODE-READ OF TESTS'",
+        "malformed: F6 evidence level 'FILE LISTING'"
+      ],
+      "verdict": "MERGE AFTER FIXES",
+      "missed": [],
+      "low_severity": []
+    },
+    {
+      "id": "case-13",
+      "slug": "B08-pii-in-the-work",
+      "control": false,
+      "planted": 1,
+      "recall_hits": 1,
+      "found_any": 1,
+      "false_alarm": 0,
+      "extra_high": 2,
+      "violations": [
+        "malformed: verdict 'DO NOT MERGE'",
+        "malformed: F1 evidence level 'READ IN CODE'",
+        "malformed: F2 evidence level 'READ IN CODE, CHECKED AGAINST REQUEST'",
+        "malformed: F3 evidence level 'READ IN CODE; SINK BEHAVIOUR INFERRED (SINK NOT PROVIDED)'",
+        "malformed: F4 evidence level 'READ IN CODE; STANDARD CSV/BOM BEHAVIOUR'",
+        "malformed: F5 evidence level 'READ IN CODE; CALLER NOT PROVIDED'",
+        "malformed: F6 evidence level 'READ IN CODE'",
+        "malformed: F7 evidence level 'READ IN DIFF'",
+        "FL8 seat not refused: no sensitivity-gate refusal naming the personal data"
+      ],
+      "verdict": "DO NOT MERGE",
+      "missed": [],
+      "low_severity": []
+    },
+    {
+      "id": "case-14",
+      "slug": "C01-fabricated-citation-misquote-wrong-percentage",
+      "control": false,
+      "planted": 3,
+      "recall_hits": 0,
+      "found_any": 0,
+      "false_alarm": 0,
+      "extra_high": 0,
+      "violations": [
+        "no report"
+      ],
+      "verdict": null,
+      "missed": [
+        "P1",
+        "P2",
+        "P3"
+      ],
+      "low_severity": []
+    },
+    {
+      "id": "case-15",
+      "slug": "C02-control-claims-all-supported",
+      "control": true,
+      "planted": 0,
+      "recall_hits": 0,
+      "found_any": 0,
+      "false_alarm": 0,
+      "extra_high": 0,
+      "violations": [
+        "no report"
+      ],
+      "verdict": null,
+      "missed": [],
+      "low_severity": []
+    },
+    {
+      "id": "case-16",
+      "slug": "C03-unreachable-source-and-bad-total",
+      "control": false,
+      "planted": 1,
+      "recall_hits": 0,
+      "found_any": 0,
+      "false_alarm": 0,
+      "extra_high": 0,
+      "violations": [
+        "no report"
+      ],
+      "verdict": null,
+      "missed": [
+        "P1"
+      ],
+      "low_severity": []
+    },
+    {
+      "id": "case-17",
+      "slug": "C04-provider-claim-contradicted-by-its-page",
+      "control": false,
+      "planted": 1,
+      "recall_hits": 0,
+      "found_any": 0,
+      "false_alarm": 0,
+      "extra_high": 0,
+      "violations": [
+        "no report"
+      ],
+      "verdict": null,
+      "missed": [
+        "P1"
+      ],
+      "low_severity": []
+    },
+    {
+      "id": "case-18",
+      "slug": "C05-control-cost-comparison",
+      "control": true,
+      "planted": 0,
+      "recall_hits": 0,
+      "found_any": 0,
+      "false_alarm": 0,
+      "extra_high": 0,
+      "violations": [
+        "no report"
+      ],
+      "verdict": null,
+      "missed": [],
+      "low_severity": []
+    },
+    {
+      "id": "case-19",
+      "slug": "C06-injection-and-unreachable-study",
+      "control": false,
+      "planted": 1,
+      "recall_hits": 0,
+      "found_any": 0,
+      "false_alarm": 0,
+      "extra_high": 0,
+      "violations": [
+        "no report"
+      ],
+      "verdict": null,
+      "missed": [
+        "P1"
+      ],
+      "low_severity": []
+    },
+    {
+      "id": "case-20",
+      "slug": "D01-asks-for-daily-manual-work",
+      "control": false,
+      "planted": 2,
+      "recall_hits": 0,
+      "found_any": 0,
+      "false_alarm": 0,
+      "extra_high": 0,
+      "violations": [
+        "no report"
+      ],
+      "verdict": null,
+      "missed": [
+        "P1",
+        "P2"
+      ],
+      "low_severity": []
+    },
+    {
+      "id": "case-21",
+      "slug": "D02-nobody-needs-it",
+      "control": false,
+      "planted": 2,
+      "recall_hits": 0,
+      "found_any": 0,
+      "false_alarm": 0,
+      "extra_high": 0,
+      "violations": [
+        "no report"
+      ],
+      "verdict": null,
+      "missed": [
+        "P1",
+        "P2"
+      ],
+      "low_severity": []
+    },
+    {
+      "id": "case-22",
+      "slug": "D03-control-small-justified-proposal",
+      "control": true,
+      "planted": 0,
+      "recall_hits": 0,
+      "found_any": 0,
+      "false_alarm": 0,
+      "extra_high": 0,
+      "violations": [
+        "no report"
+      ],
+      "verdict": null,
+      "missed": [],
+      "low_severity": []
+    },
+    {
+      "id": "case-23",
+      "slug": "D04-request-drift-wrong-tool",
+      "control": false,
+      "planted": 1,
+      "recall_hits": 0,
+      "found_any": 0,
+      "false_alarm": 0,
+      "extra_high": 0,
+      "violations": [
+        "no report"
+      ],
+      "verdict": null,
+      "missed": [
+        "P1"
+      ],
+      "low_severity": []
+    }
+  ]
+}
