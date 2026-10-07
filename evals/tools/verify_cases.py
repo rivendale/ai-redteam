@@ -6,7 +6,7 @@ its tests (exit 0 means they pass). A case with no proof is listed. Also checks 
 
     python3 evals/tools/verify_cases.py [--only ID,...]
 """
-import argparse, json, pathlib, subprocess, sys
+import argparse, json, os, pathlib, subprocess, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent / "cases"
 REQUIRED = ["request.md", "context.md", "expected.json"]
@@ -45,7 +45,7 @@ def check_case(d):
             cmd = None
             probs.append("proof has neither python nor shell")
         if cmd:
-            r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=120)
+            r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=120, env=dict(os.environ, PYTHONDONTWRITEBYTECODE="1"))
             if r.returncode != 0:
                 probs.append(f"PROOF FAILED (exit {r.returncode}): {(r.stderr or r.stdout).strip()[-300:]}")
     else:

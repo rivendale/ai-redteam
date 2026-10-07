@@ -51,10 +51,33 @@ def first(d, *keys):
     return None
 
 
+# pr-review vocabulary (P0-P3, a merge recommendation, free-text evidence) read as the scorer's own. Lossy by design; recall depends only
+# on severity, location and wording, and the evidence label only on the UNVERIFIED rules.
+P_SEVERITY = {"p0": "critical", "p1": "high", "p2": "medium", "p3": "low"}
+
+
+def evidence_from_text(ev):
+    low = ev.lower()
+    if re.search(r"\bunverified\b|not provided|not supplied", low):
+        return "UNVERIFIED"
+    if re.search(r"infer|depends on|relies on|reasoned|assum|unknown", low):
+        return "PROBABLE"
+    if re.search(r"read|traced|confirm|listing|file|diff|recomput|reproduc|executed|ran\b", low):
+        return "CONFIRMED"
+    return ev
+
+
 def norm_verdict(v):
     if isinstance(v, dict):
         v = first(v, "verdict", "value", "decision")
-    return re.sub(r"[\s_-]+", " ", s(v)).strip().upper()
+    v = re.sub(r"[\s_-]+", " ", s(v)).strip().upper()
+    if v.startswith("DO NOT MERGE"):
+        return "REWORK"
+    if v.startswith("MERGE AFTER FIXES"):
+        return "SHIP WITH FIXES"
+    if v.startswith("MERGE"):
+        return "SHIP"
+    return v
 
 
 def norm_findings(rep):
@@ -71,11 +94,15 @@ def norm_findings(rep):
         elif isinstance(loc, list):
             loc = " ".join(s(v) for v in loc)
         sev = s(first(f, "severity", "sev", "level")).strip().lower()
+        sev = P_SEVERITY.get(sev, sev)
         ev = s(first(f, "evidence_level", "evidence", "confidence", "label")).strip().upper()
-        ev = ev if ev in EVID else ev.split()[0] if ev.split() and ev.split()[0] in EVID else ev
+        ev = ev if ev in EVID else ev.split()[0] if ev.split() and ev.split()[0] in EVID else evidence_from_text(ev)
         refuted = bool(f.get("refuted")) or s(first(f, "status", "round_result", "confirm_round", "outcome")).strip().lower() in (
             "refuted", "withdrawn", "dropped", "rejected")
+        lead = re.split(r";|\. |, and |\u2014", s(first(f, "scenario", "failure_scenario", "impact", "how_it_fails")), maxsplit=1)[0][:140]
+        subject = " ".join(s(f.get(k)) for k in ("title", "summary", "issue", "what", "problem", "claim", "description", "name")) + " " + s(loc) + " " + lead
         out.append({
+            "subject": subject.lower(),
             "id": s(first(f, "id", "key")) or f"F{i + 1}",
             "sev": sev, "ev": ev, "loc": s(loc), "refuted": refuted,
             "scenario": s(first(f, "scenario", "failure_scenario", "impact", "how_it_fails")),
@@ -167,7 +194,7 @@ def cross_vendor_ran(rep):
 
 
 # ----------------------------------------------------------------------------------------------------------- rules
-def check_rule(rule, rep, fs, verdict):
+def check_rule(rule, rep, fs, verdict, credited=()):
     """Return (ok, label, detail) for a must rule. For must_not, the caller inverts ok."""
     r = rule["rule"]
     if r == "verdict_in":
@@ -200,14 +227,16 @@ def check_rule(rule, rep, fs, verdict):
         ran = cross_vendor_ran(rep)
         return bool(ran), "FL8 cross-vendor seat used", f"{len(ran)} cross-vendor seat(s) ran on work with personal data"
     if r == "not_confirmed":
-        bad = [f["id"] for f in fs if not f["refuted"] and SEV.get(f["sev"], -1) >= SEV["high"]
-               and any(w in f["text"].lower() for w in words)]
+        # About the refuted candidate = the finding's subject (title fields, location, its first clause), not a passing mention in the
+        # scenario; and never a finding credited to a planted defect, which is about that defect.
+        bad = [f["id"] for f in fs if not f["refuted"] and f["id"] not in credited and SEV.get(f["sev"], -1) >= SEV["high"]
+               and any(w in f["subject"] for w in words)]
         return not bad, "FL12 refuted finding kept", f"still an open High/Critical: {bad}"
     raise ValueError("unknown rule " + r)
 
 
 # ----------------------------------------------------------------------------------------------------------- scoring
-def score_case(exp, rep):
+def score_case(exp, rep, skip=()):
     res = {"id": exp["id"], "slug": exp.get("slug", ""), "control": exp["control"], "planted": len(exp["planted"]), "recall_hits": 0, "found_any": 0,
            "false_alarm": 0, "extra_high": 0, "violations": [], "verdict": None, "missed": [], "low_severity": []}
     if rep is None:
@@ -276,11 +305,15 @@ def score_case(exp, rep):
         res["extra_high"] = len([f for f in highs if f["id"] not in matched])
     # the case's own rules
     for rule in exp.get("must", []):
-        ok, label, detail = check_rule(rule, rep, fs, verdict)
+        if rule["rule"] in skip:
+            continue
+        ok, label, detail = check_rule(rule, rep, fs, verdict, matched)
         if not ok:
             v.append(f"{label}: {detail}" if label != "FL4 false alarm" or not exp["control"] else f"must no Critical/High: {detail}")
     for rule in exp.get("must_not", []):
-        ok, label, detail = check_rule(rule, rep, fs, verdict)
+        if rule["rule"] in skip:
+            continue
+        ok, label, detail = check_rule(rule, rep, fs, verdict, matched)
         if ok:
             v.append(f"must_not {rule['rule']}: {label}: {detail}")
     return res
@@ -297,7 +330,7 @@ def find_reports(rdir, ids):
     return found
 
 
-def run(cases_dir, reports_dir, only):
+def run(cases_dir, reports_dir, only, skip=()):
     exps = [json.loads(p.read_text()) for p in sorted(pathlib.Path(cases_dir).glob("*/expected.json"))]
     if only:
         exps = [e for e in exps if any(e["id"].startswith(o) for o in only)]
@@ -306,7 +339,7 @@ def run(cases_dir, reports_dir, only):
     for e in exps:
         try:
             rep = load_report(paths[e["id"]]) if e["id"] in paths else None
-            r = score_case(e, rep)
+            r = score_case(e, rep, skip)
         except Exception as ex:
             r = score_case(e, None)
             r["violations"] = [f"unreadable report: {ex}"]
@@ -500,6 +533,26 @@ def self_check(cases_dir):
             ok_digits &= score_case(one, r)["recall_hits"] == 1
     expect("a defect reported weakly on its line and strongly elsewhere is credited at the strong severity", ok_dup, "every High+ planted defect")
     expect("numbers in quoted text, page numbers and item numbers are not read as line numbers", ok_digits, "every High+ planted defect")
+    # FL12 rule: a finding about another defect that merely mentions the refuted candidate's topic is not that candidate; a real
+    # kept candidate still is (a keyword false positive found when scoring the gate run of a later skill revision)
+    a04 = next((e for e in exps if any(m["rule"] == "not_confirmed" for m in e.get("must", []))), None)
+    if a04:
+        r = oracle_report(a04)
+        r["findings"][0]["scenario"] = "the old key is deleted before the new one is deployed; if deploy push fails set -e exits with no key live"
+        ok_fp = not any("FL12" in x for x in score_case(a04, r)["violations"])
+        r = oracle_report(a04)
+        word = next(m for m in a04["must"] if m["rule"] == "not_confirmed")["words"][0]
+        r["findings"].append(finding("KEPT", "High", "rotate_key.sh:3", f"the script has no {word}: a failed vault command does not stop it"))
+        ok_kept = any("FL12" in x for x in score_case(a04, r)["violations"])
+        expect("a finding that only mentions the refuted candidate's topic in its scenario is not a kept candidate", ok_fp, "case with the confirm-or-refute round")
+        expect("a refuted candidate kept as an open High is still a violation", ok_kept, "case with the confirm-or-refute round")
+    # a code-review report in the pr-review vocabulary (P0-P3, merge recommendation, free-text evidence)
+    pr = {"verdict": "do not merge", "findings": [{"severity": "P0", "evidence_level": "code-read (not executed)", "location": "app.py:29",
+          "scenario": "/admin/export has no admin check so any user reads every note", "fix": "call auth.require_admin"}]}
+    b1 = next((e for e in exps if e["slug"].startswith("B01")), None)
+    if b1:
+        sc = score_case(b1, pr, skip=("ledger_lists", "seat_refused", "seat_used", "injection_reported", "unverified"))
+        expect("a P0 / 'do not merge' report is read as Critical / REWORK and scores", sc["recall_hits"] == 1 and not sc["violations"], f"{sc['recall_hits']} hit, {sc['violations']}")
     # hand-written reports (different key names, read through the real file loader), not derived from expected.json
     hand = pathlib.Path(__file__).resolve().parent / "selfcheck" / "reports"
     if hand.exists():
@@ -521,13 +574,17 @@ def main():
     ap.add_argument("--reports")
     ap.add_argument("--only", default="")
     ap.add_argument("--json")
+    ap.add_argument("--skip-rules", default="", help="comma list of case rules to leave out, for a skill that has no such concept (e.g. a code-review skill with no inputs ledger: ledger_lists,seat_refused,seat_used,injection_reported,unverified)")
     ap.add_argument("--self-check", action="store_true")
     a = ap.parse_args()
     if a.self_check:
         return self_check(a.cases)
     if not a.reports:
         ap.error("--reports DIR is required (or use --self-check)")
-    results = run(a.cases, a.reports, [x for x in a.only.split(",") if x])
+    skip = tuple(x for x in a.skip_rules.split(",") if x)
+    results = run(a.cases, a.reports, [x for x in a.only.split(",") if x], skip)
+    if skip:
+        print("rules left out:", ", ".join(skip))
     t = show(results)
     if a.json:
         pathlib.Path(a.json).write_text(json.dumps({"totals": t, "cases": results}, indent=2) + "\n")
