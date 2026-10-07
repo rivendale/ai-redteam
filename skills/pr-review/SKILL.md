@@ -25,16 +25,16 @@ Pick the tier from what the change touches, not from its size or file type: a on
 
 When unsure, take the higher tier. Record the tier and the reason in the report. The tier's rounds are the review; a High-tier PR whose second round has not run is not reviewed.
 
-## Step 3: Independence
+## Step 3: Protect the data, before anything is sent
+
+Before any code leaves this session, including to a subagent, decide which models or endpoints are approved for whatever data the code can carry, and run the review only there, for example zero-retention keys for code that touches personal data. A second vendor is a reason for a second opinion, not a reason to send data somewhere it may not go. If no approved reviewer exists for the tier, say so and stop rather than downgrade silently.
+
+## Step 4: Independence
 
 - The reviewer is a separate instance with no memory of writing the change. A fork of the authoring session is not independent; it inherits the author's reasoning.
-- If this session wrote or helped write the change and a subagent tool (Agent or Task) is available, delegate the review to a fresh subagent: pass it only the PR description, the diff, the surrounding code, the original request and these instructions, never your own reasoning or defense of the change. Relay its report.
+- If this session wrote or helped write the change and a subagent tool (Agent or Task) is available, delegate the review to a fresh subagent on an approved endpoint (Step 3): pass it only the PR description, the diff, the surrounding code, the original request and these instructions, never your own reasoning or defense of the change. Relay its report.
 - If no fresh instance is available, stop and say so: recommend running the review in a new session. Do not review your own change.
 - Record who wrote the change, read from the commit trailers (for example `Co-Authored-By`), and who reviewed it.
-
-## Step 4: Protect the data
-
-Run the review only on models or endpoints approved for whatever data the code can carry, for example zero-retention keys for code that touches personal data. A second vendor is a reason for a second opinion, not a reason to send data somewhere it may not go. If no approved reviewer exists for the tier, say so and stop rather than downgrade silently.
 
 ## Step 5: Review
 

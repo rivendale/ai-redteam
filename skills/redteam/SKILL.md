@@ -1,6 +1,6 @@
 ---
 name: redteam
-description: Adversarial review of work before anyone relies on it - decisions and analysis, code and diffs, factual claims, and ideas or proposals. Use when asked to red team, double-check, challenge, audit, fact-check or stress-test an output, a plan, a claim or a proposal.
+description: Adversarial review of work before anyone relies on it - decisions and analysis, code and diffs, factual claims, ideas or proposals, and regulated or customer-facing text (disclosures, marketing, policies, contracts). Use when asked to red team, double-check, challenge, audit, fact-check or stress-test an output, a plan, a claim or a proposal.
 ---
 
 # Redteam: adversarial diagnostic review
