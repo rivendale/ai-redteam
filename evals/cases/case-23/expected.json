@@ -1,0 +1,55 @@
+{
+  "id": "case-23",
+  "track": "D",
+  "title": "Evaluation of a different tool from the one the request named",
+  "failure_list": [
+    11
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "request-drift",
+      "file": "work/evaluation.md",
+      "lines": [
+        1,
+        1
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "keyhole",
+        "secretsweep",
+        "different tool",
+        "wrong tool",
+        "request",
+        "asked",
+        "drift",
+        "never evaluates"
+      ],
+      "all_words": [],
+      "why": "the request asked about Keyhole; the evaluation tests and recommends SecretSweep and never mentions Keyhole"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "e = open('evaluation.md').read()\nassert 'Keyhole' not in e and 'SecretSweep' in e"
+  },
+  "slug": "D04-request-drift-wrong-tool"
+}

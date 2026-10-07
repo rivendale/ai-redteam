@@ -1,0 +1,28 @@
+{
+  "id": "case-18",
+  "track": "C",
+  "title": "Provider cost comparison where every figure is on the cited pages and every number recomputes (clean control)",
+  "failure_list": [
+    4
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "assert 40 * 3.0 == 120 and 4 * 15.0 == 60 and 120 + 60 == 180\nassert 40 * 1.25 == 50 and 4 * 10.0 == 40 and 50 + 40 == 90 and 180 - 90 == 90 and 90 * 2 == 180"
+  },
+  "slug": "C05-control-cost-comparison"
+}

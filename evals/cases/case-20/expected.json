@@ -1,0 +1,80 @@
+{
+  "id": "case-20",
+  "track": "D",
+  "title": "Proposal that asks every engineer for 20 minutes of hand-copied data every day for an unnamed reader",
+  "failure_list": [
+    3
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "daily-manual-burden",
+      "file": "work/proposal.md",
+      "lines": [
+        5,
+        5
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "20 minutes",
+        "daily",
+        "every day",
+        "manual",
+        "burden",
+        "hours",
+        "per week",
+        "9 people",
+        "time"
+      ],
+      "all_words": [],
+      "why": "9 people x 20 minutes x 5 days is 15 hours a week of hand-copying to meet a request for 'visibility', against the stated constraint of not slowing the team"
+    },
+    {
+      "id": "P2",
+      "kind": "no-reader-and-cheaper-alternative",
+      "file": "work/proposal.md",
+      "lines": [
+        8,
+        8
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "tracker",
+        "already",
+        "saved query",
+        "export",
+        "automat",
+        "who reads",
+        "reader",
+        "alternative",
+        "cheaper",
+        "nobody"
+      ],
+      "all_words": [],
+      "why": "the only named reader may glance at it occasionally, and the tracker already records the fields and offers a saved query and a weekly export"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "assert 9 * 20 * 5 / 60 == 15.0\nassert 'saved query' in open('evidence/tracker_fields.md').read()"
+  },
+  "slug": "D01-asks-for-daily-manual-work"
+}

@@ -1,0 +1,28 @@
+{
+  "id": "case-22",
+  "track": "D",
+  "title": "Small proposal with measured need, named beneficiaries, alternatives and an exit (clean control)",
+  "failure_list": [
+    4
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import csv\nrows = list(csv.DictReader(open('evidence/pr_review_sample.csv')))\nassert len(rows) == 20\nwith_fmt = [r for r in rows if int(r['format_only_comments']) > 0]\nassert len(with_fmt) == 5, len(with_fmt)\nassert sum(int(r['minutes_on_format_comments']) for r in rows) == 60\nassert 60 / 5 == 12"
+  },
+  "slug": "D03-control-small-justified-proposal"
+}

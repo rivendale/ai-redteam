@@ -1,0 +1,71 @@
+{
+  "id": "case-01",
+  "track": "A",
+  "title": "Decision memo: the cost case rests on a run count that the supplied data contradicts, and the plan burns the old system",
+  "failure_list": [
+    2,
+    9
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "wrong-number-vs-evidence",
+      "file": "work/memo.md",
+      "lines": [
+        7,
+        7
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "3,000",
+        "3000",
+        "run_counts",
+        "31,",
+        "32,",
+        "ten times",
+        "10x",
+        "volume",
+        "evidence"
+      ],
+      "all_words": [],
+      "why": "the supplied data shows about 30,000-33,000 runs a month; at $0.06 that is about $1,900-1,950, not $180, so the move costs far more than the VM"
+    },
+    {
+      "id": "P2",
+      "kind": "no-rollback",
+      "file": "work/memo.md",
+      "lines": [
+        19,
+        19
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "rollback",
+        "roll back",
+        "revers",
+        "decommission",
+        "fallback",
+        "undo",
+        "same day"
+      ],
+      "all_words": [],
+      "why": "the plan destroys the working system the day of cutover, leaving no way back if the new one misbehaves"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [],
+  "proof": {
+    "cwd": "work",
+    "python": "import csv\nrows = list(csv.DictReader(open('evidence/run_counts.csv')))\nlast = int(rows[-1]['runs'])\ncost = last * 0.06\nassert last > 30000 and cost > 1500, (last, cost)\nassert 'Decommission the VM the same day' in open('memo.md').read()"
+  },
+  "slug": "A01-wrong-volume-and-no-way-back"
+}

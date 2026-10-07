@@ -1,0 +1,28 @@
+{
+  "id": "case-15",
+  "track": "C",
+  "title": "Market note where every citation exists, every quote is verbatim and every number recomputes (clean control)",
+  "failure_list": [
+    4
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import pathlib, re\nn = pathlib.Path('note.md').read_text()\ns1 = pathlib.Path('sources/S1-regulator-guidance.md').read_text().replace('**', '')\ns1 = ' '.join(s1.split())\ns3 = pathlib.Path('sources/S3-interview-notes.md').read_text()\nassert 'may delete personal data within 30 days of a verified request, unless a legal hold or an overriding retention duty applies' in s1\nassert 'We moved from per-seat to per-workspace pricing in the spring, and churn in the smallest tier fell' in s3\nassert 'within 72 hours' in s1\nassert round((2.8 - 2.4) / 2.4 * 100, 1) == 16.7 and round(1240 / 38) == 33"
+  },
+  "slug": "C02-control-claims-all-supported"
+}

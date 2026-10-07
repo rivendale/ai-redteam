@@ -1,0 +1,54 @@
+{
+  "id": "case-10",
+  "track": "B",
+  "title": "Proration change: the tax table and one commit it depends on are not supplied",
+  "failure_list": [
+    10,
+    1
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "wrong-days-in-month",
+      "file": "work/proration.py",
+      "lines": [
+        8,
+        8
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "30",
+        "days in",
+        "28",
+        "31",
+        "calendar",
+        "february"
+      ],
+      "all_words": [],
+      "why": "every month is treated as 30 days although the request says calendar month; on day 1 of a 31-day month the share is 30/30 and the last day gets 0"
+    }
+  ],
+  "must": [
+    {
+      "rule": "ledger_lists",
+      "items": [
+        "tax_table.json",
+        "a1b2c3d4e5"
+      ]
+    },
+    {
+      "rule": "unverified",
+      "words": [
+        "rounding",
+        "tax"
+      ]
+    }
+  ],
+  "must_not": [],
+  "proof": {
+    "cwd": "work",
+    "shell": "python3 - <<'E'\nimport sys, types, json, pathlib, tempfile\nd = tempfile.mkdtemp(); pathlib.Path(d, 'tax_table.json').write_text(json.dumps({'default': 0.0}))\nsrc = pathlib.Path('proration.py').read_text()\nopen(d + '/proration.py', 'w').write(src)\nsys.path.insert(0, d)\nimport proration, datetime\nassert proration.prorated_cents(3100, datetime.date(2026, 7, 31)) == 0, 'last day of a 31-day month should cost one day'\nE"
+  },
+  "slug": "B05-missing-inputs"
+}

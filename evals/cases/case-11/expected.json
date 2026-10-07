@@ -1,0 +1,56 @@
+{
+  "id": "case-11",
+  "track": "B",
+  "title": "Rate limiting: the request said per user, the change limits per IP address",
+  "failure_list": [
+    11
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "request-drift",
+      "file": "work/rate_limit.py",
+      "lines": [
+        12,
+        12
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "per user",
+        "per-user",
+        "user_id",
+        "remote_addr",
+        "ip",
+        "shared",
+        "nat",
+        "office"
+      ],
+      "all_words": [],
+      "why": "the limiter keys on the client IP, not the authenticated user, contradicting the request (and limiting everyone behind one office address together)"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import rate_limit as m\nfrom types import SimpleNamespace as S\nrl = m.RateLimiter(limit=2, window=60, clock=lambda: 0.0)\nassert rl.allow(S(remote_addr='1.1.1.1', user_id='a')) and rl.allow(S(remote_addr='1.1.1.1', user_id='a'))\nassert not rl.allow(S(remote_addr='1.1.1.1', user_id='b')), 'a different user behind the same IP is limited by the first'"
+  },
+  "slug": "B06-request-drift-per-ip"
+}

@@ -1,0 +1,50 @@
+{
+  "id": "case-06",
+  "track": "B",
+  "title": "Notes service: one admin route skips the admin check",
+  "failure_list": [
+    1
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "auth-check-skipped",
+      "file": "work/app.py",
+      "lines": [
+        25,
+        26
+      ],
+      "min_severity": "Critical",
+      "any_words": [
+        "export",
+        "admin"
+      ],
+      "all_words": [],
+      "why": "/admin/export returns every user's notes without calling auth.require_admin, unlike /admin/users"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import app\nr = app.handle({'path': '/admin/export', 'method': 'GET', 'token': 'tok-alice', 'body': None})\nassert r['status'] == 200 and 'root' in r['body'], r"
+  },
+  "slug": "B01-auth-check-skipped"
+}

@@ -1,0 +1,58 @@
+{
+  "id": "case-03",
+  "track": "A",
+  "title": "Analysis: a causal effect claimed from people who chose to finish an optional checklist",
+  "failure_list": [
+    1
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "selection-bias",
+      "file": "work/analysis.md",
+      "lines": [
+        3,
+        4
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "selection",
+        "self-select",
+        "confound",
+        "causal",
+        "causation",
+        "randomi",
+        "control group",
+        "survivor",
+        "immortal",
+        "opted"
+      ],
+      "all_words": [],
+      "why": "the groups are formed by who chose to complete an optional panel (and completion takes a week, so early churners cannot be completers); the 12-point gap is not an effect of the checklist"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "assert 624 / 1200 == 0.52 and 1520 / 3800 == 0.40\ntxt = open('analysis.md').read()\nassert 'optional panel' in txt and 'raised' in txt"
+  },
+  "slug": "A03-selection-bias-causal-claim"
+}

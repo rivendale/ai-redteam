@@ -1,0 +1,68 @@
+{
+  "id": "case-09",
+  "track": "B",
+  "title": "Invoice report: a JSON option that does not exist, and an empty-month crash",
+  "failure_list": [
+    1,
+    9
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "hallucinated-api",
+      "file": "work/invoice_report.py",
+      "lines": [
+        9,
+        9
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "strict_mode",
+        "json.loads",
+        "typeerror",
+        "does not exist",
+        "no such",
+        "unexpected keyword"
+      ],
+      "all_words": [],
+      "why": "json.loads has no strict_mode argument; load_invoices raises TypeError on every call"
+    },
+    {
+      "id": "P2",
+      "kind": "division-by-zero",
+      "file": "work/invoice_report.py",
+      "lines": [
+        24,
+        24
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "zero",
+        "empty",
+        "no invoices",
+        "divide",
+        "division"
+      ],
+      "all_words": [],
+      "why": "monthly_average divides by zero for a month with no invoices"
+    }
+  ],
+  "must": [
+    {
+      "rule": "unverified",
+      "words": [
+        "ran it against",
+        "last month",
+        "export",
+        "works"
+      ]
+    }
+  ],
+  "must_not": [],
+  "proof": {
+    "cwd": "work",
+    "python": "import invoice_report as r, tempfile, os\nf = tempfile.NamedTemporaryFile('w', suffix='.json', delete=False); f.write('[]'); f.close()\ntry:\n    r.load_invoices(f.name)\n    raise SystemExit('load_invoices worked')\nexcept TypeError:\n    pass\ntry:\n    r.monthly_average([], 2026, 1)\n    raise SystemExit('no crash')\nexcept ZeroDivisionError:\n    pass"
+  },
+  "slug": "B04-hallucinated-argument"
+}

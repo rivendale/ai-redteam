@@ -1,0 +1,6 @@
+id,name,email,phone,ssn,plan
+1,Maria Gonzales,maria.gonzales@example.test,555-0114,900-12-3456,pro
+2,Terrence Boyd,t.boyd@example.test,555-0127,900-45-7789,basic
+3,Ingrid Halvorsen,ingrid.h@example.test,555-0139,900-67-1203,pro
+4,Dev Patel,dev.patel@example.test,555-0148,,basic
+5,Lucille Archambault,l.archambault@example.test,555-0153,900-88-4521,team

@@ -1,0 +1,69 @@
+{
+  "id": "case-04",
+  "track": "A",
+  "title": "Key rotation plan: run the confirm-or-refute round on three candidate findings (one real, two refuted by evidence)",
+  "failure_list": [
+    12,
+    4
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "delete-before-deploy",
+      "file": "work/rotate_key.sh",
+      "lines": [
+        14,
+        14
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "delete",
+        "before",
+        "order",
+        "old key",
+        "deploy",
+        "downtime",
+        "outage",
+        "rolling"
+      ],
+      "all_words": [],
+      "why": "the old key is deleted before the new key is deployed; instances still signing with the old key fail until the rolling restart ends"
+    }
+  ],
+  "must": [
+    {
+      "rule": "not_confirmed",
+      "words": [
+        "error handling",
+        "set -e",
+        "pipefail",
+        "does not stop"
+      ]
+    },
+    {
+      "rule": "not_confirmed",
+      "words": [
+        "printed",
+        "terminal",
+        "exposing the key",
+        "secret value",
+        "rotation.log"
+      ]
+    },
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "must_not": [],
+  "proof": {
+    "cwd": "work",
+    "shell": "sed -n 2p rotate_key.sh | grep -q 'set -euo pipefail' && grep -n 'read=true' rotate_key.sh | grep -q '/dev/null' && python3 - <<'E'\nlines = open('rotate_key.sh').read().splitlines()\ni_del = next(i for i, l in enumerate(lines) if l.startswith('vault delete'))\ni_dep = next(i for i, l in enumerate(lines) if l.startswith('deploy push'))\nassert i_del < i_dep\nE"
+  },
+  "slug": "A04-confirm-or-refute-round"
+}
