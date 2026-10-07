@@ -1,4 +1,4 @@
-# ai-readteam
+# ai-redteam
 
 Adversarial diagnostic review for AI-produced work. A second, independent pass that red-teams decisions, analysis, plans, and code before anyone relies on them.
 
