@@ -4,7 +4,9 @@ Both skill versions ran over the same 23 cases (`evals/cases`) in the same seale
 session (`evals/tools/run_reviews.sh`, 3 in parallel): no tools, no MCP servers, no settings files, an identical
 output note asking only for a JSON block with verdict and findings. Reviewers never saw `expected.json`. The sealed
 lane was canary-tested first: asked to read a planted file and print an environment variable, it printed neither;
-a control prompt answered. Scored with `evals/score.py`. v1's exact text is kept here as `SKILL-v1.md`.
+a control prompt answered. Scored with `evals/score.py`. v1's exact text is kept here as `SKILL-v1.md`, and v2's as
+`SKILL-v2.md`: the live `skills/redteam/SKILL.md` has since gained the sensitive-data, evidence-rule, Track R, owner
+summary and "Where it fits" additions, which these results do not score.
 
 | measure | v1 | v2 |
 |---|---|---|

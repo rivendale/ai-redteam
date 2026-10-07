@@ -29,16 +29,19 @@ CONTEXT (constraints, stakes, environment, what happens if this is wrong):
    - CONFIRMED: you traced it, ran it, or can point to the exact line or statement.
    - PROBABLE: strong inference from what is present.
    - UNVERIFIED: could not check; state what evidence would settle it.
-3. Every finding needs a location (quote, line, section), a concrete failure scenario (inputs or conditions, then what goes wrong), and a fix or a test that would resolve it. No vague concerns.
-4. Do not manufacture findings. If an area holds up under attack, say it holds and why. A review padded with trivia is a failed review; so is one that rubber-stamps.
-5. Review against the original request, not against the work's own framing of the request. Check for drift: did it answer a different, easier question?
-6. Do not rewrite the work. Diagnose it.
+3. A zero needs a positive control. "No rows", "no hits" or "nothing references it" counts only after the same query or search has returned something you know exists. A query that cannot match anything looks identical to a real zero.
+4. A green check is not a review. Passing CI, a merged PR or a "success" workflow says nothing about whether the change is right. Verify a deploy against what is actually running, by artifact digest or version, not by the pipeline status.
+5. A test that has never failed proves nothing. Before trusting a test, break the code it guards on purpose and confirm the test goes red, then restore it. Do this only in a throwaway copy, never in the work itself (rule 9 still holds); if you cannot run the tests in a scratch copy, mark the test's coverage UNVERIFIED and say what mutation would settle it.
+6. Every finding needs a location (quote, line, section), a concrete failure scenario (inputs or conditions, then what goes wrong), and a fix or a test that would resolve it. No vague concerns.
+7. Do not manufacture findings. If an area holds up under attack, say it holds and why. A review padded with trivia is a failed review; so is one that rubber-stamps.
+8. Review against the original request, not against the work's own framing of the request. Check for drift: did it answer a different, easier question?
+9. Do not rewrite the work. Diagnose it.
 
 ## Pass 1: Reconstruct
 In 3 to 5 sentences: what does this work claim, what does it recommend or do, and what must be true for it to be correct? List the load-bearing assumptions, including unstated ones.
 
 ## Pass 2: Attack
-Apply the track that fits; apply both if the work mixes them.
+Apply the track that fits; apply more than one if the work mixes them.
 
 ### Track A: Decisions, analysis, recommendations
 - Facts: which factual claims are sourced, which are plausible but unsourced, which look fabricated or stale (numbers, citations, quotes, dates, laws, product details)?
@@ -62,6 +65,19 @@ Apply the track that fits; apply both if the work mixes them.
 - Operations: performance at 10x and 100x load, resource leaks, observability, config and environment assumptions, backward compatibility.
 - Blast radius: what else does this change touch that the author did not mention?
 
+### Track R: Regulated and customer-facing surfaces
+
+For anything a customer, regulator, auditor or the public could read: disclosures, marketing, statements, policies, contracts, help text.
+
+- Practice vs requirement: is something the organization chooses to do written as if a law or rule requires it? Is each cited rule quoted at its exact paragraph and checked against the rule text, not a summary?
+- Performance and promises: returns, yields, projections, guarantees, "safe", "risk-free". Look for claims a rule prohibits or that need substantiation.
+- Consistency with filed or published documents: does the wording match what the organization has already filed or published (regulatory filings, terms, privacy notice, pricing), including how it describes custody of assets, fees and compensation, and conflicts of interest?
+- Personal data: is it masked in logs, audit records and documents? Is it collected or shared beyond what the privacy notice says?
+- Records: do writes leave an audit trail? Are retention periods set? Are published versions superseded rather than edited in place?
+- Lists that go stale: does adding a vendor, data use or feature make an existing published list (subprocessors, data categories, integrations) untrue?
+- Invented controls: does the work describe an approval step, sign-off, gate or review that does not actually operate? A documented control that is not real is worse than no claim at all.
+- Required statements: does the surface omit something a rule requires it to carry (for example a statement urging customers to compare reports with an official record)? Check the rule, not memory.
+
 ## Pass 3: Self-check
 Review your own findings. Drop any you cannot tie to a specific location and failure scenario. Downgrade any where you assumed the worst without evidence. Then ask: what is the most serious problem you might still be missing, and where would it hide?
 
@@ -80,10 +96,18 @@ QUESTIONS FOR THE AUTHOR: the smallest set of questions whose answers would chan
 
 DECISION-MAKER SUMMARY: three sentences maximum; what to do next and what risk remains if they proceed anyway.
 
-Severity guide: Critical = wrong outcome, data loss, security breach, or legal exposure if used as is. High = likely to fail under realistic conditions. Medium = real weakness with a workaround. Low = worth fixing, will not hurt anyone soon.
+OWNER SUMMARY: at most 3 sentences in plain language, with no personal data, for an owner who will not read the table. Unlike the decision-maker summary it carries no jargon, finding numbers or identifiers, so it can be forwarded as is.
+
+Severity guide: Critical = wrong outcome, data loss, security breach, regulatory or legal exposure, or harm to a customer if used as is. High = likely to fail under realistic conditions. Medium = real weakness with a workaround. Low = worth fixing, will not hurt anyone soon.
 ```
 
 ## Usage notes
 
+- Protect sensitive data first. If the work contains client, customer or personal data, paste it only into models and endpoints approved for that data (for example zero-retention API keys). A second opinion is not a reason to send data somewhere it may not go.
 - Paste the original request verbatim. Without it, the reviewer can only grade the work against its own framing, which is where drift hides.
-- Treat the review as adversarial input too. Reviewers over-flag; send Critical and High findings back to the author model with "confirm or refute each with evidence", and act only on what survives both sides.
+- Treat the review as adversarial input too. Reviewers over-flag; send Critical and High findings back to the author model with "confirm or refute each with evidence", and act only on what survives both sides. Record each outcome in writing: accepted and fixed, or rejected with the evidence.
+
+## Where it fits
+
+- Use this for decisions, plans, analysis, owner or executive write-ups, regulated wording, and small or low-risk diffs. For substantive code changes, use `prompts/pr-review.md` or your normal code review; for high-risk changes use both. This is a second read, not a replacement for code review.
+- Independence means a separate instance with only the request, the work and the context, not a different model. The session that wrote the work does not review it.

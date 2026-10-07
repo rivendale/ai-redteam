@@ -29,9 +29,7 @@ The review can be wrong too. The rules below exist because reviews fail in known
    could change a decision) and continue the review.
 4. **Sensitivity gate.** Check the work and context for personal information, client documents, financial or health
    records, credentials, or confidential business material. If present, no cross-vendor or external reviewer may
-   receive it: mark those seats refused and say why. Use only the local or same-vendor reviewer, and only on models
-   and endpoints approved for that data (for example zero-retention API keys). A second opinion is not a reason to
-   send data somewhere it may not go.
+   receive it: mark those seats refused and say why. Use only the local or same-vendor reviewer.
 5. **Independence.** A reviewer sharing the author's context inherits its blind spots.
    - Default: if the work was produced in this conversation and a subagent tool exists, delegate to a fresh subagent.
      Give it only the original request (verbatim), the work, the context and this skill. Never pass your own
@@ -52,28 +50,18 @@ The review can be wrong too. The rules below exist because reviews fail in known
    unverified until the evidence is seen. Never claim to have run or checked something you did not.
 2. Label every finding by how it is known: CONFIRMED (traced, run, recomputed or tied to an exact line or quote),
    PROBABLE (strong inference from what is present), UNVERIFIED (could not check; say what would settle it).
-3. A zero needs a positive control. "No rows", "no hits" or "nothing references it" counts only after the same
-   query or search has returned something you know exists. A query that cannot match anything looks identical to a
-   real zero.
-4. A green check is not a review. Passing CI, a merged PR or a "success" workflow says nothing about whether the
-   change is right. Verify a deploy against what is actually running, by artifact digest or version, not by the
-   pipeline status.
-5. A test that has never failed proves nothing. Before trusting a test, break the code it guards on purpose and
-   confirm the test goes red, then restore it. Do this only in a throwaway copy, never in the work itself (rule 9
-   still holds); if you cannot run the tests in a scratch copy, mark the test's coverage UNVERIFIED and say what
-   mutation would settle it.
-6. Every finding needs a location (file:line, quote, section), a concrete failure scenario (conditions, then what
+3. Every finding needs a location (file:line, quote, section), a concrete failure scenario (conditions, then what
    goes wrong) and a fix or a test. No vague concerns.
-7. Do not manufacture findings. If an area holds, say so and why. Correct, well-supported work gets no invented
+4. Do not manufacture findings. If an area holds, say so and why. Correct, well-supported work gets no invented
    Critical or High: a false alarm is a review failure, not thoroughness. A rubber stamp is equally a failure.
-8. Review against the original request, not the work's framing of it. Drift (answering a different or easier
+5. Review against the original request, not the work's framing of it. Drift (answering a different or easier
    question, or building the wrong thing well) is at least High.
-9. Diagnose; do not rewrite. Do not modify the work unless asked after the report.
+6. Diagnose; do not rewrite. Do not modify the work unless asked after the report.
 
 ## Pass 1: Reconstruct
 
 In 3 to 5 sentences: what the work claims, what it recommends or does, and what must be true for it to be correct.
-List the load-bearing assumptions, including unstated ones. Pick the tracks: A, B, C, D, R, or several.
+List the load-bearing assumptions, including unstated ones. Pick the tracks: A, B, C, D, or several.
 
 ## Pass 2: Attack
 
@@ -119,27 +107,6 @@ List the load-bearing assumptions, including unstated ones. Pick the tracks: A, 
 - Adoption: who uses it in the first week, and what would show it was abandoned?
 - Fit: does it solve the problem in the original request, or a more interesting adjacent one?
 
-### Track R: regulated and customer-facing surfaces
-For anything a customer, regulator, auditor or the public could read: disclosures, marketing, statements, policies,
-contracts, help text.
-- Practice vs requirement: is something the organization chooses to do written as if a law or rule requires it? Is
-  each cited rule quoted at its exact paragraph and checked against the rule text, not a summary?
-- Performance and promises: returns, yields, projections, guarantees, "safe", "risk-free". Look for claims a rule
-  prohibits or that need substantiation.
-- Consistency with filed or published documents: does the wording match what the organization has already filed or
-  published (regulatory filings, terms, privacy notice, pricing), including how it describes custody of assets, fees
-  and compensation, and conflicts of interest?
-- Personal data: is it masked in logs, audit records and documents? Is it collected or shared beyond what the
-  privacy notice says?
-- Records: do writes leave an audit trail? Are retention periods set? Are published versions superseded rather than
-  edited in place?
-- Lists that go stale: does adding a vendor, data use or feature make an existing published list (subprocessors,
-  data categories, integrations) untrue?
-- Invented controls: does the work describe an approval step, sign-off, gate or review that does not actually
-  operate? A documented control that is not real is worse than no claim at all.
-- Required statements: does the surface omit something a rule requires it to carry (for example a statement urging
-  customers to compare reports with an official record)? Check the rule, not memory.
-
 ## Pass 3: Self-check, then confirm or refute
 
 1. Drop any finding without a location and a concrete failure scenario. Downgrade any that assumed the worst.
@@ -167,9 +134,6 @@ WHAT HOLDS UP: the parts that survived attack.
 UNVERIFIED CLAIMS: what the work asserts that could not be confirmed, and how to confirm each.
 QUESTIONS FOR THE AUTHOR: the smallest set whose answers would change the verdict.
 DECISION-MAKER SUMMARY: three sentences at most; what to do next and the risk if they proceed anyway.
-OWNER SUMMARY: at most 3 sentences in plain language, with no personal data, for an owner who will not read the
-table. Unlike the decision-maker summary it carries no jargon, finding numbers or identifiers, so it can be
-forwarded as is.
 
 Then one fenced `json` block:
 
@@ -185,20 +149,9 @@ Then one fenced `json` block:
 }
 ```
 
-Severity: Critical = wrong outcome, data loss, security breach, regulatory or legal exposure, or harm to a customer
-if used as is. High = likely to fail
+Severity: Critical = wrong outcome, data loss, security breach or legal exposure if used as is. High = likely to fail
 under realistic conditions, or drift from the request. Medium = real weakness with a workaround. Low = worth fixing,
 harms no one soon.
-
-## Where it fits
-
-- Use this for decisions, plans, analysis, owner or executive write-ups, regulated wording, and small or low-risk
-  diffs. For substantive code changes, use the sibling `pr-review` skill or your normal code review; for high-risk
-  changes use both. This is a second read, not a replacement for code review.
-- Independence means a separate instance with only the request, the work and the context, not a different model.
-  The session that wrote the work does not review it.
-- Reviewers over-flag. The confirm-or-refute round in Pass 3 is that check; record each outcome in writing: accepted
-  and fixed, or rejected with the evidence.
 
 ## After the report
 
