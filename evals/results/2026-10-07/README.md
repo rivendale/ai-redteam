@@ -8,11 +8,16 @@ a control prompt answered. Scored with `evals/score.py`. v1's exact text is kept
 
 | measure | v1 | v2 |
 |---|---|---|
-| recall (planted defects at minimum severity) | 17/23 = 0.74 | 20/23 = 0.87 |
+| recall (planted defects at minimum severity) | 18/23 = 0.78 | 23/23 = 1.00 |
 | found at any severity | 20/23 | 23/23 |
 | false alarms on 6 clean controls | 1 | 0 |
 | failure-list violations | 9 in 8 cases | 0 |
-| extra Critical/High on defect cases (not scored) | 44 | 25 |
+| extra Critical/High on defect cases (not scored) | 43 | 22 |
+
+Re-scored after #6 fixed the scorer: it had read digits in location text ("p. 14", "150-page") as line numbers and
+credited the closest finding instead of the strongest, so a weak finding took the credit for three defects v2 had
+rated Critical, High and Critical. The first scoring (v1 17/23, v2 20/23, extras 44 and 25) is kept in
+`v1-score.json` and `v2-score.json`; the re-scored files are `*-score-rescored.json`. Only cases 01, 16 and 17 moved.
 
 v2 meets the spec's bar: better recall with no more false alarms.
 
@@ -33,4 +38,5 @@ Limits, stated plainly:
 - Violations 9 vs 0 are not fully like-for-like: v1 has no ledger or seat concept, so some of its violations are
   rules it was never written to follow.
 - The extra Critical/High findings (44 vs 25) are not adjudicated; "0 false alarms" covers the 6 clean controls only.
-- v2's three misses are severity calibration on claims (found, rated below the key): A01 P1, C03 P1, C04 P1.
+- The three apparent v2 misses in the first scoring were a scorer fault (see above), not severity calibration.
+- The 22 extra Critical/High on v2 are being spot-checked (10 sampled) by an independent reviewer.
