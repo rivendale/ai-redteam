@@ -1,5 +1,9 @@
 # ai-redteam
 
+> **AI agents:** read [AGENTS.md](AGENTS.md) first. Install, invocation for each CLI, and pitfalls are in
+> [docs/using-with-ai-agents.md](docs/using-with-ai-agents.md); a plain index is in [llms.txt](llms.txt).
+
+
 Adversarial diagnostic review for AI-produced work. A second, independent pass that red-teams decisions, analysis, plans, and code before anyone relies on them, and a bounded reviewer that closes out a pull request.
 
 Each comes in two forms:
@@ -43,6 +47,8 @@ One pull request, one exact head commit, reviewed in a throwaway checkout agains
 | [`docs/SPEC.md`](docs/SPEC.md) | v2 design and failure list (written before the v2 skill text) |
 | [`docs/attack-catalog.md`](docs/attack-catalog.md) | Eleven ways AI-built systems fail under attack, each with the question a reviewer should ask |
 | [`docs/why-reviews-fail.md`](docs/why-reviews-fail.md) | How reviews of AI work go wrong, and the habit that prevents each |
+| [`docs/workflow.md`](docs/workflow.md) | Where these reviews sit in a build-and-review loop |
+| [`docs/using-with-ai-agents.md`](docs/using-with-ai-agents.md) | How AI CLIs read a repo, install and invoke, proving the load, pitfalls |
 | [`docs/privacy-checklist.md`](docs/privacy-checklist.md) | Questions for any work that touches personal information |
 
 Companion repos: [hsi-operator](https://github.com/rivendale/hsi-operator) (keeping a person at the strategic level of agent work),

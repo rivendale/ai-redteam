@@ -1,0 +1,30 @@
+# ai-redteam
+
+> Adversarial review for AI-produced work: a redteam skill (decisions, code, claims, ideas, regulated text) and a pr-review skill, with paste-in prompts, reference docs and a scored eval set.
+
+Agents: start at AGENTS.md. People: start at README.md.
+
+## Skills
+
+- [skills/redteam/SKILL.md](skills/redteam/SKILL.md): adversarial review; Tracks A decisions, B code, C claims, D ideas, R regulated text; inputs ledger, sensitivity gate, confirm-or-refute
+- [skills/pr-review/SKILL.md](skills/pr-review/SKILL.md): bounded review of one pull request with written adjudication
+
+## Prompts (no install)
+
+- [prompts/adversarial-review.md](prompts/adversarial-review.md): redteam as a paste-in prompt for any model
+- [prompts/pr-review.md](prompts/pr-review.md): pr-review as a paste-in prompt
+
+## Docs
+
+- [AGENTS.md](AGENTS.md): rules and commands for AI agents working in this repo
+- [docs/using-with-ai-agents.md](docs/using-with-ai-agents.md): how each CLI reads a repo, install and invoke, proving the load, pitfalls
+- [docs/workflow.md](docs/workflow.md): where these reviews sit in a build-and-review loop
+- [docs/SPEC.md](docs/SPEC.md): v2 design and failure list
+- [docs/attack-catalog.md](docs/attack-catalog.md): ways AI-built systems fail under attack, as reviewer questions
+- [docs/why-reviews-fail.md](docs/why-reviews-fail.md): how reviews of AI work go wrong
+- [docs/privacy-checklist.md](docs/privacy-checklist.md): questions for work that touches personal data
+
+## Evals
+
+- [evals/README.md](evals/README.md): 23 cases, scorer, runner, how a case is scored
+- [evals/results/](evals/results/): published runs with reports, prompts and SHA256SUMS

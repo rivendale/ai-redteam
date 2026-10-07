@@ -43,7 +43,9 @@ the paste-in prompt, not the skill, and is not scored here. Gate: pass.
 
 ## Limits
 
-- Extras on the amended redteam rose from 22 to 28 and are not adjudicated.
+- Extras on the amended redteam rose from 22 to 28. Spot check by the eval-set author (10 of 28, every third from
+  index 0, 8 cases): real 6 (one confirmed by running it), defensible but over-rated 4 (Medium rather than High), invented
+  0. The other 18, and v1's 43, were not read, so no v1-versus-#9 comparison of extras is claimed.
 - pr-review's injection, personal-data and inputs-ledger behavior was not tested here (code cases only): untested, not passed.
 - Reruns after the tooling fix in #11 will not carry the `__pycache__` noise described below.
 

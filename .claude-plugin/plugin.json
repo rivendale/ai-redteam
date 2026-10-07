@@ -1,0 +1,9 @@
+{
+  "name": "ai-redteam",
+  "description": "Adversarial review of AI-produced work (decisions, code, claims, ideas, regulated text) and bounded pull-request review with written adjudication.",
+  "license": "MIT",
+  "skills": [
+    "./skills/redteam",
+    "./skills/pr-review"
+  ]
+}
