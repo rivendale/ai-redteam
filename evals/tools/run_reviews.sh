@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Run one skill version over every eval case in a sealed, tool-less headless Claude session.
-# usage: run_reviews.sh SKILL.md OUTDIR [PARALLEL]
+# usage: run_reviews.sh SKILL.md OUTDIR [PARALLEL]   (ONLY=case-06,case-07 to run a subset)
 # Each reviewer sees only: the skill text, the case's request/context/work (from tools/prepare.py), and the same
 # output-format note for every version. It never sees expected.json. No tools, no MCP servers, no settings files.
 set -u
 skill=$(realpath "$1"); out=$(realpath -m "$2"); par=${3:-3}
 here=$(cd "$(dirname "$0")/../.." && pwd)
 prep=$(mktemp -d); mkdir -p "$out"
-python3 "$here/evals/tools/prepare.py" "$prep" >/dev/null
+python3 "$here/evals/tools/prepare.py" "$prep" ${ONLY:+--only "$ONLY"} >/dev/null
 export INVOCATION_ID= SKILL="$skill" OUT="$out"
 review() {
   d=$1; c=$(basename "$d")
