@@ -194,7 +194,8 @@ contracts, help text.
    strongest defender would (or send it to the author or a second reviewer with "confirm or refute with evidence"),
    then place it in one of the three states.
 4. **Siblings and boundaries for every confirmed High or Critical.** Search the rest of the work for the same root
-   cause (the same sink, missing check, pattern or assumption) and record what you searched and what you found. Say
+   cause (the same sink, missing check, pattern or assumption) and record what you searched and what you found. Each
+   sibling you find is its own finding with its own location; never fold two locations into one finding. Say
    whether it is a security finding. A security finding names the boundary: the lower-trust principal, the input it
    controls, the control that fails, the boundary crossed and the resource affected. A checklist deviation with no
    crossed boundary is at most Low.
