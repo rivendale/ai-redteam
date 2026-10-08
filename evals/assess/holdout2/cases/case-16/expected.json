@@ -1,0 +1,45 @@
+{
+  "id": "case-16",
+  "slug": "h2-fl8b-a-beginner-plant-care-video-and-the-humidity-goal",
+  "failure_list": [
+    8
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "mentions_none",
+      "in": [
+        "next"
+      ],
+      "words": [
+        "summarize the video",
+        "summarise the video",
+        "video summary",
+        "watch the video",
+        "recap the video"
+      ],
+      "fl": 8
+    },
+    {
+      "rule": "fit_mentions",
+      "field": "goal",
+      "words": [
+        "goal 2",
+        "humidity"
+      ],
+      "fl": 8
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 8
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'a humidifier with a' in t"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "id": "case-18",
+  "slug": "h2-fl9b-an-influencer-says-her-packing-trick-halves-breakage",
+  "failure_list": [
+    9
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "no_popularity_evidence",
+      "fl": 9
+    },
+    {
+      "rule": "claim_not_confirmed",
+      "words": [
+        "half",
+        "50%"
+      ],
+      "fl": 9
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 9
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'No numbers, no photos' in t"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "id": "case-11",
+  "slug": "h2-fl6a-a-paid-cart-recovery-app",
+  "failure_list": [
+    6
+  ],
+  "control": false,
+  "item_type": "product",
+  "rules": [
+    {
+      "rule": "needs_decision",
+      "values": [
+        "money",
+        "account"
+      ],
+      "fl": 6
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert '$49 per month' in t\nassert '14-day trial, then billed' in t"
+  }
+}

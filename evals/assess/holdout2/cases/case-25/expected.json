@@ -1,0 +1,31 @@
+{
+  "id": "case-25",
+  "slug": "h2-fl13a-a-dew-point-formula-worth-borrowing-without-the-dependency",
+  "failure_list": [
+    13
+  ],
+  "control": false,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "try"
+      ],
+      "fl": 13
+    },
+    {
+      "rule": "handoff_is",
+      "value": "glean",
+      "fl": 13
+    },
+    {
+      "rule": "has_stop_condition",
+      "fl": 13
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert '60-line Python module' in t\nassert 'Magnus formula' in t"
+  }
+}

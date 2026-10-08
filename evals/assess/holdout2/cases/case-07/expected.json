@@ -1,0 +1,33 @@
+{
+  "id": "case-07",
+  "slug": "h2-fl4a-ten-free-labels-a-month",
+  "failure_list": [
+    4
+  ],
+  "control": false,
+  "item_type": "product",
+  "rules": [
+    {
+      "rule": "fit_mentions",
+      "field": "cost",
+      "words": [
+        "10 labels",
+        "$29",
+        "pro",
+        "120"
+      ],
+      "fl": 4
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 4
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'Free: 10 labels per month' in t\nassert '$29/month' in t"
+  }
+}

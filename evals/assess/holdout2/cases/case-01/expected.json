@@ -1,0 +1,48 @@
+{
+  "id": "case-01",
+  "slug": "h2-fl1a-accurate-to-a-tenth-of-a-percent",
+  "failure_list": [
+    1
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "claim_not_confirmed",
+      "words": [
+        "accurate to 0.1",
+        "0.1%"
+      ],
+      "fl": 1
+    },
+    {
+      "rule": "mentions_any",
+      "in": [
+        "claims",
+        "risks",
+        "raw"
+      ],
+      "words": [
+        "resolution",
+        "+/-2",
+        "\u00b12",
+        "2 %rh",
+        "2%",
+        "datasheet",
+        "accuracy"
+      ],
+      "fl": 1
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 1
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'Humidity resolution | 0.1 %RH' in t\nassert '+/-2 %RH (typical)' in t"
+  }
+}

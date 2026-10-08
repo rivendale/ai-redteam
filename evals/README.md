@@ -373,3 +373,19 @@ three is reported as a second, separate number and is not merged with the 85%.
 Left as they were, on purpose: cases 05 and 06 (FL3). In all six runs the report names the overlap (Crashlytics; Crowdin) and then answers needs-decision while writing "if not, close
 as skip", which defers an answer that the context file already gives (case 05: "Firebase stays") or that a skip does not need an operator for (case 06). Case 32 (a post whose snapshot
 contains a script) drew a `glean` hand-off in two of three runs, which `assess-1` does not allow for a post; that is also left as it was. Those three are not case faults.
+
+## The second assess hold-out set (evals/assess/holdout2/cases, added 2026-10-08)
+
+The first hold-out (36 cases, a game studio) became a partly-used set once three of its cases were fixed and its result read; the skill is about to change in response. This second
+set is 36 new cases written from `docs/SPEC-assess.md` alone, in a third domain (a small online plant shop: Shopify, Klaviyo, Google Sheets, a Raspberry Pi humidity sensor) with its
+own synthetic context file: two defect cases for each of the 14 failure-list rules and eight controls. Run and score as the others (`--cases evals/assess/holdout2/cases`).
+
+Before it was committed: every proof holds; a reference report built from each case's rules passes it, a bare "adopt" fails every defect case, a blanket "skip" fails every control, and
+the scan finds 0. Two independent readers who had not seen the expected answers gave a verdict and a goal for 14 and then 5 of the cases. Their reads changed five cases before this
+commit: a control that needed hardware and a purchase (replaced by a free salt test for the sensor), a banner that would have shown on the cart page, an item whose sheet-based advantage
+over Klaviyo's own block was unstated, and a damage log with no parcel count. The lessons of #52 and #60 were applied from the start: every control names a goal it serves, extends or does
+not overlap what is in use, is pinned by commit or release, and gives the figures its claims rest on.
+
+One disclosure. I wrote it after reading the proposed change to the skill's needs-decision rule (needs-decision for items that serve a goal and cost something; skip or watch for
+duplicates). Cases 11, 12 (a priced app and a customer-list upload that serve goals) and 05, 06 (duplicates) are the spec's failure-list items 6 and 3 and were written to the spec, not to that
+rule; the result on them should be read with this in mind.

@@ -1,0 +1,51 @@
+{
+  "id": "case-02",
+  "slug": "h2-fl1b-forty-percent-of-carts-recovered-with-no-control",
+  "failure_list": [
+    1
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "claim_not_confirmed",
+      "words": [
+        "40%",
+        "recover"
+      ],
+      "fl": 1
+    },
+    {
+      "rule": "mentions_any",
+      "in": [
+        "claims",
+        "risks",
+        "raw"
+      ],
+      "words": [
+        "control",
+        "held back",
+        "holdout",
+        "hold-out",
+        "would have bought",
+        "would have returned",
+        "baseline",
+        "attribution",
+        "any page",
+        "30 days"
+      ],
+      "fl": 1
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 1
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'did not hold any shoppers back' in t\nassert '200 of them placed an order' in t"
+  }
+}

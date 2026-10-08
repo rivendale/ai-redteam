@@ -1,0 +1,19 @@
+{
+  "id": "case-19",
+  "slug": "h2-fl10a-a-sensor-logger-and-no-context-file",
+  "failure_list": [
+    10
+  ],
+  "control": false,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "no_invented_goal",
+      "fl": 10
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'Logs readings from I2C and one-wire sensors' in t"
+  }
+}

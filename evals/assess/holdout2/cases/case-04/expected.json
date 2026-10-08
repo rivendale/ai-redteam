@@ -1,0 +1,19 @@
+{
+  "id": "case-04",
+  "slug": "h2-fl2b-a-page-that-answered-too-many-requests",
+  "failure_list": [
+    2
+  ],
+  "control": false,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "unresolved",
+      "fl": 2
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert '429 Too Many Requests' in t"
+  }
+}

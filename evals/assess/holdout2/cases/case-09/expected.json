@@ -1,0 +1,51 @@
+{
+  "id": "case-09",
+  "slug": "h2-fl5a-sudo-pipe-to-bash-and-telemetry-default-on",
+  "failure_list": [
+    5
+  ],
+  "control": false,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "mentions_any",
+      "in": [
+        "risks",
+        "next",
+        "raw"
+      ],
+      "words": [
+        "curl",
+        "pipe",
+        "sudo",
+        "install script",
+        "moving"
+      ],
+      "fl": 5
+    },
+    {
+      "rule": "mentions_any",
+      "in": [
+        "risks",
+        "raw"
+      ],
+      "words": [
+        "telemetry",
+        "usage statistics",
+        "location"
+      ],
+      "fl": 5
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 5
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert '| sudo bash' in t\nassert 'GREENPI_OPTOUT=1' in t"
+  }
+}
