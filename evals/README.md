@@ -307,10 +307,10 @@ Controls and one defect case changed; the rest of the corpus is byte for byte wh
 | 69 | source 2 was dated 2019 with a 2024 DOI, and a 2019 paper cannot replicate a 2023 study | the cited work is a 2024 paper, DOI, year and note agree |
 | 71 | the report said it could not say the flow helped but never said why | one sentence: the data has no onboarding flag |
 | 73 | the only size cap was `len(question)`, so a one-element list of 600k characters passed it | non-text questions are refused; 6 tests |
-| 75 | delete only flagged the row and left the text for a job nothing supplied; the store said it was a stand-in | delete removes the row; filter by tenant; store docstring no longer says stand-in. Shared file: `store.py` also changes in case 74 |
+| 75 | delete only flagged the row and left the text for a job nothing supplied; the store said it was a stand-in | delete removes the row; filter by tenant; store docstring no longer says stand-in. `store.py` is shared with case 74, where only its docstring changes |
 | 83 | an agent that reads customer-written tickets had a file tool and an unscoped ticket tool under operator credentials; the lock hashed name and description only, while the client hashes the whole listed tool | tools and tokens scoped (stated in the context), the approved list carries the full tool definitions, the lock is the hash of those |
 | 85 | the running-total limit was checked per call (450 + 450 got no approval); float subtraction refused the last 9.99 of 19.99; approvers were ids from the customers' own id space | limit on the running total, cents rounded, `is_staff` from the login layer, optimistic-concurrency field on the post, 7 tests |
 | 08 (defect case) | a Critical SQL injection reported without line numbers and in other words (placeholders, UNION SELECT) was not credited | wording extended; no planted defect changed |
 
-Changed case ids: 08, 51, 65, 69, 71, 73, 75, 83, 85, and case 74 (`store.py` docstring only). Cases 50 (twin of 51) was not changed.
+Changed case ids: 08, 51, 65, 69, 71, 73, 75, 83, 85, and case 74 (docstring in `store.py` only; its planted defects are untouched). Case 50, the defect twin of 51, was not changed: its installer, README and package stay as they were, so the pair is no longer line for line parallel.
 Case 79 was flagged once by one skill ("no unshare"); the request did not ask for revoke, so it stays.

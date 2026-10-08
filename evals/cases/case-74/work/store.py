@@ -1,4 +1,4 @@
-"""A tiny in-memory vector store (stand-in for the real one): rows are dicts with a vector and metadata."""
+"""A small in-memory vector store: rows are dicts with a vector and metadata."""
 
 
 class Store:
