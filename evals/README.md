@@ -1,7 +1,8 @@
-# Evals for the redteam skill
+# Evals for the redteam and pr-review skills
 
-23 cases written from `docs/SPEC.md` (the four tracks, the v2 additions and the failure list) and the README only. They were not
-written from either version of the skill text or its prompt, so the cases are not shaped around them.
+49 cases, 15 of them clean controls, added in four rounds (below). The first 23 were written from `docs/SPEC.md` (the four tracks, the
+v2 additions and the failure list) and the README only. They were not written from either version of the skill text or its prompt, so
+the cases are not shaped around them.
 
 All material is invented: code, companies, people, figures and documents. Personal-data fixtures use reserved test values
 (`example.test` addresses, ID numbers in an unissued range).

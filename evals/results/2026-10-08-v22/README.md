@@ -1,5 +1,9 @@
 # v2.2 gate, 2026-10-08: redteam (merged) and pr-review (held), three runs each
 
+> **Update:** the held pr-review half was tested on #29's fixtures and merged in #30. See
+> [`../2026-10-08-prreview-held`](../2026-10-08-prreview-held/README.md). This page is the gate as it was run; "held" below
+> describes the state before #30.
+
 v2.2 (`SKILL-redteam-v22.md`; `SKILL-prreview-v22.md` is kept as the text that was run, but its changes are NOT in this PR) against the current skills on main, in the
 same sealed lane (`evals/tools/run_reviews.sh`: claude-opus-5-5, Claude Code 2.1.292, no tools, no MCP servers).
 Cases 35 and 36 were re-run after #24 fixed their fixtures; the v2.2 reports for 35-39 are those re-runs. Scored with
@@ -27,6 +31,8 @@ Current-skill baselines for cases 1-34 are the published `../2026-10-07-repeat/f
   they change; unit names match as whole file names).
 
 ## pr-review (the v2.2 pr-review change is held, not merged)
+
+Held at this gate; tested and merged later in #30 ([`../2026-10-08-prreview-held`](../2026-10-08-prreview-held/README.md)).
 
 | measure | v2.2, runs 1/2/3 | current, runs 1/2/3 |
 |---|---|---|

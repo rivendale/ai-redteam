@@ -17,14 +17,16 @@ Agents: start at AGENTS.md. People: start at README.md.
 ## Docs
 
 - [AGENTS.md](AGENTS.md): rules and commands for AI agents working in this repo
+- [docs/capabilities.md](docs/capabilities.md): everything the repo does, grouped, each with the file that owns it
 - [docs/using-with-ai-agents.md](docs/using-with-ai-agents.md): how each CLI reads a repo, install and invoke, proving the load, pitfalls
 - [docs/workflow.md](docs/workflow.md): where these reviews sit in a build-and-review loop
-- [docs/SPEC.md](docs/SPEC.md): v2 design and failure list
+- [docs/SPEC.md](docs/SPEC.md): v2 and v2.2 design and failure list (items 1-20)
 - [docs/attack-catalog.md](docs/attack-catalog.md): ways AI-built systems fail under attack, as reviewer questions
+- [docs/framework-mapping.md](docs/framework-mapping.md): the catalog and skills against the OWASP LLM and Agentic Top 10 lists and MITRE ATLAS
 - [docs/why-reviews-fail.md](docs/why-reviews-fail.md): how reviews of AI work go wrong
 - [docs/privacy-checklist.md](docs/privacy-checklist.md): questions for work that touches personal data
 
 ## Evals
 
-- [evals/README.md](evals/README.md): 23 cases, scorer, runner, how a case is scored
+- [evals/README.md](evals/README.md): 49 cases (15 clean controls), scorer, runner, how a case is scored
 - [evals/results/](evals/results/): published runs with reports, prompts and SHA256SUMS

@@ -3,6 +3,8 @@
 Each entry is a way AI-built systems fail under attack, with the question a reviewer should ask and where to look.
 Entries marked *measured* were reproduced on one operator's machines; the rest cite published research. Use it with
 Track B (code) and Track C (claims) of the `redteam` skill.
+How the entries map to the OWASP LLM and Agentic Top 10 lists and to MITRE ATLAS is in
+[framework-mapping.md](framework-mapping.md).
 
 ## Untrusted input reaching something that can act
 
