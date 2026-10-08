@@ -5,7 +5,7 @@ conn = sqlite3.connect(":memory:")
 conn.row_factory = sqlite3.Row
 conn.executescript("""
     create table orders (id integer primary key, customer text, total real, secret_note text);
-    insert into orders values (1, 'ann', 10.0, 'vip'), (2, 'bo', 20.0, 'late payer'), (3, 'cy', 30.0, '');
+    insert into orders values (1, 'ann', 10.0, 'vip'), (2, 'bo', 20.0, 'late payer'), (3, 'ann', 30.0, ''), (4, 'ann', 5.0, ''), (5, 'cy', 30.0, '');
 """)
 
 

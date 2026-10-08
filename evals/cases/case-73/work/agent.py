@@ -1,7 +1,9 @@
-"""Research agent behind the /ask endpoint, with turn, token and request caps."""
+"""Research agent behind the /ask endpoint, with input, turn, token and request caps. One process serves the endpoint."""
 import json
 import time
 
+MAX_QUESTION_CHARS = 2000
+MAX_TOOL_RESULT_CHARS = 4000
 MAX_TURNS = 6
 MAX_TOKENS_PER_REQUEST = 20000
 MAX_REQUESTS_PER_HOUR = 20
@@ -13,6 +15,8 @@ class BudgetExceeded(Exception):
 
 
 def run_agent(llm, tools, question):
+    if len(question) > MAX_QUESTION_CHARS:
+        raise BudgetExceeded("question too long")
     messages = [{"role": "user", "content": question}]
     spent = 0
     for _ in range(MAX_TURNS):
@@ -21,11 +25,12 @@ def run_agent(llm, tools, question):
         if spent > MAX_TOKENS_PER_REQUEST:
             raise BudgetExceeded("token budget for this request")
         if reply.get("tool"):
+            messages.append({"role": "assistant", "tool_call": {"tool": reply["tool"], "args": reply.get("args", {})}})
             try:
                 result = tools[reply["tool"]](**reply.get("args", {}))
             except Exception as exc:
                 result = f"error: {exc}"
-            messages.append({"role": "tool", "content": json.dumps(result, default=str)})
+            messages.append({"role": "tool", "content": json.dumps(result, default=str)[:MAX_TOOL_RESULT_CHARS]})
             continue
         return reply["answer"]
     raise BudgetExceeded("turn limit")

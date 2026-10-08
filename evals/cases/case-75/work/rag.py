@@ -8,10 +8,10 @@ def ingest(tenant, doc_id, vec, text):
     index.add(doc_id, vec, text, tenant=tenant, deleted=False)
 
 
-def delete(doc_id):
-    """Deleting marks the document; it is removed from the index by the nightly job."""
+def delete(tenant, doc_id):
+    """Deleting marks the tenant's document; it is removed from the index by the nightly job."""
     for r in index.rows:
-        if r["id"] == doc_id:
+        if r["id"] == doc_id and r["tenant"] == tenant:
             r["deleted"] = True
 
 

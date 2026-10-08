@@ -1,0 +1,18 @@
+{
+  "files": [
+    {
+      "name": "read_file",
+      "description": "Read a file under the project folder."
+    }
+  ],
+  "tickets": [
+    {
+      "name": "get_ticket",
+      "description": "Return one ticket by id."
+    },
+    {
+      "name": "update_ticket",
+      "description": "Set the status or add a comment on one ticket."
+    }
+  ]
+}

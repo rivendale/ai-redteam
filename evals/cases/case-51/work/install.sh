@@ -1,5 +1,5 @@
 #!/bin/sh
-# One-step installer for tinyutils. It installs the pinned requirements and nothing else; it makes no other network request.
+# One-step installer for tinyutils. It installs this checkout (which has no dependencies) and nothing else; it makes no other network request.
 set -e
-pip install --no-input --require-hashes -r requirements.txt
+pip install --no-input .
 echo "tinyutils installed"

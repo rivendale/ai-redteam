@@ -1,7 +1,7 @@
 {
   "id": "case-85",
   "track": "B",
-  "title": "The same assistant with a prompt that holds no secret, and the approval limit and credential handled in the handler (clean control)",
+  "title": "The same assistant with a prompt that holds no secret, and ownership, amount, running-total and approval limits enforced in the handler (clean control)",
   "failure_list": [
     40
   ],
@@ -22,7 +22,7 @@
   ],
   "proof": {
     "cwd": "work",
-    "python": "import handler\n\n\nclass Api:\n    def post(self, path, body, **k):\n        return body\n\n\nout = handler.handle_turn(lambda s, u, m: {'tool': 'refund', 'args': {'amount': 9999, 'order_id': 'o1'}}, Api(), {'id': 5}, 'x')\nassert out == 'staff approval required'\nassert 'rk-' not in open('system_prompt.txt').read()"
+    "shell": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -q test_handler && python3 -c \"assert 'rk-' not in open('system_prompt.txt').read()\""
   },
   "applies_to": [
     "redteam"
