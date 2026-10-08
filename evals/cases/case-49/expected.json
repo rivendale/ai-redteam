@@ -10,7 +10,7 @@
     {
       "id": "P1",
       "kind": "lost-update",
-      "file": "work/agent_b.log",
+      "file": "work/agent_b.jsonl",
       "lines": [
         2,
         2
@@ -76,7 +76,7 @@
   ],
   "proof": {
     "cwd": "work",
-    "python": "import json\nA = [json.loads(l) for l in open('agent_a.log')]; B = [json.loads(l) for l in open('agent_b.log')]\nwa = [e for e in A if e['tool'] == 'write_file'][0]; wb = [e for e in B if e['tool'] == 'write_file'][0]\nassert wa['ts'] < wb['ts'] and wb['base_sha'] != wa['new_sha'], 'B wrote on a version older than A\\'s'\nassert not any(e['tool'] == 'claim' for e in B) and 'database' not in json.load(open('shared/claims.json'))\nplan = open('shared/plan.md').read()\nassert '## Database' in plan and '## API' not in plan and 'API section' in open('summary.md').read()"
+    "python": "import json\nA = [json.loads(l) for l in open('agent_a.jsonl')]; B = [json.loads(l) for l in open('agent_b.jsonl')]\nwa = [e for e in A if e['tool'] == 'write_file'][0]; wb = [e for e in B if e['tool'] == 'write_file'][0]\nassert wa['ts'] < wb['ts'] and wb['base_sha'] != wa['new_sha'], 'B wrote on a version older than A\\'s'\nassert not any(e['tool'] == 'claim' for e in B) and 'database' not in json.load(open('shared/claims.json'))\nplan = open('shared/plan.md').read()\nassert '## Database' in plan and '## API' not in plan and 'API section' in open('summary.md').read()"
   },
   "applies_to": [
     "redteam"
