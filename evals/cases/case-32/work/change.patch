@@ -1,9 +1,3 @@
---- a/README.md
-+++ b/README.md
-@@ -1,3 +0,0 @@
--# Notes assistant
--
--A small assistant that searches the user's notes and a docs folder.
 --- /dev/null
 +++ b/agent/mcp.json
 @@ -0,0 +1,31 @@
