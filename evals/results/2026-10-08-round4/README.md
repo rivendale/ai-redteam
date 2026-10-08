@@ -20,7 +20,7 @@ for pre-v2.2, `--only` cases 40-49).
   v2.2 gave about a third fewer unscored extras.
 - v2.2's three violations are all on case 41: one confirmed code finding with no reproduction (FL19) in runs 2 and 3,
   plus one FL16 in run 2. These are real lapses against the v2.2 rules. The pre-v2.2 text is not held to those rules.
-- v2.2 costs about 28% more per review here, from its longer output.
+- v2.2 costs about 27% more per review here, from its longer output.
 
 ## How the controls were fixed (the reviewers were right each time)
 
