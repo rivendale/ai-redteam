@@ -396,7 +396,7 @@
       "properties": {
         "claim": {
           "type": "string",
-          "minLength": 5
+          "minLength": 3
         },
         "evidence": {
           "type": "string",

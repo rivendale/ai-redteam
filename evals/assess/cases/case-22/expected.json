@@ -19,14 +19,6 @@
         "adopt"
       ],
       "fl": 11
-    },
-    {
-      "rule": "confidence_in",
-      "values": [
-        "low",
-        "medium"
-      ],
-      "fl": 11
     }
   ],
   "proof": {
