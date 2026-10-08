@@ -381,7 +381,7 @@ set is 36 new cases written from `docs/SPEC-assess.md` alone, in a third domain 
 own synthetic context file: two defect cases for each of the 14 failure-list rules and eight controls. Run and score as the others (`--cases evals/assess/holdout2/cases`).
 
 Before it was committed: every proof holds; a reference report built from each case's rules passes it, a bare "adopt" fails every defect case, a blanket "skip" fails every control, and
-the scan finds 0. Two independent readers who had not seen the expected answers gave a verdict and a goal for 14 and then 5 of the cases. Their reads changed seven cases before this
+the scan finds 0. Two independent readers who had not seen the expected answers gave a verdict and a goal for 14 and then 5 of the cases. Their reads changed five cases before this
 commit: a control that needed hardware and a purchase (replaced by a free salt test for the sensor), a banner that would have shown on the cart page, an item whose sheet-based advantage
 over Klaviyo's own block was unstated, and a damage log with no parcel count. The lessons of #52 and #60 were applied from the start: every control names a goal it serves, extends or does
 not overlap what is in use, is pinned by commit or release, and gives the figures its claims rest on.
