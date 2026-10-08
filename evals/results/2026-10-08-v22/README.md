@@ -53,12 +53,15 @@ bringing it to schema 2.2 is a follow-up with its own eval.
 
 ## Cost (list price, from `_meta/*.usage.json`)
 
-| set | per review | seconds |
+Like for like, cases 35-39, runs 1/2/3, per review (measured by the second reader on the committed usage files):
+
+| skill | v2.2 | current |
 |---|---|---|
-| redteam v2.2 (run 3, 39 cases) | $0.145 | 74 |
-| redteam current, cases 35-39 | $0.110 | 52 |
-| pr-review v2.2 (run 3, 19 cases) | $0.088 | 46 |
-| pr-review current, cases 35-39 | $0.078 | 53 |
+| redteam | $0.200 / $0.140 / $0.131 | $0.156 / $0.095 / $0.110 |
+| pr-review | $0.116 / $0.072 / $0.073 | $0.115 / $0.082 / $0.078 |
+
+redteam v2.2 costs about 30% more per review on these cases (longer output: coverage, answers, reproduction);
+pr-review is level. Over all 39 cases, redteam v2.2 run 3 averaged $0.145 and 74 s per review.
 
 Each run folder holds the reports, `prompts/` (exactly what each reviewer was sent) and `_meta/` (usage).
 Re-run summary: `python3 evals/tools/summarize_usage.py <run folder>`.
