@@ -198,3 +198,18 @@ The proofs run the code or read the logs: the JWT cases forge both bad tokens ag
 log cases parse the events and compare them with the final claims. A fixed test RSA key (1024 bits, invented) is embedded in the JWT cases;
 nothing in them is a real credential.
 
+
+## Round 5: the v2.3 scorer profile (docs/SPEC.md, "v2.3 additions")
+
+`score.py --profile v2.3` applies the v2.2 rules plus the ones the v2.3 section adds, split so a v2.2 text and a v2.3 text can be compared fairly:
+
+- **Counted in `violations` (a v2.2 text can meet them):** FL21 (a document the reviewer was given is missing from coverage; the same check as FL17, labelled FL21 for
+  documents), FL23 first half (the report says it ran code; the sealed lane has no tools), FL26 (a case that names `scope.out` units: none may appear as checked),
+  FL27 (a case with `history_secret: true`: the report must search history or say it did not).
+- **Counted in `v23_only` and printed apart (need the v2.3 text):** the schema 2.3 field rules (`boundary`, `siblings_searched`, `security`, the `reason` list, checked only
+  on a report that declares `schema_version` 2.3) and FL23 second half (a reproduction that runs the work under review and no isolation statement anywhere in the report).
+  A 2.2 report is never asked for them.
+- `--skill plain` scores the cases whose `applies_to` lists `plain`; `prepare.py --applies` and `APPLIES=` in `run_reviews.sh` select the same cases to run.
+
+The run-claim rule was checked against all 590 committed reports (0 hits; every one of those runs had no tools, so a hit would be a real false claim) and against 14
+constructed sentences in both directions. Mutating the rule code leaves only window-size constants alive.
