@@ -24,9 +24,19 @@ review() {
     echo "You have no tools in this session: you cannot run code or open links. After your report, append one fenced"
     echo "json block with \"verdict\" and \"findings\" (each: severity, evidence_level, location, scenario, fix)."
   } > "$OUT/$c.prompt"
-  timeout 900 claude -p --tools "" --strict-mcp-config --mcp-config '{"mcpServers":{}}' \
+  # --output-format json carries the report text plus model and token usage; the report is written unchanged to
+  # case-NN.md and the usage to case-NN.usage.json, so runs stay comparable and every result can state its cost.
+  timeout 900 claude -p --output-format json --tools "" --strict-mcp-config --mcp-config '{"mcpServers":{}}' \
     --setting-sources "" --permission-mode dontAsk --disallowedTools "Bash,Write,Edit,Read,WebFetch,WebSearch" \
-    < "$OUT/$c.prompt" > "$OUT/$c.md" 2> "$OUT/$c.err" || echo "$c failed rc=$?" >> "$OUT/failures.txt"
+    < "$OUT/$c.prompt" > "$OUT/$c.json" 2> "$OUT/$c.err" || echo "$c failed rc=$?" >> "$OUT/failures.txt"
+  python3 - "$OUT/$c.json" "$OUT/$c.md" "$OUT/$c.usage.json" <<'PYX' || echo "$c unparsable json" >> "$OUT/failures.txt"
+import json, sys
+d = json.load(open(sys.argv[1]))
+open(sys.argv[2], "w").write(d.get("result", ""))
+json.dump({"models": list((d.get("modelUsage") or {}).keys()), "usage": d.get("usage"),
+           "total_cost_usd": d.get("total_cost_usd"), "duration_ms": d.get("duration_ms"),
+           "num_turns": d.get("num_turns")}, open(sys.argv[3], "w"), indent=1)
+PYX
 }
 export -f review
 ls -d "$prep"/case-* | xargs -P "$par" -I{} bash -c 'review "$@"' _ {}
