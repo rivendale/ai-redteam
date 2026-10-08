@@ -34,14 +34,14 @@ how your agent behaves with no review (see Pitfalls).
 **Claude Code**
 ```bash
 git clone https://github.com/rivendale/ai-redteam && cd ai-redteam && git checkout <reviewed-sha>
-mkdir -p ~/.claude/skills && cp -r skills/redteam skills/pr-review ~/.claude/skills/     # all projects
+mkdir -p ~/.claude/skills && cp -r skills/redteam skills/pr-review skills/assess ~/.claude/skills/     # all projects
 # or, per project: copy into <project>/.claude/skills/
 # or as a plugin from the local clone:
 claude plugin marketplace add ./ && claude plugin install ai-redteam@ai-redteam --scope user
 ```
 Invoke: after copying into a skills folder, `/redteam`, `/redteam src/billing/`, `/redteam the plan above; stakes:
 production data`, or `/pr-review`. After a plugin install the skills are namespaced: `/ai-redteam:redteam` and
-`/ai-redteam:pr-review`.
+`/ai-redteam:pr-review`; assess is `/assess <link> <your question>` (or `/ai-redteam:assess`).
 It also triggers on plain requests that match the description ("red team this", "is this PR ready to merge?").
 The skill name is `pr-review`, not `review`, because Claude Code's built-in command owns `review`.
 
@@ -58,8 +58,11 @@ give Gemini a pointer to `AGENTS.md` in your own settings, or paste `prompts/adv
 **Grok CLI**: Grok loads `AGENTS.md` only inside a folder it trusts; an untrusted folder reports zero project
 instructions, which looks exactly like a missing file. Trust the folder, then check.
 
-**Any chat or model**: paste `prompts/adversarial-review.md` or `prompts/pr-review.md` and fill in the three inputs
+**Any chat or model**: paste `prompts/adversarial-review.md`, `prompts/pr-review.md` or `prompts/assess.md` and fill in the three inputs
 (original request verbatim, the work, the context). Use a different model from the one that produced the work.
+For assess, paste the item (or its text if the assistant cannot open links), your question, and your filled
+`templates/assess-context.md`. Assess has been measured only in the Claude eval lane; results in Codex, ChatGPT,
+Gemini and Grok are untested until a run in each is recorded.
 
 ## Prove the load before you trust it
 

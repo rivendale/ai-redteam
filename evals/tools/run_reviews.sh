@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 # Run one skill version over every eval case in a sealed, tool-less headless Claude session.
 # usage: run_reviews.sh SKILL.md OUTDIR [PARALLEL]   (ONLY=case-06,case-07 to run a subset; APPLIES=pr-review or plain for the cases that target it;
-# for the plain prompt pass prompts/adversarial-review.md as SKILL.md)
+# for the plain prompt pass prompts/adversarial-review.md as SKILL.md; CASES=evals/assess/cases with NOTE=assess for the
+# assess skill, whose output note asks for its own JSON block)
 # Each reviewer sees only: the skill text, the case's request/context/work (from tools/prepare.py), and the same
 # output-format note for every version. It never sees expected.json. No tools, no MCP servers, no settings files.
 set -u
 skill=$(realpath "$1"); out=$(realpath -m "$2"); par=${3:-3}
 here=$(cd "$(dirname "$0")/../.." && pwd)
 prep=$(mktemp -d); mkdir -p "$out/_meta"
-python3 "$here/evals/tools/prepare.py" "$prep" ${ONLY:+--only "$ONLY"} ${APPLIES:+--applies "$APPLIES"} >/dev/null
-export INVOCATION_ID= SKILL="$skill" OUT="$out"
+python3 "$here/evals/tools/prepare.py" "$prep" ${ONLY:+--only "$ONLY"} ${APPLIES:+--applies "$APPLIES"} ${CASES:+--cases "$CASES"} >/dev/null
+export INVOCATION_ID= SKILL="$skill" OUT="$out" NOTE="${NOTE:-}"
 review() {
   d=$1; c=$(basename "$d")
   [ -s "$OUT/$c.md" ] && return 0
@@ -23,7 +24,12 @@ review() {
     find "$d/work" -type f | sort | while read -r f; do echo "### file: ${f#$d/work/}"; cat "$f"; echo; done
     echo; echo "=== OUTPUT NOTE (same for every version) ==="
     echo "You have no tools in this session: you cannot run code or open links. After your report, append one fenced"
-    echo "json block with \"verdict\" and \"findings\" (each: severity, evidence_level, location, scenario, fix)."
+    if [ "${NOTE:-}" = assess ]; then
+      echo "json block in the format the skill specifies. The item is a saved snapshot (work/snapshot.md, dated in work/meta.json);"
+      echo "the context file is work/context_file.md when present."
+    else
+      echo "json block with \"verdict\" and \"findings\" (each: severity, evidence_level, location, scenario, fix)."
+    fi
   } > "$OUT/$c.prompt"
   # --output-format json carries the report text plus model and token usage; the report is written unchanged to
   # case-NN.md and the raw output and usage to _meta/ (score.py reads case-NN.json in preference to the .md, so

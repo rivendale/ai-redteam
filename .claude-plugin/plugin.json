@@ -1,10 +1,11 @@
 {
   "name": "ai-redteam",
-  "description": "Adversarial review of AI-produced work (decisions, code, claims, ideas, regulated text) and bounded pull-request review with written adjudication.",
+  "description": "Adversarial review of AI-produced work (decisions, code, claims, ideas, regulated text) and bounded pull-request review with written adjudication, and assess: whether a link or item is useful here and what to do next.",
   "license": "MIT",
   "skills": [
     "./skills/redteam",
-    "./skills/pr-review"
+    "./skills/pr-review",
+    "./skills/assess"
   ],
   "version": "2.2.0",
   "author": {
