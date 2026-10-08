@@ -12,10 +12,15 @@ on:
 permissions:
   contents: read
 
+# A newer push to the same pull request replaces its running checks. Pushes to main are never cancelled, so two quick
+# merges each keep their own result.
 concurrency:
   group: checks-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+# The required status checks to set in branch protection are named after the job and the matrix value:
+# "offline (3.12)", "offline (3.13)" and "offline (3.14)", not "checks". A pull request that edits this file runs its own edited
+# copy, so a change here needs a human read.
 jobs:
   offline:
     runs-on: ubuntu-24.04
