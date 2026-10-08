@@ -1,6 +1,6 @@
 {
   "id": "case-34",
-  "slug": "ctl6-a-ruff-plugin",
+  "slug": "ctl6-a-formatter-for-the-link-checker-we-run",
   "failure_list": [
     0
   ],
@@ -17,14 +17,26 @@
     },
     {
       "rule": "mentions_none",
+      "skip_negated": true,
       "words": [
-        "telemetry",
-        "no license",
-        "unlicensed",
+        "sends telemetry",
+        "collects telemetry",
+        "phones home",
+        "has no license",
+        "is unlicensed",
         "install script",
         "curl",
         "abandoned",
         "unmaintained"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "fit_mentions",
+      "field": "goal",
+      "words": [
+        "goal 1",
+        "dead link"
       ],
       "fl": 0
     },
@@ -34,6 +46,7 @@
     },
     {
       "rule": "mentions_none",
+      "skip_negated": true,
       "in": [
         "cost"
       ],
@@ -43,13 +56,14 @@
         "personal use",
         "non-commercial",
         "paid tier",
-        "trial"
+        "free trial",
+        "trial period"
       ],
       "fl": 0
     }
   ],
   "proof": {
     "cwd": "work",
-    "python": "t = open('snapshot.md').read()\nassert 'configuration preset' in t"
+    "python": "t = open('snapshot.md').read()\nassert 'lychee --format json' in t"
   }
 }

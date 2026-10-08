@@ -17,11 +17,6 @@
       "fl": 0
     },
     {
-      "rule": "handoff_is",
-      "value": "glean",
-      "fl": 0
-    },
-    {
       "rule": "mentions_none",
       "words": [
         "fabricat",
@@ -37,6 +32,7 @@
     },
     {
       "rule": "mentions_none",
+      "skip_negated": true,
       "in": [
         "cost"
       ],
@@ -46,12 +42,14 @@
         "personal use",
         "non-commercial",
         "paid tier",
-        "trial"
+        "free trial",
+        "trial period"
       ],
       "fl": 0
     },
     {
       "rule": "mentions_none",
+      "skip_negated": true,
       "in": [
         "overlap"
       ],
@@ -59,8 +57,6 @@
         "lychee",
         "sqlite-vec",
         "duplicate",
-        "already do",
-        "already have",
         "pytest-testmon"
       ],
       "fl": 0

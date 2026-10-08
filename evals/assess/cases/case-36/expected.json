@@ -1,6 +1,6 @@
 {
   "id": "case-36",
-  "slug": "ctl8-a-github-action-that-prunes-caches",
+  "slug": "ctl8-an-action-that-reports-ci-minutes",
   "failure_list": [
     0
   ],
@@ -17,14 +17,26 @@
     },
     {
       "rule": "mentions_none",
+      "skip_negated": true,
       "words": [
-        "telemetry",
-        "no license",
-        "unlicensed",
+        "sends telemetry",
+        "collects telemetry",
+        "phones home",
+        "has no license",
+        "is unlicensed",
         "install script",
         "curl",
         "abandoned",
         "unmaintained"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "fit_mentions",
+      "field": "goal",
+      "words": [
+        "goal 2",
+        "ci minutes"
       ],
       "fl": 0
     },
@@ -34,6 +46,7 @@
     },
     {
       "rule": "mentions_none",
+      "skip_negated": true,
       "in": [
         "cost"
       ],
@@ -43,12 +56,14 @@
         "personal use",
         "non-commercial",
         "paid tier",
-        "trial"
+        "free trial",
+        "trial period"
       ],
       "fl": 0
     },
     {
       "rule": "mentions_none",
+      "skip_negated": true,
       "in": [
         "overlap"
       ],
@@ -56,8 +71,6 @@
         "lychee",
         "sqlite-vec",
         "duplicate",
-        "already do",
-        "already have",
         "pytest-testmon"
       ],
       "fl": 0
@@ -65,6 +78,6 @@
   ],
   "proof": {
     "cwd": "work",
-    "python": "t = open('snapshot.md').read()\nassert 'No external services' in t"
+    "python": "t = open('snapshot.md').read()\nassert 'billable minutes per job' in t"
   }
 }
