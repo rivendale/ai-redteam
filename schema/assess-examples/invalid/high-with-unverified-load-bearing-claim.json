@@ -1,0 +1,45 @@
+{
+  "schema_version": "assess-1",
+  "verdict": "try",
+  "item": {
+    "type": "repo",
+    "identity": "acme/linkcheck@4f2c1a9 (MIT, last push 2026-09-30, not archived)",
+    "resolved": true
+  },
+  "claims": [
+    {
+      "claim": "checks 10,000 links a minute",
+      "evidence": "README benchmark on a 16-core machine, no method given",
+      "status": "UNVERIFIED"
+    },
+    {
+      "claim": "no network calls other than the links it checks",
+      "evidence": "read src/main.py: no other requests",
+      "status": "CONFIRMED"
+    }
+  ],
+  "fit": {
+    "goal": "keep the docs free of dead links (context file, goal 2)",
+    "overlap": "the docs CI already runs lychee on every push",
+    "burden": "one new CI job",
+    "risks": [
+      "MIT, no telemetry found"
+    ],
+    "cost": {
+      "price": "free",
+      "tier": "open source",
+      "limits": "none",
+      "terms": "MIT",
+      "checked_at": "2026-10-08"
+    }
+  },
+  "next_action": {
+    "action": "Run it on the docs folder once and compare its dead-link list with lychee's",
+    "owner": "operator",
+    "done_when": "both lists are in a file and the differences are explained",
+    "stop_condition": "stop if it reports nothing lychee does not",
+    "handoff": "glean"
+  },
+  "confidence": "high",
+  "context_file": "present"
+}

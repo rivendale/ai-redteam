@@ -1,0 +1,162 @@
+{
+  "valid": [
+    "adopt-repo-high.json",
+    "adopt-repo-use-it-no-handoff.json",
+    "high-with-unverified-not-load-bearing.json",
+    "idea-no-handoff.json",
+    "needs-decision-money.json",
+    "no-context-low.json",
+    "skip.json",
+    "try-post-harvest.json",
+    "try-product-none.json",
+    "try-repo.json",
+    "unresolved-low.json",
+    "watch.json"
+  ],
+  "invalid": {
+    "no-schema-version.json": {
+      "layer": "schema",
+      "expect": "schema_version"
+    },
+    "wrong-schema-version.json": {
+      "layer": "schema",
+      "expect": "schema_version"
+    },
+    "no-verdict.json": {
+      "layer": "schema",
+      "expect": "verdict"
+    },
+    "verdict-not-in-enum.json": {
+      "layer": "schema",
+      "expect": "verdict"
+    },
+    "needs-decision-no-reason.json": {
+      "layer": "schema",
+      "expect": "needs_decision_reason"
+    },
+    "needs-decision-reason-not-in-enum.json": {
+      "layer": "schema",
+      "expect": "needs_decision_reason"
+    },
+    "item-type-not-in-enum.json": {
+      "layer": "schema",
+      "expect": "item.type"
+    },
+    "item-no-identity.json": {
+      "layer": "schema",
+      "expect": "item"
+    },
+    "unresolved-without-reason.json": {
+      "layer": "schema",
+      "expect": "item"
+    },
+    "resolved-not-boolean.json": {
+      "layer": "schema",
+      "expect": "item.resolved"
+    },
+    "claims-not-array.json": {
+      "layer": "schema",
+      "expect": "claims"
+    },
+    "claim-status-not-in-enum.json": {
+      "layer": "schema",
+      "expect": "claims[0].status"
+    },
+    "claim-no-evidence.json": {
+      "layer": "schema",
+      "expect": "claims[0]"
+    },
+    "fit-no-goal.json": {
+      "layer": "schema",
+      "expect": "fit"
+    },
+    "fit-no-cost.json": {
+      "layer": "schema",
+      "expect": "fit"
+    },
+    "cost-no-price.json": {
+      "layer": "schema",
+      "expect": "fit.cost"
+    },
+    "cost-no-terms.json": {
+      "layer": "schema",
+      "expect": "fit.cost"
+    },
+    "cost-no-checked-at.json": {
+      "layer": "schema",
+      "expect": "fit.cost"
+    },
+    "risks-not-array.json": {
+      "layer": "schema",
+      "expect": "fit.risks"
+    },
+    "next-action-no-owner.json": {
+      "layer": "schema",
+      "expect": "next_action"
+    },
+    "next-action-no-done-when.json": {
+      "layer": "schema",
+      "expect": "next_action"
+    },
+    "try-without-stop-condition.json": {
+      "layer": "schema",
+      "expect": "next_action"
+    },
+    "handoff-not-in-enum.json": {
+      "layer": "schema",
+      "expect": "next_action.handoff"
+    },
+    "try-repo-handoff-harvest.json": {
+      "layer": "schema",
+      "expect": "next_action.handoff"
+    },
+    "try-repo-no-handoff.json": {
+      "layer": "schema",
+      "expect": "next_action"
+    },
+    "try-product-handoff-harvest.json": {
+      "layer": "schema",
+      "expect": "next_action.handoff"
+    },
+    "try-idea-handoff-glean.json": {
+      "layer": "schema",
+      "expect": "next_action.handoff"
+    },
+    "watch-with-glean.json": {
+      "layer": "schema",
+      "expect": "next_action.handoff"
+    },
+    "skip-with-harvest.json": {
+      "layer": "schema",
+      "expect": "next_action.handoff"
+    },
+    "needs-decision-with-glean.json": {
+      "layer": "schema",
+      "expect": "next_action.handoff"
+    },
+    "try-post-handoff-glean.json": {
+      "layer": "schema",
+      "expect": "next_action.handoff"
+    },
+    "confidence-not-in-enum.json": {
+      "layer": "schema",
+      "expect": "confidence"
+    },
+    "context-file-not-in-enum.json": {
+      "layer": "schema",
+      "expect": "context_file"
+    },
+    "high-with-unresolved-item.json": {
+      "layer": "schema",
+      "expect": "item.resolved"
+    },
+    "high-with-no-context-file.json": {
+      "layer": "schema",
+      "expect": "context_file"
+    },
+    "high-with-unverified-load-bearing-claim.json": {
+      "layer": "cross",
+      "expect": "claims[0]"
+    }
+  }
+}

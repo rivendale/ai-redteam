@@ -1,0 +1,34 @@
+{
+  "schema_version": "assess-1",
+  "verdict": "watch",
+  "item": {
+    "type": "product",
+    "identity": "the product page at example.test/pro",
+    "resolved": false,
+    "unresolved_reason": "login wall: the page text was not readable"
+  },
+  "claims": [],
+  "fit": {
+    "goal": "keep the docs free of dead links (context file, goal 2)",
+    "overlap": "the docs CI already runs lychee on every push",
+    "burden": "one new CI job",
+    "risks": [
+      "MIT, no telemetry found"
+    ],
+    "cost": {
+      "price": "free",
+      "tier": "open source",
+      "limits": "none",
+      "terms": "MIT",
+      "checked_at": "2026-10-08"
+    }
+  },
+  "next_action": {
+    "action": "Ask the sender for the pricing page text",
+    "owner": "operator",
+    "done_when": "the text is in the conversation",
+    "handoff": "none"
+  },
+  "confidence": "low",
+  "context_file": "present"
+}
