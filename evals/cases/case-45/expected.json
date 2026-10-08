@@ -1,0 +1,71 @@
+{
+  "id": "case-45",
+  "track": "B",
+  "title": "Documents service where every public route authenticates and the internal reindex route does not, while the production proxy publishes it",
+  "failure_list": [
+    1
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "uneven-auth",
+      "file": "work/app.py",
+      "lines": [
+        25,
+        29
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "internal",
+        "reindex",
+        "no token",
+        "unauthenticated",
+        "without auth",
+        "proxy",
+        "purge",
+        "delete_all",
+        "private network",
+        "public",
+        "exposed"
+      ],
+      "all_words": [],
+      "why": "every /api route authenticates, but /internal/reindex does not, and the proxy that runs in production forwards /internal/ from the internet: anyone can POST /internal/reindex?purge=1 and delete every document",
+      "aliases": [
+        {
+          "file": "deploy/proxy.conf",
+          "lines": [
+            7,
+            7
+          ]
+        }
+      ]
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import app, store\nassert store.DOCS\nr = app.handle({'path': '/internal/reindex', 'method': 'POST', 'token': None, 'body': None, 'query': {'purge': '1'}})\nassert r['status'] == 200 and not store.DOCS, 'unauthenticated purge'\nassert 'location /internal/' in open('deploy/proxy.conf').read()"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "T03-one-route-skips-the-auth-gate"
+}

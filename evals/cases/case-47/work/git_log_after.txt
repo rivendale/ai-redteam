@@ -1,0 +1,6 @@
+$ git log --oneline -3
+4be19d2 move api key to the environment
+7c20a1f add ci pipeline
+1a02e55 initial commit
+$ git status --short
+(clean)
