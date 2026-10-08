@@ -314,3 +314,8 @@ Controls and one defect case changed; the rest of the corpus is byte for byte wh
 
 Changed case ids: 08, 50, 51, 65, 69, 71, 73, 75, 83, 85, and case 74 (docstring in `store.py` only; its planted defects are untouched). Case 50 is the defect twin of 51: its README, package, tests and build setup follow 51 again, and its planted defect (the installer's upload of the environment, `install.sh`) is unchanged.
 Case 79 was flagged once by one skill ("no unshare"); the request did not ask for revoke, so it stays.
+
+Claim status `REFUTED` (assess-1, additive, 2026-10-08): a claim the item's own text or terms show to be false is recorded as REFUTED with the
+contradicting fact as its evidence. Before this the enum had no place for it, and a sender's false claim was recorded UNVERIFIED, which the
+cross-field rule then treated as a reason to cap confidence (case-07 of the v1.1 run). REFUTED never caps confidence. The controls that name a
+supported claim now fail on REFUTED as well as UNVERIFIED, so a true claim cannot be marked false.
