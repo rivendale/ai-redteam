@@ -11,6 +11,7 @@ silently switches `AGENTS.md` off in Claude Code from 2.1.277, when native `AGEN
 |---|---|---|
 | `skills/redteam/SKILL.md` | Adversarial review of decisions, code, claims and ideas (Tracks A, B, C, D, plus R for regulated text) | asked to red team, challenge, fact-check or stress-test work |
 | `skills/pr-review/SKILL.md` | Bounded review of one pull request, with written adjudication | asked to review or close out a PR |
+| `skills/assess/SKILL.md` | Whether a link or item someone sends is useful here, and the one next step | asked "is this useful?", "should we use or buy this?", or forwarded a link |
 | `prompts/*.md` | The same reviews as paste-in prompts for any model or chat | the agent cannot install skills |
 | `docs/attack-catalog.md`, `docs/why-reviews-fail.md`, `docs/privacy-checklist.md` | Reference the skills point reviewers at | during Track B, C or a privacy question |
 | `docs/SPEC.md` | The v2 and v2.2 design and failure list (items 1-20) | before changing a skill |
