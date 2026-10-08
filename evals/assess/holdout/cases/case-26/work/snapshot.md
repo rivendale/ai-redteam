@@ -1,5 +1,5 @@
-# Glossary-first pre-translation, step by step  (post, 2026-09-21)
+# Spot-check a translation with a back-translation sample  (post, 2026-09-21)
 
-Put the approved glossary terms in the prompt as a table (source term, required translation), then the strings to translate, then a rule: use the table verbatim,
-never paraphrase a glossary term. We ran it on 800 strings in Spanish and German; a bilingual reviewer found glossary terms used correctly in 779 of 800 (97%).
-The prompt text and the 800 strings are in the post. About 25 lines of Python call the model and write the result back to a CSV.
+Pick a random 5% of the strings, stratified by length so long strings are included. A bilingual teammate who has not seen the originals translates each chosen target string
+back into the source language, and then marks every original and back-translation pair as same meaning, changed meaning or unclear. On 200 sampled strings we found a changed
+meaning in 31; 27 of those 31 were in strings longer than 80 characters. The marks go in a column next to each string. No code, no tool and no spend are needed, only a teammate's time.

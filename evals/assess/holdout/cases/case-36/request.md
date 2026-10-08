@@ -1,3 +1,3 @@
-lfs-lockbot warns when two people edit the same locked asset. we use git lfs. worth a try?
+placeholder-check catches broken {0} and %s in our crowdin exports before we import them. goal 3, we use crowdin.
 
-Link: https://github.com/example-org/lfs-lockbot
+Link: https://github.com/example-org/placeholder-check
