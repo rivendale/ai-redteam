@@ -110,9 +110,10 @@ that never meets a check.
 - Tests: do they assert real behavior? Weakened, skipped, or written to match the bug? The critical untested case.
 - Operations: 10x and 100x load, leaks, observability, config assumptions, backward compatibility.
 - Blast radius: what else the change touches that the author did not mention.
-- Reproduction: write the failing test or exact reproduction steps (inputs, command, observed versus expected) as part
-  of the finding, before you confirm it. A code finding you cannot reproduce is `needs_validation`, not confirmed. A
-  test that would pass on the current code proves nothing.
+- Reproduction: every confirmed Track B finding, at every severity (Medium and Low included), carries a failing test
+  or exact reproduction steps (inputs, command, observed versus expected) in its `reproduction` field. Write it before
+  you confirm the finding. A code finding you cannot reproduce is `needs_validation`, not confirmed. A test that would
+  pass on the current code proves nothing.
 - Secrets include history: in a repository review, a secret removed in a later commit is still exposed. Search the
   history read-only, or say plainly that you did not.
 - Text a human cannot see: scan for zero-width, bidirectional and tag characters and look-alike letters that change
@@ -176,8 +177,8 @@ contracts, help text.
 ## Pass 3: Self-check, then confirm or refute
 
 1. **Three states, no others.** Every candidate ends as exactly one of:
-   - `confirmed`: a location, a concrete failure scenario with stated conditions, evidence, and a fix (plus a failing
-     test or reproduction for code);
+   - `confirmed`: a location, a concrete failure scenario with stated conditions, evidence, and a fix. A Track B
+     finding also carries `reproduction`, whatever its severity;
    - `needs_validation`: a real suspicion you could not settle, including anything you could only mark UNVERIFIED.
      State the exact unresolved fact that would settle it. It has **no severity** and never sets the verdict;
    - `refuted`: re-examined and wrong. Move it out of the findings into the `refuted` list with the evidence. It is
@@ -266,8 +267,9 @@ Then one fenced `json` block. It must pass `python3 tools/validate_findings.py R
 
 Coverage `kind` is one of file, document, function, section, claim, assumption, config, data; list every file and
 document you were given under `checked` or `not_checked`. A `not_checked` reason is one of not_supplied, not_read,
-no_tools, out_of_scope, time_budget, other. Every confirmed High or Critical carries `security` and
-`siblings_searched`; a security finding also carries `boundary`.
+no_tools, out_of_scope, time_budget, other. Every confirmed Track B finding carries `reproduction`, at
+every severity. Every confirmed High or Critical carries `security` and `siblings_searched`; a security finding also
+carries `boundary`.
 
 Severity comes from the four questions in Pass 3: Critical = wrong outcome, data loss, security breach, regulatory or
 legal exposure, or harm to a customer, confirmed with a concrete scenario. High = likely to fail under realistic
