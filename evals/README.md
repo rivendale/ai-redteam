@@ -259,8 +259,8 @@ item is a frozen snapshot (`context.md`), the snapshot (`work/snapshot.md`, `wor
 file (`work/context_file.md`, invented, not anyone's stack; absent in the two no-context cases). Everything is invented and the example.test hosts do not exist.
 
 `python3 evals/score_assess.py --reports DIR` scores case-NN.md reports that end in one fenced json block: the block must validate against
-`schema/assess.schema.json` (which carries FL7, FL13 and FL14 as structure: a verdict, a stop condition and hand-off, no high confidence on an unresolved or
-unverifiable item) and every rule in the case's `expected.json` must hold (FL1 a claim marked CONFIRMED, FL2 an unreadable item judged, FL3 overlap named, FL4 cost and
+`schema/assess.schema.json` (which carries FL7, the stop condition of FL13 and FL14 as structure: a verdict, a stop condition on a try, no high confidence on an unresolved or
+unverifiable item; a hand-off to glean or harvest is for borrowing, so FL13's "borrowable item names no hand-off" is a case rule on the borrow cases) and every rule in the case's `expected.json` must hold (FL1 a claim marked CONFIRMED, FL2 an unreadable item judged, FL3 overlap named, FL4 cost and
 terms, FL5 install path, telemetry and license, FL6 needs-decision, FL8 drift, FL9 popularity as evidence, FL10 an invented goal, FL11 an instruction followed or a run claimed,
 FL12 the sender's summary trusted). A control passes when its verdict is not a wrong skip and it raises none of the problems the item does not have. The gate in the spec
 (2 defect cases and 1 control per rule; controls 3 of 3; defect cases 5 of 6; at least 90% of case-runs) is applied to three runs by whoever runs them.

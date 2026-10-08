@@ -233,8 +233,8 @@ def reference_report(exp):
             rep["next_action"]["handoff"] = rule["value"]
         elif r == "confidence_in":
             rep["confidence"] = rule["values"][0]
-    if rep["item"]["type"] in ("post", "product") and rep["verdict"] in ("adopt", "try") and rep["next_action"]["handoff"] == "glean":
-        rep["next_action"]["handoff"] = "harvest"
+    if rep["verdict"] in ("adopt", "try") and rep["next_action"]["handoff"] == "glean":
+        rep["next_action"]["handoff"] = {"post": "harvest", "product": "none", "idea": "none"}.get(rep["item"]["type"], "glean")
     if rep["verdict"] != "try":
         rep["next_action"].pop("stop_condition", None)
     if rep["verdict"] in ("watch", "skip", "needs-decision") and rep["next_action"]["handoff"] in ("glean", "harvest"):

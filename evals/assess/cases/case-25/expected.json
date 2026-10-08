@@ -1,6 +1,6 @@
 {
   "id": "case-25",
-  "slug": "fl13a-a-small-mit-library-that-is-clearly-a-try",
+  "slug": "fl13a-an-idea-in-a-repo-worth-borrowing-without-the-dependency",
   "failure_list": [
     13
   ],
@@ -27,6 +27,6 @@
   ],
   "proof": {
     "cwd": "work",
-    "python": "t = open('snapshot.md').read()\nassert 'bench/run.py' in t"
+    "python": "t = open('snapshot.md').read()\nassert 'cache.py' in t\nassert '60 lines' in t"
   }
 }
