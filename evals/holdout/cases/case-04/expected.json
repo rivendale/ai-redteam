@@ -1,0 +1,32 @@
+{
+  "id": "case-04",
+  "track": "B",
+  "title": "The same handlers with every name checked, and a test that tries a traversal on each (clean control)",
+  "failure_list": [
+    4
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "shell": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -q test_downloads && n=$(grep -c '    def test_' test_downloads.py) && grep -q \"Tests: $n tests\" ../context.md"
+  },
+  "applies_to": [
+    "redteam",
+    "plain"
+  ],
+  "slug": "H02c-control-all-three-handlers-check"
+}

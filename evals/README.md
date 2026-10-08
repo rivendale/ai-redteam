@@ -334,3 +334,26 @@ Checked before it was committed: every case's proof holds (including the one scr
 self-check builds a passing reference report for each case, a bare "adopt" fails every defect case and a blanket "skip" fails every control, and the secret scan finds 0.
 The controls were read for defects of their own (the lesson of rounds 4 and 5): an install pinned to a commit, a permitted license, a post whose script and table are in
 the snapshot so its claims can be checked, and no tool that does the same job as one the context names.
+
+## The redteam hold-out set (evals/holdout/cases, added 2026-10-08)
+
+The 85 redteam cases became a development set once the v2.3 skill text was tuned against them. The hold-out set is 22 cases written from `docs/SPEC.md`
+(v2, v2.2 and v2.3 sections) alone, in a domain the dev set does not use (a city bike-share operator): 16 defect cases and 6 controls across tracks A, B, C and D.
+
+| spec item | cases |
+|---|---|
+| FL1 an auth check skipped on one path; FL24 siblings | 01 (+ control 02), 03 (+ control 04) |
+| model output run as SQL (item 12); denial of wallet (16); a writable retrieval corpus (17) | 05; 06 (+ control 07); 08 |
+| model-artifact supply chain (18); fail-open default (19); gaming a test (21) | 09 (+ control 10); 11; 12 |
+| FL3 a proposal nobody needs, with daily manual work (Track D) | 13 |
+| FL2 base-rate neglect, a wrong number, a misquote, a citation not supplied; citation laundering (13) | 14; 15; 16 |
+| FL7 an instruction to the reviewer, FL10 a missing input; FL11 drift (+ control) | 17; 18 (+ control 19) |
+| a clean claims control | 20 |
+| FL27 a secret only in history; item 11 a look-alike character | 21; 22 |
+
+Run both skills unchanged, three runs each, with `CASES=evals/holdout/cases evals/tools/run_reviews.sh SKILL.md OUTDIR`, and score with
+`python3 evals/score.py --cases evals/holdout/cases --reports OUTDIR --profile auto`. Every case lists `redteam` and `plain` in `applies_to`; there is no pr-review case.
+
+Checked before it was committed: every proof holds (each control's own tests run and pass, and the arithmetic in the two memo controls is recomputed in the proof),
+a perfect report built from each case scores full recall with no violation, a bare SHIP scores no recall on any defect case, a paranoid report is flagged on every
+control, and the secret scan finds 0. Each control was read cold by a reviewer who had not seen the answers. The first read found three real flaws (a false test count, a non-ASCII token that raised instead of giving 401, a pin that was only a placeholder) and the controls were fixed; a second, fresh read found none. Proofs now also check that the context's "Tests: N tests" line matches the file.

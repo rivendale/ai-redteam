@@ -1,0 +1,63 @@
+{
+  "id": "case-16",
+  "track": "C",
+  "title": "A brief whose only source is a trade article that cites the vendor's blog that cites the vendor's own press release (11 respondents, no method)",
+  "failure_list": [
+    2
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "citation-laundering",
+      "file": "work/brief.md",
+      "lines": [
+        3,
+        3
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "press release",
+        "vendor",
+        "own customers",
+        "11 respondents",
+        "circular",
+        "self-cit",
+        "no method",
+        "laundering",
+        "trade article",
+        "original",
+        "chain"
+      ],
+      "all_words": [],
+      "why": "the 30% starts in the vendor's own press release (11 of its customers, no method) and is passed through a blog and a trade article that did not test it; nothing independent supports it"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "s3 = open('sources/S3.md').read()\nassert \"PedalPower's own customers\" in s3 and '11 respondents' in s3\nassert 'We have not tested' in open('sources/S1.md').read() and 'our release' in open('sources/S2.md').read()"
+  },
+  "applies_to": [
+    "redteam",
+    "plain"
+  ],
+  "slug": "H12-a-30-percent-that-traces-back-to-the-sellers-release"
+}

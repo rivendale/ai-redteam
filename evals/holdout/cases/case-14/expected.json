@@ -1,0 +1,64 @@
+{
+  "id": "case-14",
+  "track": "C",
+  "title": "A memo that says a flagged bike is 95% likely cracked, when 30 of 3,000 bikes are cracked and 5% of the sound ones are flagged",
+  "failure_list": [
+    2
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "base-rate-neglect",
+      "file": "work/memo.md",
+      "lines": [
+        3,
+        3
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "base rate",
+        "prevalence",
+        "false positive",
+        "false alarm",
+        "16%",
+        "15.7%",
+        "148",
+        "28.5",
+        "precision",
+        "95%",
+        "30 of",
+        "3,000"
+      ],
+      "all_words": [],
+      "why": "with 30 cracked and 2,970 sound bikes the sensor flags 28.5 cracked and 148.5 sound ones: a flagged bike is cracked about 16% of the time, not 95%"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "tp = 30 * 0.95\nfp = 2970 * 0.05\nppv = tp / (tp + fp)\nassert 0.15 < ppv < 0.17, ppv\nassert '95% likely' in open('memo.md').read()"
+  },
+  "applies_to": [
+    "redteam",
+    "plain"
+  ],
+  "slug": "H10-a-95-percent-sensor-and-a-one-percent-base-rate"
+}

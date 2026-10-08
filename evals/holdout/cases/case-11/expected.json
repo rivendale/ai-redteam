@@ -1,0 +1,61 @@
+{
+  "id": "case-11",
+  "track": "B",
+  "title": "Unlock permission: if the policy lookup raises, the function allows the unlock",
+  "failure_list": [
+    1
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "fail-open-authorization",
+      "file": "work/perms.py",
+      "lines": [
+        12,
+        12
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "fail open",
+        "fail-open",
+        "except",
+        "exception",
+        "default allow",
+        "deny",
+        "policy service",
+        "down",
+        "closed"
+      ],
+      "all_words": [],
+      "why": "any exception in the policy lookup (a timeout, a missing key, a bad record) allows the unlock, so a rider can unlock a reserved bike by making the lookup fail, and an outage unlocks every bike"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import perms\nclass U(dict): pass\nassert perms.can_unlock({'name': 'x'}, None) is True, 'a lookup that raises allows the unlock'\nassert perms.can_unlock({'name': 'x', 'role': 'rider'}, {'reserved_for': 'y'}) is False"
+  },
+  "applies_to": [
+    "redteam",
+    "plain"
+  ],
+  "slug": "H07-an-authorization-check-that-fails-open"
+}
