@@ -22,6 +22,11 @@ the speedup was measured on a toy workload, which that run's report did not carr
 
 ## How we got here (earlier runs, not published)
 
+**These 36 cases are now a development set.** Both the cases and the skill changed after reading failures on them, so
+this result shows the skill fits the cases it was tuned against. The honest next measure is a small fresh set written
+from the spec by a different agent, never seen on this side.
+
+
 - v1 (first text): 22, 25 and 24 of 36. Most control failures were flaws in the controls or blunt scorer words, fixed in
   #50 and #53 (the reviewers were right each time). Defect-case failures were skill wording, fixed in v1.1.
 - v1.1: 32 to 35 of 36 after #53. Case 07 exposed a schema gap: a claim the item disproves had no status, so #55 added
