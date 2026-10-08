@@ -2,7 +2,8 @@
 
 You are an AI coding agent (Claude Code, Codex, Gemini CLI, Grok or another) reading this repo. This file is the
 one instruction file; there is no `CLAUDE.md`, `GEMINI.md` or other copy (two copies drift, and a `CLAUDE.md`
-silently switches `AGENTS.md` off in Claude Code; see [docs/using-with-ai-agents.md](docs/using-with-ai-agents.md)).
+silently switches `AGENTS.md` off in Claude Code from 2.1.277, when native `AGENTS.md` support began; see
+[docs/using-with-ai-agents.md](docs/using-with-ai-agents.md)).
 
 ## What is here
 

@@ -16,6 +16,12 @@ adds what is specific to these skills.
 | `llms.txt` | assistants and crawlers that fetch a site or repo map | a plain Markdown index with one line per important file |
 | `prompts/*.md` | a person pasting into any chat | the same procedure with no installation |
 
+Which file each CLI loads was measured 2026-09-21 (Claude Code 2.1.278, Codex 0.155.1, Gemini CLI 0.60.0, Grok
+1.0.34 and 1.0.40) and re-checked for this repo on 2026-10-07 (Claude Code 2.1.293 and Codex 0.161.0 loaded
+`AGENTS.md` and quoted its sentinel line; Grok 1.0.46 in an untrusted clone reported zero project instructions;
+Gemini CLI 0.63.0 has `gemini skills install` and `skills link`, but its instruction file was not re-tested). Tools
+change; re-check before relying on a row.
+
 **The skill description decides whether the skill is used.** An agent sees only `name` and `description` until the
 skill triggers, so the description must name the user's words ("red team", "fact-check", "review this PR"), not the
 skill's internals.
@@ -33,16 +39,20 @@ mkdir -p ~/.claude/skills && cp -r skills/redteam skills/pr-review ~/.claude/ski
 # or as a plugin from the local clone:
 claude plugin marketplace add ./ && claude plugin install ai-redteam@ai-redteam --scope user
 ```
-Invoke: `/redteam`, `/redteam src/billing/`, `/redteam the plan above; stakes: production data`, or `/pr-review`.
+Invoke: after copying into a skills folder, `/redteam`, `/redteam src/billing/`, `/redteam the plan above; stakes:
+production data`, or `/pr-review`. After a plugin install the skills are namespaced: `/ai-redteam:redteam` and
+`/ai-redteam:pr-review`.
 It also triggers on plain requests that match the description ("red team this", "is this PR ready to merge?").
 The skill name is `pr-review`, not `review`, because Claude Code's built-in command owns `review`.
 
-**Codex CLI**: Codex loads `AGENTS.md` from the working directory and uses plugins from a marketplace
-(`codex plugin add`). Without the plugin, point it at the skill: "Follow skills/redteam/SKILL.md and review
-<target>". Codex stops adding instruction files once their combined size passes its budget (32 KiB by default).
+**Codex CLI**: Codex loads `AGENTS.md` from the working directory (re-checked on 0.161.0) and uses plugins from a
+marketplace (`codex plugin add`). Without the plugin, point it at the skill: "Follow skills/redteam/SKILL.md and
+review <target>". Its instruction budget is `project_doc_max_bytes`, 32768 bytes by default in 0.161.0; what happens
+past it was not tested here, so keep instruction files well under it.
 
-**Gemini CLI**: Gemini reads its own instruction file name, not `AGENTS.md`, and has its own skill store
-(`gemini skills install <git url>`); it does not see `~/.claude/skills`. Do not add a second instruction file here;
+**Gemini CLI**: as measured on 0.60.0 (2026-09-21), Gemini reads its own instruction file name, not `AGENTS.md`,
+and has its own skill store (`gemini skills install <git url>`, and on 0.63.0 also `skills link`); it did not see
+`~/.claude/skills`. Not re-tested on 0.63.0. Do not add a second instruction file here;
 give Gemini a pointer to `AGENTS.md` in your own settings, or paste `prompts/adversarial-review.md`.
 
 **Grok CLI**: Grok loads `AGENTS.md` only inside a folder it trusts; an untrusted folder reports zero project
@@ -56,21 +66,27 @@ instructions, which looks exactly like a missing file. Trust the folder, then ch
 1. Ask the agent: "What project instruction files did you load? Quote the last line of AGENTS.md." The last line is
    a sentinel; if the agent cannot quote it, the file did not load (or was truncated).
 2. Ask: "List the skills you can use, with their descriptions." If `redteam` is missing, the install did not land.
+   Run this check with the Skill tool available: a session started with `--tools ""` lists no skills at all, which
+   looks like a failed install.
 3. After changing an instruction file, ask the **first** new session what it loaded; one has been seen to load
    nothing while later sessions were fine.
 
 ## Pitfalls
 
-- **A `CLAUDE.md` anywhere above the working directory switches `AGENTS.md` off** in Claude Code, silently. Delete the
-  older file, or set `instructionFiles` to `claude-md-and-agents-md` in user-level settings; a project
-  `.claude/settings.json` is ignored for that option.
+- **A `CLAUDE.md` in or above the working directory switches `AGENTS.md` off** in Claude Code, silently (measured
+  on 2.1.277, 2026-09-21 and 22; native `AGENTS.md` support begins at 2.1.277). Delete the older file, or set
+  `instructionFiles` to `claude-md-and-agents-md`; Claude Code's documentation says that option is read from
+  user-level or managed settings ([memory docs](https://code.claude.com/docs/en/memory#choose-which-instruction-files-load),
+  read 2026-09-22).
 - **Untrusted folders are unguided.** A nested checkout does not inherit trust from its parent.
 - **Budgets truncate silently.** Keep `AGENTS.md` small; long material goes in `docs/`, linked.
 - **`@file` import lines are not expanded by every tool.** Link the file and say what it holds.
-- **A capability granted mid-session is invisible to that session.** Restart before concluding a new skill or tool
-  is missing.
-- **Generators write their own `AGENTS.md`.** After any scaffold or app builder runs, read the root instruction file.
-- **Unpinned installs run whatever is published today.** `npx skills add owner/repo` fetches the latest version;
+- **A capability granted mid-session is invisible to that session** (experience, MCP tools, 2026-09). Restart before
+  concluding a new skill or tool is missing.
+- **Generators write their own `AGENTS.md`** (experience: one app builder left an 18.9 KB vendor instruction file
+  in four generated repos, 2026-09). After any scaffold or app builder runs, read the root instruction file.
+- **Unpinned installs run whatever is published today.** `npx skills add owner/repo` fetched the latest published
+  version (measured with `skills` 1.7.0);
   install from a local clone at a reviewed commit, and leave a `PINNED` note (source, commit, date, what you read).
 - **Reviewed work can carry instructions.** The skills treat them as data; keep that rule if you adapt them.
 - **A same-context review inherits the author's blind spots.** Run the review in a fresh session or a subagent, and
