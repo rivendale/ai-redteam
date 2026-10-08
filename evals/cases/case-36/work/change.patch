@@ -1,0 +1,60 @@
+--- a/orders.py
++++ b/orders.py
+@@ -1,11 +1,13 @@
+ """Order cancellation."""
++from company_audit import record
+ 
+ 
+-def cancel_order(db, order_id):
++def cancel_order(db, order_id, actor=None):
+     row = db.get_order(order_id)
+     if row is None:
+         raise KeyError(order_id)
+     if row["status"] == "shipped":
+         raise ValueError("cannot cancel a shipped order")
+     db.set_status(order_id, "cancelled")
++    record("order.cancelled", order_id=order_id, actor=actor)
+     return True
+--- /dev/null
++++ b/tests/test_orders.py
+@@ -0,0 +1,40 @@
++import json
++import os
++import tempfile
++import unittest
++
++import company_audit
++import orders
++
++
++class FakeDb:
++    def __init__(self, status):
++        self.status, self.set = status, None
++
++    def get_order(self, order_id):
++        return None if order_id == "missing" else {"status": self.status}
++
++    def set_status(self, order_id, status):
++        self.set = status
++
++
++class CancelTests(unittest.TestCase):
++    def setUp(self):
++        self.dir = tempfile.mkdtemp()
++        company_audit.AUDIT_PATH = os.path.join(self.dir, "audit.log")
++
++    def test_cancel_is_on_disk_before_it_returns(self):
++        db = FakeDb("open")
++        self.assertTrue(orders.cancel_order(db, "o1", actor="alice"))
++        with open(company_audit.AUDIT_PATH) as f:
++            row = json.loads(f.readline())
++        self.assertEqual((row["event"], row["order_id"], row["actor"]), ("order.cancelled", "o1", "alice"))
++
++    def test_shipped_is_refused_and_not_recorded(self):
++        with self.assertRaises(ValueError):
++            orders.cancel_order(FakeDb("shipped"), "o2")
++        self.assertFalse(os.path.exists(company_audit.AUDIT_PATH))
++
++
++if __name__ == "__main__":
++    unittest.main()

@@ -1,0 +1,32 @@
+{
+  "id": "case-39",
+  "track": "B",
+  "title": "Close-out where the proposed fix resolves the finding, updates the only caller and adds tests that fail before it (clean control)",
+  "failure_list": [
+    4
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "shell": "W=$PWD; T=$(mktemp -d); cp -r base/. $T/ && cd $T && patch -p1 -s < $W/change.patch && python3 - <<'PYEND'\nimport report\ntry:\n    report.average([]); raise SystemExit(\"F1 should be real before the fix\")\nexcept ZeroDivisionError:\n    pass\n\nPYEND\npatch -p1 -s < $W/fix.patch && python3 - <<'PYEND'\nimport subprocess, sys\nassert subprocess.run([sys.executable, \"-m\", \"unittest\", \"-q\", \"tests.test_report\"], env={\"PYTHONPATH\": \".\", \"PYTHONDONTWRITEBYTECODE\": \"1\"}).returncode == 0\nimport report\nassert report.average([]) is None and report.summary_line(\"a\", []) == \"a: n/a\" and report.summary_line(\"a\", [2, 4]) == \"a: 3.0\"\n\nPYEND"
+  },
+  "applies_to": [
+    "redteam",
+    "pr-review"
+  ],
+  "slug": "Q05-control-fix-is-correct"
+}

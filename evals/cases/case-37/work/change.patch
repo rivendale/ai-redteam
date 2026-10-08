@@ -1,0 +1,25 @@
+--- a/exporter.py
++++ b/exporter.py
+@@ -3,3 +3,8 @@
+ 
+ def header():
+     return "name,note"
++
++
++def export_rows(rows):
++    """Lines of a CSV file for `rows` (lists of values), header excluded."""
++    return [",".join(str(v) for v in row) for row in rows]
+--- /dev/null
++++ b/tests/test_exporter.py
+@@ -0,0 +1,11 @@
++import unittest
++import exporter
++
++
++class T(unittest.TestCase):
++    def test_plain_row(self):
++        self.assertEqual(exporter.export_rows([["ann", "ok"]]), ["ann,ok"])
++
++
++if __name__ == "__main__":
++    unittest.main()

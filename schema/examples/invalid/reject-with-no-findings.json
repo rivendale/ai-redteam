@@ -1,0 +1,43 @@
+{
+  "schema_version": "2.2",
+  "verdict": "REJECT",
+  "confidence": "medium",
+  "inputs_ledger": [
+    {
+      "item": "request.md",
+      "status": "seen",
+      "matters": true
+    },
+    {
+      "item": "config/limits.yaml",
+      "status": "not_seen",
+      "matters": true
+    }
+  ],
+  "coverage": {
+    "checked": [
+      {
+        "unit": "app.py",
+        "kind": "file"
+      },
+      {
+        "unit": "app.py:handle",
+        "kind": "function"
+      }
+    ],
+    "not_checked": [
+      {
+        "unit": "config/limits.yaml",
+        "reason": "not supplied"
+      }
+    ]
+  },
+  "findings": [],
+  "refuted": [
+    {
+      "id": "C2",
+      "candidate": "The script has no error handling.",
+      "evidence": "Line 2 is set -euo pipefail, which stops the script on any failing command."
+    }
+  ]
+}

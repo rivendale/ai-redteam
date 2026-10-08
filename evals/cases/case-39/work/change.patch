@@ -1,0 +1,29 @@
+--- a/report.py
++++ b/report.py
+@@ -1,4 +1,9 @@
+ """Weekly report."""
++
++
++def average(values):
++    """Mean of `values`."""
++    return sum(values) / len(values)
+ 
+ 
+ def summary_line(name, scores):
+--- /dev/null
++++ b/tests/test_report.py
+@@ -0,0 +1,14 @@
++import unittest
++import report
++
++
++class T(unittest.TestCase):
++    def test_average(self):
++        self.assertEqual(report.average([2, 4]), 3)
++
++    def test_summary(self):
++        self.assertEqual(report.summary_line("a", [2, 4]), "a: 3.0")
++
++
++if __name__ == "__main__":
++    unittest.main()
