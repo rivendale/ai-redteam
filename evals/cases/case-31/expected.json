@@ -13,8 +13,8 @@
       "kind": "tool-description-attack",
       "file": "work/change.patch",
       "lines": [
-        23,
-        23
+        17,
+        17
       ],
       "min_severity": "Critical",
       "any_words": [
@@ -45,8 +45,8 @@
       "kind": "over-broad-filesystem-access",
       "file": "work/change.patch",
       "lines": [
-        30,
-        30
+        24,
+        24
       ],
       "min_severity": "High",
       "any_words": [
