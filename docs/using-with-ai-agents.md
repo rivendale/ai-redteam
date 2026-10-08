@@ -79,12 +79,11 @@ instructions, which looks exactly like a missing file. Trust the folder, then ch
   user-level or managed settings ([memory docs](https://code.claude.com/docs/en/memory#choose-which-instruction-files-load),
   read 2026-09-22).
 - **Untrusted folders are unguided.** A nested checkout does not inherit trust from its parent.
-- **Budgets truncate silently.** Keep `AGENTS.md` small; long material goes in `docs/`, linked.
+- **Budgets can truncate silently.** Keep `AGENTS.md` small; long material goes in `docs/`, linked.
 - **`@file` import lines are not expanded by every tool.** Link the file and say what it holds.
 - **A capability granted mid-session is invisible to that session** (experience, MCP tools, 2026-09). Restart before
   concluding a new skill or tool is missing.
-- **Generators write their own `AGENTS.md`** (experience: one app builder left an 18.9 KB vendor instruction file
-  in four generated repos, 2026-09). After any scaffold or app builder runs, read the root instruction file.
+- **Generators can write their own `AGENTS.md`** (experience, 2026-09). After any scaffold or app builder runs, read the root instruction file.
 - **Unpinned installs run whatever is published today.** `npx skills add owner/repo` fetched the latest published
   version (measured with `skills` 1.7.0);
   install from a local clone at a reviewed commit, and leave a `PINNED` note (source, commit, date, what you read).
