@@ -77,7 +77,7 @@ def evidence_from_text(ev):
         return "UNVERIFIED"
     if re.search(r"infer|depends on|relies on|reasoned|assum|unknown", low):
         return "PROBABLE"
-    if re.search(r"read|traced|confirm|listing|file|diff|recomput|reproduc|executed|ran\b", low):
+    if re.search(r"read|traced|confirm|listing|file|diff|recomput|reproduc|executed|ran\b|record|process", low):
         return "CONFIRMED"
     return ev
 
@@ -135,7 +135,7 @@ def norm_findings(rep):
 
 
 def is_open_high(f):
-    return (not f["refuted"]) and SEV.get(f["sev"], -1) >= SEV["high"]
+    return (not f["refuted"]) and not f.get("closed") and SEV.get(f["sev"], -1) >= SEV["high"]
 
 
 # ----------------------------------------------------------------------------------------------------------- matching
@@ -282,6 +282,36 @@ def check_rule(rule, rep, fs, verdict, credited=()):
 
 
 # ----------------------------------------------------------------------------------------------------------- scoring
+RESOLVED = re.compile(r"\b(resolved|fixed|fix(ed)? (in|by)|accepted|closed|addressed)\b", re.I)
+NOT_RESOLVED = re.compile(r"\b(not (yet )?(fixed|resolved|addressed)|still|incomplete|regress\w*|introduc\w*|new defect|breaks?|fails?)\b", re.I)
+
+
+def restated_first_round(exp, fs):
+    """Ids of findings that merely restate a first-round finding of a close-out CONTROL as resolved.
+
+    A close-out report legitimately mentions the finding the fix was for. When the case is a control (the fix is correct), a finding at
+    that finding's location that says it is resolved, and not that the fix is incomplete or broke something, is history, not an open
+    defect."""
+    d = exp.get("_dir")
+    if not d or not exp.get("control"):
+        return set()
+    rf = pathlib.Path(d) / "work" / "review_findings.md"
+    if not rf.exists():
+        return set()
+    locs = []
+    for m in re.finditer(r"^\|\s*F\d+\s*\|[^|]*\|\s*([^|]+?)\s*\|", rf.read_text(), re.M):
+        mm = re.match(r"(\S+?):(\d+)", m.group(1).strip())
+        if mm:
+            locs.append({"file": mm.group(1), "lines": [int(mm.group(2)), int(mm.group(2))]})
+    out = set()
+    for f in fs:
+        says_resolved = RESOLVED.search(f["scenario"]) or re.match(r"\s*(accepted|fixed|resolved|closed|addressed)\b", f["fix"], re.I)
+        # judged on the scenario only: a fix note may say the regression tests "fail on the base commit and pass on the fix"
+        if says_resolved and not NOT_RESOLVED.search(f["scenario"]) and any(d is not None and d <= 3 for d in (loc_dist(f["loc"], p) for p in locs)):
+            out.add(f["id"])
+    return out
+
+
 # ----------------------------------------------------------------------------------------------------------- v2.2 rules
 def _sus_match(sp, f):
     low = f["text"].lower()
@@ -376,9 +406,14 @@ def score_case(exp, rep, skip=(), profile="auto"):
     all_fs = norm_findings(rep)
     nvs = [f for f in all_fs if f["nv"]]          # needs_validation: no severity, never recall, never a false alarm, never the verdict
     fs = [f for f in all_fs if not f["nv"]]
+    for f in fs:
+        f["closed"] = False
+    for f in fs:
+        f["closed"] = f["id"] in restated_first_round(exp, fs)
     v22 = profile == "v2.2" or (profile == "auto" and s(rep.get("schema_version")).startswith("2.2"))
     res["v22"] = v22
     res["needs_validation"] = len(nvs)
+    res["restated_resolved"] = sum(1 for f in fs if f["closed"])
     v = res["violations"]
     if verdict not in VERDICTS:
         v.append(f"malformed: verdict {verdict!r}")
@@ -1110,6 +1145,35 @@ def self_check(cases_dir):
     if applies({"id": "x"}, "pr-review") or not applies({"id": "x"}, "redteam") or not applies({"id": "x"}, None) or not applies({"applies_to": ["pr-review"]}, "pr-review") or applies({"applies_to": ["pr-review"]}, "redteam"):
         bad.append("applies")
     expect("applies_to: a case that does not say is a redteam case", not bad, "5 cells")
+    # ---- a close-out control: restating the first-round finding as resolved is history; saying the fix is incomplete is not
+    co = next((e for e in exps if e["control"] and (pathlib.Path(e["_dir"]) / "work" / "review_findings.md").exists()), None)
+    if co:
+        first = re.search(r"^\|\s*F\d+\s*\|[^|]*\|\s*(\S+?):(\d+)", (pathlib.Path(co["_dir"]) / "work" / "review_findings.md").read_text(), re.M)
+        loc = f"{first.group(1)}:{first.group(2)}"
+        def co_rep(text, loc_=loc, verdict="SHIP", sev="P1"):
+            return {"verdict": verdict, "findings": [{"id": "F1", "severity": sev, "evidence_level": "read in code", "location": loc_, "scenario": text, "fix": "none"}], "inputs_ledger": {}}
+        bad = []
+        for name, r_, want_fa, want_fl6 in (
+            ("resolved restatement", co_rep("F1 from the first round raised an error on empty input. Resolved in the fix commit."), 0, False),
+            ("fixed restatement, merge after fixes", co_rep("The first-round bug was fixed by the commit.", verdict="merge after fixes"), 0, False),
+            ("fix incomplete", co_rep("The fix is incomplete: the first-round input still crashes the report."), 1, True),
+            ("fix broke something", co_rep("The fix resolved F1 but introduces a new failure for another input."), 1, True),
+            ("resolved, but in another file", co_rep("Resolved in the fix commit.", loc_="other_file.py:200"), 1, True),
+            ("resolved, same file, far from the first-round line", co_rep("Resolved in the fix commit.", loc_=f"{first.group(1)}:{int(first.group(2)) + 40}"), 1, True),
+            ("resolved, same file, 3 lines away", co_rep("Resolved in the fix commit.", loc_=f"{first.group(1)}:{int(first.group(2)) + 3}"), 0, False),
+            ("not worded as resolved", co_rep("The empty-input case needs a guard."), 1, True),
+            ("restated in the past tense, resolution in the fix note", {**co_rep("average([]) raised an error and crashed the report."), "findings": [{"id": "F1", "severity": "P1", "evidence_level": "read", "location": loc, "scenario": "average([]) raised an error and crashed the report.", "fix": "Accepted in 2fa9c10: returns None; the new tests fail on the base commit and pass on the fix."}]}, 0, False),
+            ("fix note says accepted but the scenario says it still crashes", {**co_rep("x"), "findings": [{"id": "F1", "severity": "P1", "evidence_level": "read", "location": loc, "scenario": "Accepted fix still crashes the report for another week.", "fix": "Accepted in 2fa9c10."}]}, 1, True)):
+            got = score_case(co, r_)
+            if got["false_alarm"] != want_fa or any("FL6" in x for x in got["violations"]) != want_fl6:
+                bad.append(name)
+        expect("close-out control: a finding that restates the first-round finding as resolved is not an open High; one that says the fix is incomplete, broke something or sits elsewhere is", not bad, str(bad[:3]) if bad else "10 cells")
+        dc = next((e for e in exps if not e["control"] and (pathlib.Path(e["_dir"]) / "work" / "review_findings.md").exists()), None)
+        if dc:
+            dfirst = re.search(r"^\|\s*F\d+\s*\|[^|]*\|\s*(\S+?):(\d+)", (pathlib.Path(dc["_dir"]) / "work" / "review_findings.md").read_text(), re.M)
+            r_ = co_rep("F1 was resolved in the fix commit.", loc_=f"{dfirst.group(1)}:{dfirst.group(2)}", verdict="REWORK")
+            expect("the restatement rule does not apply to a case that plants a defect in the fix", score_case(dc, r_)["restated_resolved"] == 0, "defect case")
+    expect("an evidence label that names a review record or process note is read as CONFIRMED, not malformed", norm_findings({"findings": [{"id": "a", "evidence_level": "PROCESS (REVIEW RECORD)"}]})[0]["ev"] == "CONFIRMED", "label mapped")
     # hand-written reports (different key names, read through the real file loader), not derived from expected.json
     hand = pathlib.Path(__file__).resolve().parent / "selfcheck" / "reports"
     if hand.exists():
