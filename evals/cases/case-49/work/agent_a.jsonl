@@ -1,0 +1,4 @@
+{"ts": "10:00:01", "agent": "A", "tool": "read_file", "path": "shared/plan.md", "sha": "a1"}
+{"ts": "10:00:09", "agent": "A", "tool": "claim", "section": "api", "ok": true}
+{"ts": "10:00:20", "agent": "A", "tool": "write_file", "path": "shared/plan.md", "base_sha": "a1", "new_sha": "b2", "note": "adds the API section"}
+{"ts": "10:00:21", "agent": "A", "tool": "final", "text": "API section added to the shared plan."}

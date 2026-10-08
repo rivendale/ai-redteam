@@ -1,0 +1,84 @@
+{
+  "id": "case-46",
+  "track": "B",
+  "title": "Handlers that take the role for an admin action, and the user whose projects are listed, from client-supplied fields instead of the verified session",
+  "failure_list": [
+    1
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "role-from-client",
+      "file": "work/handlers.py",
+      "lines": [
+        25,
+        25
+      ],
+      "min_severity": "Critical",
+      "any_words": [
+        "role",
+        "body",
+        "client",
+        "supplied",
+        "admin",
+        "session",
+        "privilege",
+        "escalat",
+        "set_quota",
+        "quota"
+      ],
+      "all_words": [],
+      "why": "set_quota reads the role from the request body and falls back to the session only when it is absent, so any member sends {\"role\": \"admin\"} and sets quotas"
+    },
+    {
+      "id": "P2",
+      "kind": "identity-from-query",
+      "file": "work/handlers.py",
+      "lines": [
+        19,
+        19
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "query",
+        "user_id",
+        "other users",
+        "idor",
+        "list_projects",
+        "private",
+        "someone else",
+        "enumerate",
+        "client"
+      ],
+      "all_words": [],
+      "why": "list_projects filters by a user_id from the query string, so any logged-in user lists any other user's private projects"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import handlers as h\nh.create_project({'session': {'user_id': 'u2', 'role': 'member'}, 'body': {'name': 'secret'}, 'query': {}})\nr = h.set_quota({'session': {'user_id': 'u1', 'role': 'member'}, 'body': {'role': 'admin', 'project_id': 1, 'quota': 9}, 'query': {}})\nassert r['status'] == 200 and h.QUOTAS == {1: 9}\nr = h.list_projects({'session': {'user_id': 'u1', 'role': 'member'}, 'body': {}, 'query': {'user_id': 'u2'}})\nassert [p['name'] for p in r['body']] == ['secret']"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "T04-role-and-identity-from-the-client"
+}

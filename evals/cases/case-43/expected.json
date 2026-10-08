@@ -1,0 +1,61 @@
+{
+  "id": "case-43",
+  "track": "B",
+  "title": "Token verifier that takes the algorithm from the token's own header: alg none and HS256 signed with the public key are both accepted",
+  "failure_list": [
+    1
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "jwt-algorithm-confusion",
+      "file": "work/auth.py",
+      "lines": [
+        45,
+        45
+      ],
+      "min_severity": "Critical",
+      "any_words": [
+        "alg",
+        "algorithm",
+        "none",
+        "hs256",
+        "confusion",
+        "header",
+        "unsigned",
+        "forge",
+        "public key",
+        "pin"
+      ],
+      "all_words": [],
+      "why": "the algorithm is read from the token header: alg none is accepted with no signature, and HS256 is checked with the public key text as the secret, so anyone can mint a token for any subject"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import base64, hashlib, hmac, json\nimport auth\nb = lambda x: base64.urlsafe_b64encode(x).rstrip(b\"=\").decode()\nhead = lambda alg: b(json.dumps({\"alg\": alg}).encode())\nbody = b(json.dumps({\"sub\": \"admin\", \"exp\": 2000000000}).encode())\nnone_tok = head(\"none\") + \".\" + body + \".\"\nassert auth.verify_token(none_tok, now=1000)[\"sub\"] == \"admin\", \"alg none accepted\"\nhs = head(\"HS256\") + \".\" + body\nsig = hmac.new(auth.PUBLIC_KEY_PEM.encode(), hs.encode(), hashlib.sha256).digest()\nassert auth.verify_token(hs + \".\" + b(sig), now=1000)[\"sub\"] == \"admin\", \"HS256 with the public key accepted\"\n"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "T01-jwt-algorithm-from-the-token"
+}
