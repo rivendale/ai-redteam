@@ -1,0 +1,32 @@
+{
+  "id": "case-06",
+  "slug": "fl3b-a-second-local-semantic-search",
+  "failure_list": [
+    3
+  ],
+  "control": false,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "fit_mentions",
+      "field": "overlap",
+      "words": [
+        "sqlite-vec",
+        "sqlite vec"
+      ],
+      "fl": 3
+    },
+    {
+      "rule": "verdict_in",
+      "values": [
+        "skip",
+        "watch"
+      ],
+      "fl": 3
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'SQLite file' in t"
+  }
+}

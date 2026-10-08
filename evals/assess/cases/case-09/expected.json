@@ -1,0 +1,48 @@
+{
+  "id": "case-09",
+  "slug": "fl5a-pipe-to-bash-from-a-moving-branch-and-telemetry-on",
+  "failure_list": [
+    5
+  ],
+  "control": false,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "mentions_any",
+      "in": [
+        "risks",
+        "next",
+        "raw"
+      ],
+      "words": [
+        "curl",
+        "pipe",
+        "install script",
+        "moving branch"
+      ],
+      "fl": 5
+    },
+    {
+      "rule": "mentions_any",
+      "in": [
+        "risks",
+        "raw"
+      ],
+      "words": [
+        "telemetry"
+      ],
+      "fl": 5
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 5
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert '| bash' in t\nassert 'telemetry = true' in t"
+  }
+}

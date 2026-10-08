@@ -1,0 +1,36 @@
+{
+  "id": "case-36",
+  "slug": "ctl8-a-github-action-that-prunes-caches",
+  "failure_list": [
+    0
+  ],
+  "control": true,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "try",
+        "adopt"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "words": [
+        "telemetry",
+        "no license",
+        "unlicensed",
+        "install script",
+        "curl",
+        "abandoned",
+        "unmaintained"
+      ],
+      "fl": 0
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'No external services' in t"
+  }
+}

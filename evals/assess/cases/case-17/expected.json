@@ -1,0 +1,42 @@
+{
+  "id": "case-17",
+  "slug": "fl9a-forty-thousand-stars-and-no-maintainers",
+  "failure_list": [
+    9
+  ],
+  "control": false,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "no_popularity_evidence",
+      "fl": 9
+    },
+    {
+      "rule": "mentions_any",
+      "in": [
+        "risks",
+        "raw",
+        "next"
+      ],
+      "words": [
+        "maintainer",
+        "last push",
+        "2024",
+        "unmaintained",
+        "stale"
+      ],
+      "fl": 9
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 9
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'looking for new maintainers' in t"
+  }
+}

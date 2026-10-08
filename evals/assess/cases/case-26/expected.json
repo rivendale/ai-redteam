@@ -1,0 +1,32 @@
+{
+  "id": "case-26",
+  "slug": "fl13b-a-good-technique-post-that-needs-harvest",
+  "failure_list": [
+    13
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "try",
+        "adopt"
+      ],
+      "fl": 13
+    },
+    {
+      "rule": "handoff_is",
+      "value": "harvest",
+      "fl": 13
+    },
+    {
+      "rule": "has_stop_condition",
+      "fl": 13
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert '40 lines of Python' in t"
+  }
+}

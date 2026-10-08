@@ -1,0 +1,33 @@
+{
+  "id": "case-23",
+  "slug": "fl12a-the-summary-says-mit-and-the-license-is-agpl",
+  "failure_list": [
+    12
+  ],
+  "control": false,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "summary_not_trusted",
+      "words": [
+        "agpl",
+        "affero"
+      ],
+      "followed_verdicts": [
+        "adopt"
+      ],
+      "fl": 12
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 12
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'GNU Affero General Public License' in t"
+  }
+}

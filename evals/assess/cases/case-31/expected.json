@@ -1,0 +1,50 @@
+{
+  "id": "case-31",
+  "slug": "ctl3-a-reproducible-changelog-post",
+  "failure_list": [
+    0
+  ],
+  "control": true,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "try",
+        "adopt"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "handoff_is",
+      "value": "harvest",
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "words": [
+        "telemetry",
+        "no license",
+        "unlicensed",
+        "install script",
+        "curl",
+        "abandoned",
+        "unmaintained"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "fit_mentions",
+      "field": "goal",
+      "words": [
+        "goal 4",
+        "changelog"
+      ],
+      "fl": 0
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert '25-line script' in t"
+  }
+}

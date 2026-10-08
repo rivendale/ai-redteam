@@ -1,0 +1,41 @@
+{
+  "id": "case-16",
+  "slug": "fl8b-papers-of-the-week-and-one-goal",
+  "failure_list": [
+    8
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "fit_mentions",
+      "field": "goal",
+      "words": [
+        "goal 3"
+      ],
+      "fl": 8
+    },
+    {
+      "rule": "mentions_none",
+      "in": [
+        "next"
+      ],
+      "words": [
+        "papers of the week",
+        "ten papers"
+      ],
+      "fl": 8
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 8
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'No links' in t"
+  }
+}

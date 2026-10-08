@@ -1,0 +1,33 @@
+{
+  "id": "case-08",
+  "slug": "fl4b-training-only-on-the-paid-tier",
+  "failure_list": [
+    4
+  ],
+  "control": false,
+  "item_type": "product",
+  "rules": [
+    {
+      "rule": "fit_mentions",
+      "field": "cost",
+      "words": [
+        "pro",
+        "$49"
+      ],
+      "fl": 4
+    },
+    {
+      "rule": "needs_decision",
+      "values": [
+        "money",
+        "account",
+        "data_to_new_party"
+      ],
+      "fl": 4
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'No training' in t\nassert 'Pro' in t"
+  }
+}

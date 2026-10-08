@@ -1,0 +1,45 @@
+{
+  "id": "case-15",
+  "slug": "fl8a-a-tier-list-answered-as-a-tier-list",
+  "failure_list": [
+    8
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "mentions_none",
+      "in": [
+        "next"
+      ],
+      "words": [
+        "tier list",
+        "s-tier",
+        "agentone",
+        "agenttwo"
+      ],
+      "fl": 8
+    },
+    {
+      "rule": "fit_mentions",
+      "field": "goal",
+      "words": [
+        "none found",
+        "goal 2",
+        "goal 4"
+      ],
+      "fl": 8
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 8
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'Ranked by vibes' in t"
+  }
+}

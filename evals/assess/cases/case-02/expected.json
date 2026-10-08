@@ -1,0 +1,47 @@
+{
+  "id": "case-02",
+  "slug": "fl1b-vendor-speedup-measured-on-a-toy-workload",
+  "failure_list": [
+    1
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "claim_not_confirmed",
+      "words": [
+        "2x",
+        "twice as fast",
+        "similar gains"
+      ],
+      "fl": 1
+    },
+    {
+      "rule": "mentions_any",
+      "in": [
+        "claims",
+        "risks",
+        "raw"
+      ],
+      "words": [
+        "baseline",
+        "actions/cache",
+        "toy",
+        "3 python files",
+        "12 tests"
+      ],
+      "fl": 1
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 1
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert '3 Python files' in t\nassert 'did not measure a baseline' in t"
+  }
+}

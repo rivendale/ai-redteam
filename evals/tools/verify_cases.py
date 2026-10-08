@@ -4,7 +4,7 @@
 A defect case's proof DEMONSTRATES the planted defect (the snippet exits 0 only when the defect is really there); a control's proof runs
 its tests (exit 0 means they pass). A case with no proof is listed. Also checks the structure each case must have.
 
-    python3 evals/tools/verify_cases.py [--only ID,...]
+    python3 evals/tools/verify_cases.py [--only ID,...] [--cases DIR]     (DIR defaults to evals/cases; evals/assess/cases holds the assess cases)
 """
 import argparse, json, os, pathlib, subprocess, sys
 
@@ -20,9 +20,10 @@ def check_case(d):
             probs.append(f"missing {f}")
     if not (d / "work").exists() or not any((d / "work").rglob("*")):
         probs.append("work/ is missing or empty")
+    exp.setdefault("planted", [])
     if exp["control"] and exp["planted"]:
         probs.append("a control must not list planted defects")
-    if not exp["control"] and not exp["planted"] and not any(m.get("rule") for m in exp.get("must", [])):
+    if not exp["control"] and not exp["planted"] and not any(m.get("rule") for m in exp.get("must", [])) and not exp.get("rules"):
         probs.append("a defect case needs planted defects or a must rule")
     for patch in [d / "work" / n for n in ("change.patch", "fix.patch") if (d / "work" / n).exists()]:  # a pull-request case: the patch must apply to base/ and must not remove a file unless the case means it to
         import re
@@ -73,8 +74,12 @@ def ignored_files():
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", default="")
+    ap.add_argument("--cases", default="")
     a = ap.parse_args()
     ids = [x for x in a.only.split(",") if x]
+    global ROOT
+    if a.cases:
+        ROOT = pathlib.Path(a.cases).resolve()
     dirs = sorted(p for p in ROOT.iterdir() if p.is_dir() and (not ids or p.name in ids or any(p.name.startswith(i) for i in ids)))
     bad = 0
     for d in dirs:

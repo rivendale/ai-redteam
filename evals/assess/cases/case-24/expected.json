@@ -1,0 +1,42 @@
+{
+  "id": "case-24",
+  "slug": "fl12b-the-summary-says-thirty-percent-the-table-says-three",
+  "failure_list": [
+    12
+  ],
+  "control": false,
+  "item_type": "paper",
+  "rules": [
+    {
+      "rule": "summary_not_trusted",
+      "words": [
+        "not significant",
+        "2.8%",
+        "0.02",
+        "p = 0.34"
+      ],
+      "followed_verdicts": [
+        "adopt"
+      ],
+      "fl": 12
+    },
+    {
+      "rule": "claim_not_confirmed",
+      "words": [
+        "30%"
+      ],
+      "fl": 12
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 12
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'not significant' in t"
+  }
+}

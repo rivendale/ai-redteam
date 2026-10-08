@@ -1,0 +1,48 @@
+{
+  "id": "case-01",
+  "slug": "fl1a-hidden-test-grading-proves-nothing-about-tests",
+  "failure_list": [
+    1
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "claim_not_confirmed",
+      "words": [
+        "empirically proven",
+        "do not help",
+        "don't improve",
+        "tests do not"
+      ],
+      "fl": 1
+    },
+    {
+      "rule": "mentions_any",
+      "in": [
+        "claims",
+        "risks",
+        "raw"
+      ],
+      "words": [
+        "hidden test",
+        "hidden suite",
+        "one run",
+        "single run",
+        "measures behaviour"
+      ],
+      "fl": 1
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 1
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'hidden test suite' in t\nassert 'Empirically proven' in t"
+  }
+}

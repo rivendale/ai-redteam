@@ -1,0 +1,34 @@
+{
+  "id": "case-18",
+  "slug": "fl9b-a-famous-name-and-no-data",
+  "failure_list": [
+    9
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "no_popularity_evidence",
+      "fl": 9
+    },
+    {
+      "rule": "claim_not_confirmed",
+      "words": [
+        "doubles accuracy",
+        "doubles"
+      ],
+      "fl": 9
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 9
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'No data' in t"
+  }
+}

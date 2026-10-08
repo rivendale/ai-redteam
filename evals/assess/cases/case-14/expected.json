@@ -1,0 +1,38 @@
+{
+  "id": "case-14",
+  "slug": "fl7b-a-long-docs-site-and-worth-it",
+  "failure_list": [
+    7
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "skip",
+        "watch"
+      ],
+      "fl": 7
+    },
+    {
+      "rule": "mentions_any",
+      "in": [
+        "next",
+        "fit",
+        "raw"
+      ],
+      "words": [
+        "web framework",
+        "decided",
+        "framework this year",
+        "not adopting"
+      ],
+      "fl": 7
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'web framework' in t"
+  }
+}
