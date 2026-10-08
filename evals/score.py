@@ -457,6 +457,29 @@ def v23_only_violations(rep, fs):
     return out
 
 
+def best_assignment(pids, cand):
+    """Credit each finding to at most one planted defect so that the assignment is the best possible, not the first greedy one:
+    most defects found at the minimum severity, then most found at all, then the better matches. A greedy pass can hand a finding
+    to a defect that has another candidate and leave the defect that has only that finding with nothing."""
+    best = [None, {}]
+
+    def go(i, used, total, chosen):
+        if i == len(pids):
+            if best[0] is None or total > best[0]:
+                best[0], best[1] = total, dict(chosen)
+            return
+        go(i + 1, used, total, chosen)
+        for key, f in cand.get(pids[i], []):
+            if f["id"] in used:
+                continue
+            chosen[pids[i]] = f
+            go(i + 1, used | {f["id"]}, tuple(a + b for a, b in zip(total, key)), chosen)
+            del chosen[pids[i]]
+
+    go(0, frozenset(), (0, 0, 0, 0, 0), {})
+    return best[1]
+
+
 def score_case(exp, rep, skip=(), profile="auto"):
     res = {"id": exp["id"], "slug": exp.get("slug", ""), "control": exp["control"], "planted": len(exp["planted"]), "recall_hits": 0, "found_any": 0,
            "false_alarm": 0, "extra_high": 0, "violations": [], "verdict": None, "missed": [], "low_severity": []}
@@ -504,9 +527,8 @@ def score_case(exp, rep, skip=(), profile="auto"):
     # planted defects: each finding is credited to at most one planted defect. A finding is eligible when it names the planted
     # file and is within 3 lines of it or uses its wording. Pairs are taken best first: on the lines AND in the wording, then
     # either; within that the highest severity (a defect reported twice is credited to the stronger report), then the closer one.
-    owner, matched = {}, set()
     live = [f for f in fs if not f["refuted"]]
-    pairs = []
+    cand = {}
     for p in exp["planted"]:
         for f in live:
             d = loc_dist(f["loc"], p)
@@ -516,11 +538,11 @@ def score_case(exp, rep, skip=(), profile="auto"):
             if near and not all(w.lower() in f["body"].lower() for w in p.get("all_words", [])):
                 near = False
             if near or wd:
-                pairs.append((-(int(near) + int(wd)), -SEV.get(f["sev"], -1), d, p["id"], f["id"], f))
-    for _, _, _, pid, fid, f in sorted(pairs, key=lambda x: x[:5]):
-        if pid not in owner and fid not in matched:
-            owner[pid] = f
-            matched.add(fid)
+                hit = SEV.get(f["sev"], -1) >= SEV[p["min_severity"].lower()]
+                # recall first, then that a defect is found at all, then the better match (lines AND wording), then the stronger report, then the closer
+                cand.setdefault(p["id"], []).append(((int(hit), 1, int(near) + int(wd), SEV.get(f["sev"], -1), -min(d, 999)), f))
+    owner = best_assignment([p["id"] for p in exp["planted"]], cand)
+    matched = {f["id"] for f in owner.values()}
     for p in exp["planted"]:
         f = owner.get(p["id"])
         if f is None:
@@ -1135,6 +1157,19 @@ def self_check(cases_dir):
         if score_case(aw, rep([fnd("High", loc="app.py", text=text)]))["found_any"] != want:
             bad.append("all_words " + text)
     expect("wording-only matching: every all_words word must be present, and one any_words word", not bad, str(bad[:3]) if bad else "4 cells")
+    # credit assignment is the best one, not the first greedy one (gate 2.3.1, case-14 run 3: P2 took the only finding that fitted P3)
+    two = {**synth(), "planted": [{"id": "P1", "kind": "x", "file": "work/app.py", "lines": [10, 10], "min_severity": "High", "any_words": ["unless"], "all_words": [], "why": "w"},
+                                  {"id": "P2", "kind": "x", "file": "work/app.py", "lines": [20, 20], "min_severity": "High", "any_words": ["18%"], "all_words": [], "why": "w"}]}
+    bad = []
+    for name, fs_, want in (("shared finding goes to the defect that has no other", [fnd("Critical", loc="app.py", text="18% unless fixed"), fnd("Critical", loc="app.py", text="applies unless held")], (2, 2)),
+                            ("order of the findings does not matter", [fnd("Critical", loc="app.py", text="applies unless held"), fnd("Critical", loc="app.py", text="18% unless fixed")], (2, 2)),
+                            ("one finding cannot pay two defects", [fnd("Critical", loc="app.py", text="18% unless fixed")], (1, 1)),
+                            ("a hit beats a lower-severity find", [fnd("Medium", loc="app.py", text="18% unless fixed"), fnd("High", loc="app.py", text="applies unless held")], (1, 2))):
+        fs2 = [{**f_, "id": f"F{n}"} for n, f_ in enumerate(fs_, 1)]
+        r = score_case(two, rep(fs2))
+        if (r["recall_hits"], r["found_any"]) != want:
+            bad.append(f"{name}: got {(r['recall_hits'], r['found_any'])}")
+    expect("matching: findings are credited so that the most defects are found at the minimum severity, whatever the order of findings and of defects", not bad, str(bad[:3]) if bad else "4 cells")
     bad = []
     sus_exp = {**synth(control=True), "suspicions": [{"id": "S1", "file": "orders.py", "any_words": ["flush"], "why": "w"}]}
 
