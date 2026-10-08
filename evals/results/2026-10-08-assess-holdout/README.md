@@ -13,7 +13,7 @@ the sealed lane three times. **Scored against the cases as merged in #58 (177580
 | all cases (36) | 30 | 31 | 31 |
 | list price per review | $0.101 | $0.061 | $0.061 |
 
-Gate (`docs/SPEC-assess.md`, Measure): controls 3 of 3 (no: case 36 fails 3 of 3), each rule at least 5 of 6 (no: FL3 0 of 6),
+Gate (`docs/SPEC-assess.md`, Measure): controls 3 of 3 (no: case 36 fails 3 of 3), each rule at least 5 of 6 (no: FL3 0 of 6, FL13 3 of 6),
 at least 90% of case-runs (no: 92 of 108, 85%). **Fails.** Against the development set's 107 of 108, the drop is the size of
 the tuning.
 
