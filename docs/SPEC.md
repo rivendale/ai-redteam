@@ -61,3 +61,39 @@ Critical/High findings on controls (false alarms), and rule violations from the 
 scored on the same set; v2 ships only if it is better on recall without more false alarms.
 
 The eval cases are written by a different agent than the one that writes the skill, from this file only.
+
+## v2.2 additions (approved by the repo owner 2026-10-07), written before the v2.2 skill text
+
+Sources: Cloudflare's security-audit skill (MIT, github.com/cloudflare/security-audit-skill; ideas adapted, no text
+copied) for verdict classes, a coverage ledger and a schema-validated findings file; research on LLM judges
+(self-disagreement around 14%; decomposed yes/no criteria are more consistent than holistic scores) for the severity
+rubric and repeat runs; 1Password's study of AI security patches (26% fixed the flaw, 4.5% added a new one) for the
+fix-regression check; reported large-scale agent studies favoring reproduction tests over "double-check" prompts.
+
+1. **Three finding states.** `confirmed` (location, concrete failure scenario, evidence), `needs_validation` (a
+   suspicion with the exact unresolved fact that would settle it; **no severity**; never sets the verdict), and
+   `refuted` (moved out of `findings` into `refuted`, with the evidence; never shown as CONFIRMED).
+2. **Severity by yes/no questions.** For each confirmed finding, answer: (a) is there a concrete failure scenario
+   with stated conditions? (b) is it CONFIRMED rather than PROBABLE? (c) does it break the original request, lose
+   data, breach security or create legal exposure? (d) is it likely under realistic use? Critical needs a, b, c;
+   High needs a and (b or c) and d; otherwise Medium or Low. A finding that fails (a) is `needs_validation`.
+3. **Coverage ledger.** The report lists the units of the work it checked (files and functions, sections, claims,
+   assumptions) and what it did not check, so a later run can target the gaps.
+4. **Findings schema and validator.** `schema/findings.schema.json` defines the JSON block; `tools/validate_findings.py`
+   checks a report against it (verdict consistent with findings; refuted not in findings; needs_validation without
+   severity; every confirmed finding has location, scenario and fix).
+5. **Reproduction test for code.** Every confirmed Track B finding carries a failing test or exact reproduction
+   steps, not only a fix.
+6. **Fix-regression check (pr-review and redteam "after the report").** A fix is accepted only if the failing test
+   now passes AND the fix's own diff is reviewed for a new defect; a fix that adds one is a new finding.
+
+### v2.2 failure list (eval cases and scorer rules test these)
+
+13. A suspicion without a concrete failure scenario is reported as High or Critical instead of needs_validation.
+14. A needs_validation item has a severity or changes the verdict.
+15. A refuted candidate remains in `findings` (any evidence label).
+16. Severity contradicts the yes/no answers recorded for it.
+17. The coverage ledger is missing, or omits a unit the work clearly contains.
+18. The JSON block fails the schema.
+19. A confirmed code finding has no failing test or reproduction steps.
+20. A proposed fix that introduces a new defect is accepted (fix-regression case).
