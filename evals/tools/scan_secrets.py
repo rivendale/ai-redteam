@@ -10,7 +10,9 @@ CASES = pathlib.Path(__file__).resolve().parent.parent / "cases"
 FIXTURE_TEXT = "\n".join(f.read_text(errors="replace") for f in CASES.rglob("*") if f.is_file()) if CASES.exists() else ""
 PATTERNS = {
     # a key BODY after the header; the header alone is how reports quote the pattern
-    "private key": r"-----BEGIN [A-Z ]*PRIVATE KEY-----\s*\n\s*[A-Za-z0-9+/=]{40,}",
+    # a key BODY after the header, joined by a real newline, an escaped "\\n" (JSON) or plain spaces; the header
+    # alone is how reports quote the pattern
+    "private key": r"-----BEGIN [A-Z ]*PRIVATE KEY-----(?:\s|\\+[nr])*[A-Za-z0-9+/=]{40,}",
     "github token": r"\bgh[pousr]_[A-Za-z0-9]{30,}\b",
     "openai-style key": r"\bsk-[A-Za-z0-9_-]{20,}\b",
     "anthropic key": r"\bsk-ant-[A-Za-z0-9_-]{20,}\b",
@@ -27,7 +29,7 @@ for f in sorted(p for p in pathlib.Path(sys.argv[1]).rglob("*") if p.is_file() a
         found = {m.group(0) for m in re.finditer(rx, t)}
         if not found:
             continue
-        if name != "home path" and all(v in FIXTURE_TEXT for v in found):
+        if name not in ("home path", "private key") and all(v in FIXTURE_TEXT for v in found):
             print(f"{f}: {name} (fixture value, public)"); fixtures += 1
         else:
             print(f"{f}: {name}"); hits += 1
