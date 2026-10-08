@@ -1,0 +1,31 @@
+{
+  "id": "case-65",
+  "track": "B",
+  "title": "The same bot where the model picks one of three fixed actions and the image URL carries only the ticket id (clean control)",
+  "failure_list": [
+    30
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "shell": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -q test_bot"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "U12c-control-fixed-actions-and-a-clean-image"
+}

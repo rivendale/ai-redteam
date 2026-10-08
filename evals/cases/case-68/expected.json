@@ -1,0 +1,83 @@
+{
+  "id": "case-68",
+  "track": "C",
+  "title": "Evidence note with a working link whose page is a different paper, and a replication cited with the wrong year and the opposite finding",
+  "failure_list": [
+    32
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "source-content-mismatch",
+      "file": "work/note.md",
+      "lines": [
+        3,
+        3
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "parking",
+        "different paper",
+        "does not match",
+        "not the cited",
+        "mismatch",
+        "ref2",
+        "[2]",
+        "wrong paper",
+        "title"
+      ],
+      "all_words": [],
+      "why": "[2] loads, but the retrieved page is a paper on parking policies; it says nothing about team size or the four-day week"
+    },
+    {
+      "id": "P2",
+      "kind": "misdated-and-reversed-source",
+      "file": "work/note.md",
+      "lines": [
+        3,
+        3
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "2019",
+        "not significant",
+        "did not hold",
+        "opposite",
+        "replication",
+        "2024",
+        "ref3",
+        "[3]",
+        "0.04"
+      ],
+      "all_words": [],
+      "why": "[3] is a 2019 paper whose replication found no significant effect; the note cites it as 2024 and as support"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import pathlib\nr2 = pathlib.Path('retrieved/ref2.md').read_text().lower()\nassert 'parking' in r2 and 'four-day' not in r2 and 'team size' not in r2\nr3 = pathlib.Path('retrieved/ref3.md').read_text()\nassert '2019' in r3 and 'not significant' in r3"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "U14-references-that-resolve-but-are-not-the-cited-work"
+}

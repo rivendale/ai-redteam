@@ -28,5 +28,5 @@ Agents: start at AGENTS.md. People: start at README.md.
 
 ## Evals
 
-- [evals/README.md](evals/README.md): 49 cases (15 clean controls), scorer, runner, how a case is scored
+- [evals/README.md](evals/README.md): 87 cases (34 clean controls), scorer, runner, how a case is scored
 - [evals/results/](evals/results/): published runs with reports, prompts and SHA256SUMS

@@ -76,5 +76,9 @@
     "cwd": "work",
     "python": "assert 9 * 20 * 5 / 60 == 15.0\nassert 'saved query' in open('evidence/tracker_fields.md').read()"
   },
-  "slug": "D01-asks-for-daily-manual-work"
+  "slug": "D01-asks-for-daily-manual-work",
+  "applies_to": [
+    "redteam",
+    "plain"
+  ]
 }

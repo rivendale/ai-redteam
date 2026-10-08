@@ -1,0 +1,31 @@
+{
+  "id": "case-75",
+  "track": "B",
+  "title": "The same service filtering by tenant and deleted flag inside the query, with tests for both (clean control)",
+  "failure_list": [
+    35
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "shell": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -q test_rag"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "U17c-control-filtered-at-query-time"
+}

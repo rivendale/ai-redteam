@@ -15,7 +15,7 @@ silently switches `AGENTS.md` off in Claude Code from 2.1.277, when native `AGEN
 | `docs/attack-catalog.md`, `docs/why-reviews-fail.md`, `docs/privacy-checklist.md` | Reference the skills point reviewers at | during Track B, C or a privacy question |
 | `docs/SPEC.md` | The v2 and v2.2 design and failure list (items 1-20) | before changing a skill |
 | `docs/workflow.md` | Where these skills sit in a build-and-review loop | planning who reviews what |
-| `evals/` | 49 cases (15 clean controls), a scorer, the runner and published results | before and after changing a skill |
+| `evals/` | 87 cases (34 clean controls), a scorer, the runner and published results | before and after changing a skill |
 | `docs/capabilities.md` | Everything the repo does, grouped, each with the file that owns it | you need the whole map |
 | `llms.txt` | A plain index of the above | a crawler or assistant wants the map |
 
@@ -38,7 +38,7 @@ silently switches `AGENTS.md` off in Claude Code from 2.1.277, when native `AGEN
 ```bash
 python3 evals/tools/verify_cases.py            # prove each case's planted defect (or control) is real
 python3 evals/score.py --self-check            # prove the scorer can tell good reports from bad
-evals/tools/run_reviews.sh skills/redteam/SKILL.md /tmp/run-redteam 3          # all 49 cases, sealed lane
+evals/tools/run_reviews.sh skills/redteam/SKILL.md /tmp/run-redteam 3          # all cases that apply to redteam, sealed lane
 ONLY=case-06,case-07 evals/tools/run_reviews.sh skills/pr-review/SKILL.md /tmp/run-pr 3   # a subset
 python3 evals/score.py --reports /tmp/run-redteam --json /tmp/score.json       # recall, false alarms, violations
 ```

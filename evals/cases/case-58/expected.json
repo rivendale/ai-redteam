@@ -1,0 +1,62 @@
+{
+  "id": "case-58",
+  "track": "B",
+  "title": "A repository whose current tree is clean but whose first commit holds an AWS key pair that a later commit removed",
+  "failure_list": [
+    27
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "secret-only-in-history",
+      "file": "work/git_history.txt",
+      "lines": [
+        27,
+        27
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "history",
+        "commit",
+        "3f2a1b9",
+        "akia",
+        "rotate",
+        "revoke",
+        "removed",
+        "filter",
+        "still",
+        "earlier commit"
+      ],
+      "all_words": [],
+      "why": "commit 3f2a1b9 adds an AWS access key pair that commit 9c1e2d7 removes from the tree; making the repository public publishes the pair with the history, so the key must be rotated and the history rewritten"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('config.py').read()\nassert 'AKIA' not in t\nh = open('git_history.txt').read()\nassert h.count('AKIAIOSFODNN7EXAMPLE') == 2 and '3f2a1b9' in h"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "history_secret": true,
+  "slug": "M8-a-key-removed-in-a-later-commit-but-still-in-history"
+}

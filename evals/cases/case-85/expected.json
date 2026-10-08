@@ -1,0 +1,31 @@
+{
+  "id": "case-85",
+  "track": "B",
+  "title": "The same assistant with a prompt that holds no secret, and the approval limit and credential handled in the handler (clean control)",
+  "failure_list": [
+    40
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import handler\n\n\nclass Api:\n    def post(self, path, body, **k):\n        return body\n\n\nout = handler.handle_turn(lambda s, u, m: {'tool': 'refund', 'args': {'amount': 9999, 'order_id': 'o1'}}, Api(), {'id': 5}, 'x')\nassert out == 'staff approval required'\nassert 'rk-' not in open('system_prompt.txt').read()"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "U23c-control-no-secrets-and-server-side-limits"
+}

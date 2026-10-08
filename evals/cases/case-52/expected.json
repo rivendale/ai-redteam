@@ -1,0 +1,82 @@
+{
+  "id": "case-52",
+  "track": "B",
+  "title": "Sorting added to three listings; two of them paste the request's sort parameter into SQL and the third allow-lists it",
+  "failure_list": [
+    24
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "sql-injection-in-order-by",
+      "file": "work/exports.py",
+      "lines": [
+        7,
+        7
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "injection",
+        "order by",
+        "sort",
+        "f-string",
+        "allow-list",
+        "allowlist",
+        "parameter",
+        "sql"
+      ],
+      "all_words": [],
+      "why": "the sort parameter is pasted into the SQL; a caller can append a clause (for example a LIMIT or a comment) and shape the query"
+    },
+    {
+      "id": "P2",
+      "kind": "sibling-sql-injection-in-order-by",
+      "file": "work/reports.py",
+      "lines": [
+        7,
+        7
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "injection",
+        "order by",
+        "order_by",
+        "f-string",
+        "allow-list",
+        "allowlist",
+        "parameter",
+        "sql",
+        "same"
+      ],
+      "all_words": [],
+      "why": "the same root cause in a second file: order_by is pasted into the SQL, while admin.py shows the allow-list the other two should use"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import exports, reports, admin\nall_rows = exports.export_orders({})\nassert len(all_rows) == 3\nassert len(exports.export_orders({'sort': 'id limit 1 --'})) == 1\nassert len(reports.totals_report({'order_by': 'customer limit 1 --'})) == 1\ntry:\n    admin.list_orders({'sort': 'id limit 1 --'})\n    raise SystemExit('admin accepted it')\nexcept ValueError:\n    pass"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "M4-the-same-injection-in-two-of-three-listings"
+}

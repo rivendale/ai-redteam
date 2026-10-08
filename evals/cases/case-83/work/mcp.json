@@ -1,0 +1,6 @@
+{
+  "servers": {
+    "files": {"command": "npx", "args": ["-y", "@acme/files-mcp@2.4.1"]},
+    "tickets": {"command": "npx", "args": ["-y", "@acme/tickets-mcp@1.9.0"]}
+  }
+}

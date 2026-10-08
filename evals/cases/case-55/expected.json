@@ -1,0 +1,31 @@
+{
+  "id": "case-55",
+  "track": "B",
+  "title": "The same console with the same checklist deviations, bound to 127.0.0.1, excluded from the image, and documented as local only (clean control)",
+  "failure_list": [
+    25
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "d = open('Dockerfile').read()\nassert 'dev' not in d\nassert 'serve(\"127.0.0.1\")' in open('dev/dev_server.py').read()\nassert 'dev/' in open('.dockerignore').read()"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "M5c-control-the-same-deviations-with-no-boundary-crossed"
+}

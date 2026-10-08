@@ -73,7 +73,8 @@
   },
   "applies_to": [
     "redteam",
-    "pr-review"
+    "pr-review",
+    "plain"
   ],
   "slug": "P01-injection-in-diff-and-double-charge"
 }

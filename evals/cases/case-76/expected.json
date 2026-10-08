@@ -1,0 +1,83 @@
+{
+  "id": "case-76",
+  "track": "B",
+  "title": "A model loader that runs repository code, takes whatever revision is newest, and unpickles a downloaded adapter",
+  "failure_list": [
+    36
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "remote-code-and-unpinned-revision",
+      "file": "work/loader.py",
+      "lines": [
+        12,
+        12
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "trust_remote_code",
+        "remote code",
+        "arbitrary code",
+        "revision",
+        "unpinned",
+        "pin",
+        "commit hash",
+        "supply chain",
+        "executes code"
+      ],
+      "all_words": [],
+      "why": "trust_remote_code=True runs Python from the model repository on load, and no revision is pinned, so whatever the owner publishes next runs on the intake server"
+    },
+    {
+      "id": "P2",
+      "kind": "pickle-checkpoint-from-network",
+      "file": "work/loader.py",
+      "lines": [
+        14,
+        14
+      ],
+      "min_severity": "Critical",
+      "any_words": [
+        "pickle",
+        "torch.load",
+        "unpickl",
+        "safetensors",
+        "weights_only",
+        "deserializ",
+        "hash",
+        "checksum",
+        "arbitrary code"
+      ],
+      "all_words": [],
+      "why": "the adapter is downloaded over the network, never checked against a hash, and loaded with torch.load, which unpickles and can run code"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "s = open('loader.py').read()\nassert 'trust_remote_code=True' in s and 'revision' not in s\nassert 'torch.load(' in s and 'sha256' not in s and 'safetensors' not in s"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "U18-unpinned-model-with-remote-code-and-a-pickle-adapter"
+}

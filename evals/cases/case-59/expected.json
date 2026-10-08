@@ -1,0 +1,32 @@
+{
+  "id": "case-59",
+  "track": "B",
+  "title": "A repository whose tree and whole history use the environment for credentials from the first commit (clean control)",
+  "failure_list": [
+    27
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "h = open('git_history.txt').read()\nassert 'AKIA' not in h and 'wJalr' not in h and h.count('commit ') == 1"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "history_secret": true,
+  "slug": "M8c-control-a-history-that-never-held-a-secret"
+}

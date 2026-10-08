@@ -1,0 +1,41 @@
+{
+  "id": "case-57",
+  "track": "B",
+  "title": "A correct render change in the same scoped package, with the same out-of-scope legacy file (clean control)",
+  "failure_list": [
+    26
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "shell": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -q test_report"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "scope": {
+    "in": [
+      "report.py",
+      "test_report.py",
+      "CHANGED.md"
+    ],
+    "out": [
+      "legacy.py"
+    ]
+  },
+  "slug": "M7c-control-a-correct-change-and-the-same-out-of-scope-file"
+}

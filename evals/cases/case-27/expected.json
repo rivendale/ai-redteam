@@ -26,7 +26,8 @@
   },
   "applies_to": [
     "redteam",
-    "pr-review"
+    "pr-review",
+    "plain"
   ],
   "slug": "P04-control-slugify-hardening"
 }

@@ -24,5 +24,9 @@
     "cwd": "work",
     "python": "import csv\nrows = list(csv.DictReader(open('evidence/bench.csv')))\nr = {int(x['requests_per_sec']): (int(x['p95_ms']), int(x['errors'])) for x in rows}\nassert r[800][0] == 12 and 800 / 200 == 4\nassert r[1600][0] < 50 < r[3200][0]\nassert 1600 / 200 == 8 and 3200 / 200 == 16"
   },
-  "slug": "A02-control-keep-postgres"
+  "slug": "A02-control-keep-postgres",
+  "applies_to": [
+    "redteam",
+    "plain"
+  ]
 }

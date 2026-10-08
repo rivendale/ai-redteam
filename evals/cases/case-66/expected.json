@@ -1,0 +1,83 @@
+{
+  "id": "case-66",
+  "track": "C",
+  "title": "Briefing whose three citations chain back to the vendor's own press release about its own customers",
+  "failure_list": [
+    31
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "citation-laundering",
+      "file": "work/brief.md",
+      "lines": [
+        3,
+        3
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "press release",
+        "circular",
+        "launder",
+        "same source",
+        "vendor",
+        "trace",
+        "independent",
+        "chain",
+        "41",
+        "originates"
+      ],
+      "all_words": [],
+      "why": "[1] and [2] repeat the figure from the vendor's press release (S3, a survey of 41 of its own customers); no source is independent of the vendor"
+    },
+    {
+      "id": "P2",
+      "kind": "self-citation",
+      "file": "work/brief.md",
+      "lines": [
+        4,
+        4
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "self",
+        "press release",
+        "vendor",
+        "own",
+        "leading",
+        "circular",
+        "[3]",
+        "market leader"
+      ],
+      "all_words": [],
+      "why": "[3] is the vendor's own press release saying it is the leader"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import pathlib\nfor n in ('S1-trend-report', 'S2-hbr-article'):\n    t = pathlib.Path('sources/' + n + '.md').read_text().lower()\n    assert '27%' in t\ns3 = pathlib.Path('sources/S3-press-release.md').read_text().lower()\nassert 'our own customers' in s3 and '41' in s3\nassert 'press release' in pathlib.Path('sources/S1-trend-report.md').read_text().lower()"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "U13-claims-that-trace-back-to-the-vendor"
+}

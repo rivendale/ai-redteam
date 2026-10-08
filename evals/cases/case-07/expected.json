@@ -25,5 +25,9 @@
     "cwd": "work",
     "shell": "python3 -m unittest -q test_token_bucket"
   },
-  "slug": "B02-control-token-bucket"
+  "slug": "B02-control-token-bucket",
+  "applies_to": [
+    "redteam",
+    "plain"
+  ]
 }

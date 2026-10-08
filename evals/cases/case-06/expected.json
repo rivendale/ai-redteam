@@ -46,5 +46,9 @@
     "cwd": "work",
     "python": "import app\nr = app.handle({'path': '/admin/export', 'method': 'GET', 'token': 'tok-alice', 'body': None})\nassert r['status'] == 200 and 'root' in r['body'], r"
   },
-  "slug": "B01-auth-check-skipped"
+  "slug": "B01-auth-check-skipped",
+  "applies_to": [
+    "redteam",
+    "plain"
+  ]
 }

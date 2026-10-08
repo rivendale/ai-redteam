@@ -1,0 +1,82 @@
+{
+  "id": "case-74",
+  "track": "B",
+  "title": "A shared vector index queried without a tenant filter, where deleted documents are only marked",
+  "failure_list": [
+    35
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "no-tenant-filter-at-query-time",
+      "file": "work/rag.py",
+      "lines": [
+        19,
+        19
+      ],
+      "min_severity": "Critical",
+      "any_words": [
+        "tenant",
+        "filter",
+        "cross-tenant",
+        "other customer",
+        "isolation",
+        "leak",
+        "where",
+        "namespace",
+        "access control"
+      ],
+      "all_words": [],
+      "why": "the query ignores the tenant: the top hits come from every customer's documents, so one customer's question can be answered from another's files"
+    },
+    {
+      "id": "P2",
+      "kind": "deleted-documents-still-retrieved",
+      "file": "work/rag.py",
+      "lines": [
+        15,
+        15
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "deleted",
+        "delete",
+        "soft",
+        "still retriev",
+        "nightly",
+        "tombstone",
+        "marked",
+        "removed from the index"
+      ],
+      "all_words": [],
+      "why": "a deleted document is only flagged and the query never checks the flag, so it is retrieved and quoted until the nightly job runs"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import rag\nrag.ingest('acme', 'a1', [1, 0], 'acme salary bands')\nrag.ingest('globex', 'g1', [0.9, 0.1], 'globex layoff plan')\nseen = []\nrag.answer(lambda p: seen.append(p) or 'x', lambda q: [0.9, 0.1], 'acme', 'q')\nassert 'globex layoff plan' in seen[0], 'another tenant document was retrieved'\nrag.delete('a1')\nseen.clear()\nrag.answer(lambda p: seen.append(p) or 'x', lambda q: [1, 0], 'acme', 'q')\nassert 'acme salary bands' in seen[0], 'a deleted document was retrieved'"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "U17-shared-index-with-no-tenant-filter-and-soft-deletes"
+}

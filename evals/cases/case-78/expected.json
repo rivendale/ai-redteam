@@ -1,0 +1,82 @@
+{
+  "id": "case-78",
+  "track": "B",
+  "title": "A sharing layer where new documents are visible to anyone with the link and a backend error grants access",
+  "failure_list": [
+    37
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "fail-open-permission-check",
+      "file": "work/share.py",
+      "lines": [
+        13,
+        13
+      ],
+      "min_severity": "Critical",
+      "any_words": [
+        "fail open",
+        "fails open",
+        "fail-open",
+        "exception",
+        "except",
+        "backend down",
+        "default allow",
+        "fail closed",
+        "returns true"
+      ],
+      "all_words": [],
+      "why": "when the permissions backend errors, can_view returns True: an outage or a forced error shows every document to everyone"
+    },
+    {
+      "id": "P2",
+      "kind": "unsafe-defaults",
+      "file": "work/share.py",
+      "lines": [
+        2,
+        2
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "default",
+        "anyone_with_link",
+        "anyone with the link",
+        "private by default",
+        "telemetry",
+        "debug",
+        "opt-in",
+        "public by default"
+      ],
+      "all_words": [],
+      "why": "new documents default to anyone-with-link, with telemetry and debug on; users who never open settings share everything"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import share\n\n\nclass Down:\n    def viewers(self, d):\n        raise ConnectionError('down')\n\n\nassert share.PermissionService(Down()).can_view('eve', 'd1') is True\nassert share.new_document('ann', 'x')['sharing'] == 'anyone_with_link'"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "U19-open-by-default-and-a-permission-check-that-fails-open"
+}

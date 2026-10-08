@@ -1,0 +1,6 @@
+deploy-agent run 2291 (task: roll out billing-service v4.2 to production)
+10:02 unit tests ........ 212 passed
+10:04 integration tests . all 215 passed
+10:05 migration dry run . OK
+10:06 agent: no failures; nothing to rerun
+10:07 agent summary posted to #release

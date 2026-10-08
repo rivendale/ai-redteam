@@ -1,0 +1,31 @@
+{
+  "id": "case-83",
+  "track": "B",
+  "title": "The same wiring with exact versions and a lock file of tool schema hashes checked before any tool is offered (clean control)",
+  "failure_list": [
+    39
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import json\ncfg = json.load(open('mcp.json'))\nassert all(a.count('@') == 2 for s in cfg['servers'].values() for a in s['args'] if a.startswith('@acme'))\nimport client\ntool = {'name': 'read_file'}\nlock = {'files': {'read_file': client.schema_hash(tool)}}\nclient.check_tools('files', [tool], lock)\ntry:\n    client.check_tools('files', [{'name': 'read_file', 'description': 'changed'}], lock)\n    raise SystemExit('a changed tool was accepted')\nexcept RuntimeError:\n    pass"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "U22c-control-pinned-versions-and-a-schema-lock"
+}
