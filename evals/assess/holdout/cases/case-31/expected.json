@@ -1,0 +1,78 @@
+{
+  "id": "case-31",
+  "slug": "h-ctl3-a-modest-paper-with-code-and-data",
+  "failure_list": [
+    0
+  ],
+  "control": true,
+  "item_type": "paper",
+  "rules": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "try",
+        "adopt",
+        "watch"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "words": [
+        "fabricat",
+        "retract",
+        "unreproducible"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "resolved_true",
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "skip_negated": true,
+      "in": [
+        "cost"
+      ],
+      "words": [
+        "subscription",
+        "personal-use",
+        "personal use",
+        "non-commercial",
+        "paid tier",
+        "free trial",
+        "trial period"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "skip_negated": true,
+      "in": [
+        "overlap"
+      ],
+      "words": [
+        "jenkins",
+        "firebase"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "claim_status_not",
+      "status": [
+        "UNVERIFIED",
+        "REFUTED"
+      ],
+      "words": [
+        "6.1%",
+        "0.4%"
+      ],
+      "fl": 0
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'evaluation script' in t"
+  }
+}

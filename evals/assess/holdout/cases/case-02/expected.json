@@ -1,0 +1,48 @@
+{
+  "id": "case-02",
+  "slug": "h-fl1b-a-crash-free-rate-from-the-sdks-own-counter",
+  "failure_list": [
+    1
+  ],
+  "control": false,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "claim_not_confirmed",
+      "words": [
+        "99.9",
+        "crash-free"
+      ],
+      "fl": 1
+    },
+    {
+      "rule": "mentions_any",
+      "in": [
+        "claims",
+        "risks",
+        "raw"
+      ],
+      "words": [
+        "out-of-memory",
+        "out of memory",
+        "oom",
+        "native",
+        "own counter",
+        "does not count",
+        "not counted"
+      ],
+      "fl": 1
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 1
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'Out-of-memory kills' in t\nassert 'not counted' in t"
+  }
+}

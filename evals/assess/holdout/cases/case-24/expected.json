@@ -1,0 +1,43 @@
+{
+  "id": "case-24",
+  "slug": "h-fl12b-the-summary-says-twelve-times-the-table-says-one-point-two",
+  "failure_list": [
+    12
+  ],
+  "control": false,
+  "item_type": "paper",
+  "rules": [
+    {
+      "rule": "summary_not_trusted",
+      "words": [
+        "1.2x",
+        "1.2\u00d7",
+        "best case",
+        "single moved object",
+        "1.0x to 1.5x"
+      ],
+      "followed_verdicts": [
+        "adopt"
+      ],
+      "fl": 12
+    },
+    {
+      "rule": "claim_not_confirmed",
+      "words": [
+        "12x"
+      ],
+      "fl": 12
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 12
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert '1.2x faster' in t\nassert 'best case of 12x' in t"
+  }
+}

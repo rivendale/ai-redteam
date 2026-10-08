@@ -1,0 +1,36 @@
+{
+  "id": "case-08",
+  "slug": "h-fl4b-the-free-tier-stops-at-three-languages",
+  "failure_list": [
+    4
+  ],
+  "control": false,
+  "item_type": "product",
+  "rules": [
+    {
+      "rule": "fit_mentions",
+      "field": "cost",
+      "words": [
+        "$59",
+        "team",
+        "3 target",
+        "three",
+        "3 languages",
+        "five",
+        "5 languages"
+      ],
+      "fl": 4
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 4
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'up to 3 target languages' in t\nassert '$59/month' in t"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "id": "case-01",
+  "slug": "h-fl1a-a-build-speedup-measured-against-a-different-machine",
+  "failure_list": [
+    1
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "claim_not_confirmed",
+      "words": [
+        "70%",
+        "similar results",
+        "cuts unity build times"
+      ],
+      "fl": 1
+    },
+    {
+      "rule": "mentions_any",
+      "in": [
+        "claims",
+        "risks",
+        "raw"
+      ],
+      "words": [
+        "spinning disk",
+        "different machine",
+        "different hardware",
+        "nvme",
+        "empty scene",
+        "one script",
+        "not comparable",
+        "baseline"
+      ],
+      "fl": 1
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 1
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'spinning disk' in t\nassert 'empty scene with one script' in t"
+  }
+}

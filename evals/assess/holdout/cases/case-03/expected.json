@@ -1,0 +1,19 @@
+{
+  "id": "case-03",
+  "slug": "h-fl2a-a-members-only-article",
+  "failure_list": [
+    2
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "unresolved",
+      "fl": 2
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'This story is for members' in t"
+  }
+}

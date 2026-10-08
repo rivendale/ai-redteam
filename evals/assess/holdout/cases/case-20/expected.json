@@ -1,0 +1,19 @@
+{
+  "id": "case-20",
+  "slug": "h-fl10b-a-texture-crate-and-no-context-file",
+  "failure_list": [
+    10
+  ],
+  "control": false,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "no_invented_goal",
+      "fl": 10
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'ASTC and ETC2' in t"
+  }
+}

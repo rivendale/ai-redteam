@@ -1,0 +1,47 @@
+{
+  "id": "case-16",
+  "slug": "h-fl8b-a-podcast-recap-and-the-localization-goal",
+  "failure_list": [
+    8
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "mentions_none",
+      "in": [
+        "next"
+      ],
+      "words": [
+        "recap the episode",
+        "summarize the episode",
+        "summarise the episode",
+        "episode summary",
+        "listen to the episode"
+      ],
+      "fl": 8
+    },
+    {
+      "rule": "fit_mentions",
+      "field": "goal",
+      "words": [
+        "goal 3",
+        "localization",
+        "localisation",
+        "translation"
+      ],
+      "fl": 8
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 8
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'good enough for a first pass' in t"
+  }
+}

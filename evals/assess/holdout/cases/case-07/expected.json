@@ -1,0 +1,36 @@
+{
+  "id": "case-07",
+  "slug": "h-fl4a-free-build-minutes-that-count-ten-for-one-on-macos",
+  "failure_list": [
+    4
+  ],
+  "control": false,
+  "item_type": "product",
+  "rules": [
+    {
+      "rule": "fit_mentions",
+      "field": "cost",
+      "words": [
+        "macos",
+        "multiplier",
+        "10x",
+        "x10",
+        "ten",
+        "30 minutes",
+        "30 macos"
+      ],
+      "fl": 4
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 4
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'macOS x10' in t\nassert '300 build minutes' in t"
+  }
+}

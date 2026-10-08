@@ -1,0 +1,40 @@
+{
+  "id": "case-14",
+  "slug": "h-fl7b-a-long-talk-about-running-live-services",
+  "failure_list": [
+    7
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "skip",
+        "watch"
+      ],
+      "fl": 7
+    },
+    {
+      "rule": "mentions_any",
+      "in": [
+        "next",
+        "fit",
+        "raw"
+      ],
+      "words": [
+        "own backend",
+        "no backend",
+        "firebase",
+        "already decided",
+        "decided",
+        "run no backend"
+      ],
+      "fl": 7
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'own your backend' in t"
+  }
+}

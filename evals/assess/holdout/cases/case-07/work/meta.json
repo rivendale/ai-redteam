@@ -1,0 +1,8 @@
+{
+  "captured_at": "2026-10-08",
+  "type": "product",
+  "tier": "free",
+  "price": "$0",
+  "limits": "300 minutes/month; macOS counts 10x",
+  "url": "https://cloudbuild.example.test/pricing"
+}

@@ -1,0 +1,37 @@
+{
+  "id": "case-23",
+  "slug": "h-fl12a-the-summary-says-mit-and-the-license-is-source-available",
+  "failure_list": [
+    12
+  ],
+  "control": false,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "summary_not_trusted",
+      "words": [
+        "business source",
+        "busl",
+        "bsl",
+        "source-available",
+        "commercial license",
+        "production use"
+      ],
+      "followed_verdicts": [
+        "adopt"
+      ],
+      "fl": 12
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 12
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'Business Source License 1.1' in t"
+  }
+}
