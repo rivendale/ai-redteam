@@ -1,0 +1,69 @@
+{
+  "schema_version": "2.3",
+  "verdict": "REWORK",
+  "confidence": "medium",
+  "inputs_ledger": [
+    {
+      "item": "request.md",
+      "status": "seen",
+      "matters": true
+    },
+    {
+      "item": "config/limits.yaml",
+      "status": "not_seen",
+      "matters": true
+    }
+  ],
+  "coverage": {
+    "checked": [
+      {
+        "unit": "app.py",
+        "kind": "file"
+      },
+      {
+        "unit": "app.py:handle",
+        "kind": "function"
+      },
+      {
+        "unit": "PR.md",
+        "kind": "document"
+      }
+    ],
+    "not_checked": [
+      {
+        "unit": "config/limits.yaml",
+        "reason": "not_supplied"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "F1",
+      "status": "confirmed",
+      "severity": "High",
+      "evidence_level": "CONFIRMED",
+      "track": "A",
+      "location": "memo.md:8",
+      "security": false,
+      "scenario": "The memo divides by the 2025 customer count where the table gives 2024, so the saving claimed is 31% too high.",
+      "fix": "Recompute from the supplied CSV.",
+      "answers": {
+        "a": true,
+        "b": true,
+        "c": false,
+        "d": true
+      },
+      "siblings_searched": {
+        "searched": "every figure in the memo that uses a customer count",
+        "found": "the same wrong denominator in the second table"
+      }
+    }
+  ],
+  "refuted": [
+    {
+      "id": "C2",
+      "candidate": "The script has no error handling.",
+      "evidence": "Line 2 is set -euo pipefail, which stops the script on any failing command."
+    }
+  ]
+}

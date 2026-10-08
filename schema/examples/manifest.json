@@ -4,7 +4,11 @@
     "clean-control.json",
     "full-example.json",
     "high-probable-by-c.json",
-    "only-needs-validation.json"
+    "only-needs-validation.json",
+    "v23-clean-control.json",
+    "v23-full-example.json",
+    "v23-high-not-security.json",
+    "v23-medium-needs-no-extras.json"
   ],
   "invalid": {
     "no-schema-version.json": {
@@ -178,6 +182,50 @@
     "refuted-id-also-in-findings.json": {
       "layer": "cross",
       "expect": "refuted[0].id"
+    },
+    "v23-high-no-siblings.json": {
+      "layer": "schema",
+      "expect": "findings[0]"
+    },
+    "v23-high-no-security-flag.json": {
+      "layer": "schema",
+      "expect": "findings[0]"
+    },
+    "v23-security-no-boundary.json": {
+      "layer": "schema",
+      "expect": "findings[0]"
+    },
+    "v23-boundary-no-crossed.json": {
+      "layer": "schema",
+      "expect": "findings[0].boundary"
+    },
+    "v23-boundary-part-empty.json": {
+      "layer": "schema",
+      "expect": "findings[0].boundary.principal"
+    },
+    "v23-siblings-no-found.json": {
+      "layer": "schema",
+      "expect": "findings[0].siblings_searched"
+    },
+    "v23-siblings-searched-too-short.json": {
+      "layer": "schema",
+      "expect": "findings[0].siblings_searched.searched"
+    },
+    "v23-security-not-boolean.json": {
+      "layer": "schema",
+      "expect": "findings[0].security"
+    },
+    "v23-reason-not-in-enum.json": {
+      "layer": "schema",
+      "expect": "coverage.not_checked[0].reason"
+    },
+    "v23-reason-missing.json": {
+      "layer": "schema",
+      "expect": "coverage.not_checked[0]"
+    },
+    "v23-kind-misspelled.json": {
+      "layer": "schema",
+      "expect": "coverage.checked[2].kind"
     }
   }
 }
