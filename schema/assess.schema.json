@@ -213,7 +213,51 @@
             "properties": {
               "type": {
                 "enum": [
-                  "product",
+                  "product"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "next_action": {
+            "required": [
+              "handoff"
+            ],
+            "properties": {
+              "handoff": {
+                "enum": [
+                  "harvest",
+                  "none"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "verdict",
+          "item"
+        ],
+        "properties": {
+          "verdict": {
+            "enum": [
+              "adopt",
+              "try"
+            ]
+          },
+          "item": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
                   "idea"
                 ]
               }
@@ -224,16 +268,16 @@
       "then": {
         "properties": {
           "next_action": {
+            "required": [
+              "handoff"
+            ],
             "properties": {
               "handoff": {
                 "enum": [
                   "none"
                 ]
               }
-            },
-            "required": [
-              "handoff"
-            ]
+            }
           }
         }
       }
@@ -470,7 +514,7 @@
             "harvest",
             "none"
           ],
-          "description": "glean and harvest are for borrowing ideas from the item; using a tool or buying a product is not borrowing and takes none. Which values are allowed depends on the verdict and the item type (see allOf)."
+          "description": "glean and harvest are for borrowing ideas from the item; using a tool or buying a product is not borrowing and takes none. A repo or paper allows glean or none; a post or a product (a site) allows harvest or none; an idea takes none; watch, skip and needs-decision take none."
         }
       }
     }
