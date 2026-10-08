@@ -312,5 +312,5 @@ Controls and one defect case changed; the rest of the corpus is byte for byte wh
 | 85 | the running-total limit was checked per call (450 + 450 got no approval); float subtraction refused the last 9.99 of 19.99; approvers were ids from the customers' own id space | limit on the running total, cents rounded, `is_staff` from the login layer, optimistic-concurrency field on the post, 7 tests |
 | 08 (defect case) | a Critical SQL injection reported without line numbers and in other words (placeholders, UNION SELECT) was not credited | wording extended; no planted defect changed |
 
-Changed case ids: 08, 51, 65, 69, 71, 73, 75, 83, 85, and case 74 (docstring in `store.py` only; its planted defects are untouched). Case 50, the defect twin of 51, was not changed: its installer, README and package stay as they were, so the pair is no longer line for line parallel.
+Changed case ids: 08, 50, 51, 65, 69, 71, 73, 75, 83, 85, and case 74 (docstring in `store.py` only; its planted defects are untouched). Case 50 is the defect twin of 51: its README, package, tests and build setup follow 51 again, and its planted defect (the installer's upload of the environment, `install.sh`) is unchanged.
 Case 79 was flagged once by one skill ("no unshare"); the request did not ask for revoke, so it stays.
