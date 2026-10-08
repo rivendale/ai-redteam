@@ -49,3 +49,5 @@ case-31/32 runs, excluded from the cost above (79/79/42); re-derive with `python
 
 Three runs, one model and vendor. The eval author spot-checked extras on earlier runs only. Reports are committed;
 prompts and usage files for runs 2-3 are in the run directories of the operator, not here.
+
+**Correction, 2026-10-08 (scorer #51, best-assignment matching).** Rescored with the same reports and cases, the matcher change alone moves only recall and found-at-any-severity; false alarms and violations do not change. v1 recall rises by 1 in runs 1 and 2 (run 3 unchanged), so v1 is 30 / 30 / 32 on the table's terms. The moved cases are 14 (run 1) and 34 (run 2), neither of them the blocked case-31, so the unblocked-cases row for v1 rises to 30 / 28 / 32. The current redteam runs and pr-review do not move.

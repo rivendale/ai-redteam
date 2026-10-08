@@ -46,3 +46,5 @@ Limits, stated plainly:
   angle; 2 are real defects the key misses: case-13 `parse_row` drops name and phone, case-19 "fixed all findings"
   versus the source's "high or critical"); defensible but over-rated 3 (Medium rather than High; no verdict changes);
   invented 0. v1's 43 extras were not checked, so v2 being better than v1 on extras is not shown.
+
+**Correction, 2026-10-08 (scorer #51, best-assignment matching).** Rescored with the same reports and cases, the matcher change alone moves only recall and found-at-any-severity; false alarms and violations do not change. v1 recall rises by 1 (19 to 20 on today's cases; the table above was scored on the cases as they stood then). v2 does not move.

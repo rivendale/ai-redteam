@@ -46,3 +46,5 @@ fixture values recognized, a private key needs its body) reports 0 hits and 19 f
 `sk-test-0000000000000000`, and the text "-----BEGIN RSA PRIVATE KEY-----" quoted in reproduction steps, with no key body.
 
 Each run folder holds the reports, `prompts/` and `_meta/` (usage). `SHA256SUMS` covers every file here.
+
+**Correction, 2026-10-08 (scorer #51, best-assignment matching).** Rescored with the same reports and cases, the matcher change alone moves only recall and found-at-any-severity; false alarms and violations do not change. Recall at minimum severity becomes 13 / 13 / 13 for v2.2 (run 1 was 12) and 13 / 13 / 12 for pre-v2.2 (runs 1 and 2 were 11 and 12). v2.2 then caught 39 of 39, and pre-v2.2 38 of 39.
