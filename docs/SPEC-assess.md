@@ -127,7 +127,8 @@ tested by hand on real links and recorded as such.
 Each case holds a snapshot, the sender's words, a context file (or none), the expected verdicts and must / must-not
 rules. Controls are items that are plainly useful and correctly described; the skill must not invent a problem.
 
-- **Coverage:** each failure-list rule has at least two defect cases and one control.
+- **Coverage:** each failure-list rule has at least two defect cases. Controls (at least eight) cover the problems a
+  reviewer could invent: license, install path, telemetry, price or terms, overlap, claim strength and resolution.
 - **Runs:** three per case.
 - **Gate:** every control passes in 3 of 3 runs (no wrong `skip`, no invented risk at High); each rule's defect cases
   pass in at least 5 of 6 runs; and at least 90% of all case-runs pass.
