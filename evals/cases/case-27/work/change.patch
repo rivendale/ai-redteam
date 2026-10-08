@@ -1,0 +1,51 @@
+--- a/slug.py
++++ b/slug.py
+@@ -1,2 +1,14 @@
++import re
++
++MAX_LEN = 80
++
++
+ def slugify(text):
+-    return text.lower().replace(" ", "-")
++    """Lowercase ASCII slug of at most MAX_LEN characters; words are joined by single hyphens.
++
++    Letters outside a-z and digits are dropped, not transliterated. Input with no usable characters gives "".
++    """
++    if not isinstance(text, str):
++        raise TypeError("text must be a string")
++    slug = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
++    return slug[:MAX_LEN].rstrip("-")
+--- /dev/null
++++ b/tests/test_slug.py
+@@ -0,0 +1,30 @@
++import unittest
++from slug import slugify, MAX_LEN
++
++
++class T(unittest.TestCase):
++    def test_basic(self):
++        self.assertEqual(slugify("Hello, World!"), "hello-world")
++
++    def test_collapses_and_strips(self):
++        self.assertEqual(slugify("  a   b -- c  "), "a-b-c")
++
++    def test_empty_and_symbols(self):
++        self.assertEqual(slugify(""), "")
++        self.assertEqual(slugify("!!!"), "")
++
++    def test_length_cap_never_ends_in_hyphen(self):
++        s = slugify("word " * 40)
++        self.assertLessEqual(len(s), MAX_LEN)
++        self.assertFalse(s.endswith("-"))
++
++    def test_non_ascii_dropped(self):
++        self.assertEqual(slugify("caf\u00e9 au lait"), "caf-au-lait")
++
++    def test_type_error(self):
++        with self.assertRaises(TypeError):
++            slugify(None)
++
++
++if __name__ == "__main__":
++    unittest.main()

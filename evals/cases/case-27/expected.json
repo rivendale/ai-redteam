@@ -1,0 +1,32 @@
+{
+  "id": "case-27",
+  "track": "B",
+  "title": "Small hardening of slugify with tests (clean control)",
+  "failure_list": [
+    4
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "shell": "W=$PWD; T=$(mktemp -d); cp -r base/. $T/ && cd $T && patch -p1 -s < $W/change.patch && PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. python3 -m unittest -q tests.test_slug"
+  },
+  "applies_to": [
+    "redteam",
+    "pr-review"
+  ],
+  "slug": "P04-control-slugify-hardening"
+}

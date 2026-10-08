@@ -1,0 +1,80 @@
+{
+  "id": "case-30",
+  "track": "R",
+  "title": "Privacy notice that adds an analytics vendor while the published processor list stays as it was, and a statement template without the required sentence",
+  "failure_list": [
+    2
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "stale-published-list",
+      "file": "work/privacy_notice.md",
+      "lines": [
+        8,
+        8
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "corvid",
+        "subprocessor",
+        "processor",
+        "list",
+        "stale",
+        "only with",
+        "untrue",
+        "not listed"
+      ],
+      "all_words": [],
+      "why": "the notice now sends account data to Corvid Metrics, which is not on the published processor list the same sentence relies on"
+    },
+    {
+      "id": "P2",
+      "kind": "required-statement-missing",
+      "file": "work/statement_template.md",
+      "lines": [
+        11,
+        11
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "4.5",
+        "compare",
+        "official account statement",
+        "required",
+        "sentence",
+        "missing",
+        "omit"
+      ],
+      "all_words": [],
+      "why": "rule 4.5 requires the sentence 'Compare this information with your official account statement.' on every communication about a managed account; the template lacks it"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "assert 'Corvid' not in open('subprocessors_published.md').read()\nassert 'Corvid Metrics' in open('privacy_notice.md').read()\nassert 'official account statement' not in open('statement_template.md').read()\nassert 'official account statement' in open('rule_extract.md').read()"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "R03-stale-subprocessor-list-and-missing-statement"
+}

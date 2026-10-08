@@ -1,0 +1,81 @@
+{
+  "id": "case-28",
+  "track": "R",
+  "title": "Product page that promises a guaranteed risk-free return and describes a pre-approval control that the filed procedure says does not operate",
+  "failure_list": [
+    2,
+    9
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "prohibited-guarantee",
+      "file": "work/page.md",
+      "lines": [
+        3,
+        3
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "guarantee",
+        "risk-free",
+        "4.2",
+        "RICR",
+        "prohibited",
+        "free of risk"
+      ],
+      "all_words": [],
+      "why": "rule 4.2 prohibits stating or implying a guaranteed return or an investment free of risk"
+    },
+    {
+      "id": "P2",
+      "kind": "invented-control",
+      "file": "work/page.md",
+      "lines": [
+        7,
+        7
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "approved",
+        "before it goes live",
+        "sample",
+        "10%",
+        "procedure",
+        "invented",
+        "not individually",
+        "does not operate",
+        "monthly"
+      ],
+      "all_words": [],
+      "why": "the filed procedure says pages are sampled monthly and not approved individually; the page describes a pre-publication approval that does not exist"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import csv\nt = open('page.md').read()\nr = [float(x['net_return_pct']) for x in csv.DictReader(open('performance.csv'))]\nassert round(sum(r)/len(r), 1) == 7.1\nassert 'guaranteed' in t and 'risk-free' in t\nassert 'not individually approved' in ' '.join(open('compliance_procedure.md').read().split())"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "R01-guarantee-and-invented-control"
+}

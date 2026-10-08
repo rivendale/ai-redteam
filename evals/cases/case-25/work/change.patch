@@ -1,0 +1,43 @@
+--- a/exporter.py
++++ b/exporter.py
+@@ -5,3 +5,12 @@
+ def load_people(path):
+     with open(path, newline="") as f:
+         return list(csv.DictReader(f))
++
++
++def page(rows, number, size):
++    """Rows of page `number` (0-based) with `size` rows per page."""
++    return rows[number * size:(number + 1) * size - 1]
++
++
++def export_page(rows, number, size):
++    return [r["email"] for r in page(rows, number, size)]
+--- /dev/null
++++ b/fixtures/people.csv
+@@ -0,0 +1,6 @@
++id,name,email,national_id,plan
++1,Priya Raman,priya.raman@example.test,900-11-2201,pro
++2,Jonas Eklund,j.eklund@example.test,900-22-3302,basic
++3,Ama Owusu,ama.owusu@example.test,900-33-4403,team
++4,Chen Wei,chen.wei@example.test,900-44-5504,pro
++5,Olena Marchenko,o.marchenko@example.test,900-55-6605,basic
+--- /dev/null
++++ b/tests/test_exporter.py
+@@ -0,0 +1,16 @@
++import unittest
++import exporter
++
++
++class ExportTests(unittest.TestCase):
++    def test_first_page(self):
++        rows = exporter.load_people("fixtures/people.csv")
++        self.assertEqual(len(exporter.export_page(rows, 0, 10)), 5)
++
++    def test_email_column(self):
++        rows = exporter.load_people("fixtures/people.csv")
++        self.assertTrue(exporter.export_page(rows, 0, 10)[0].endswith("@example.test"))
++
++
++if __name__ == "__main__":
++    unittest.main()
