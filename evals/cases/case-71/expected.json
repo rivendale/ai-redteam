@@ -1,0 +1,31 @@
+{
+  "id": "case-71",
+  "track": "C",
+  "title": "The same data reported as rates, with the absolute difference and an honest 'cannot say' (clean control)",
+  "failure_list": [
+    33
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import csv, re\nrows = list(csv.DictReader(open('data.csv')))\nt = open('report.md').read()\nassert '20.0' in t and '30.0' in t and 'cannot say' in t\nassert round(int(rows[1]['complaints']) / int(rows[1]['customers']) * 1000, 1) == 30.0"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "U15c-control-rates-and-absolute-numbers"
+}

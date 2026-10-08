@@ -1,0 +1,31 @@
+{
+  "id": "case-67",
+  "track": "C",
+  "title": "A briefing that names the vendor survey as a vendor survey and uses an independent study with a stated effect size (clean control)",
+  "failure_list": [
+    31
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import pathlib\nb = pathlib.Path('brief.md').read_text()\nassert 'vendor' in b.lower() and '6%' in b and '41' in b\ns = pathlib.Path('sources/S4-nine-team-study.md').read_text()\nassert 'median resolution time fell 6%' in s.lower()"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "U13c-control-primary-and-independent"
+}

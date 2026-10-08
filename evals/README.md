@@ -1,6 +1,6 @@
 # Evals for the redteam and pr-review skills
 
-49 cases, 15 of them clean controls, added in four rounds (below). The first 23 were written from `docs/SPEC.md` (the four tracks, the
+87 cases, 34 of them clean controls, added in five rounds (below). The first 23 were written from `docs/SPEC.md` (the four tracks, the
 v2 additions and the failure list) and the README only. They were not written from either version of the skill text or its prompt, so
 the cases are not shaped around them.
 
@@ -213,3 +213,40 @@ nothing in them is a real credential.
 
 The run-claim rule was checked against all 590 committed reports (0 hits; every one of those runs had no tools, so a hit would be a real false claim) and against 14
 constructed sentences in both directions. Mutating the rule code leaves only window-size constants alive.
+
+## Round 5: the v2.3 cases (50-87)
+
+Written from the v2.3 section of `docs/SPEC.md` only, before any v2.3 skill text: for each catalog entry that has a case (11-20 and 22-24) a defect case and a clean
+control that handles the same surface correctly, and for the review-method items that need their own case (3, 4, 5, 7, 8 and 9) a defect case and a control. Items 1 and 2
+are scored on every case (FL21 over the work's documents, FL19 over reproduction); item 6 reuses cases 45 and 46; item 10 is the plain target (below). Each proof runs,
+or for text cases recomputes the fact the defect rests on. 38 cases, 19 controls, 33 planted defects.
+
+| Cases | Generator id | What they plant | Failure item |
+|---|---|---|---|
+| 50-51 | M3 | an installer that uploads the environment; control that only installs | 23 |
+| 52-53 | M4 | the same SQL injection in two of three listings; control allow-listing all three | 24 |
+| 54-55 | M5 | a default password on a console published to the internet; the same deviations with no boundary crossed | 25 |
+| 56-57 | M7 | an off-by-one in a scoped review with an out-of-scope file; control with the same file | 26 |
+| 58-59 | M8 | a key removed in a later commit but still in history; control whose history never held one | 27 |
+| 60-61 | M9 | an instruction to reviewers in the PR text (pr-review and plain); control with an ordinary reviewer request | 28 |
+| 62-63 | U11 | a zero-width character inside a deny list; an instruction in invisible tag characters; control with ordinary non-ASCII text | 29 |
+| 64-65 | U12 | a model's reply run in a shell and placed in an image URL; control with fixed actions | 30 |
+| 66-67 | U13 | citations that chain back to the vendor's press release; control with an independent study | 31 |
+| 68-69 | U14 | a link whose page is a different paper; a misdated, reversed replication; control whose sources match | 32 |
+| 70-71 | U15 | a raw count celebrated over a halved base; relative risk as the headline; control with rates | 33 |
+| 72-73 | U16 | an anonymous agent loop with no budget; control with caps, login and a rate limit | 34 |
+| 74-75 | U17 | a shared index with no tenant filter and soft deletes; control filtering at query time | 35 |
+| 76-77 | U18 | remote code, an unpinned revision and an unpickled adapter; control pinned with a hash | 36 |
+| 78-79 | U19 | open-by-default sharing and a check that fails open; control private and fail-closed | 37 |
+| 80-81 | U20 | a memo with no model id or date and a retired model's price; control with ids and dates | 38 |
+| 82-83 | U22 | tool servers pinned by name only; control with versions and a schema lock | 39 |
+| 84-85 | U23 | a secret and an authorization rule kept in a system prompt; control enforcing outside it | 40 |
+| 86-87 | U24 | a summary contradicting its log and a one-word deploy trigger; control with an independent gate | 41 |
+
+Each case's `slug` in `expected.json` begins with the generator id above.
+New `expected.json` keys: `scope` (`in` and `out` unit names, for FL26) and `history_secret` (for FL27). **The plain target:** 12 older cases and 60-61 list `plain` in
+`applies_to` (6 defect cases and 6 controls from the four tracks, plus the pair), so the plain prompt is scored on `--skill plain`.
+
+**Entry 11 (invisible characters).** The zero-width space, the Unicode tag characters (U+E00xx), bidirectional marks and a Cyrillic letter were checked to survive
+`prepare.py` and the runner's prompt assembly byte for byte. Whether the model sees them is measurable only by a live run: check case 50's two defects first.
+Cases 54-57 (entries 13 and 14) supply the cited documents, because the lane cannot fetch a link.

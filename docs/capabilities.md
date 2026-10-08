@@ -107,7 +107,7 @@ Source: [`attack-catalog.md`](attack-catalog.md).
 
 Source: [`evals/README.md`](../evals/README.md). All case material is invented.
 
-**Cases: 49, of which 15 are clean controls, 52 planted defects in total.** 38 cases are redteam only; 11 apply to both skills.
+**Cases: 87, of which 34 are clean controls, 85 planted defects in total.** 85 apply to redteam (64 to redteam only), 13 to pr-review and 14 to the plain prompt.
 
 | Round | Cases | Controls | What it tests |
 |---|---|---|---|
@@ -115,6 +115,7 @@ Source: [`evals/README.md`](../evals/README.md). All case material is invented.
 | 2 | 24-34 | 3 | pull requests, Track R, tool descriptions, data poisoning |
 | 3 | 35-39 | 3 | v2.2: needs_validation (35, 36) and fix-regression close-outs (37-39) |
 | 4 | 40-49 | 3 | shortcut-taking, JWT, uneven auth, client-supplied identity, agent actions vs narration, shared-file overwrite |
+| 5 | 50-87 | 19 | v2.3: the catalog entries 11-20 and 22-24 and the method items on safe running, siblings, boundaries, scope, history and the work as data (each a defect case with a control) |
 
 **Scorer failure rules** ([`evals/score.py`](../evals/score.py); the list itself is in [`SPEC.md`](SPEC.md)). FL1, FL2, FL3, FL11
 and FL20 are measured through recall and the verdict rules. The rest are read from each report:

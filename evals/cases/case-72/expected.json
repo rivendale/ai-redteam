@@ -1,0 +1,86 @@
+{
+  "id": "case-72",
+  "track": "B",
+  "title": "A public, anonymous endpoint that loops model calls with no turn, token or rate limit",
+  "failure_list": [
+    34
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "unbounded-agent-loop",
+      "file": "work/agent.py",
+      "lines": [
+        8,
+        8
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "unbounded",
+        "no limit",
+        "turn",
+        "token",
+        "cost",
+        "budget",
+        "loop",
+        "denial of wallet",
+        "billed",
+        "infinite",
+        "retry"
+      ],
+      "all_words": [],
+      "why": "the loop has no turn, token or cost cap and retries forever; a model that keeps calling a tool bills without end"
+    },
+    {
+      "id": "P2",
+      "kind": "anonymous-spend-endpoint",
+      "file": "work/agent.py",
+      "lines": [
+        20,
+        20
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "anonymous",
+        "no login",
+        "unauthenticated",
+        "rate limit",
+        "public",
+        "every request",
+        "spend",
+        "per-user",
+        "quota",
+        "abuse"
+      ],
+      "all_words": [],
+      "why": "anyone can call the endpoint with no login and no rate limit; each request spends on the account"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import agent\ncalls = []\n\n\ndef llm(m):\n    calls.append(1)\n    if len(calls) > 500:\n        return {'answer': 'stop'}\n    return {'tool': 't', 'args': {}}\n\n\nagent.ask_endpoint({'question': 'q'}, llm, {'t': lambda: 'x'})\nassert len(calls) > 500, 'the loop only ended because the test stopped it'"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "U16-an-agent-loop-with-no-budget-on-a-public-endpoint"
+}

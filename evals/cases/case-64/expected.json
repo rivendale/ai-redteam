@@ -1,0 +1,81 @@
+{
+  "id": "case-64",
+  "track": "B",
+  "title": "An ops bot that runs the model's reply as a shell command and puts the model's summary into an image URL",
+  "failure_list": [
+    30
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "model-output-to-shell",
+      "file": "work/bot.py",
+      "lines": [
+        12,
+        12
+      ],
+      "min_severity": "Critical",
+      "any_words": [
+        "shell",
+        "command injection",
+        "model output",
+        "untrusted",
+        "prompt injection",
+        "subprocess",
+        "llm05",
+        "arbitrary command"
+      ],
+      "all_words": [],
+      "why": "the model's reply, steered by the customer's ticket text, is run with shell=True: a ticket can make the bot run any command"
+    },
+    {
+      "id": "P2",
+      "kind": "model-output-in-rendered-url",
+      "file": "work/bot.py",
+      "lines": [
+        18,
+        18
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "image",
+        "exfiltrat",
+        "url",
+        "markdown",
+        "render",
+        "leak",
+        "query string",
+        "badge"
+      ],
+      "all_words": [],
+      "why": "the model's summary, which can contain ticket data, is placed in the query string of an image URL that the ticket page fetches: data leaves with the render"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import bot, os, tempfile\nd = tempfile.mkdtemp(); p = os.path.join(d, 'pwned')\nbot.handle(lambda prompt: 'touch ' + p, 'ticket')\nassert os.path.exists(p), 'the reply ran as a command'\nassert 'note=' in bot.status_markdown(1, 'card 4111')"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "U12-model-text-run-in-a-shell-and-placed-in-an-image-url"
+}

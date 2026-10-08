@@ -1,0 +1,12 @@
+--- a/uploads.py
++++ b/uploads.py
+@@ -5,8 +5,6 @@
+ 
+ 
+ def read_upload(name):
+-    """Return the bytes of an uploaded file. name is the file's name as the user sees it."""
+-    if "/" in name or ".." in name:
+-        raise ValueError("bad name")
++    """Return the bytes of an uploaded file. name is the file's name as the user sees it, possibly in a folder."""
+     with open(os.path.join(UPLOAD_DIR, name), "rb") as f:
+         return f.read()

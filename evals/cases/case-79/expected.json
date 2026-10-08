@@ -1,0 +1,31 @@
+{
+  "id": "case-79",
+  "track": "B",
+  "title": "The same layer, private by default, with telemetry and debug off and a check that denies on error (clean control)",
+  "failure_list": [
+    37
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "shell": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -q test_share"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "U19c-control-private-and-fail-closed"
+}

@@ -1,0 +1,31 @@
+{
+  "id": "case-51",
+  "track": "B",
+  "title": "The same package whose installer installs hashed requirements and makes no other request (clean control)",
+  "failure_list": [
+    23
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "s = open('install.sh').read()\nassert 'curl' not in s and 'env' not in s.replace('--no-input', '') and '--require-hashes' in s"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "M3c-control-an-installer-that-only-installs"
+}

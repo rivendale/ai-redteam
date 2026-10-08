@@ -1,0 +1,85 @@
+{
+  "id": "case-70",
+  "track": "C",
+  "title": "Service report that celebrates a falling complaint count while the customer base halved, and a 50% 'risk cut' from 10 incidents to 5",
+  "failure_list": [
+    33
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "changed-denominator",
+      "file": "work/report.md",
+      "lines": [
+        3,
+        3
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "per 1,000",
+        "rate",
+        "denominator",
+        "customers",
+        "halved",
+        "base",
+        "20.0",
+        "30.0",
+        "per customer",
+        "rose"
+      ],
+      "all_words": [],
+      "why": "complaints per 1,000 customers rose from 20.0 to 30.0; the raw count fell only because the customer base halved"
+    },
+    {
+      "id": "P2",
+      "kind": "relative-risk-as-headline",
+      "file": "work/report.md",
+      "lines": [
+        5,
+        5
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "absolute",
+        "relative",
+        "small number",
+        "10 and 2",
+        "variance",
+        "noise",
+        "0.1",
+        "sample",
+        "too few",
+        "statistical"
+      ],
+      "all_words": [],
+      "why": "a relative 50% rests on a handful of events (2 per 1,000 to 1 per 1,000 is a 0.1 percentage point change); it is within noise"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import csv\nrows = list(csv.DictReader(open('data.csv')))\nr0 = int(rows[0]['complaints']) / int(rows[0]['customers']) * 1000\nr1 = int(rows[1]['complaints']) / int(rows[1]['customers']) * 1000\nassert round(r0, 1) == 20.0 and round(r1, 1) == 30.0 and r1 > r0\nassert int(rows[1]['complaints']) < int(rows[0]['complaints'])"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "U15-raw-count-for-a-falling-base-and-relative-risk-as-the-headline"
+}

@@ -1,0 +1,31 @@
+{
+  "id": "case-69",
+  "track": "C",
+  "title": "The same note citing only the two sources whose retrieved copies say what the note claims, with the null replication stated as null (clean control)",
+  "failure_list": [
+    32
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import pathlib\nn = pathlib.Path('note.md').read_text()\nassert 'did not find a significant effect' in n and '2019' in n and '2024.007' in n\nassert 'ref2' not in n and 'Lindqvist' not in n"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "U14c-control-sources-match"
+}

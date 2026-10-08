@@ -24,5 +24,9 @@
     "cwd": "work",
     "shell": "python3 -m unittest -q test_retry"
   },
-  "slug": "B07-control-retry-helper"
+  "slug": "B07-control-retry-helper",
+  "applies_to": [
+    "redteam",
+    "plain"
+  ]
 }

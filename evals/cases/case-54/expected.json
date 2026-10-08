@@ -1,0 +1,62 @@
+{
+  "id": "case-54",
+  "track": "B",
+  "title": "The developer console with default password and debug on, copied into the production image and bound to every interface on a public host",
+  "failure_list": [
+    25
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "default-credential-crosses-trust-boundary",
+      "file": "work/dev/dev_server.py",
+      "lines": [
+        5,
+        5
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "default password",
+        "public",
+        "internet",
+        "0.0.0.0",
+        "dockerfile",
+        "deployed",
+        "exposed",
+        "production",
+        "boundary",
+        "unauthenticated",
+        "anyone"
+      ],
+      "all_words": [],
+      "why": "the default password protects a console that the Dockerfile ships and serves on 0.0.0.0 on a public host: anyone on the internet can sign in and edit users and flags"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "d = open('Dockerfile').read()\nassert 'COPY dev/' in d and 'dev_server.py' in d\nassert 'serve(\"0.0.0.0\")' in open('dev/dev_server.py').read()\nassert 'public host' in open('deploy.md').read()"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "M5-a-default-password-on-a-console-published-to-the-internet"
+}

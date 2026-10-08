@@ -1,0 +1,31 @@
+{
+  "id": "case-53",
+  "track": "B",
+  "title": "The same three listings, each allow-listing the sort field (clean control)",
+  "failure_list": [
+    24
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import exports, reports, admin\nfor fn, arg in ((exports.export_orders, {'sort': 'id limit 1 --'}), (reports.totals_report, {'order_by': 'customer limit 1 --'}), (admin.list_orders, {'sort': 'id limit 1 --'})):\n    try:\n        fn(arg)\n        raise SystemExit('accepted')\n    except ValueError:\n        pass\nassert len(exports.export_orders({'sort': 'total'})) == 3"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "M4c-control-all-three-allow-listed"
+}

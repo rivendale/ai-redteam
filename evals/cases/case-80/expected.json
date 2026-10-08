@@ -1,0 +1,84 @@
+{
+  "id": "case-80",
+  "track": "C",
+  "title": "Memo with a context window, price and benchmark that name no model id or date, and a price that belongs to a retired model",
+  "failure_list": [
+    38
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "no-model-id-or-date",
+      "file": "work/memo.md",
+      "lines": [
+        3,
+        3
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "model id",
+        "which model",
+        "version",
+        "date",
+        "no date",
+        "unnamed",
+        "lumen-2",
+        "which version",
+        "specific model"
+      ],
+      "all_words": [],
+      "why": "the memo recommends 'Lumen' with a context window, price and benchmark but names no model id and no date, so none of the figures can be tied to a product"
+    },
+    {
+      "id": "P2",
+      "kind": "stale-price-from-retired-model",
+      "file": "work/memo.md",
+      "lines": [
+        5,
+        5
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "$8",
+        "lumen-1",
+        "retired",
+        "$3.00",
+        "$120",
+        "$320",
+        "200,000",
+        "stale",
+        "outdated",
+        "100,000"
+      ],
+      "all_words": [],
+      "why": "$8 per million input tokens and the one-million context claim do not match the supplied price page; $8 belongs to the retired lumen-1-large, so the monthly cost is $320 instead of about $120"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "m = open('memo.md').read()\np = open('price_page.md').read()\nassert 'lumen-' not in m.lower() and '2026' not in m\nassert '$8.00' in p and 'retired' in p and '1,000,000' not in p\nassert 40 * 8 == 320 and 40 * 3 == 120"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "U20-claims-with-no-model-id-or-date-and-a-price-from-a-retired-model"
+}
