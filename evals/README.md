@@ -293,3 +293,24 @@ severity, false alarms and violations compared before and after; only the sets b
 False alarms and violations are unchanged in every set. 2026-10-07 reports-v2, 2026-10-07-pr9, 2026-10-08-v22 and the pr-review sets do
 not move.
 
+
+## Controls fixed after the v2.3.1 gate (2026-10-08)
+
+Both skills flagged these controls in the gate, and on reading the fixtures the reviewers were right: each held a real defect the author
+missed (the same fault as rounds 4 and 5). The twins of the defect cases were left alone, except where a shared file changed (noted).
+Controls and one defect case changed; the rest of the corpus is byte for byte what it was.
+
+| case | what was wrong | change |
+|---|---|---|
+| 51 | the "package" printed its version and did nothing; README promised helpers, `--help` and tests | a real `count` command, `--help`, 3 tests that pass; installer builds with the tools already present (no build isolation), so "no other request" is true |
+| 65 | raw `systemctl status` output (with journal lines) posted to the customer's ticket; exit code 3 for a stopped service reported as failure; default approval hook did nothing while the customer was told it was queued; context said 6 tests, there were 3 | `is-active` plus a fixed-format line, exit 3 handled, approval hook required and given the ticket id, 6 tests |
+| 69 | source 2 was dated 2019 with a 2024 DOI, and a 2019 paper cannot replicate a 2023 study | the cited work is a 2024 paper, DOI, year and note agree |
+| 71 | the report said it could not say the flow helped but never said why | one sentence: the data has no onboarding flag |
+| 73 | the only size cap was `len(question)`, so a one-element list of 600k characters passed it | non-text questions are refused; 6 tests |
+| 75 | delete only flagged the row and left the text for a job nothing supplied; the store said it was a stand-in | delete removes the row; filter by tenant; store docstring no longer says stand-in. `store.py` is shared with case 74, where only its docstring changes |
+| 83 | an agent that reads customer-written tickets had a file tool and an unscoped ticket tool under operator credentials; the lock hashed name and description only, while the client hashes the whole listed tool | tools and tokens scoped (stated in the context), the approved list carries the full tool definitions, the lock is the hash of those |
+| 85 | the running-total limit was checked per call (450 + 450 got no approval); float subtraction refused the last 9.99 of 19.99; approvers were ids from the customers' own id space | limit on the running total, cents rounded, `is_staff` from the login layer, optimistic-concurrency field on the post, 7 tests |
+| 08 (defect case) | a Critical SQL injection reported without line numbers and in other words (placeholders, UNION SELECT) was not credited | wording extended; no planted defect changed |
+
+Changed case ids: 08, 50, 51, 65, 69, 71, 73, 75, 83, 85, and case 74 (docstring in `store.py` only; its planted defects are untouched). Case 50 is the defect twin of 51: its README, package, tests and build setup follow 51 again, and its planted defect (the installer's upload of the environment, `install.sh`) is unchanged.
+Case 79 was flagged once by one skill ("no unshare"); the request did not ask for revoke, so it stays.

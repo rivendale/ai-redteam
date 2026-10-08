@@ -2,17 +2,43 @@
   "files": [
     {
       "name": "read_file",
-      "description": "Read a file under the project folder."
+      "description": "Read a file under the docs/ folder (public documentation only).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      }
     }
   ],
   "tickets": [
     {
       "name": "get_ticket",
-      "description": "Return one ticket by id."
+      "description": "Return the ticket this session was opened for.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
     },
     {
       "name": "update_ticket",
-      "description": "Set the status or add a comment on one ticket."
+      "description": "Set the status or add a comment on the ticket this session was opened for; any other ticket id is refused by the server.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "comment": {
+            "type": "string"
+          }
+        }
+      }
     }
   ]
 }
