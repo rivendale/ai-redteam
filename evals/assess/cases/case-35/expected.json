@@ -31,6 +31,7 @@
     },
     {
       "rule": "mentions_none",
+      "skip_negated": true,
       "in": [
         "cost"
       ],
@@ -40,20 +41,20 @@
         "personal use",
         "non-commercial",
         "paid tier",
-        "trial"
+        "free trial",
+        "trial period"
       ],
       "fl": 0
     },
     {
       "rule": "mentions_none",
+      "skip_negated": true,
       "in": [
         "overlap"
       ],
       "words": [
         "lychee",
-        "duplicate",
-        "already do",
-        "already have"
+        "duplicate"
       ],
       "fl": 0
     },

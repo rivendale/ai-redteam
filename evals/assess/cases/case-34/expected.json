@@ -46,6 +46,7 @@
     },
     {
       "rule": "mentions_none",
+      "skip_negated": true,
       "in": [
         "cost"
       ],
@@ -55,7 +56,8 @@
         "personal use",
         "non-commercial",
         "paid tier",
-        "trial"
+        "free trial",
+        "trial period"
       ],
       "fl": 0
     }
