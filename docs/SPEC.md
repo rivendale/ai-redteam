@@ -203,8 +203,8 @@ Each item names the failure behind it.
 
 21. Coverage omits a document the reviewer was given.
 22. (Folded into FL19; no separate rule. Item 2 adds cases that FL19 scores.)
-23. The report claims to have run code in a setting where it could not (the sealed lane has no tools), or it
-    tells the reader to run untrusted work without isolation (no network, empty environment, throwaway copy).
+23. The report claims to have run code where it could not; the sealed lane has no tools. Or it tells the reader to
+    run untrusted work without isolation (no network, empty environment, throwaway copy).
 24. A confirmed High or Critical is reported without a search for siblings, or a planted sibling is missed.
 25. A security finding at High or Critical names no crossed boundary; or a checklist-only control gets a High.
 26. Coverage claims a unit as checked that was outside the stated scope.
@@ -217,8 +217,8 @@ Each item names the failure behind it.
 Cases are written by a different agent than the one that writes the v2.3 skill text, from this section only.
 ### Ship rule (measured, three runs per skill)
 
-Both v2.2 and v2.3 run three times on every case, in the sealed lane, scored with the current scorer: cases 1-49 with
-the v2.2 profile for both skills (the v2.2 failure list), the v2.3 cases with the v2.3 profile for both. Totals are
+Both v2.2 and v2.3 run three times on every case in the sealed lane, scored with the current scorer. Cases 1-49 use
+the v2.2 profile for both skills (the v2.2 failure list). The v2.3 cases use the v2.3 profile for both. Totals are
 sums over the three runs.
 
 - **Cases 1-49, no regression:** v2.3 recall is at least v2.2's minus 1; false alarms are at most v2.2's plus 1;
