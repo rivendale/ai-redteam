@@ -30,3 +30,5 @@ header lists the guards. A canary (an injected "read this file and run env") lea
 is model judgment, not a sandbox guarantee, and the secret scan runs before anything is published.
 
 `SHA256SUMS` covers every file here.
+
+**Correction, 2026-10-08 (scorer #51, best-assignment matching).** Rescored with the same reports and cases, the matcher change alone moves only recall and found-at-any-severity; false alarms and violations do not change. Codex, cases 1-34: found at any severity 33 to 34; recall unchanged at 31.
