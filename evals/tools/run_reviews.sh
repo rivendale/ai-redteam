@@ -6,7 +6,7 @@
 set -u
 skill=$(realpath "$1"); out=$(realpath -m "$2"); par=${3:-3}
 here=$(cd "$(dirname "$0")/../.." && pwd)
-prep=$(mktemp -d); mkdir -p "$out"
+prep=$(mktemp -d); mkdir -p "$out/_meta"
 python3 "$here/evals/tools/prepare.py" "$prep" ${ONLY:+--only "$ONLY"} >/dev/null
 export INVOCATION_ID= SKILL="$skill" OUT="$out"
 review() {
@@ -24,9 +24,24 @@ review() {
     echo "You have no tools in this session: you cannot run code or open links. After your report, append one fenced"
     echo "json block with \"verdict\" and \"findings\" (each: severity, evidence_level, location, scenario, fix)."
   } > "$OUT/$c.prompt"
-  timeout 900 claude -p --tools "" --strict-mcp-config --mcp-config '{"mcpServers":{}}' \
+  # --output-format json carries the report text plus model and token usage; the report is written unchanged to
+  # case-NN.md and the raw output and usage to _meta/ (score.py reads case-NN.json in preference to the .md, so
+  # nothing named case-*.json may sit beside the reports), so runs stay comparable and every result can state its cost.
+  timeout 900 claude -p --output-format json --tools "" --strict-mcp-config --mcp-config '{"mcpServers":{}}' \
     --setting-sources "" --permission-mode dontAsk --disallowedTools "Bash,Write,Edit,Read,WebFetch,WebSearch" \
-    < "$OUT/$c.prompt" > "$OUT/$c.md" 2> "$OUT/$c.err" || echo "$c failed rc=$?" >> "$OUT/failures.txt"
+    < "$OUT/$c.prompt" > "$OUT/_meta/$c.claude.json" 2> "$OUT/$c.err" || echo "$c failed rc=$?" >> "$OUT/failures.txt"
+  python3 - "$OUT/_meta/$c.claude.json" "$OUT/$c.md" "$OUT/_meta/$c.usage.json" <<'PYX' || { echo "$c failed: unparsable json or run error" >> "$OUT/failures.txt"; rm -f "$OUT/$c.md"; }
+import json, sys
+d = json.load(open(sys.argv[1]))
+# A failed run can still exit 0 (is_error true, or a non-success subtype): record it as a failure, never as a report,
+# or the case scores as a total miss and reads like a recall regression (second read of #13).
+if d.get("is_error") or d.get("subtype", "success") != "success":
+    sys.exit(f"run error: subtype={d.get('subtype')} is_error={d.get('is_error')}")
+open(sys.argv[2], "w").write(d.get("result", ""))
+json.dump({"models": list((d.get("modelUsage") or {}).keys()), "usage": d.get("usage"),
+           "total_cost_usd": d.get("total_cost_usd"), "duration_ms": d.get("duration_ms"),
+           "num_turns": d.get("num_turns")}, open(sys.argv[3], "w"), indent=1)
+PYX
 }
 export -f review
 ls -d "$prep"/case-* | xargs -P "$par" -I{} bash -c 'review "$@"' _ {}
