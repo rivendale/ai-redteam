@@ -290,13 +290,16 @@ def _sus_match(sp, f):
 
 
 def work_units(exp):
-    """The units a coverage ledger must account for: the files of the case's work/ (a base/README.md is boilerplate)."""
+    """The units a coverage ledger must account for: the files of the case's work/ (a base/README.md is boilerplate; a patch counts as the files it changes)."""
     d = exp.get("_dir")
     if not d:
         return []
     out = []
     for p in sorted((pathlib.Path(d) / "work").rglob("*")):
-        if p.is_file() and not (p.name == "README.md" and "base" in p.relative_to(pathlib.Path(d) / "work").parts[:1]):
+        if p.is_file() and p.name in ("change.patch", "fix.patch"):
+            # a patch is carried by the files it changes: naming those files accounts for it
+            out += [pathlib.PurePosixPath(m).name for m in re.findall(r"^\+\+\+ b/(\S+)", p.read_text(), re.M)]
+        elif p.is_file() and not (p.name == "README.md" and "base" in p.relative_to(pathlib.Path(d) / "work").parts[:1]):
             out.append(p.name)
     return sorted(set(out))
 
@@ -351,7 +354,7 @@ def v22_violations(exp, rep, fs, nvs, verdict):
     named = " ".join(s(u.get("unit")) for k in ("checked", "not_checked") for u in (cov.get(k) or []) if isinstance(u, dict)).lower()
     if named:
         for u in work_units(exp):
-            if u.lower() not in named:
+            if not re.search(r"(?<![\w.-])" + re.escape(u.lower()) + r"(?![\w-])", named):  # whole names: test_x.py does not cover x.py
                 out.append(f"FL17 coverage ledger omits a unit of the work: {u}")
     # FL13: a suspicion the case plants must not come out as a confirmed High or Critical
     for sp in exp.get("suspicions", []):
@@ -890,6 +893,16 @@ def self_check(cases_dir):
         r = oracle_report_v22(e)
         dropped = r["coverage"]["checked"].pop()["unit"]
         expect("FL17: a ledger that omits a unit of the work names it", any("FL17" in x and dropped in x for x in v22(e, r)["violations"]), f"omitted {dropped}")
+        pr_case = next((x for x in exps if (pathlib.Path(x["_dir"]) / "work" / "change.patch").exists() and not x["control"]), None)
+        if pr_case:
+            units = work_units(pr_case)
+            touched = sorted({m.split("/")[-1] for m in re.findall(r"^\+\+\+ b/(\S+)", (pathlib.Path(pr_case["_dir"]) / "work" / "change.patch").read_text(), re.M)})
+            rr = oracle_report_v22(pr_case)
+            ok_units = bool(touched) and all(t in units for t in touched) and "change.patch" not in units and "fix.patch" not in units
+            ledger_names = " ".join(u["unit"] for u in rr["coverage"]["checked"]).lower()
+            expect("FL17: a patch is accounted for by the files it changes; the patch file itself is not demanded", ok_units and "change.patch" not in ledger_names and not any("FL17" in x for x in v22(pr_case, rr)["violations"]), f"units {units}")
+            rr["coverage"]["checked"] = [u for u in rr["coverage"]["checked"] if u["unit"] != touched[0]]
+            expect("FL17: leaving out a file the patch changes is still flagged", any("FL17" in x and touched[0] in x for x in v22(pr_case, rr)["violations"]), f"omitted {touched[0]}")
         r = oracle_report_v22(e)
         r["verdict"] = "MAYBE"
         expect("FL18: a block that fails the schema is a violation", any("FL18" in x for x in v22(e, r)["violations"]), "violation raised")

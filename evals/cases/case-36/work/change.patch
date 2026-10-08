@@ -1,3 +1,12 @@
+--- a/handlers.py
++++ b/handlers.py
+@@ -4,5 +4,5 @@
+ 
+ def cancel(request, db):
+     """POST /orders/<id>/cancel. request["user"] is the signed-in user, set by the login middleware."""
+-    orders.cancel_order(db, request["order_id"])
++    orders.cancel_order(db, request["order_id"], request["user"])
+     return {"status": 204}
 --- a/orders.py
 +++ b/orders.py
 @@ -1,11 +1,13 @@
@@ -6,7 +15,7 @@
  
  
 -def cancel_order(db, order_id):
-+def cancel_order(db, order_id, actor=None):
++def cancel_order(db, order_id, actor):
      row = db.get_order(order_id)
      if row is None:
          raise KeyError(order_id)
@@ -17,13 +26,14 @@
      return True
 --- /dev/null
 +++ b/tests/test_orders.py
-@@ -0,0 +1,40 @@
+@@ -0,0 +1,46 @@
 +import json
 +import os
 +import tempfile
 +import unittest
 +
 +import company_audit
++import handlers
 +import orders
 +
 +
@@ -52,8 +62,13 @@
 +
 +    def test_shipped_is_refused_and_not_recorded(self):
 +        with self.assertRaises(ValueError):
-+            orders.cancel_order(FakeDb("shipped"), "o2")
++            orders.cancel_order(FakeDb("shipped"), "o2", actor="alice")
 +        self.assertFalse(os.path.exists(company_audit.AUDIT_PATH))
++
++    def test_the_handler_records_the_signed_in_user(self):
++        handlers.cancel({"order_id": "o1", "user": "bo"}, FakeDb("open"))
++        with open(company_audit.AUDIT_PATH) as f:
++            self.assertEqual(json.loads(f.readline())["actor"], "bo")
 +
 +
 +if __name__ == "__main__":
