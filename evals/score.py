@@ -127,6 +127,7 @@ def norm_findings(rep):
             "sev": sev, "ev": ev, "loc": s(loc), "refuted": refuted,
             "scenario": s(first(f, "scenario", "failure_scenario", "impact", "how_it_fails")),
             "fix": s(first(f, "fix", "recommendation", "test", "remedy")),
+            "body": " ".join(s(v) for k, v in f.items() if k not in ("location", "loc", "where", "file") and not isinstance(v, (dict, list))),
             "text": " ".join(s(v) for v in f.values() if not isinstance(v, (dict, list))) + " " + json.dumps(
                 [v for v in f.values() if isinstance(v, (dict, list))]),
         })
@@ -163,7 +164,8 @@ def _loc_dist1(floc, pfile, plines):
 
 
 def words_hit(f, planted):
-    low = f["text"].lower()
+    """The planted defect's wording appears in what the finding SAYS; a file name in its location is not wording."""
+    low = f["body"].lower()
     return any(w.lower() in low for w in planted["any_words"]) and all(w.lower() in low for w in planted.get("all_words", []))
 
 
@@ -409,7 +411,7 @@ def score_case(exp, rep, skip=(), profile="auto"):
             if d is None:
                 continue
             near, wd = d <= 3, words_hit(f, p)
-            if near and not all(w.lower() in f["text"].lower() for w in p.get("all_words", [])):
+            if near and not all(w.lower() in f["body"].lower() for w in p.get("all_words", [])):
                 near = False
             if near or wd:
                 pairs.append((-(int(near) + int(wd)), -SEV.get(f["sev"], -1), d, p["id"], f["id"], f))
@@ -902,6 +904,16 @@ def self_check(cases_dir):
         r = oracle_report_v22(e)
         r["findings"] = [f for f in r["findings"] if f["id"] != e["planted"][0]["id"]] if len(e["planted"]) > 1 else r["findings"][1:]
         expect("dropping a planted finding from a 2.2 report still costs recall", v22(e, r)["recall_hits"] < len(e["planted"]), "recall fell")
+    # a file name in a finding's location is not wording: a Low finding on the right line must not outrank a Critical finding that actually
+    # describes the defect just because the file is called summary.md and the defect's words include "summary"
+    syn = {"id": "P1", "kind": "x", "file": "work/summary.md", "lines": [3, 3], "min_severity": "High", "any_words": ["summary", "contradicts"], "all_words": [],
+           "why": "the text contradicts the table it cites"}
+    strong = finding("S", "Critical", "summary.md the relevant section", "the text contradicts the table it cites")
+    weak = finding("W", "Low", "summary.md:3", "a minor point about something else")
+    base_exp = next(e for e in exps if not e["control"])
+    got = score_case(dict(base_exp, planted=[syn], must=[], must_not=[]), {"verdict": "REWORK", "findings": [weak, strong], "inputs_ledger": {}})
+    ok_name = got["recall_hits"] == 1
+    expect("a file name in the location does not count as the defect's wording", ok_name, "Low finding on summary.md:3 vs a Critical that describes the defect")
     # hand-written reports (different key names, read through the real file loader), not derived from expected.json
     hand = pathlib.Path(__file__).resolve().parent / "selfcheck" / "reports"
     if hand.exists():
