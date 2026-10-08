@@ -3,30 +3,36 @@
 @@ -4,5 +4,5 @@
  
  def cancel(request, db):
-     """POST /orders/<id>/cancel. request["user"] is the signed-in user, set by the login middleware."""
+     """POST /orders/<id>/cancel. request["user"] is the signed-in user's id (a string), set by the login middleware."""
 -    orders.cancel_order(db, request["order_id"])
 +    orders.cancel_order(db, request["order_id"], request["user"])
      return {"status": 204}
 --- a/orders.py
 +++ b/orders.py
-@@ -1,11 +1,13 @@
+@@ -1,8 +1,11 @@
  """Order cancellation."""
 +from company_audit import record
  
  
 -def cancel_order(db, order_id):
+-    """Cancel an open order. Returns True if it was cancelled now, False if it was already cancelled."""
 +def cancel_order(db, order_id, actor):
++    """Cancel an open order on behalf of `actor` (the user id, a string). Returns True if it was cancelled now, False if it was already
++    cancelled (nothing is recorded then). The audit record is written first: if that write fails the error propagates and the order
++    stays open, so a cancellation is never made without its record."""
      row = db.get_order(order_id)
      if row is None:
          raise KeyError(order_id)
-     if row["status"] == "shipped":
+@@ -10,5 +13,6 @@
          raise ValueError("cannot cancel a shipped order")
-     db.set_status(order_id, "cancelled")
+     if row["status"] == "cancelled":
+         return False
 +    record("order.cancelled", order_id=order_id, actor=actor)
+     db.set_status(order_id, "cancelled")
      return True
 --- /dev/null
 +++ b/tests/test_orders.py
-@@ -0,0 +1,46 @@
+@@ -0,0 +1,57 @@
 +import json
 +import os
 +import tempfile
@@ -69,6 +75,17 @@
 +        handlers.cancel({"order_id": "o1", "user": "bo"}, FakeDb("open"))
 +        with open(company_audit.AUDIT_PATH) as f:
 +            self.assertEqual(json.loads(f.readline())["actor"], "bo")
++
++    def test_a_failed_audit_write_leaves_the_order_open(self):
++        company_audit.AUDIT_PATH = os.path.join(self.dir, "missing", "audit.log")
++        db = FakeDb("open")
++        with self.assertRaises(OSError):
++            orders.cancel_order(db, "o1", actor="alice")
++        self.assertIsNone(db.set)
++
++    def test_cancelling_twice_records_once(self):
++        self.assertFalse(orders.cancel_order(FakeDb("cancelled"), "o1", actor="alice"))
++        self.assertFalse(os.path.exists(company_audit.AUDIT_PATH))
 +
 +
 +if __name__ == "__main__":
