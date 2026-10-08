@@ -1,0 +1,18 @@
+{
+  "name": "ai-redteam",
+  "owner": {
+    "name": "rivendale"
+  },
+  "plugins": [
+    {
+      "name": "ai-redteam",
+      "source": "./",
+      "description": "Adversarial review of AI-produced work and bounded pull-request review with written adjudication.",
+      "version": "2.1.0",
+      "author": {
+        "name": "rivendale"
+      }
+    }
+  ],
+  "description": "Adversarial review skills for AI-produced work."
+}
