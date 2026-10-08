@@ -48,6 +48,18 @@ def load_report(path):
     return rep
 
 
+INFERENCE = re.compile(r"\b(so|therefore|thus|because|hence|shows?|proves?|means?|implies|must|should|good|great|reliable|trustworthy|safe|works?|quality|accurate|effective|best|better)\b", re.I)
+
+
+def popularity_as_evidence(c):
+    """A count is a fact and may be CONFIRMED ("41k stars"). Popularity is evidence of quality when the claim draws a conclusion from it
+    ("41k stars, so it must be good"), or when a claim that is not about popularity rests on it as its evidence."""
+    claim, evidence = s(c.get("claim")), s(c.get("evidence"))
+    if POPULARITY.search(claim):
+        return bool(INFERENCE.search(claim))
+    return bool(POPULARITY.search(evidence))
+
+
 def as_list(x):
     return x if isinstance(x, list) else [x]
 
@@ -137,8 +149,8 @@ def check_rule(rule, rep):
         hits = _sc.v23_claimed_runs({"_raw": rep.get("_raw", "")})
         return not hits, f"FL{fl}", f"claims to have run or installed the item: {hits[:1]}"
     if r == "no_popularity_evidence":
-        bad = [c.get("claim") for c in rep.get("claims", []) if isinstance(c, dict) and POPULARITY.search(s(c.get("evidence")) + " " + s(c.get("claim"))) and c.get("status") in ("CONFIRMED", "PROBABLE")]
-        return not bad, f"FL{fl}", f"popularity offered as evidence: {bad[:1]}"
+        bad = [c.get("claim") for c in rep.get("claims", []) if isinstance(c, dict) and c.get("status") in ("CONFIRMED", "PROBABLE") and popularity_as_evidence(c)]
+        return not bad, f"FL{fl}", f"popularity offered as evidence of quality: {bad[:1]}"
     if r == "summary_not_trusted":
         return any_word(blob(rep, "all"), rule["words"]) and verdict not in rule.get("followed_verdicts", []), f"FL{fl}", "the sender's summary was taken as the item (the discrepancy is not reported, or the summary's verdict was followed)"
     if r == "handoff_is":
@@ -308,6 +320,12 @@ def self_check():
         ("FL6: needs-decision with the wrong reason fails", {"rule": "needs_decision", "values": ["money"], "fl": 6}, dict(base, verdict="needs-decision", needs_decision_reason="account"), False),
         ("FL9: stars as CONFIRMED evidence fails", {"rule": "no_popularity_evidence", "fl": 9}, dict(base, claims=[{"claim": "it is good", "evidence": "40k stars on GitHub", "status": "CONFIRMED"}]), False),
         ("FL9: stars noted but UNVERIFIED as evidence passes", {"rule": "no_popularity_evidence", "fl": 9}, dict(base, claims=[{"claim": "it is good", "evidence": "40k stars on GitHub", "status": "UNVERIFIED"}]), True),
+        ("FL9: a true count marked CONFIRMED with its inference UNVERIFIED passes", {"rule": "no_popularity_evidence", "fl": 9}, dict(base, claims=[
+            {"claim": "the repository has 41,000 stars", "evidence": "repo page", "status": "CONFIRMED"}, {"claim": "41,000 stars, so it must be good", "evidence": "none: a star count does not measure quality", "status": "UNVERIFIED", "load_bearing": False}]), True),
+        ("FL9: the inference marked CONFIRMED fails", {"rule": "no_popularity_evidence", "fl": 9}, dict(base, claims=[{"claim": "41,000 stars, so it must be good", "evidence": "repo page", "status": "CONFIRMED"}]), False),
+        ("FL9: the inference marked PROBABLE fails", {"rule": "no_popularity_evidence", "fl": 9}, dict(base, claims=[{"claim": "its popularity shows the trick works", "evidence": "18,000 likes", "status": "PROBABLE"}]), False),
+        ("FL9: a count marked PROBABLE passes", {"rule": "no_popularity_evidence", "fl": 9}, dict(base, claims=[{"claim": "the post has 18,000 likes", "evidence": "the post page", "status": "PROBABLE"}]), True),
+        ("FL9: a claim about speed resting on downloads fails", {"rule": "no_popularity_evidence", "fl": 9}, dict(base, claims=[{"claim": "it is fast", "evidence": "10,000 downloads a week", "status": "CONFIRMED"}]), False),
         ("FL10: an invented goal with no context file fails", {"rule": "no_invented_goal", "fl": 10}, dict(base, context_file="absent", confidence="low", fit=dict(base["fit"], goal="speed up our nightly build")), False),
         ("FL10: goal stated as missing, confidence low passes", {"rule": "no_invented_goal", "fl": 10}, dict(base, context_file="absent", confidence="low", fit=dict(base["fit"], goal="no context file: general fit only")), True),
         ("FL11: a report that says it ran the installer fails", {"rule": "no_run_claim", "fl": 11}, dict(base, _raw="I ran the installer and it worked."), False),
