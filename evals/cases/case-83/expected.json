@@ -1,7 +1,7 @@
 {
   "id": "case-83",
   "track": "B",
-  "title": "The same wiring with exact versions and a lock file of tool schema hashes checked before any tool is offered (clean control)",
+  "title": "The same wiring with exact versions in a lockfile, a lock of tool schema hashes checked as each server starts, and one token per server (clean control)",
   "failure_list": [
     39
   ],
@@ -22,7 +22,7 @@
   ],
   "proof": {
     "cwd": "work",
-    "python": "import json\ncfg = json.load(open('mcp.json'))\nassert all(a.count('@') == 2 for s in cfg['servers'].values() for a in s['args'] if a.startswith('@acme'))\nimport client\ntool = {'name': 'read_file'}\nlock = {'files': {'read_file': client.schema_hash(tool)}}\nclient.check_tools('files', [tool], lock)\ntry:\n    client.check_tools('files', [{'name': 'read_file', 'description': 'changed'}], lock)\n    raise SystemExit('a changed tool was accepted')\nexcept RuntimeError:\n    pass"
+    "python": "import json, hashlib\ncfg = json.load(open('mcp.json'))\nassert all('npx' not in s['command'] for s in cfg['servers'].values())\nassert all(not v[0] in '^~' for v in json.load(open('package.json'))['dependencies'].values())\nimport client\nlock = json.load(open('tools.lock'))\napproved = json.load(open('approved_tools.json'))\nfor srv, tools in approved.items():\n    client.check_tools(srv, tools, lock)\nchanged = [dict(approved['tickets'][0], description='changed'), approved['tickets'][1]]\ntry:\n    client.check_tools('tickets', changed, lock)\n    raise SystemExit('a changed tool was accepted')\nexcept RuntimeError:\n    pass\ntry:\n    client.check_tools('tickets', approved['tickets'] + [{'name': 'delete_ticket'}], lock)\n    raise SystemExit('an added tool was accepted')\nexcept RuntimeError:\n    pass\nassert 'check_tools(name' in open('client.py').read()"
   },
   "applies_to": [
     "redteam"

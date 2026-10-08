@@ -2,14 +2,15 @@ commit 9c1e2d7 (HEAD -> main)
 Date:   2026-09-28
     read AWS credentials from the environment
 
-diff --git a/config.py b/config.py
 --- a/config.py
 +++ b/config.py
-@@ -1,6 +1,7 @@
- """Service configuration. Secrets come from the environment."""
-+import os
+@@ -1,4 +1,6 @@
+-"""Service configuration."""
 -AWS_ACCESS_KEY_ID = "AKIAIOSFODNN7EXAMPLE"
 -AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
++"""Service configuration. Secrets come from the environment."""
++import os
++
 +AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", "")
 +AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", "")
  BUCKET = "acme-exports-prod"
@@ -18,8 +19,6 @@ commit 3f2a1b9
 Date:   2026-08-02
     add the export bucket settings
 
-diff --git a/config.py b/config.py
-new file mode 100644
 --- /dev/null
 +++ b/config.py
 @@ -0,0 +1,4 @@

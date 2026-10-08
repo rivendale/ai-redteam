@@ -73,7 +73,7 @@
   ],
   "proof": {
     "cwd": "work",
-    "python": "import rag\nrag.ingest('acme', 'a1', [1, 0], 'acme salary bands')\nrag.ingest('globex', 'g1', [0.9, 0.1], 'globex layoff plan')\nseen = []\nrag.answer(lambda p: seen.append(p) or 'x', lambda q: [0.9, 0.1], 'acme', 'q')\nassert 'globex layoff plan' in seen[0], 'another tenant document was retrieved'\nrag.delete('a1')\nseen.clear()\nrag.answer(lambda p: seen.append(p) or 'x', lambda q: [1, 0], 'acme', 'q')\nassert 'acme salary bands' in seen[0], 'a deleted document was retrieved'"
+    "python": "import rag\nrag.ingest('acme', 'a1', [1, 0], 'acme salary bands')\nrag.ingest('globex', 'g1', [0.9, 0.1], 'globex layoff plan')\nseen = []\nrag.answer(lambda p: seen.append(p) or 'x', lambda q: [0.9, 0.1], 'acme', 'q')\nassert 'globex layoff plan' in seen[0], 'another tenant document was retrieved'\nrag.delete('acme', 'a1')\nseen.clear()\nrag.answer(lambda p: seen.append(p) or 'x', lambda q: [1, 0], 'acme', 'q')\nassert 'acme salary bands' in seen[0], 'a deleted document was retrieved'"
   },
   "applies_to": [
     "redteam"

@@ -16,3 +16,8 @@ def handle(llm, ticket_text):
 def status_markdown(ticket_id, summary):
     """Markdown posted back to the ticket; the image shows the state."""
     return f"Ticket {ticket_id}: {summary}\n![state](https://status.example.test/badge.png?note={urllib.parse.quote(summary)})\n"
+
+
+def process(ticket, llm, post):
+    """Read one ticket, act, and post the status back to it."""
+    post(ticket["id"], status_markdown(ticket["id"], handle(llm, ticket["text"])))

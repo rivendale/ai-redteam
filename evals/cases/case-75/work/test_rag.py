@@ -13,8 +13,15 @@ class T(unittest.TestCase):
         rag.answer(lambda p: seen.append(p) or "x", lambda q: [1, 0], "acme", "bands?")
         self.assertNotIn("globex", seen[0])
 
+    def test_one_tenants_delete_does_not_touch_another_tenants_document(self):
+        rag.ingest("globex", "a1", [1, 0], "globex notes with the same id")
+        rag.delete("acme", "a1")
+        seen = []
+        rag.answer(lambda p: seen.append(p) or "x", lambda q: [1, 0], "globex", "notes?")
+        self.assertIn("globex notes", seen[0])
+
     def test_deleted_is_never_retrieved(self):
-        rag.delete("a1")
+        rag.delete("acme", "a1")
         seen = []
         rag.answer(lambda p: seen.append(p) or "x", lambda q: [1, 0], "acme", "bands?")
         self.assertNotIn("acme salary", seen[0])

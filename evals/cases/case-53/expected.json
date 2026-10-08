@@ -22,7 +22,7 @@
   ],
   "proof": {
     "cwd": "work",
-    "python": "import exports, reports, admin\nfor fn, arg in ((exports.export_orders, {'sort': 'id limit 1 --'}), (reports.totals_report, {'order_by': 'customer limit 1 --'}), (admin.list_orders, {'sort': 'id limit 1 --'})):\n    try:\n        fn(arg)\n        raise SystemExit('accepted')\n    except ValueError:\n        pass\nassert len(exports.export_orders({'sort': 'total'})) == 3"
+    "python": "import exports, reports, admin\nfor fn, arg in ((exports.export_orders, {'user': 'ann', 'sort': 'id limit 1 --'}), (reports.totals_report, {'user': 'ann', 'sort': 'customer limit 0 --'}), (admin.list_orders, {'role': 'admin', 'sort': 'id limit 1 --'})):\n    try:\n        fn(arg)\n        raise SystemExit('accepted')\n    except ValueError:\n        pass\nassert len(exports.export_orders({'user': 'ann', 'sort': 'total'})) == 3\nassert [r['customer'] for r in exports.export_orders({'user': 'bo'})] == ['bo']\ntry:\n    admin.list_orders({'role': 'customer'})\n    raise SystemExit('a customer listed everything')\nexcept PermissionError:\n    pass"
   },
   "applies_to": [
     "redteam"

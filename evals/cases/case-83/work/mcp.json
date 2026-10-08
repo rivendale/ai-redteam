@@ -1,6 +1,6 @@
 {
   "servers": {
-    "files": {"command": "npx", "args": ["-y", "@acme/files-mcp@2.4.1"]},
-    "tickets": {"command": "npx", "args": ["-y", "@acme/tickets-mcp@1.9.0"]}
+    "files": {"command": "node", "args": ["node_modules/@acme/files-mcp/dist/index.js"], "token_env": "FILES_TOKEN"},
+    "tickets": {"command": "node", "args": ["node_modules/@acme/tickets-mcp/dist/index.js"], "token_env": "TICKETS_TOKEN"}
   }
 }

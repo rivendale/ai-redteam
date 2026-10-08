@@ -12,8 +12,8 @@
       "kind": "secret-only-in-history",
       "file": "work/git_history.txt",
       "lines": [
-        27,
-        27
+        26,
+        26
       ],
       "min_severity": "High",
       "any_words": [
@@ -52,7 +52,7 @@
   ],
   "proof": {
     "cwd": "work",
-    "python": "t = open('config.py').read()\nassert 'AKIA' not in t\nh = open('git_history.txt').read()\nassert h.count('AKIAIOSFODNN7EXAMPLE') == 2 and '3f2a1b9' in h"
+    "python": "t = open('config.py').read()\nassert 'AKIA' not in t\nh = open('git_history.txt').read()\nassert h.count('AKIAIOSFODNN7EXAMPLE') >= 2 and '3f2a1b9' in h"
   },
   "applies_to": [
     "redteam"

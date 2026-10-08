@@ -5,7 +5,7 @@ import torch
 from transformers import AutoModelForTokenClassification
 
 MODEL = "acme-labs/ner-small"
-ADAPTER_URL = "https://files.example.test/adapters/intake-v3.bin"
+ADAPTER_URL = "https://files.example.com/adapters/intake-v3.bin"
 
 
 def load():

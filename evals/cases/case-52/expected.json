@@ -12,8 +12,8 @@
       "kind": "sql-injection-in-order-by",
       "file": "work/exports.py",
       "lines": [
-        7,
-        7
+        8,
+        8
       ],
       "min_severity": "High",
       "any_words": [
@@ -34,14 +34,14 @@
       "kind": "sibling-sql-injection-in-order-by",
       "file": "work/reports.py",
       "lines": [
-        7,
-        7
+        8,
+        8
       ],
       "min_severity": "High",
       "any_words": [
         "injection",
         "order by",
-        "order_by",
+        "sort",
         "f-string",
         "allow-list",
         "allowlist",
@@ -50,7 +50,7 @@
         "same"
       ],
       "all_words": [],
-      "why": "the same root cause in a second file: order_by is pasted into the SQL, while admin.py shows the allow-list the other two should use"
+      "why": "the same root cause in a second file: sort is pasted into the SQL, while admin.py shows the allow-list the other two should use"
     }
   ],
   "must": [
@@ -73,7 +73,7 @@
   ],
   "proof": {
     "cwd": "work",
-    "python": "import exports, reports, admin\nall_rows = exports.export_orders({})\nassert len(all_rows) == 3\nassert len(exports.export_orders({'sort': 'id limit 1 --'})) == 1\nassert len(reports.totals_report({'order_by': 'customer limit 1 --'})) == 1\ntry:\n    admin.list_orders({'sort': 'id limit 1 --'})\n    raise SystemExit('admin accepted it')\nexcept ValueError:\n    pass"
+    "python": "import exports, reports, admin\nu = {'user': 'ann'}\nassert len(exports.export_orders(u)) == 3\nassert len(exports.export_orders({**u, 'sort': 'id limit 1 --'})) == 1\nassert len(reports.totals_report({**u, 'sort': 'customer limit 0 --'})) == 0 and len(reports.totals_report(u)) == 1\ntry:\n    admin.list_orders({'role': 'admin', 'sort': 'id limit 1 --'})\n    raise SystemExit('admin accepted it')\nexcept ValueError:\n    pass"
   },
   "applies_to": [
     "redteam"

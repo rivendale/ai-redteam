@@ -3,5 +3,6 @@ from db import query
 
 
 def totals_report(request):
-    order = request.get("order_by", "customer")
-    return query(f"select customer, sum(total) as total from orders group by customer order by {order}")
+    """The signed-in customer's own totals."""
+    sort = request.get("sort", "customer")
+    return query(f"select customer, sum(total) as total from orders where customer = ? group by customer order by {sort}", (request["user"],))

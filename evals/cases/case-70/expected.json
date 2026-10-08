@@ -1,7 +1,7 @@
 {
   "id": "case-70",
   "track": "C",
-  "title": "Service report that celebrates a falling complaint count while the customer base halved, and a 50% 'risk cut' from 10 incidents to 5",
+  "title": "Service report that celebrates a falling complaint count while the customer base halved, and a 40% 'risk cut' from 10 incidents to 3",
   "failure_list": [
     33
   ],
@@ -44,16 +44,16 @@
         "absolute",
         "relative",
         "small number",
-        "10 and 2",
+        "10 and 3",
         "variance",
         "noise",
-        "0.1",
+        "0.08",
         "sample",
         "too few",
         "statistical"
       ],
       "all_words": [],
-      "why": "a relative 50% rests on a handful of events (2 per 1,000 to 1 per 1,000 is a 0.1 percentage point change); it is within noise"
+      "why": "a relative 40% rests on a handful of events (10 to 3 incidents, 1.9 to 1.2 per 1,000 is a 0.08 percentage point change); it is within noise"
     }
   ],
   "must": [

@@ -1,7 +1,7 @@
 {
   "id": "case-65",
   "track": "B",
-  "title": "The same bot where the model picks one of three fixed actions and the image URL carries only the ticket id (clean control)",
+  "title": "The same bot where the model picks from fixed actions (read-only ones run, changes wait for staff) and the image URL carries only the ticket id (clean control)",
   "failure_list": [
     30
   ],

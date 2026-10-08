@@ -10,6 +10,18 @@ class T(unittest.TestCase):
         self.assertIn("error", r)
         self.assertLessEqual(len(calls), agent.MAX_TURNS)
 
+    def test_an_oversized_question_is_refused_before_any_model_call(self):
+        calls = []
+        r = agent.ask_endpoint({"user": "u3", "question": "x" * 100000}, lambda m: calls.append(1) or {"answer": "a"}, {})
+        self.assertEqual((r, calls), ({"error": "question too long"}, []))
+
+    def test_a_huge_tool_result_is_truncated(self):
+        seen = []
+        replies = iter([{"tool": "t", "args": {}, "tokens": 1}, {"answer": "done", "tokens": 1}])
+        llm = lambda m: seen.append(m) or next(replies)
+        agent.ask_endpoint({"user": "u4", "question": "q"}, llm, {"t": lambda: "y" * 100000})
+        self.assertLessEqual(len(seen[1][-1]["content"]), agent.MAX_TOOL_RESULT_CHARS)
+
     def test_anonymous_is_refused(self):
         self.assertEqual(agent.ask_endpoint({"question": "q"}, lambda m: {"answer": "a"}, {}), {"error": "login required"})
 

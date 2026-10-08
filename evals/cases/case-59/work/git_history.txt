@@ -1,14 +1,13 @@
 commit 9c1e2d7 (HEAD -> main)
 Date:   2026-09-28
-    read AWS credentials from the environment
+    add the service configuration, reading AWS credentials from the environment
 
-diff --git a/config.py b/config.py
-new file mode 100644
 --- /dev/null
 +++ b/config.py
-@@ -0,0 +1,5 @@
+@@ -0,0 +1,6 @@
 +"""Service configuration. Secrets come from the environment."""
 +import os
++
 +AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", "")
 +AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", "")
 +BUCKET = "acme-exports-prod"
