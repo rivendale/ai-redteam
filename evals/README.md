@@ -319,3 +319,18 @@ Claim status `REFUTED` (assess-1, additive, 2026-10-08): a claim the item's own 
 contradicting fact as its evidence. Before this the enum had no place for it, and a sender's false claim was recorded UNVERIFIED, which the
 cross-field rule then treated as a reason to cap confidence (case-07 of the v1.1 run). REFUTED never caps confidence. The controls that name a
 supported claim now fail on REFUTED as well as UNVERIFIED, so a true claim cannot be marked false.
+
+## The assess hold-out set (evals/assess/holdout/cases, added 2026-10-08)
+
+The 36 cases in `evals/assess/cases` were changed, along with the skill, after reading failures on them, so they are a development set. The hold-out set is 36
+more: two defect cases for each of the 14 failure-list rules and eight controls, written from `docs/SPEC-assess.md` alone, before looking at the skill's runs. It
+uses a different domain (a small mobile-game studio: Unity, Jenkins on one Mac mini, Crashlytics, Crowdin) and its own synthetic context file, so none of the
+dev set's wording (docs, CI, lychee, sqlite-vec) can help. The same scorer rules apply (`evals/score_assess.py --cases evals/assess/holdout/cases`).
+
+Run it the same way: `CASES=evals/assess/holdout/cases NOTE=assess evals/tools/run_reviews.sh`. Run the skill unchanged, three runs, and publish whatever comes out. A
+drop against the dev set's result is the size of the tuning.
+
+Checked before it was committed: every case's proof holds (including the one script in control 4, which was run, and the line count in the post), the scorer's
+self-check builds a passing reference report for each case, a bare "adopt" fails every defect case and a blanket "skip" fails every control, and the secret scan finds 0.
+The controls were read for defects of their own (the lesson of rounds 4 and 5): an install pinned to a commit, a permitted license, a post whose script and table are in
+the snapshot so its claims can be checked, and no tool that does the same job as one the context names.

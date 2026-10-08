@@ -1,0 +1,46 @@
+{
+  "id": "case-15",
+  "slug": "h-fl8a-a-top-ten-list-and-one-goal",
+  "failure_list": [
+    8
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "mentions_none",
+      "in": [
+        "next"
+      ],
+      "words": [
+        "top 10",
+        "ten best",
+        "colorgrader",
+        "inspector plus"
+      ],
+      "fl": 8
+    },
+    {
+      "rule": "fit_mentions",
+      "field": "goal",
+      "words": [
+        "none found",
+        "goal 1",
+        "no goal",
+        "android"
+      ],
+      "fl": 8
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 8
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'None of them touches builds' in t"
+  }
+}

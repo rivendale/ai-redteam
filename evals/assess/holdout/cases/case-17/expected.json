@@ -1,0 +1,44 @@
+{
+  "id": "case-17",
+  "slug": "h-fl9a-twenty-eight-thousand-stars-and-a-quiet-repository",
+  "failure_list": [
+    9
+  ],
+  "control": false,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "no_popularity_evidence",
+      "fl": 9
+    },
+    {
+      "rule": "mentions_any",
+      "in": [
+        "risks",
+        "raw",
+        "next"
+      ],
+      "words": [
+        "last commit",
+        "last push",
+        "2023",
+        "unmaintained",
+        "stale",
+        "unity 6",
+        "no reply"
+      ],
+      "fl": 9
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 9
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert '28,000 stars' in t\nassert 'does this work with Unity 6' in t"
+  }
+}

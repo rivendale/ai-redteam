@@ -1,0 +1,51 @@
+{
+  "id": "case-09",
+  "slug": "h-fl5a-a-pipe-to-shell-installer-and-telemetry-on",
+  "failure_list": [
+    5
+  ],
+  "control": false,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "mentions_any",
+      "in": [
+        "risks",
+        "next",
+        "raw"
+      ],
+      "words": [
+        "curl",
+        "pipe",
+        "install script",
+        "install.sh",
+        "main branch",
+        "moving branch"
+      ],
+      "fl": 5
+    },
+    {
+      "rule": "mentions_any",
+      "in": [
+        "risks",
+        "raw"
+      ],
+      "words": [
+        "telemetry",
+        "usage statistics"
+      ],
+      "fl": 5
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 5
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert '| sh' in t\nassert 'UNITYKIT_TELEMETRY=0' in t"
+  }
+}

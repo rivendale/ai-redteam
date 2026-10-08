@@ -1,0 +1,39 @@
+{
+  "id": "case-27",
+  "slug": "h-fl14a-an-apk-size-claim-with-no-benchmark-app",
+  "failure_list": [
+    14
+  ],
+  "control": false,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "claim_not_confirmed",
+      "words": [
+        "60%",
+        "60 percent",
+        "cuts"
+      ],
+      "fl": 14
+    },
+    {
+      "rule": "confidence_in",
+      "values": [
+        "low",
+        "medium"
+      ],
+      "fl": 14
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 14
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'are private and are not in this repository' in t"
+  }
+}

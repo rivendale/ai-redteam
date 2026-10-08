@@ -1,0 +1,71 @@
+{
+  "id": "case-35",
+  "slug": "h-ctl7-an-ios-build-post-with-its-method-and-table",
+  "failure_list": [
+    0
+  ],
+  "control": true,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "try",
+        "adopt",
+        "watch"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "skip_negated": true,
+      "words": [
+        "sends telemetry",
+        "collects telemetry",
+        "phones home",
+        "install script",
+        "curl",
+        "abandoned",
+        "unmaintained"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "resolved_true",
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "skip_negated": true,
+      "in": [
+        "cost"
+      ],
+      "words": [
+        "subscription",
+        "personal-use",
+        "personal use",
+        "non-commercial",
+        "paid tier",
+        "free trial",
+        "trial period"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "claim_status_not",
+      "status": [
+        "UNVERIFIED",
+        "REFUTED"
+      ],
+      "words": [
+        "14",
+        "11 min"
+      ],
+      "fl": 0
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert '10 runs each' in t\nassert '| Library cache | 11 min | 10-12 |' in t"
+  }
+}

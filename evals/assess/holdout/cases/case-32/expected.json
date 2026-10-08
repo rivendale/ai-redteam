@@ -1,0 +1,90 @@
+{
+  "id": "case-32",
+  "slug": "h-ctl4-a-known-issues-script-we-can-read-in-full",
+  "failure_list": [
+    0
+  ],
+  "control": true,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "try",
+        "adopt"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "skip_negated": true,
+      "words": [
+        "sends telemetry",
+        "collects telemetry",
+        "phones home",
+        "install script",
+        "curl",
+        "abandoned",
+        "unmaintained"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "resolved_true",
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "skip_negated": true,
+      "in": [
+        "cost"
+      ],
+      "words": [
+        "subscription",
+        "personal-use",
+        "personal use",
+        "non-commercial",
+        "paid tier",
+        "free trial",
+        "trial period"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "skip_negated": true,
+      "in": [
+        "overlap"
+      ],
+      "words": [
+        "crowdin",
+        "crashlytics"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "fit_mentions",
+      "field": "goal",
+      "words": [
+        "goal 4",
+        "devlog"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "claim_status_not",
+      "status": [
+        "UNVERIFIED",
+        "REFUTED"
+      ],
+      "words": [
+        "14-line"
+      ],
+      "fl": 0
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nimport re\nb = re.search(r'```python\\n(.*?)```', t, re.S).group(1)\nn = len(b.rstrip('\\n').splitlines())\nassert ('%d-line script' % n) in t, n"
+  }
+}

@@ -46,6 +46,8 @@ jobs:
         run: python3 evals/score_assess.py --self-check
       - name: Assess case proofs
         run: python3 evals/tools/verify_cases.py --cases evals/assess/cases
+      - name: Assess hold-out case proofs
+        run: python3 evals/tools/verify_cases.py --cases evals/assess/holdout/cases
       - name: Eval case proofs (every planted defect demonstrated, every control's tests pass)
         run: python3 evals/tools/verify_cases.py
       - name: Byte-compile every Python file

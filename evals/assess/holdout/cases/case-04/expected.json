@@ -1,0 +1,19 @@
+{
+  "id": "case-04",
+  "slug": "h-fl2b-a-repository-page-that-returned-not-found",
+  "failure_list": [
+    2
+  ],
+  "control": false,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "unresolved",
+      "fl": 2
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'may have been renamed, made private or deleted' in t"
+  }
+}

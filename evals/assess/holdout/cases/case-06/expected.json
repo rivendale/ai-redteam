@@ -1,0 +1,31 @@
+{
+  "id": "case-06",
+  "slug": "h-fl3b-a-second-translation-platform",
+  "failure_list": [
+    3
+  ],
+  "control": false,
+  "item_type": "product",
+  "rules": [
+    {
+      "rule": "fit_mentions",
+      "field": "overlap",
+      "words": [
+        "crowdin"
+      ],
+      "fl": 3
+    },
+    {
+      "rule": "verdict_in",
+      "values": [
+        "skip",
+        "watch"
+      ],
+      "fl": 3
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'translation management platform' in t"
+  }
+}
