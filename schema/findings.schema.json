@@ -1,11 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "redteam findings block, schema version 2.2",
-  "description": "The machine-readable JSON block at the end of a redteam or pr-review report. Written from the v2.2 section of docs/SPEC.md. Rules that compare fields across the report (the verdict against the findings, unique ids, a refuted id absent from findings) are in tools/validate_findings.py, not here.",
+  "title": "redteam findings block, schema versions 2.2 and 2.3",
+  "description": "The machine-readable JSON block at the end of a redteam or pr-review report. Written from the v2.2 and v2.3 sections of docs/SPEC.md. A 2.2 report is validated as before; a 2.3 report also needs the boundary, siblings_searched and reason rules (all additive). Rules that compare fields across the report (the verdict against the findings, unique ids, a refuted id absent from findings) are in tools/validate_findings.py, not here.",
   "type": "object",
   "required": ["schema_version", "verdict", "inputs_ledger", "coverage", "findings", "refuted"],
   "properties": {
-    "schema_version": {"const": "2.2"},
+    "schema_version": {"enum": ["2.2", "2.3"]},
     "verdict": {"enum": ["SHIP", "SHIP WITH FIXES", "REWORK", "REJECT"]},
     "confidence": {"enum": ["high", "medium", "low"]},
     "inputs_ledger": {"type": "array", "items": {"$ref": "#/$defs/ledgerItem"}},
@@ -15,7 +15,45 @@
     "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
     "refuted": {"type": "array", "items": {"$ref": "#/$defs/refutedItem"}}
   },
+  "allOf": [
+    {"if": {"required": ["schema_version"], "properties": {"schema_version": {"const": "2.3"}}}, "then": {"$ref": "#/$defs/v23"}}
+  ],
   "$defs": {
+    "v23": {
+      "description": "What schema 2.3 adds to 2.2. Coverage reasons come from a closed list; a confirmed High or Critical finding says whether it is a security finding, what was searched for siblings of it, and, if it is a security finding, the boundary it crosses.",
+      "type": "object",
+      "properties": {
+        "coverage": {"properties": {"not_checked": {"items": {"properties": {"reason": {"enum": ["not_supplied", "not_read", "no_tools", "out_of_scope", "time_budget", "other"]}}}}}},
+        "findings": {"items": {"$ref": "#/$defs/finding23"}}
+      }
+    },
+    "finding23": {
+      "type": "object",
+      "allOf": [
+        {"if": {"required": ["status", "severity"], "properties": {"status": {"const": "confirmed"}, "severity": {"enum": ["High", "Critical"]}}},
+         "then": {"required": ["security", "siblings_searched"]}},
+        {"if": {"required": ["security"], "properties": {"security": {"const": true}}}, "then": {"required": ["boundary"]}}
+      ],
+      "properties": {
+        "security": {"type": "boolean"},
+        "siblings_searched": {
+          "description": "What was searched for other instances of the same root cause, and what was found.",
+          "type": "object",
+          "required": ["searched", "found"],
+          "properties": {"searched": {"type": "string", "minLength": 10}, "found": {"type": "string", "minLength": 4}}
+        },
+        "boundary": {
+          "description": "The lower-trust principal, the input it controls, the control that fails, the boundary crossed and the resource affected. A checklist deviation with no crossed boundary is at most Low.",
+          "type": "object",
+          "required": ["principal", "input", "control", "crossed", "resource"],
+          "properties": {
+            "principal": {"type": "string", "minLength": 3}, "input": {"type": "string", "minLength": 3},
+            "control": {"type": "string", "minLength": 3}, "crossed": {"type": "string", "minLength": 3},
+            "resource": {"type": "string", "minLength": 3}
+          }
+        }
+      }
+    },
     "ledgerItem": {
       "type": "object",
       "required": ["item", "status"],
@@ -38,7 +76,7 @@
             "required": ["unit", "kind"],
             "properties": {
               "unit": {"type": "string", "minLength": 1},
-              "kind": {"enum": ["file", "function", "section", "claim", "assumption", "config", "data"]},
+              "kind": {"enum": ["file", "document", "function", "section", "claim", "assumption", "config", "data"]},
               "note": {"type": "string"}
             }
           }

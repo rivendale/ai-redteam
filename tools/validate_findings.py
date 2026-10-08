@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check a redteam / pr-review findings block against schema/findings.schema.json and the cross-field rules of the v2.2 spec.
+"""Check a redteam / pr-review findings block against schema/findings.schema.json and the cross-field rules of the v2.2 and v2.3 specs.
 
     python3 tools/validate_findings.py REPORT [--quiet]        REPORT is a .json file, or a .md report whose LAST ```json block is read
     python3 tools/validate_findings.py --self-check            run schema/examples (valid ones pass, each invalid one names its fault)
@@ -186,7 +186,7 @@ def main(argv):
     errs = validate(rep)
     if not errs:
         if "--quiet" not in argv:
-            print(f"{args[0]}: valid (schema 2.2)")
+            print(f"{args[0]}: valid (schema {rep.get('schema_version')})")
         return 0
     for p, m in errs:
         print(f"{p or '$'}: {m}")
