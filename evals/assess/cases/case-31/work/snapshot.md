@@ -1,7 +1,7 @@
 # Changelogs from commit trailers, step by step  (post, 2026-09-17)
 
-Add a `Change:` trailer to each commit message (`Change: fixed`). A 21-line script reads `git log` since the last tag, groups lines by trailer
-type and writes the markdown. The whole script:
+A commit-msg hook adds a `Change:` trailer to each commit from the first word of its subject (`Fix the retry` becomes `Change: fixed`), so nobody
+types one. A 21-line script reads `git log` since the last tag, groups lines by trailer type and writes the markdown. The whole script:
 
 ```python
 import subprocess
