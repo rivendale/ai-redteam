@@ -1,0 +1,194 @@
+You are running the following skill. Follow it exactly.
+
+=== SKILL ===
+---
+name: pr-review
+description: Disciplined, bounded code review of one pull request, with written adjudication of every finding. Use when asked to review a PR, close out a PR, or decide whether a PR is ready to merge.
+---
+
+# pr-review: Bounded Pull Request Review
+
+Review one pull request at one exact commit, find what would break, and close it out in writing. redteam stress-tests any piece of work; pr-review closes out a PR. A review is finished when every finding has a written decision and the merge recommendation follows from the evidence, not when the reviewer runs out of things to say.
+
+## Step 1: Freeze the target
+
+1. Name the PR, its exact head commit and its merge base with the target branch. Record both SHAs in the report.
+2. Review in a throwaway worktree or checkout of that head, not in the author's working tree. Uncommitted changes are not part of the PR.
+3. A review of a head that has since moved is not a review of the new head. If the head moves during or after the review, say so and say which commits were not reviewed.
+
+## Step 2: Size the review by risk
+
+Pick the tier from what the change touches, not from its size or file type: a one-line config change that alters who can access what is High.
+
+| Tier | What it covers | Review |
+|---|---|---|
+| Low | Docs, version pins, tests only, and config that does not touch auth, permissions, secrets, network exposure or data handling | One independent read; the `redteam` skill is enough |
+| Standard | Ordinary code changes | One model round |
+| High | Authentication and permissions, secrets and network exposure (including their configuration), migrations, money movement, personal data, regulated text | Two rounds, ideally on two different vendors |
+
+When unsure, take the higher tier. Record the tier and the reason in the report. The tier's rounds are the review; a High-tier PR whose second round has not run is not reviewed.
+
+## Step 3: Protect the data, before anything is sent
+
+Before any code leaves this session, including to a subagent, decide which models or endpoints are approved for whatever data the code can carry, and run the review only there, for example zero-retention keys for code that touches personal data. A second vendor is a reason for a second opinion, not a reason to send data somewhere it may not go. If no approved reviewer exists for the tier, say so and stop rather than downgrade silently.
+
+## Step 4: Independence
+
+- The reviewer is a separate instance with no memory of writing the change. A fork of the authoring session is not independent; it inherits the author's reasoning.
+- If this session wrote or helped write the change and a subagent tool (Agent or Task) is available, delegate the review to a fresh subagent on an approved endpoint (Step 3): pass it only the PR description, the diff, the surrounding code, the original request and these instructions, never your own reasoning or defense of the change. Relay its report.
+- If no fresh instance is available, stop and say so: recommend running the review in a new session. Do not review your own change.
+- Record who wrote the change, read from the commit trailers (for example `Co-Authored-By`), and who reviewed it.
+
+## Step 5: Review
+
+1. Read the diff in the context of the code around it: callers, callees, the schema, the config it reads, the tests that cover it. A diff read alone misses what the change breaks elsewhere.
+2. Check the change against the original request: all of it, and nothing extra.
+3. Trust nothing on assertion. "Tested" and "handles X" are claims until the test is seen and, where possible, run.
+4. Every finding uses this format:
+
+| Field | Content |
+|---|---|
+| Severity | P0 (blocks merge: data loss, security breach, outage, wrong money) / P1 (likely to fail in real use) / P2 (real weakness, workaround exists) / P3 (worth fixing, not urgent) |
+| Location | `file:line` |
+| Failure scenario | The concrete inputs or conditions, then what goes wrong |
+| Suggested test | A test that would fail today and pass once fixed |
+
+A finding without a location and a concrete failure scenario is not a finding. Drop it.
+
+## Step 6: Bound the spend
+
+- The tier sets the budget: one run per round the tier requires (one for Standard, two for High).
+- Any run beyond that needs the owner's approval, asked for with four facts: the run count so far, the cost so far, the estimated extra cost, and the specific question the new run would answer. "Review it again" is not a question.
+- Corrections made after a review are verified as Step 7's **Accepted** defines, by a targeted read of the correction diff and its tests, not by another full review.
+
+## Step 7: Adjudicate in writing
+
+Every finding gets a decision:
+
+- **Accepted**: fixed, with a regression test that fails without the fix and passes with it, AND the fix's own diff read for a new defect (a targeted read of the change, not another paid round; AI-written fixes have been measured adding new flaws). A fix that introduces a defect is a new finding, not an acceptance. Name the fix commit. Where no test can apply (docs, config, a version pin), say so and give the evidence the fix is right instead.
+- **Deferred** (P2 and P3 only): agreed, not fixed in this PR, with a link to the issue that tracks it. A P0 or P1 cannot be deferred.
+- **Rejected**: with the evidence (a line of code, a test result, a spec reference) that shows the finding is wrong or out of scope.
+
+Post the adjudication on the PR with the reviewed SHA. If fixes moved the head, say which lines changed after the review and how each change was verified.
+
+## Step 8: Merge only when clear
+
+Recommend merge only when all of these hold:
+
+- every round the tier requires has run, and every finding has a written decision;
+- every expected check is present and green (a missing check is not green, and a red check is never overridden);
+- no unresolved blocker remains;
+- no owner or architecture decision is pending.
+
+## Signals
+
+- **A finding count that will not fall across rounds is a design problem.** Do not run another line-by-line round. Split the PR, or ask a structural question: "what is wrong here that neither of us has said?"
+- **Reviewers over-flag.** Two reviewers agreeing is one observation made twice, not proof. Confirm a finding against the code before acting on it.
+
+## Output format
+
+The reviewer writes the review report. The close-out is written after the author has adjudicated the findings, by whoever closes the PR; a reviewer never adjudicates its own findings.
+
+**Review report**
+
+REVIEWED: PR, head SHA, merge base SHA.
+TIER: Low / Standard / High, and why.
+REVIEWERS: who reviewed (instance and model), and who wrote the change (from the commit trailers).
+
+FINDINGS:
+
+| # | Severity | Location | Failure scenario | Suggested test |
+|---|---|---|---|---|
+
+FILES NEEDED BUT NOT PROVIDED: the list, or "none".
+
+**Close-out**
+
+ADJUDICATION:
+
+| # | Decision | Evidence or fix commit |
+|---|---|---|
+
+VERIFIED AFTER FIXES: what changed after the review, and how each change was verified.
+
+MERGE RECOMMENDATION: merge / merge after fixes / do not merge, with the reason and any check, blocker or decision still open.
+
+=== INPUTS ===
+--- ORIGINAL REQUEST (request.md) ---
+Make slugify safe for user-supplied titles: only a-z, 0-9 and single hyphens, a length cap, and a clear error for non-strings.
+--- CONTEXT (context.md) ---
+Review requested: review of PR #70 (work/PR.md, work/change.patch, files it changes in work/base/) before merge.
+Stakes: standard; a small library function used when creating URLs.
+--- WORK UNDER REVIEW ---
+### file: PR.md
+# PR #70: harden slugify
+Head 9d4e1a7, merge base c82f0b3.
+
+Output is lowercase a-z, 0-9 and single hyphens, at most 80 characters, never starting or ending with a hyphen. Letters outside
+a-z are dropped, not transliterated (stated in the docstring and tested). Non-strings raise TypeError. Six tests, all pass.
+
+### file: base/README.md
+# Repository
+Small service repository (invented). Changes are proposed as pull requests; the patch in change.patch applies to the files in base/.
+
+### file: base/slug.py
+def slugify(text):
+    return text.lower().replace(" ", "-")
+
+### file: change.patch
+--- a/slug.py
++++ b/slug.py
+@@ -1,2 +1,14 @@
++import re
++
++MAX_LEN = 80
++
++
+ def slugify(text):
+-    return text.lower().replace(" ", "-")
++    """Lowercase ASCII slug of at most MAX_LEN characters; words are joined by single hyphens.
++
++    Letters outside a-z and digits are dropped, not transliterated. Input with no usable characters gives "".
++    """
++    if not isinstance(text, str):
++        raise TypeError("text must be a string")
++    slug = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
++    return slug[:MAX_LEN].rstrip("-")
+--- /dev/null
++++ b/tests/test_slug.py
+@@ -0,0 +1,30 @@
++import unittest
++from slug import slugify, MAX_LEN
++
++
++class T(unittest.TestCase):
++    def test_basic(self):
++        self.assertEqual(slugify("Hello, World!"), "hello-world")
++
++    def test_collapses_and_strips(self):
++        self.assertEqual(slugify("  a   b -- c  "), "a-b-c")
++
++    def test_empty_and_symbols(self):
++        self.assertEqual(slugify(""), "")
++        self.assertEqual(slugify("!!!"), "")
++
++    def test_length_cap_never_ends_in_hyphen(self):
++        s = slugify("word " * 40)
++        self.assertLessEqual(len(s), MAX_LEN)
++        self.assertFalse(s.endswith("-"))
++
++    def test_non_ascii_dropped(self):
++        self.assertEqual(slugify("caf\u00e9 au lait"), "caf-au-lait")
++
++    def test_type_error(self):
++        with self.assertRaises(TypeError):
++            slugify(None)
++
++
++if __name__ == "__main__":
++    unittest.main()
+
+
+=== OUTPUT NOTE (same for every version) ===
+You have no tools in this session: you cannot run code or open links. After your report, append one fenced
+json block with "verdict" and "findings" (each: severity, evidence_level, location, scenario, fix).
