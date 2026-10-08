@@ -15,6 +15,8 @@ class BudgetExceeded(Exception):
 
 
 def run_agent(llm, tools, question):
+    if not isinstance(question, str):
+        raise BudgetExceeded("question must be text")
     if len(question) > MAX_QUESTION_CHARS:
         raise BudgetExceeded("question too long")
     messages = [{"role": "user", "content": question}]

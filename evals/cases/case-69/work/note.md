@@ -4,4 +4,4 @@ Across 14 firms, employees on a four-day week reported lower exhaustion scores t
 
 ## Sources (retrieved copies are in retrieved/)
 1. Calder & Osei, "A four-day week and exhaustion", Journal of Work Studies, 2023. https://doi.example.org/10.5555/jws.2023.114 (retrieved/ref1.md)
-2. Mbeki et al., "Replicating the four-day week", Journal of Work Studies, 2019. https://doi.example.org/10.5555/jws.2024.007 (retrieved/ref3.md)
+2. Mbeki et al., "Replicating the four-day week", Journal of Work Studies, 2024. https://doi.example.org/10.5555/jws.2024.007 (retrieved/ref3.md)

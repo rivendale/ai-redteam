@@ -1,7 +1,7 @@
 {
   "id": "case-75",
   "track": "B",
-  "title": "The same service filtering by tenant and deleted flag inside the query, with tests for both (clean control)",
+  "title": "The same service filtering by tenant inside the query and deleting a document by removing it, with tests for both (clean control)",
   "failure_list": [
     35
   ],

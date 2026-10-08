@@ -20,7 +20,11 @@
         "sql",
         "injection",
         "concatenat",
-        "parameter"
+        "parameter",
+        "placeholder",
+        "union select",
+        "1=1",
+        "' or "
       ],
       "all_words": [],
       "why": "owner and term are concatenated into the SQL text; a term like ' OR owner != ' reads other users' notes"

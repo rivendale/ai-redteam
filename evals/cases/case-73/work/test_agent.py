@@ -15,6 +15,11 @@ class T(unittest.TestCase):
         r = agent.ask_endpoint({"user": "u3", "question": "x" * 100000}, lambda m: calls.append(1) or {"answer": "a"}, {})
         self.assertEqual((r, calls), ({"error": "question too long"}, []))
 
+    def test_a_question_that_is_not_text_is_refused_before_any_model_call(self):
+        calls = []
+        r = agent.ask_endpoint({"user": "u4", "question": ["x" * 100000]}, lambda m: calls.append(1) or {"answer": "a"}, {})
+        self.assertEqual((r, calls), ({"error": "question must be text"}, []))
+
     def test_a_huge_tool_result_is_truncated(self):
         seen = []
         replies = iter([{"tool": "t", "args": {}, "tokens": 1}, {"answer": "done", "tokens": 1}])
