@@ -47,7 +47,8 @@ hand off to `glean` (code or papers) or `harvest` (text or sites) in rivendale/o
    - `watch`: not now; name what would change the answer.
    - `skip`: give the reason.
    - `needs-decision`: anything that spends money, adds an account or subscription, sends data to a new party, or
-     changes a standing rule. Say which. The operator decides; you never do.
+     changes a standing rule. Say which. The operator decides; you never do. This holds even when you lean to
+     `skip`: give your lean and the reason in the VERDICT sentence, and leave the choice to the operator.
 6. **One next action,** with who does it and how to tell it is done. When the answer is to borrow ideas, name the
    hand-off: `glean` for code or a paper, `harvest` for text, a site or a product page. Using a tool or buying a product is not
    borrowing; its hand-off is `none`.
@@ -93,8 +94,11 @@ Then one fenced `json` block that passes the assess schema (`schema/assess.schem
 }
 ```
 
-`item.type` is repo, paper, post, product or idea. For `needs-decision`, add `needs_decision_reason` (money,
-account, data to a new party, or a standing rule) and use hand-off `none`. An unresolved item has `"resolved": false`
+`item.type` is repo, paper, post, product or idea. For `needs-decision`, add `needs_decision_reason`: exactly one of
+`money`, `account`, `data_to_new_party` or `standing_rule` (when several apply, the first in that order; name the
+others in the VERDICT sentence), and use hand-off `none`. `context_file` is exactly `present` or `absent`. Every claim
+counts as one the verdict rests on unless it has `"load_bearing": false`, so set that on each claim the verdict does
+not depend on. An unresolved item has `"resolved": false`
 and an `unresolved_reason`.
 
 ## Where it fits
