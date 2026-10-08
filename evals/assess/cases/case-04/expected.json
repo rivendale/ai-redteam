@@ -1,0 +1,19 @@
+{
+  "id": "case-04",
+  "slug": "fl2b-page-that-renders-only-in-a-browser",
+  "failure_list": [
+    2
+  ],
+  "control": false,
+  "item_type": "product",
+  "rules": [
+    {
+      "rule": "unresolved",
+      "fl": 2
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'You need to enable JavaScript' in t"
+  }
+}

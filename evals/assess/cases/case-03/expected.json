@@ -1,0 +1,19 @@
+{
+  "id": "case-03",
+  "slug": "fl2a-login-wall-with-a-promising-title",
+  "failure_list": [
+    2
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "unresolved",
+      "fl": 2
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'Sign in to continue reading' in t"
+  }
+}

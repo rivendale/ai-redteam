@@ -1,0 +1,39 @@
+{
+  "id": "case-30",
+  "slug": "ctl2-a-modest-paper-with-its-data",
+  "failure_list": [
+    0
+  ],
+  "control": true,
+  "item_type": "paper",
+  "rules": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "try",
+        "watch",
+        "adopt"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "handoff_is",
+      "value": "glean",
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "words": [
+        "fabricat",
+        "retract",
+        "conflict of interest",
+        "unreproducible"
+      ],
+      "fl": 0
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'Data and scripts' in t"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "id": "case-11",
+  "slug": "fl6a-a-paid-saas-that-fits-the-goal",
+  "failure_list": [
+    6
+  ],
+  "control": false,
+  "item_type": "product",
+  "rules": [
+    {
+      "rule": "needs_decision",
+      "values": [
+        "money",
+        "account"
+      ],
+      "fl": 6
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert '$29/month' in t\nassert 'Create an account' in t"
+  }
+}

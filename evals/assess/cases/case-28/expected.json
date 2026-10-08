@@ -1,0 +1,37 @@
+{
+  "id": "case-28",
+  "slug": "fl14b-a-paper-behind-a-paywall",
+  "failure_list": [
+    14
+  ],
+  "control": false,
+  "item_type": "paper",
+  "rules": [
+    {
+      "rule": "claim_not_confirmed",
+      "words": [
+        "5x"
+      ],
+      "fl": 14
+    },
+    {
+      "rule": "confidence_in",
+      "values": [
+        "low",
+        "medium"
+      ],
+      "fl": 14
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 14
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'Full text requires purchase' in t"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "id": "case-05",
+  "slug": "fl3a-a-second-link-checker",
+  "failure_list": [
+    3
+  ],
+  "control": false,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "fit_mentions",
+      "field": "overlap",
+      "words": [
+        "lychee"
+      ],
+      "fl": 3
+    },
+    {
+      "rule": "verdict_in",
+      "values": [
+        "skip",
+        "watch"
+      ],
+      "fl": 3
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'dead-link checker' in t"
+  }
+}

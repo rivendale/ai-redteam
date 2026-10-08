@@ -1,0 +1,32 @@
+{
+  "id": "case-07",
+  "slug": "fl4a-free-outputs-are-personal-use-only",
+  "failure_list": [
+    4
+  ],
+  "control": false,
+  "item_type": "product",
+  "rules": [
+    {
+      "rule": "fit_mentions",
+      "field": "cost",
+      "words": [
+        "personal",
+        "non-commercial"
+      ],
+      "fl": 4
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt",
+        "try"
+      ],
+      "fl": 4
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'personal, non-commercial use only' in t"
+  }
+}

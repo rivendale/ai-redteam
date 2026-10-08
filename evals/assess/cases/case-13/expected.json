@@ -1,0 +1,40 @@
+{
+  "id": "case-13",
+  "slug": "fl7a-five-tools-compared-and-one-question",
+  "failure_list": [
+    7
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "watch",
+        "skip",
+        "needs-decision",
+        "try"
+      ],
+      "fl": 7
+    },
+    {
+      "rule": "mentions_any",
+      "in": [
+        "next",
+        "raw"
+      ],
+      "words": [
+        "doca",
+        "docd",
+        "none of",
+        "no tool",
+        "not any"
+      ],
+      "fl": 7
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'Five documentation tools' in t"
+  }
+}

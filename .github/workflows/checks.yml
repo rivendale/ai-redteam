@@ -42,6 +42,10 @@ jobs:
         run: python3 tools/validate_findings.py --self-check
       - name: Assess validator self-check
         run: python3 tools/validate_assess.py --self-check
+      - name: Assess scorer self-check
+        run: python3 evals/score_assess.py --self-check
+      - name: Assess case proofs
+        run: python3 evals/tools/verify_cases.py --cases evals/assess/cases
       - name: Eval case proofs (every planted defect demonstrated, every control's tests pass)
         run: python3 evals/tools/verify_cases.py
       - name: Byte-compile every Python file

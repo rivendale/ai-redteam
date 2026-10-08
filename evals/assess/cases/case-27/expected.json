@@ -1,0 +1,37 @@
+{
+  "id": "case-27",
+  "slug": "fl14a-an-unverifiable-ten-times",
+  "failure_list": [
+    14
+  ],
+  "control": false,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "claim_not_confirmed",
+      "words": [
+        "10x"
+      ],
+      "fl": 14
+    },
+    {
+      "rule": "confidence_in",
+      "values": [
+        "low",
+        "medium"
+      ],
+      "fl": 14
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 14
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'benchmark script and data are not in the repository' in t"
+  }
+}

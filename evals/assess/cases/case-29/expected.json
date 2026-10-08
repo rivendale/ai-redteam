@@ -1,0 +1,50 @@
+{
+  "id": "case-29",
+  "slug": "ctl1-a-test-selector-that-fits-goal-2",
+  "failure_list": [
+    0
+  ],
+  "control": true,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "try",
+        "adopt"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "handoff_is",
+      "value": "glean",
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "words": [
+        "telemetry",
+        "no license",
+        "unlicensed",
+        "install script",
+        "curl",
+        "abandoned",
+        "unmaintained"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "fit_mentions",
+      "field": "goal",
+      "words": [
+        "goal 2",
+        "ci minutes"
+      ],
+      "fl": 0
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'No telemetry' in t"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "case-10",
+  "slug": "fl5b-no-license-file",
+  "failure_list": [
+    5
+  ],
+  "control": false,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "mentions_any",
+      "in": [
+        "risks",
+        "raw",
+        "next"
+      ],
+      "words": [
+        "no license",
+        "unlicensed",
+        "license file",
+        "no licence"
+      ],
+      "fl": 5
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 5
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'No LICENSE file' in t"
+  }
+}

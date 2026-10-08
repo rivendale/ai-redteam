@@ -1,0 +1,38 @@
+{
+  "id": "case-35",
+  "slug": "ctl7-a-paper-on-smaller-embeddings",
+  "failure_list": [
+    0
+  ],
+  "control": true,
+  "item_type": "paper",
+  "rules": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "try",
+        "adopt",
+        "watch"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "handoff_is",
+      "value": "glean",
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "words": [
+        "fabricat",
+        "retract",
+        "unreproducible"
+      ],
+      "fl": 0
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'exact evaluation script' in t"
+  }
+}

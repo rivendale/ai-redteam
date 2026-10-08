@@ -1,0 +1,41 @@
+{
+  "id": "case-32",
+  "slug": "ctl4-a-changelog-tool-that-extends-what-we-run",
+  "failure_list": [
+    0
+  ],
+  "control": true,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "try",
+        "adopt"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "handoff_is",
+      "value": "glean",
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "words": [
+        "telemetry",
+        "no license",
+        "unlicensed",
+        "install script",
+        "curl",
+        "abandoned",
+        "unmaintained"
+      ],
+      "fl": 0
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'no telemetry' in t"
+  }
+}
