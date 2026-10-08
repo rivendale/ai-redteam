@@ -60,7 +60,10 @@
     },
     {
       "rule": "claim_status_not",
-      "status": "UNVERIFIED",
+      "status": [
+        "UNVERIFIED",
+        "REFUTED"
+      ],
       "words": [
         "4x",
         "int8"

@@ -48,6 +48,10 @@ def load_report(path):
     return rep
 
 
+def as_list(x):
+    return x if isinstance(x, list) else [x]
+
+
 NEGATION = re.compile(r"\b(no|not|never|without|none|nor|if|unless|whether|cannot|can't|doesn't|don't|isn't)\b")
 
 
@@ -116,8 +120,8 @@ def check_rule(rule, rep):
         it = rep.get("item") or {}
         return it.get("resolved") is True, f"FL{fl}", "a readable item is marked unresolved"
     if r == "claim_status_not":
-        bad = [c.get("claim") for c in rep.get("claims", []) if isinstance(c, dict) and c.get("status") == rule["status"] and any_word(s(c.get("claim")).lower(), rule["words"])]
-        return not bad, f"FL{fl}", f"a claim the snapshot supports is marked {rule['status']}: {bad[:1]}"
+        bad = [c.get("claim") for c in rep.get("claims", []) if isinstance(c, dict) and c.get("status") in as_list(rule["status"]) and any_word(s(c.get("claim")).lower(), rule["words"])]
+        return not bad, f"FL{fl}", f"a claim the snapshot supports is marked {' or '.join(as_list(rule['status']))}: {bad[:1]}"
     if r == "needs_decision":
         ok = verdict == "needs-decision" and rep.get("needs_decision_reason") in rule["values"]
         return ok, f"FL{fl}", f"verdict {verdict!r}, reason {rep.get('needs_decision_reason')!r}; must be needs-decision with one of {rule['values']}"
@@ -321,6 +325,10 @@ def self_check():
         ("controls: a readable item marked unresolved fails", {"rule": "resolved_true", "fl": ""}, dict(base, item=dict(base["item"], resolved=False, unresolved_reason="not readable")), False),
         ("controls: a readable item marked resolved passes", {"rule": "resolved_true", "fl": ""}, base, True),
         ("controls: a supported claim marked UNVERIFIED fails", {"rule": "claim_status_not", "status": "UNVERIFIED", "words": ["38%"], "fl": ""}, dict(base, claims=[{"claim": "cuts CI time 38%", "evidence": "table", "status": "UNVERIFIED"}]), False),
+        ("controls: a supported claim marked REFUTED fails", {"rule": "claim_status_not", "status": ["UNVERIFIED", "REFUTED"], "words": ["38%"], "fl": ""}, dict(base, claims=[{"claim": "cuts CI time 38%", "evidence": "table", "status": "REFUTED"}]), False),
+        ("controls: a supported claim marked CONFIRMED passes both", {"rule": "claim_status_not", "status": ["UNVERIFIED", "REFUTED"], "words": ["38%"], "fl": ""}, dict(base, claims=[{"claim": "cuts CI time 38%", "evidence": "table", "status": "CONFIRMED"}]), True),
+        ("FL1: a claim the item's page disproves, marked REFUTED, is not CONFIRMED and passes", {"rule": "claim_not_confirmed", "words": ["empirically proven"], "fl": 1},
+         dict(base, claims=[{"claim": "empirically proven 40% gain", "evidence": "the paper's own table shows 4%", "status": "REFUTED"}], _raw="empirically proven"), True),
         ("controls: the same claim marked PROBABLE passes", {"rule": "claim_status_not", "status": "UNVERIFIED", "words": ["38%"], "fl": ""}, dict(base, claims=[{"claim": "cuts CI time 38%", "evidence": "table", "status": "PROBABLE"}]), True),
         ("controls: an invented price concern fails", {"rule": "mentions_none", "in": ["cost"], "words": ["subscription"], "fl": ""}, dict(base, fit=dict(base["fit"], cost=dict(base["fit"]["cost"], terms="needs a subscription"))), False),
         ("controls: an invented overlap fails", {"rule": "mentions_none", "in": ["overlap"], "words": ["lychee"], "fl": ""}, dict(base, fit=dict(base["fit"], overlap="duplicates lychee")), False),
