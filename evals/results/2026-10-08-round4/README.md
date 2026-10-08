@@ -41,7 +41,8 @@ folder's `prompts/` holds exactly what each reviewer was sent.
 **Known extra-findings source:** case 47 (a defect case) still has short file reads under reported line numbers, the
 same class #34 fixed in 48. It adds unscored extras and changes no score.
 
-**Secret scan:** 8 pattern hits, all safe to publish. They are the fixture's own public placeholder
+**Secret scan:** the scanner as of this run reported 8 pattern hits, all safe to publish. The later scanner (every file,
+fixture values recognized, a private key needs its body) reports 0 hits and 19 fixture values. They are the fixture's own public placeholder
 `sk-test-0000000000000000`, and the text "-----BEGIN RSA PRIVATE KEY-----" quoted in reproduction steps, with no key body.
 
 Each run folder holds the reports, `prompts/` and `_meta/` (usage). `SHA256SUMS` covers every file here.
