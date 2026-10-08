@@ -2,7 +2,7 @@
   "schema_version": "assess-1",
   "verdict": "try",
   "item": {
-    "type": "repo",
+    "type": "idea",
     "identity": "acme/linkcheck@4f2c1a9 (MIT, last push 2026-09-30, not archived)",
     "resolved": true
   },
@@ -38,7 +38,7 @@
     "owner": "operator",
     "done_when": "both lists are in a file and the differences are explained",
     "stop_condition": "stop if it reports nothing lychee does not",
-    "handoff": "none"
+    "handoff": "glean"
   },
   "confidence": "medium",
   "context_file": "present"

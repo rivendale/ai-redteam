@@ -3,84 +3,475 @@
   "title": "assess verdict block, schema version 1",
   "description": "The machine-readable JSON block at the end of an assess report. Written from docs/SPEC-assess.md. Rules that compare fields across the report (confidence against the item, the claims and the context file) are in tools/validate_assess.py as well as here where a schema can state them.",
   "type": "object",
-  "required": ["schema_version", "verdict", "item", "claims", "fit", "next_action", "confidence", "context_file"],
+  "required": [
+    "schema_version",
+    "verdict",
+    "item",
+    "claims",
+    "fit",
+    "next_action",
+    "confidence",
+    "context_file"
+  ],
   "properties": {
-    "schema_version": {"const": "assess-1"},
-    "verdict": {"enum": ["adopt", "try", "watch", "skip", "needs-decision"]},
-    "needs_decision_reason": {"enum": ["money", "account", "data_to_new_party", "standing_rule"]},
-    "item": {"$ref": "#/$defs/item"},
-    "claims": {"type": "array", "items": {"$ref": "#/$defs/claim"}},
-    "fit": {"$ref": "#/$defs/fit"},
-    "next_action": {"$ref": "#/$defs/nextAction"},
-    "confidence": {"enum": ["high", "medium", "low"]},
-    "context_file": {"enum": ["present", "absent"]}
+    "schema_version": {
+      "const": "assess-1"
+    },
+    "verdict": {
+      "enum": [
+        "adopt",
+        "try",
+        "watch",
+        "skip",
+        "needs-decision"
+      ]
+    },
+    "needs_decision_reason": {
+      "enum": [
+        "money",
+        "account",
+        "data_to_new_party",
+        "standing_rule"
+      ]
+    },
+    "item": {
+      "$ref": "#/$defs/item"
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/claim"
+      }
+    },
+    "fit": {
+      "$ref": "#/$defs/fit"
+    },
+    "next_action": {
+      "$ref": "#/$defs/nextAction"
+    },
+    "confidence": {
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ]
+    },
+    "context_file": {
+      "enum": [
+        "present",
+        "absent"
+      ]
+    }
   },
   "allOf": [
-    {"if": {"required": ["verdict"], "properties": {"verdict": {"const": "needs-decision"}}}, "then": {"required": ["needs_decision_reason"]}},
-    {"if": {"required": ["verdict"], "properties": {"verdict": {"const": "try"}}},
-     "then": {"properties": {"next_action": {"required": ["stop_condition"]}}}},
-    {"if": {"required": ["verdict", "item"], "properties": {"verdict": {"enum": ["adopt", "try"]}, "item": {"required": ["type"], "properties": {"type": {"enum": ["repo", "paper"]}}}}},
-     "then": {"properties": {"next_action": {"required": ["handoff"], "properties": {"handoff": {"const": "glean"}}}}}},
-    {"if": {"required": ["verdict", "item"], "properties": {"verdict": {"enum": ["adopt", "try"]}, "item": {"required": ["type"], "properties": {"type": {"enum": ["post", "product"]}}}}},
-     "then": {"properties": {"next_action": {"required": ["handoff"], "properties": {"handoff": {"const": "harvest"}}}}}},
-    {"if": {"required": ["confidence"], "properties": {"confidence": {"const": "high"}}},
-     "then": {"properties": {"context_file": {"const": "present"}, "item": {"properties": {"resolved": {"const": true}}}}}}
+    {
+      "if": {
+        "required": [
+          "verdict"
+        ],
+        "properties": {
+          "verdict": {
+            "const": "needs-decision"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "needs_decision_reason"
+        ]
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "verdict"
+        ],
+        "properties": {
+          "verdict": {
+            "const": "try"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "next_action": {
+            "required": [
+              "stop_condition"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "verdict",
+          "item"
+        ],
+        "properties": {
+          "verdict": {
+            "enum": [
+              "adopt",
+              "try"
+            ]
+          },
+          "item": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
+                  "repo",
+                  "paper"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "next_action": {
+            "properties": {
+              "handoff": {
+                "enum": [
+                  "glean",
+                  "none"
+                ]
+              }
+            },
+            "required": [
+              "handoff"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "verdict",
+          "item"
+        ],
+        "properties": {
+          "verdict": {
+            "enum": [
+              "adopt",
+              "try"
+            ]
+          },
+          "item": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
+                  "post"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "next_action": {
+            "properties": {
+              "handoff": {
+                "enum": [
+                  "harvest",
+                  "none"
+                ]
+              }
+            },
+            "required": [
+              "handoff"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "verdict",
+          "item"
+        ],
+        "properties": {
+          "verdict": {
+            "enum": [
+              "adopt",
+              "try"
+            ]
+          },
+          "item": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
+                  "product",
+                  "idea"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "next_action": {
+            "properties": {
+              "handoff": {
+                "enum": [
+                  "none"
+                ]
+              }
+            },
+            "required": [
+              "handoff"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "verdict"
+        ],
+        "properties": {
+          "verdict": {
+            "enum": [
+              "watch",
+              "skip",
+              "needs-decision"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "next_action": {
+            "properties": {
+              "handoff": {
+                "const": "none"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "confidence"
+        ],
+        "properties": {
+          "confidence": {
+            "const": "high"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "context_file": {
+            "const": "present"
+          },
+          "item": {
+            "properties": {
+              "resolved": {
+                "const": true
+              }
+            }
+          }
+        }
+      }
+    }
   ],
   "$defs": {
     "item": {
       "type": "object",
-      "required": ["type", "identity", "resolved"],
+      "required": [
+        "type",
+        "identity",
+        "resolved"
+      ],
       "properties": {
-        "type": {"enum": ["repo", "paper", "post", "product", "idea"]},
-        "identity": {"type": "string", "minLength": 3},
-        "resolved": {"type": "boolean"},
-        "unresolved_reason": {"type": "string", "minLength": 5}
+        "type": {
+          "enum": [
+            "repo",
+            "paper",
+            "post",
+            "product",
+            "idea"
+          ]
+        },
+        "identity": {
+          "type": "string",
+          "minLength": 3
+        },
+        "resolved": {
+          "type": "boolean"
+        },
+        "unresolved_reason": {
+          "type": "string",
+          "minLength": 5
+        }
       },
       "allOf": [
-        {"if": {"required": ["resolved"], "properties": {"resolved": {"const": false}}}, "then": {"required": ["unresolved_reason"]}}
+        {
+          "if": {
+            "required": [
+              "resolved"
+            ],
+            "properties": {
+              "resolved": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "unresolved_reason"
+            ]
+          }
+        }
       ]
     },
     "claim": {
       "type": "object",
-      "required": ["claim", "evidence", "status"],
+      "required": [
+        "claim",
+        "evidence",
+        "status"
+      ],
       "properties": {
-        "claim": {"type": "string", "minLength": 5},
-        "evidence": {"type": "string", "minLength": 3},
-        "status": {"enum": ["CONFIRMED", "PROBABLE", "UNVERIFIED"]},
-        "load_bearing": {"type": "boolean", "description": "False when the verdict does not rest on this claim. Absent means it does."}
+        "claim": {
+          "type": "string",
+          "minLength": 5
+        },
+        "evidence": {
+          "type": "string",
+          "minLength": 3
+        },
+        "status": {
+          "enum": [
+            "CONFIRMED",
+            "PROBABLE",
+            "UNVERIFIED"
+          ]
+        },
+        "load_bearing": {
+          "type": "boolean",
+          "description": "False when the verdict does not rest on this claim. Absent means it does."
+        }
       }
     },
     "fit": {
       "type": "object",
-      "required": ["goal", "overlap", "burden", "risks", "cost"],
+      "required": [
+        "goal",
+        "overlap",
+        "burden",
+        "risks",
+        "cost"
+      ],
       "properties": {
-        "goal": {"type": "string", "minLength": 3, "description": "The goal or gap served, by name from the context file, or 'none found'. With no context file: 'no context file'."},
-        "overlap": {"type": "string", "minLength": 3},
-        "burden": {"type": "string", "minLength": 3},
-        "risks": {"type": "array", "items": {"type": "string", "minLength": 3}},
-        "cost": {"$ref": "#/$defs/cost"}
+        "goal": {
+          "type": "string",
+          "minLength": 3,
+          "description": "The goal or gap served, by name from the context file, or 'none found'. With no context file: 'no context file'."
+        },
+        "overlap": {
+          "type": "string",
+          "minLength": 3
+        },
+        "burden": {
+          "type": "string",
+          "minLength": 3
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3
+          }
+        },
+        "cost": {
+          "$ref": "#/$defs/cost"
+        }
       }
     },
     "cost": {
       "type": "object",
-      "required": ["price", "tier", "limits", "terms", "checked_at"],
+      "required": [
+        "price",
+        "tier",
+        "limits",
+        "terms",
+        "checked_at"
+      ],
       "properties": {
-        "price": {"type": "string", "minLength": 1},
-        "tier": {"type": "string", "minLength": 1},
-        "limits": {"type": "string", "minLength": 1},
-        "terms": {"type": "string", "minLength": 1, "description": "License or usage terms, for example 'MIT' or 'free outputs personal-use only'."},
-        "checked_at": {"type": "string", "minLength": 10, "description": "The date the price and terms were read (the snapshot's capture date)."}
+        "price": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tier": {
+          "type": "string",
+          "minLength": 1
+        },
+        "limits": {
+          "type": "string",
+          "minLength": 1
+        },
+        "terms": {
+          "type": "string",
+          "minLength": 1,
+          "description": "License or usage terms, for example 'MIT' or 'free outputs personal-use only'."
+        },
+        "checked_at": {
+          "type": "string",
+          "minLength": 10,
+          "description": "The date the price and terms were read (the snapshot's capture date)."
+        }
       }
     },
     "nextAction": {
       "type": "object",
-      "required": ["action", "owner", "done_when"],
+      "required": [
+        "action",
+        "owner",
+        "done_when"
+      ],
       "properties": {
-        "action": {"type": "string", "minLength": 5},
-        "owner": {"type": "string", "minLength": 2},
-        "done_when": {"type": "string", "minLength": 5},
-        "stop_condition": {"type": "string", "minLength": 5},
-        "handoff": {"enum": ["glean", "harvest", "none"]}
+        "action": {
+          "type": "string",
+          "minLength": 5
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 2
+        },
+        "done_when": {
+          "type": "string",
+          "minLength": 5
+        },
+        "stop_condition": {
+          "type": "string",
+          "minLength": 5
+        },
+        "handoff": {
+          "enum": [
+            "glean",
+            "harvest",
+            "none"
+          ],
+          "description": "glean and harvest are for borrowing ideas from the item; using a tool or buying a product is not borrowing and takes none. Which values are allowed depends on the verdict and the item type (see allOf)."
+        }
       }
     }
   }

@@ -1,12 +1,14 @@
 {
   "valid": [
     "adopt-repo-high.json",
+    "adopt-repo-use-it-no-handoff.json",
     "high-with-unverified-not-load-bearing.json",
     "idea-no-handoff.json",
     "needs-decision-money.json",
     "no-context-low.json",
     "skip.json",
     "try-post-harvest.json",
+    "try-product-none.json",
     "try-repo.json",
     "unresolved-low.json",
     "watch.json"
@@ -104,10 +106,6 @@
       "layer": "schema",
       "expect": "next_action.handoff"
     },
-    "adopt-repo-handoff-none.json": {
-      "layer": "schema",
-      "expect": "next_action.handoff"
-    },
     "try-repo-handoff-harvest.json": {
       "layer": "schema",
       "expect": "next_action.handoff"
@@ -115,6 +113,26 @@
     "try-repo-no-handoff.json": {
       "layer": "schema",
       "expect": "next_action"
+    },
+    "try-product-handoff-harvest.json": {
+      "layer": "schema",
+      "expect": "next_action.handoff"
+    },
+    "try-idea-handoff-glean.json": {
+      "layer": "schema",
+      "expect": "next_action.handoff"
+    },
+    "watch-with-glean.json": {
+      "layer": "schema",
+      "expect": "next_action.handoff"
+    },
+    "skip-with-harvest.json": {
+      "layer": "schema",
+      "expect": "next_action.handoff"
+    },
+    "needs-decision-with-glean.json": {
+      "layer": "schema",
+      "expect": "next_action.handoff"
     },
     "try-post-handoff-glean.json": {
       "layer": "schema",
