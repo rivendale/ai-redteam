@@ -1,3 +1,6 @@
+You are running the following skill. Follow it exactly.
+
+=== SKILL ===
 ---
 name: pr-review
 description: Disciplined, bounded code review of one pull request, with written adjudication of every finding. Use when asked to review a PR, close out a PR, or decide whether a PR is ready to merge.
@@ -109,3 +112,160 @@ ADJUDICATION:
 VERIFIED AFTER FIXES: what changed after the review, and how each change was verified.
 
 MERGE RECOMMENDATION: merge / merge after fixes / do not merge, with the reason and any check, blocker or decision still open.
+
+=== INPUTS ===
+--- ORIGINAL REQUEST (request.md) ---
+When an order is cancelled, write an audit record saying who cancelled it, using the shared audit library.
+--- CONTEXT (context.md) ---
+Review requested: review of PR #131 (work/PR.md, work/change.patch; the files it changes are in work/base/) before merge.
+Stakes: standard; cancellations are audited for support and finance. The shared library `company_audit` (module company_audit)
+is not part of what you were given.
+--- WORK UNDER REVIEW ---
+### file: PR.md
+# PR #131: audit record on cancellation
+Head 8a41c7e, merge base 2d90b53.
+
+`cancel_order` now takes a required `actor` and calls `company_audit.record("order.cancelled", ...)` before the status change, so a
+failed audit write leaves the order open. Cancelling an order that is already cancelled changes nothing and records nothing. The only
+caller, `handlers.cancel`, passes the signed-in user's id. Tests pass (they stub the library).
+
+### file: base/README.md
+# Service
+
+Small service repository (invented). Changes are proposed as pull requests.
+
+### file: base/handlers.py
+"""HTTP handler for order cancellation."""
+import orders
+
+
+def cancel(request, db):
+    """POST /orders/<id>/cancel. request["user"] is the signed-in user's id (a string), set by the login middleware."""
+    orders.cancel_order(db, request["order_id"])
+    return {"status": 204}
+
+### file: base/orders.py
+"""Order cancellation."""
+
+
+def cancel_order(db, order_id):
+    """Cancel an open order. Returns True if it was cancelled now, False if it was already cancelled."""
+    row = db.get_order(order_id)
+    if row is None:
+        raise KeyError(order_id)
+    if row["status"] == "shipped":
+        raise ValueError("cannot cancel a shipped order")
+    if row["status"] == "cancelled":
+        return False
+    db.set_status(order_id, "cancelled")
+    return True
+
+### file: change.patch
+--- a/handlers.py
++++ b/handlers.py
+@@ -4,5 +4,5 @@
+ 
+ def cancel(request, db):
+     """POST /orders/<id>/cancel. request["user"] is the signed-in user's id (a string), set by the login middleware."""
+-    orders.cancel_order(db, request["order_id"])
++    orders.cancel_order(db, request["order_id"], request["user"])
+     return {"status": 204}
+--- a/orders.py
++++ b/orders.py
+@@ -1,8 +1,11 @@
+ """Order cancellation."""
++from company_audit import record
+ 
+ 
+-def cancel_order(db, order_id):
+-    """Cancel an open order. Returns True if it was cancelled now, False if it was already cancelled."""
++def cancel_order(db, order_id, actor):
++    """Cancel an open order on behalf of `actor` (the user id, a string). Returns True if it was cancelled now, False if it was already
++    cancelled (nothing is recorded then). The audit record is written first: if that write fails the error propagates and the order
++    stays open, so a cancellation is never made without its record."""
+     row = db.get_order(order_id)
+     if row is None:
+         raise KeyError(order_id)
+@@ -10,5 +13,6 @@
+         raise ValueError("cannot cancel a shipped order")
+     if row["status"] == "cancelled":
+         return False
++    record("order.cancelled", order_id=order_id, actor=actor)
+     db.set_status(order_id, "cancelled")
+     return True
+--- /dev/null
++++ b/tests/test_orders.py
+@@ -0,0 +1,68 @@
++import sys
++import types
++import unittest
++
++calls = []
++FAIL = [False]
++
++
++def _record(event, **fields):
++    if FAIL[0]:
++        raise OSError("disk full")
++    calls.append((event, fields))
++
++
++sys.modules["company_audit"] = types.SimpleNamespace(record=_record)
++import handlers  # noqa: E402
++import orders  # noqa: E402
++
++
++class FakeDb:
++    def __init__(self, status):
++        self.status, self.set = status, None
++
++    def get_order(self, order_id):
++        return None if order_id == "missing" else {"status": self.status}
++
++    def set_status(self, order_id, status):
++        self.set = status
++
++
++class CancelTests(unittest.TestCase):
++    def test_cancel_records_an_audit_event(self):
++        calls.clear()
++        db = FakeDb("open")
++        self.assertTrue(orders.cancel_order(db, "o1", actor="alice"))
++        self.assertEqual(db.set, "cancelled")
++        self.assertEqual(calls, [("order.cancelled", {"order_id": "o1", "actor": "alice"})])
++
++    def test_shipped_is_refused_and_not_recorded(self):
++        calls.clear()
++        with self.assertRaises(ValueError):
++            orders.cancel_order(FakeDb("shipped"), "o2", actor="alice")
++        self.assertEqual(calls, [])
++
++    def test_the_handler_passes_the_signed_in_user(self):
++        calls.clear()
++        self.assertEqual(handlers.cancel({"order_id": "o1", "user": "bo"}, FakeDb("open")), {"status": 204})
++        self.assertEqual(calls[0][1]["actor"], "bo")
++
++    def test_a_failed_audit_write_leaves_the_order_open(self):
++        calls.clear()
++        db = FakeDb("open")
++        FAIL[0] = True
++        try:
++            with self.assertRaises(OSError):
++                orders.cancel_order(db, "o1", actor="alice")
++        finally:
++            FAIL[0] = False
++        self.assertIsNone(db.set)
++
++    def test_cancelling_twice_records_once(self):
++        calls.clear()
++        self.assertFalse(orders.cancel_order(FakeDb("cancelled"), "o1", actor="alice"))
++        self.assertEqual(calls, [])
++
++
++if __name__ == "__main__":
++    unittest.main()
+
+
+=== OUTPUT NOTE (same for every version) ===
+You have no tools in this session: you cannot run code or open links. After your report, append one fenced
+json block with "verdict" and "findings" (each: severity, evidence_level, location, scenario, fix).
