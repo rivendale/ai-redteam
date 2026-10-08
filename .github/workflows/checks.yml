@@ -1,0 +1,44 @@
+# Offline checks on every pull request and every push to main. No model is called and no secret is used.
+# What runs: the scorer's self-check, the findings validator's self-check, every eval case's ground-truth
+# proof, a byte-compile of every Python file, and a parse of every JSON file. Three Python versions,
+# because a check that passes on one version is evidence about that version only.
+name: checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5.1.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6.3.0
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Scorer self-check
+        run: python3 evals/score.py --self-check
+      - name: Findings validator self-check
+        run: python3 tools/validate_findings.py --self-check
+      - name: Eval case proofs (every planted defect demonstrated, every control's tests pass)
+        run: python3 evals/tools/verify_cases.py
+      - name: Byte-compile every Python file
+        run: python3 -m compileall -q -x '/evals/cases/' .
+      - name: Parse every JSON file
+        run: |
+          git ls-files -z '*.json' | xargs -0 -n1 python3 -m json.tool --no-ensure-ascii > /dev/null
