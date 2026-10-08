@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Copy what a reviewer may see (request.md, context.md, work/) into OUT/<case id>/, leaving expected.json behind.
 
-    python3 evals/tools/prepare.py OUT [--only ID,...]
+    python3 evals/tools/prepare.py OUT [--only ID,...] [--applies redteam|pr-review|plain]
 """
-import argparse, pathlib, shutil, sys
+import argparse, json, pathlib, shutil, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent / "cases"
 
@@ -12,12 +12,15 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("out")
     ap.add_argument("--only", default="")
+    ap.add_argument("--applies", default="", help="keep only the cases whose expected.json lists this target in applies_to (a case that does not say is a redteam case)")
     a = ap.parse_args()
     ids = [x for x in a.only.split(",") if x]
     out = pathlib.Path(a.out)
     n = 0
     for d in sorted(p for p in ROOT.iterdir() if p.is_dir()):
         if ids and not any(d.name.startswith(i) for i in ids):
+            continue
+        if a.applies and a.applies not in json.loads((d / "expected.json").read_text()).get("applies_to", ["redteam"]):
             continue
         dst = out / d.name
         if dst.exists():
