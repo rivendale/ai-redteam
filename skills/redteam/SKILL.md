@@ -51,7 +51,8 @@ The review can be wrong too. The rules below exist because reviews fail in known
 1. Trust nothing on assertion. "Tested", "verified", "handles X", "the data shows", "industry standard" are
    unverified until the evidence is seen. Never claim to have run or checked something you did not.
 2. Label every finding by how it is known: CONFIRMED (traced, run, recomputed or tied to an exact line or quote),
-   PROBABLE (strong inference from what is present), UNVERIFIED (could not check; say what would settle it).
+   PROBABLE (strong inference from what is present). Anything you could not check is not a finding: record it as
+   `needs_validation` with the fact that would settle it, and list it under UNVERIFIED CLAIMS.
 3. A zero needs a positive control. "No rows", "no hits" or "nothing references it" counts only after the same
    query or search has returned something you know exists. A query that cannot match anything looks identical to a
    real zero.
@@ -100,6 +101,8 @@ List the load-bearing assumptions, including unstated ones. Pick the tracks: A, 
 - Tests: do they assert real behavior? Weakened, skipped, or written to match the bug? The critical untested case.
 - Operations: 10x and 100x load, leaks, observability, config assumptions, backward compatibility.
 - Blast radius: what else the change touches that the author did not mention.
+- Reproduction: every confirmed code finding carries a failing test or exact reproduction steps (inputs, command,
+  observed versus expected), not only a fix. A test that would pass on the current code proves nothing.
 
 ### Track C: factual claims
 - Sources: does each cited source exist, and does the cited passage say what is claimed? "The source exists" is not
@@ -142,26 +145,44 @@ contracts, help text.
 
 ## Pass 3: Self-check, then confirm or refute
 
-1. Drop any finding without a location and a concrete failure scenario. Downgrade any that assumed the worst.
-2. Check the verdict against the findings: no SHIP with an open Critical or High; no SHIP WITH FIXES with an open
-   Critical.
+1. **Three states, no others.** Every candidate ends as exactly one of:
+   - `confirmed`: a location, a concrete failure scenario with stated conditions, evidence, and a fix (plus a failing
+     test or reproduction for code);
+   - `needs_validation`: a real suspicion you could not settle, including anything you could only mark UNVERIFIED.
+     State the exact unresolved fact that would settle it. It has **no severity** and never sets the verdict;
+   - `refuted`: re-examined and wrong. Move it out of the findings into the `refuted` list with the evidence. It is
+     never shown as CONFIRMED, never keeps a severity, and never sets the verdict. A confirmed finding's evidence is
+     CONFIRMED or PROBABLE; never UNVERIFIED.
+2. **Severity by four yes/no questions,** answered and recorded for every confirmed finding:
+   (a) is there a concrete failure scenario with stated conditions? (b) is it CONFIRMED rather than PROBABLE?
+   (c) does it break the original request, lose data, breach security, or create regulatory, legal or customer harm?
+   (d) is it likely under realistic use? **Critical** needs a, b and c. **High** needs a and d, plus b or c.
+   Otherwise **Medium** or **Low**. A candidate that fails (a) is `needs_validation`, not a finding. A clean,
+   well-supported piece of work usually ends with no High or Critical; do not reach for one.
 3. **Confirm or refute.** Every Critical and High is a candidate. Re-examine each against the evidence as its
-   strongest defender would (or send it to the author or a second reviewer with "confirm or refute with evidence").
-   Mark each `confirmed` or `refuted`. A refuted finding is withdrawn: it is never shown as CONFIRMED and never sets
-   the verdict.
-4. Ask: what is the most serious problem still missed, and where would it hide?
+   strongest defender would (or send it to the author or a second reviewer with "confirm or refute with evidence"),
+   then place it in one of the three states.
+4. Check the verdict against the confirmed findings only: no SHIP with an open Critical or High; no SHIP WITH FIXES
+   with an open Critical.
+5. **Coverage.** Record the units you checked (files and functions, sections, claims, assumptions) and what you did
+   not check, so a later run can target the gaps.
+6. Ask: what is the most serious problem still missed, and where would it hide?
 
 ## Output format
 
 VERDICT: SHIP / SHIP WITH FIXES / REWORK / REJECT, and one sentence why.
 CONFIDENCE: high / medium / low, and what limits it (same-context review, missing inputs, no tools).
 INPUTS LEDGER: seen; not seen or not openable; whether each gap matters.
+COVERAGE: units checked; units not checked.
 SEATS AND GATE: which reviewers ran, which were refused and why.
 
 FINDINGS, ordered by severity:
 
-| # | Severity | Evidence | Track | Location | What is wrong | Failure scenario | Fix or test | Confirm/refute |
+| # | Severity | Evidence | Track | Location | What is wrong | Failure scenario | Fix and reproduction | a/b/c/d |
 |---|---|---|---|---|---|---|---|---|
+
+NEEDS VALIDATION: each suspicion, with the exact unresolved fact that would settle it (no severity).
+REFUTED: each withdrawn candidate, with the evidence that refuted it.
 
 WHAT HOLDS UP: the parts that survived attack.
 UNVERIFIED CLAIMS: what the work asserts that could not be confirmed, and how to confirm each.
@@ -171,24 +192,42 @@ OWNER SUMMARY: at most 3 sentences in plain language, with no personal data, for
 table. Unlike the decision-maker summary it carries no jargon, finding numbers or identifiers, so it can be
 forwarded as is.
 
-Then one fenced `json` block:
+Then one fenced `json` block. It must pass `python3 tools/validate_findings.py REPORT.md`
+(`schema/findings.schema.json`, schema_version 2.2):
 
 ```json
 {
+  "schema_version": "2.2",
   "verdict": "REWORK",
   "confidence": "medium",
-  "inputs_ledger": [{"item": "migrations/0042.sql", "status": "not_seen", "matters": true}],
+  "inputs_ledger": [{"item": "config/limits.yaml", "status": "not_seen", "matters": true}],
   "seats": [{"vendor": "claude-subagent", "status": "ran", "cross_vendor": false}],
   "sensitivity_gate": {"sensitive": false, "reason": ""},
-  "findings": [{"severity": "High", "evidence_level": "CONFIRMED", "track": "B", "location": "app.py:29-31",
-    "scenario": "...", "fix": "...", "status": "confirmed"}]
+  "coverage": {
+    "checked": [{"unit": "app.py", "kind": "file"}, {"unit": "app.py:handle_export", "kind": "function"}],
+    "not_checked": [{"unit": "config/limits.yaml", "reason": "not supplied"}]
+  },
+  "findings": [
+    {"id": "F1", "status": "confirmed", "severity": "High", "evidence_level": "CONFIRMED", "track": "B",
+     "location": "app.py:29-31", "scenario": "A non-admin token on GET /admin/export receives every user's notes.",
+     "fix": "Call require_admin(user) before export_all().", "answers": {"a": true, "b": true, "c": false, "d": true},
+     "reproduction": "Send GET /admin/export with a non-admin token; expect 403, observe 200."},
+    {"id": "S1", "status": "needs_validation", "track": "B", "location": "audit.py:12",
+     "suspicion": "Queued audit events may be lost on exit.",
+     "unresolved_fact": "Whether the audit library flushes synchronously (it was not supplied)."}
+  ],
+  "refuted": [{"id": "C2", "candidate": "A failed vault call continues to the delete.",
+               "evidence": "set -euo pipefail at line 2 stops the script first."}]
 }
 ```
 
-Severity: Critical = wrong outcome, data loss, security breach, regulatory or legal exposure, or harm to a customer
-if used as is. High = likely to fail
-under realistic conditions, or drift from the request. Medium = real weakness with a workaround. Low = worth fixing,
-harms no one soon.
+Coverage `kind` is one of file, function, section, claim, assumption, config, data; list every file of the work under
+`checked` or `not_checked`. 
+
+Severity comes from the four questions in Pass 3: Critical = wrong outcome, data loss, security breach, regulatory or
+legal exposure, or harm to a customer, confirmed with a concrete scenario. High = likely to fail under realistic
+conditions, or drift from the request. Medium = real weakness with a workaround. Low = worth fixing, harms no one
+soon. The finding states, coverage ledger and schema are adapted from Cloudflare's security-audit skill (MIT).
 
 ## Where it fits
 
@@ -203,5 +242,7 @@ harms no one soon.
 
 ## After the report
 
-- If asked to act, fix Critical and High first and re-verify each fix against its own failure scenario.
+- If asked to act, fix Critical and High first. A fix is verified only when its failing test now passes AND the
+  fix's own diff has been read for a new defect (a targeted read of the change, not another full review). A fix that
+  introduces a defect is a new finding.
 - If a finding is disputed, re-examine it with evidence; hold it if it survives, withdraw it plainly if not.

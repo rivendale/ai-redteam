@@ -56,13 +56,13 @@ A finding without a location and a concrete failure scenario is not a finding. D
 
 - The tier sets the budget: one run per round the tier requires (one for Standard, two for High).
 - Any run beyond that needs the owner's approval, asked for with four facts: the run count so far, the cost so far, the estimated extra cost, and the specific question the new run would answer. "Review it again" is not a question.
-- Corrections made after a review are verified by reading the correction diff and re-running the relevant tests, not by another full review.
+- Corrections made after a review are verified as Step 7's **Accepted** defines, by a targeted read of the correction diff and its tests, not by another full review.
 
 ## Step 7: Adjudicate in writing
 
 Every finding gets a decision:
 
-- **Accepted**: fixed, with a regression test that fails without the fix. Name the fix commit. Where no test can apply (docs, config, a version pin), say so and give the evidence the fix is right instead.
+- **Accepted**: fixed, with a regression test that fails without the fix and passes with it, AND the fix's own diff read for a new defect (a targeted read of the change, not another paid round; AI-written fixes have been measured adding new flaws). A fix that introduces a defect is a new finding, not an acceptance. Name the fix commit. Where no test can apply (docs, config, a version pin), say so and give the evidence the fix is right instead.
 - **Deferred** (P2 and P3 only): agreed, not fixed in this PR, with a link to the issue that tracks it. A P0 or P1 cannot be deferred.
 - **Rejected**: with the evidence (a line of code, a test result, a spec reference) that shows the finding is wrong or out of scope.
 
