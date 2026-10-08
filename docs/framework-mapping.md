@@ -51,7 +51,7 @@ ATLAS techniques overlap the entries above. The clear matches, with names as of 
 | Technique | Name | Catalog |
 |---|---|---|
 | AML.T0051 | LLM Prompt Injection (direct, indirect, triggered) | 1, 2 |
-| AML.T0053 | AI Agent Tool Invocation (formerly LLM Plugin Compromise) | 3, 4, 18 |
+| AML.T0053 | AI Agent Tool Invocation | 3, 4, 18 |
 | AML.T0060 | Publish Hallucinated Entities | 8 |
 | AML.T0080 | AI Agent Context Poisoning (sub-technique .000 Memory) | 21 |
 

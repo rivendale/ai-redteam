@@ -80,7 +80,7 @@ favoring reproduction tests over "double-check" prompts. Each source, as read on
   changing behavior ([blog, 2026-08-06](https://1password.com/blog/why-ai-generated-patches-still-require-human-review)).
   And 4.5% introduced a new vulnerability (Table 7 of the
   [paper](https://1password.com/files/resources/frontier-models-vulnerability-patches-flawed.pdf), Mierczuk, Michaels and
-  Hoodlet). The paper has been publicly criticized for arithmetic and citation errors; read it before relying on a figure.
+  Hoodlet). We have not checked its figures against its data; read the paper before relying on one.
 - **Reproduction over self-review.** On SWE-bench Verified, repeated self-verification left 78 to 85% of audit passes
   without a code change (Mohsin et al., [arXiv 2610.03984](https://arxiv.org/abs/2610.03984), 2026). Scoring each patch
   against its own reverted tree resolved 52.8% of issues, against 46.8% for the control. The same paper warns that "a
