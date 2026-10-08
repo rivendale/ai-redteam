@@ -64,7 +64,7 @@ outside material instead of our own work.
 VERDICT: adopt | try | watch | skip | needs-decision, and one sentence why.
 WHAT IT IS: resolved identity (owner/repo@sha, license, health; or paper id; or post author and date; or product,
   tier and price as read today), or UNRESOLVED and why.
-CLAIMS CHECKED: each claim, the evidence offered, and whether it holds (CONFIRMED / PROBABLE / UNVERIFIED).
+CLAIMS CHECKED: each claim, the evidence offered, and whether it holds (CONFIRMED / PROBABLE / UNVERIFIED / REFUTED).
 FIT: goal served; overlap with what is in use; burden; cost; risks.
 NEXT ACTION: one action, owner, done-when (and the glean/harvest hand-off when it applies).
 CONFIDENCE: high / medium / low, and what limits it (no context file, unresolved item, unverifiable claim).
@@ -74,7 +74,9 @@ Then one fenced `json` block, defined by `schema/assess.schema.json` (owned by t
 - `verdict`; `needs_decision_reason` (required when the verdict is `needs-decision`: money, account, data to a new
   party, or a standing rule);
 - `item`: type, identity, `resolved` (true or false) and `unresolved_reason`;
-- `claims[]`: claim, evidence, status (CONFIRMED, PROBABLE or UNVERIFIED);
+- `claims[]`: claim, evidence, status (CONFIRMED, PROBABLE, UNVERIFIED or REFUTED). REFUTED: the item's own text, terms or data show the claim
+  to be false; the contradicting fact is the evidence. A refuted claim can carry the verdict (for example a skip or
+  needs-decision) without capping confidence;
 - `fit`: goal, overlap, burden, risks, and `cost` {price, tier, limits, terms, checked_at};
 - `next_action`: action, owner, done_when, `stop_condition` (required for `try`), `handoff` (glean, harvest or none);
 - `confidence`; `context_file` (present or absent).

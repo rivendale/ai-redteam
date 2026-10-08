@@ -1,6 +1,6 @@
 # ai-redteam
 
-> Adversarial review for AI-produced work: a redteam skill (decisions, code, claims, ideas, regulated text) and a pr-review skill, with paste-in prompts, reference docs and a scored eval set.
+> Adversarial review for AI-produced work: a redteam skill (decisions, code, claims, ideas, regulated text), a pr-review skill and an assess skill (is a link useful here?), with paste-in prompts, reference docs and a scored eval set.
 
 Agents: start at AGENTS.md. People: start at README.md.
 
@@ -8,11 +8,14 @@ Agents: start at AGENTS.md. People: start at README.md.
 
 - [skills/redteam/SKILL.md](skills/redteam/SKILL.md): adversarial review; Tracks A decisions, B code, C claims, D ideas, R regulated text; inputs ledger, sensitivity gate, confirm-or-refute
 - [skills/pr-review/SKILL.md](skills/pr-review/SKILL.md): bounded review of one pull request with written adjudication
+- [skills/assess/SKILL.md](skills/assess/SKILL.md): whether a link or item is useful here, its claims checked, and one next action
 
 ## Prompts (no install)
 
 - [prompts/adversarial-review.md](prompts/adversarial-review.md): redteam as a paste-in prompt for any model
 - [prompts/pr-review.md](prompts/pr-review.md): pr-review as a paste-in prompt
+- [prompts/assess.md](prompts/assess.md): assess as a paste-in prompt for chat assistants
+- [templates/assess-context.md](templates/assess-context.md): the blank context file assess reads (keep a filled copy private)
 
 ## Docs
 
