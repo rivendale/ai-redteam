@@ -54,7 +54,7 @@ NEGATION = re.compile(r"\b(no|not|never|without|none|nor|if|unless|whether|canno
 def asserted(word, text):
     """True when the word appears in the text outside a negation or condition ("no install script", "stop if it collects telemetry")."""
     for m in re.finditer(re.escape(word), text):
-        before = re.split(r"[.;\n]", text[:m.start()])[-1][-40:]
+        before = re.split(r"[.;\n\"]", text[:m.start()])[-1][-40:]
         if not NEGATION.search(before):
             return True
     return False
