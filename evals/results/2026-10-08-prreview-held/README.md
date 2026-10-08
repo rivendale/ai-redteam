@@ -18,4 +18,15 @@ tracked the fixtures, not the text. On the fix-regression close-outs (37, 38), b
 regression in every gate run. So the change is neutral on detection, and it adds the explicit rule that an accepted
 fix has its own diff read for a new defect.
 
+## Limits of this result
+
+- **Zero is not proof of no effect.** 0 / 0 / 0 is 6 control-runs per skill (2 controls, 3 runs). That cannot exclude a small
+  difference in false alarms between the two texts.
+- **The fixture claim rests on a before-and-after.** The support for "the earlier gap tracked the fixtures" is the same pair of
+  texts on cases 35-39. On the old fixtures they raised 5 vs 1 false alarms (v2.2 vs current) over 9 control-runs each
+  (3 controls, 3 runs; `../2026-10-08-v22`). On #29's fixtures they raised 0 vs 0.
+- **"Neutral on detection" is not "helps".** It rests on the close-outs 37 and 38 and on code cases 06-13. Current pr-review is
+  already at the ceiling there (every planted defect caught in every run). So this eval cannot show a benefit of the new rule;
+  the rule is merged for its reasoning, not for a measured gain.
+
 Each run folder holds the reports, `prompts/` and `_meta/` (usage). `SHA256SUMS` covers every file here.

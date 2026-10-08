@@ -65,10 +65,30 @@ The eval cases are written by a different agent than the one that writes the ski
 ## v2.2 additions (approved by the repo owner 2026-10-07), written before the v2.2 skill text
 
 Sources: Cloudflare's security-audit skill (MIT, github.com/cloudflare/security-audit-skill; ideas adapted, no text
-copied) for verdict classes, a coverage ledger and a schema-validated findings file; research on LLM judges
-(self-disagreement around 14%; decomposed yes/no criteria are more consistent than holistic scores) for the severity
-rubric and repeat runs; 1Password's study of AI security patches (26% fixed the flaw, 4.5% added a new one) for the
-fix-regression check; reported large-scale agent studies favoring reproduction tests over "double-check" prompts.
+copied) for verdict classes, a coverage ledger and a schema-validated findings file. Research on LLM judges, for the
+severity rubric and repeat runs. 1Password's study of AI security patches, for the fix-regression check. Agent studies
+favoring reproduction tests over "double-check" prompts. Each source, as read on 2026-10-08:
+
+- **Judges disagree with themselves.** Pairwise verdicts "flip on average 13.6% of the time" when an identical
+  comparison is re-run (Yagubyan, [arXiv 2606.13685](https://arxiv.org/abs/2606.13685), 2026). Scope: two judges
+  from one provider, pairwise preferences only.
+- **Decomposed yes/no questions are more reliable than a holistic scale.** CheckEval's checklist of "decomposed binary
+  questions" raised average agreement across evaluator models by 0.45 and reduced score variance (Lee et al.,
+  [arXiv 2403.18771](https://arxiv.org/abs/2403.18771), EMNLP 2025). This measures agreement between judges, not one
+  judge's repeat consistency.
+- **AI security patches.** 1Password produced 6,080 patches for six CVEs. Of these, 26.0% fully fixed the flaw without
+  changing behavior ([blog, 2026-08-06](https://1password.com/blog/why-ai-generated-patches-still-require-human-review)).
+  And 4.5% introduced a new vulnerability (Table 7 of the
+  [paper](https://1password.com/files/resources/frontier-models-vulnerability-patches-flawed.pdf), Mierczuk, Michaels and
+  Hoodlet). The paper has been publicly criticized for arithmetic and citation errors; read it before relying on a figure.
+- **Reproduction over self-review.** On SWE-bench Verified, repeated self-verification left 78 to 85% of audit passes
+  without a code change (Mohsin et al., [arXiv 2610.03984](https://arxiv.org/abs/2610.03984), 2026). Scoring each patch
+  against its own reverted tree resolved 52.8% of issues, against 46.8% for the control. The same paper warns that "a
+  test the agent writes for its own patch accepts many incorrect ones". So the reproduction must fail before the fix.
+  Earlier, SWT-Bench found generated tests doubled SWE-Agent's precision as a filter on fixes
+  ([arXiv 2406.12952](https://arxiv.org/abs/2406.12952)). A counter-result: changing how many tests an agent writes did
+  not significantly change outcomes ([arXiv 2602.07900](https://arxiv.org/abs/2602.07900)). The spec relies on the
+  narrow claim, a test that fails before the fix, not on "more tests help".
 
 1. **Three finding states.** `confirmed` (location, concrete failure scenario, evidence), `needs_validation` (a
    suspicion with the exact unresolved fact that would settle it; **no severity**; never sets the verdict), and

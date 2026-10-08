@@ -44,8 +44,10 @@ One pull request, one exact head commit, reviewed in a throwaway checkout agains
 
 | File | Use |
 |---|---|
-| [`docs/SPEC.md`](docs/SPEC.md) | v2 design and failure list (written before the v2 skill text) |
+| [`docs/capabilities.md`](docs/capabilities.md) | Everything the repo does, grouped, with the file that owns each part |
+| [`docs/SPEC.md`](docs/SPEC.md) | v2 and v2.2 design and failure list (each written before its skill text) |
 | [`docs/attack-catalog.md`](docs/attack-catalog.md) | Twenty-eight ways AI-built systems fail under attack, each with the question a reviewer should ask |
+| [`docs/framework-mapping.md`](docs/framework-mapping.md) | The catalog and skills against OWASP LLM Top 10 2025, OWASP Agentic Top 10 2026 and MITRE ATLAS |
 | [`docs/why-reviews-fail.md`](docs/why-reviews-fail.md) | How reviews of AI work go wrong, and the habit that prevents each |
 | [`docs/workflow.md`](docs/workflow.md) | Where these reviews sit in a build-and-review loop |
 | [`docs/using-with-ai-agents.md`](docs/using-with-ai-agents.md) | How AI CLIs read a repo, install and invoke, proving the load, pitfalls |
@@ -84,6 +86,65 @@ Claude apps: zip a skill's folder and upload it as a custom skill in settings.
 - **Give it the original request verbatim.** Without it the reviewer grades the work against its own framing.
 - **The review is adversarial input, not ground truth.** Reviewers over-flag. Send Critical and High findings back to the author with "confirm or refute each with evidence", act on what survives both sides, and record each outcome in writing.
 - **Protect the data.** A second opinion is not a reason to send client, customer or personal data to a model or endpoint not approved for it.
+
+## Credits
+
+Every external source this repository adapts or cites, in one place. Per-entry credits stay where each source is used (for
+example the [attack catalog's Sources](docs/attack-catalog.md#sources)); this list points to them. "Ideas" means no text or
+code was copied. Licenses were read from each repository on 2026-10-08.
+
+**Skills and audit practice**
+
+| Source | What was taken | License | Used in |
+|---|---|---|---|
+| Cloudflare, [security-audit-skill](https://github.com/cloudflare/security-audit-skill) | ideas: finding states, a coverage ledger, a schema-validated findings file; comparison for catalog entries 12-28 | MIT | [SPEC v2.2](docs/SPEC.md), [redteam](skills/redteam/SKILL.md) output format, [catalog](docs/attack-catalog.md#sources) |
+| Garry Tan, [gstack](https://github.com/garrytan/gstack) `/cso` skill | ideas: comparison for catalog entries 12-28 | MIT | [catalog](docs/attack-catalog.md#sources) |
+| Trail of Bits, [skills](https://github.com/trailofbits/skills) | ideas only: comparison for entries 12-28; variant analysis (entry 28) | CC-BY-SA-4.0 | [catalog](docs/attack-catalog.md#sources) |
+
+**Research**
+
+| Source | What was taken | Used in |
+|---|---|---|
+| [arXiv 2609.18460](https://arxiv.org/html/2609.18460v1) | peer-handoff harm rates | catalog entry 2 |
+| [arXiv 2608.27800](https://arxiv.org/html/2608.27800v1) (ContextLeak) | tool names and descriptions as an attack surface | catalog entry 3 |
+| [arXiv 2607.07433](https://arxiv.org/abs/2607.07433) (HalluSquatting) | registered hallucinated names | catalog entry 8 |
+| [arXiv 2606.13685](https://arxiv.org/abs/2606.13685); [arXiv 2403.18771](https://arxiv.org/abs/2403.18771) (CheckEval) | judge self-disagreement; decomposed yes/no questions | [SPEC v2.2 sources](docs/SPEC.md), severity questions |
+| 1Password, [blog](https://1password.com/blog/why-ai-generated-patches-still-require-human-review) and [paper](https://1password.com/files/resources/frontier-models-vulnerability-patches-flawed.pdf) | AI security patches that fix, or add, a flaw | SPEC v2.2 sources, fix-regression check |
+| [arXiv 2610.03984](https://arxiv.org/abs/2610.03984); [arXiv 2406.12952](https://arxiv.org/abs/2406.12952) (SWT-Bench); counter-result [arXiv 2602.07900](https://arxiv.org/abs/2602.07900) | reproduction tests over self-review | SPEC v2.2 sources, Track B reproduction |
+| Meta, [Muse security write-up](https://research.meta.ai/blog/security-and-safety-for-ai-agents-our-approach-with-muse) | credentials outside the agent's runtime | catalog entry 4 |
+
+**Standards, specifications and vendor documentation**
+
+| Source | Used in |
+|---|---|
+| [RFC 8725](https://www.rfc-editor.org/rfc/rfc8725.html) (JWT best practices) | catalog entry 12 |
+| [RFC 8659](https://www.rfc-editor.org/rfc/rfc8659.html) (CAA), [RFC 6962](https://www.rfc-editor.org/rfc/rfc6962.html) (Certificate Transparency) | catalog entry 16 |
+| [CWE-295](https://cwe.mitre.org/data/definitions/295.html) (improper certificate validation) | catalog entry 15 |
+| [MCP security best practices](https://modelcontextprotocol.io/specification/draft/basic/security_best_practices) | catalog entry 18 |
+| GitHub: [validating webhook deliveries](https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries), [Actions secure use](https://docs.github.com/en/actions/reference/security/secure-use), [npm 12 changelog](https://github.blog/changelog/2026-07-08-npm-install-time-security-and-gat-bypass2fa-deprecation/) | catalog entries 15, 23, 7 |
+| Anthropic: [NIST submission](https://www-cdn.anthropic.com/43ec7e770925deabc3f0bc1dbf0133769fd03812.pdf), [Zero Trust guide](https://claude.com/resources/guides/zero-trust-for-ai-agents/security-considerations-for-autonomous-systems) | catalog entry 4 |
+| Claude Code docs: [hooks](https://code.claude.com/docs/en/hooks), [memory](https://code.claude.com/docs/en/memory), [skills](https://code.claude.com/docs/en/skills) | catalog entry 22; [using-with-ai-agents](docs/using-with-ai-agents.md) |
+| `ss(8)` manual page | catalog entry 26 |
+| [OWASP Top 10 for LLM Applications 2025](https://genai.owasp.org/llm-top-10/), [OWASP Top 10 for Agentic Applications 2026](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/), [MITRE ATLAS](https://atlas.mitre.org/) ([data](https://github.com/mitre-atlas/atlas-data)) | [framework mapping](docs/framework-mapping.md) |
+
+**Methods**
+
+| Source | Used in |
+|---|---|
+| Gary Klein, ["Performing a Project Premortem"](https://hbr.org/2007/09/performing-a-project-premortem), Harvard Business Review, 2007 | Track A pre-mortem |
+| John Dewey, [*How We Think*](https://www.gutenberg.org/ebooks/37423), 1910 | rival explanations in [workflow](docs/workflow.md) and [why-reviews-fail](docs/why-reviews-fail.md) item 10 |
+| Mutation testing, established practice since DeMillo, Lipton and Sayward, ["Hints on Test Data Selection"](https://doi.org/10.1109/C-M.1978.218136), IEEE Computer, 1978 | redteam rule 5 (a test that has never failed); [why-reviews-fail](docs/why-reviews-fail.md) item 4; the validator's weakened-copy test ([evals/README](evals/README.md)) |
+
+**Conventions**
+
+| Convention | Used in |
+|---|---|
+| [AGENTS.md](https://agents.md/) | [AGENTS.md](AGENTS.md) |
+| [llms.txt](https://llmstxt.org/) | [llms.txt](llms.txt) |
+| Anthropic Agent Skills format ([Claude Code skills](https://code.claude.com/docs/en/skills), [agentskills.io](https://agentskills.io/)) | `skills/*/SKILL.md`, `.claude-plugin/` |
+
+Measured claims (entries marked *measured* in the catalog) come from one operator's machines; the methods are in
+[rivendale/hsi-operator](https://github.com/rivendale/hsi-operator) and [rivendale/opensource](https://github.com/rivendale/opensource/tree/main/tools/web).
 
 ## License
 
