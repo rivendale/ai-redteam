@@ -323,7 +323,7 @@ supported claim now fail on REFUTED as well as UNVERIFIED, so a true claim canno
 ## The assess hold-out set (evals/assess/holdout/cases, added 2026-10-08)
 
 The 36 cases in `evals/assess/cases` were changed, along with the skill, after reading failures on them, so they are a development set. The hold-out set is 36
-more: two defect cases for each of the 14 failure-list rules and eight controls, written from `docs/SPEC-assess.md` alone, before looking at the skill's runs. It
+more: two defect cases for each of the 14 failure-list rules and eight controls, written from `docs/SPEC-assess.md` alone, without the skill text open (I had read about ten lines of it, and its JSON example, for a review, none of it used here). It
 uses a different domain (a small mobile-game studio: Unity, Jenkins on one Mac mini, Crashlytics, Crowdin) and its own synthetic context file, so none of the
 dev set's wording (docs, CI, lychee, sqlite-vec) can help. The same scorer rules apply (`evals/score_assess.py --cases evals/assess/holdout/cases`).
 
