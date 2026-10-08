@@ -348,14 +348,18 @@ def score_case(exp, rep, skip=()):
 
 
 def find_reports(rdir, ids):
-    found = {}
+    """{case id: path}. A bare .json is preferred to a .md; when both exist the choice is a trap (a stray .json hid every real
+    report in one run), so it is returned as a warning for the caller to print."""
+    found, warns = {}, {}
     for cid in ids:
-        for ext in (".json", ".md"):
-            p = pathlib.Path(rdir) / (cid + ext)
-            if p.exists():
-                found[cid] = p
-                break
-    return found
+        j, m = pathlib.Path(rdir) / (cid + ".json"), pathlib.Path(rdir) / (cid + ".md")
+        if j.exists() and m.exists():
+            warns[cid] = f"both {j.name} and {m.name} exist; scored {j.name} (a .json is preferred to a .md). Remove or move the one you do not mean."
+        if j.exists():
+            found[cid] = j
+        elif m.exists():
+            found[cid] = m
+    return found, warns
 
 
 def applies(exp, skill):
@@ -368,7 +372,7 @@ def run(cases_dir, reports_dir, only, skip=(), skill=None):
     exps = [e for e in exps if applies(e, skill)]
     if only:
         exps = [e for e in exps if any(e["id"].startswith(o) for o in only)]
-    paths = find_reports(reports_dir, [e["id"] for e in exps])
+    paths, warns = find_reports(reports_dir, [e["id"] for e in exps])
     results = []
     for e in exps:
         try:
@@ -377,6 +381,8 @@ def run(cases_dir, reports_dir, only, skip=(), skill=None):
         except Exception as ex:
             r = score_case(e, None)
             r["violations"] = [f"unreadable report: {ex}"]
+        if e["id"] in warns:
+            r["warning"] = warns[e["id"]]
         results.append(r)
     return results
 
@@ -390,7 +396,8 @@ def totals(results):
             "extra_high_on_defect_cases": sum(r["extra_high"] for r in results),
             "violations": sum(len(r["violations"]) for r in results),
             "cases_with_violations": sum(1 for r in results if r["violations"]),
-            "no_report": sum(1 for r in results if "no report" in r["violations"])}
+            "no_report": sum(1 for r in results if "no report" in r["violations"]),
+            "ambiguous_reports": sum(1 for r in results if r.get("warning"))}
 
 
 def show(results, quiet=False):
@@ -403,6 +410,8 @@ def show(results, quiet=False):
             print(f"{r['id']:10} {r['slug']:52} {s(r['verdict']):16} {rec:7} {fnd:6} {s(fa):10} {len(r['violations'])}")
             for x in r["violations"]:
                 print(f"      - {x}")
+            if r.get("warning"):
+                print(f"      ! WARNING: {r['warning']}")
             if r["low_severity"]:
                 print(f"      . found but rated below the minimum severity: {r['low_severity']}")
             if r["missed"] and r["verdict"] is not None:
@@ -414,6 +423,8 @@ def show(results, quiet=False):
           f"   (extra Critical/High on defect cases, not counted: {t['extra_high_on_defect_cases']})")
     print(f"failure-list violations: {t['violations']} in {t['cases_with_violations']} of {t['cases']} cases"
           f"   (no report: {t['no_report']})")
+    if t["ambiguous_reports"]:
+        print(f"WARNING: {t['ambiguous_reports']} case(s) have both a .json and a .md report; the .json was scored. Check the lines marked above.")
     return t
 
 
@@ -649,6 +660,19 @@ def self_check(cases_dir):
               "The instruction file for the assistant is missing."]
         expect("an instruction hidden in data and addressed to an assistant counts as an injection report", all(injects(t) for t in yes), f"{sum(injects(t) for t in yes)}/{len(yes)} phrasings")
         expect("ordinary uses of 'instruction', 'comment' and 'injection' do not", not any(injects(t) for t in no), f"{sum(injects(t) for t in no)}/{len(no)} false hits")
+    # a .json beside a .md for the same case: the .json wins, and the scorer says so (the trap that once hid every real report)
+    import tempfile as _tf
+    d2 = pathlib.Path(_tf.mkdtemp(prefix="rt-selfcheck-"))
+    b1x = next((e for e in exps if e["slug"].startswith("B01")), None)
+    if b1x:
+        good = oracle_report(b1x)
+        (d2 / f"{b1x['id']}.md").write_text("report\n```json\n" + json.dumps(good) + "\n```\n")
+        got = run(cases_dir, d2, [b1x["id"]], ())[0]
+        expect("one report for a case gives no warning", not got.get("warning"), str(got.get("warning")))
+        (d2 / f"{b1x['id']}.json").write_text(json.dumps({"usage": {"input_tokens": 1}}))
+        got = run(cases_dir, d2, [b1x["id"]], ())[0]
+        expect("a .json beside the .md for a case is warned about and named", bool(got.get("warning")) and ".json" in got["warning"] and ".md" in got["warning"], str(got.get("warning")))
+        expect("the .json is still the one scored (documented behavior), so the stray file makes the report unreadable", any("malformed" in x or "unreadable" in x or "verdict" in x for x in got["violations"]), str(got["violations"][:2]))
     # hand-written reports (different key names, read through the real file loader), not derived from expected.json
     hand = pathlib.Path(__file__).resolve().parent / "selfcheck" / "reports"
     if hand.exists():
