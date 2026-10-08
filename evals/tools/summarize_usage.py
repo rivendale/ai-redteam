@@ -3,7 +3,7 @@
 usage: summarize_usage.py RUN_DIR [RUN_DIR ...]"""
 import glob, json, sys
 for d in sys.argv[1:]:
-    rows = [json.load(open(f)) for f in sorted(glob.glob(f"{d}/case-*.usage.json"))]
+    rows = [json.load(open(f)) for f in sorted(glob.glob(f"{d}/_meta/case-*.usage.json"))]
     if not rows:
         print(f"{d}: no usage files"); continue
     tok = lambda k: sum((r.get("usage") or {}).get(k, 0) or 0 for r in rows)

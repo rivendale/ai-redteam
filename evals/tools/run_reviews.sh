@@ -6,7 +6,7 @@
 set -u
 skill=$(realpath "$1"); out=$(realpath -m "$2"); par=${3:-3}
 here=$(cd "$(dirname "$0")/../.." && pwd)
-prep=$(mktemp -d); mkdir -p "$out"
+prep=$(mktemp -d); mkdir -p "$out/_meta"
 python3 "$here/evals/tools/prepare.py" "$prep" ${ONLY:+--only "$ONLY"} >/dev/null
 export INVOCATION_ID= SKILL="$skill" OUT="$out"
 review() {
@@ -25,11 +25,12 @@ review() {
     echo "json block with \"verdict\" and \"findings\" (each: severity, evidence_level, location, scenario, fix)."
   } > "$OUT/$c.prompt"
   # --output-format json carries the report text plus model and token usage; the report is written unchanged to
-  # case-NN.md and the usage to case-NN.usage.json, so runs stay comparable and every result can state its cost.
+  # case-NN.md and the raw output and usage to _meta/ (score.py reads case-NN.json in preference to the .md, so
+  # nothing named case-*.json may sit beside the reports), so runs stay comparable and every result can state its cost.
   timeout 900 claude -p --output-format json --tools "" --strict-mcp-config --mcp-config '{"mcpServers":{}}' \
     --setting-sources "" --permission-mode dontAsk --disallowedTools "Bash,Write,Edit,Read,WebFetch,WebSearch" \
-    < "$OUT/$c.prompt" > "$OUT/$c.json" 2> "$OUT/$c.err" || echo "$c failed rc=$?" >> "$OUT/failures.txt"
-  python3 - "$OUT/$c.json" "$OUT/$c.md" "$OUT/$c.usage.json" <<'PYX' || echo "$c unparsable json" >> "$OUT/failures.txt"
+    < "$OUT/$c.prompt" > "$OUT/_meta/$c.claude.json" 2> "$OUT/$c.err" || echo "$c failed rc=$?" >> "$OUT/failures.txt"
+  python3 - "$OUT/_meta/$c.claude.json" "$OUT/$c.md" "$OUT/_meta/$c.usage.json" <<'PYX' || echo "$c unparsable json" >> "$OUT/failures.txt"
 import json, sys
 d = json.load(open(sys.argv[1]))
 open(sys.argv[2], "w").write(d.get("result", ""))
