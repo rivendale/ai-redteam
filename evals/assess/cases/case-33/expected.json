@@ -16,16 +16,11 @@
       "fl": 0
     },
     {
-      "rule": "handoff_is",
-      "value": "harvest",
-      "fl": 0
-    },
-    {
       "rule": "mentions_none",
       "words": [
-        "telemetry",
-        "no license",
-        "unlicensed",
+        "sends telemetry",
+        "collects telemetry",
+        "phones home",
         "install script",
         "curl",
         "abandoned",

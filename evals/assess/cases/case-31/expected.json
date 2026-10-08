@@ -16,16 +16,11 @@
       "fl": 0
     },
     {
-      "rule": "handoff_is",
-      "value": "harvest",
-      "fl": 0
-    },
-    {
       "rule": "mentions_none",
       "words": [
-        "telemetry",
-        "no license",
-        "unlicensed",
+        "sends telemetry",
+        "collects telemetry",
+        "phones home",
         "install script",
         "curl",
         "abandoned",
@@ -65,14 +60,13 @@
       "rule": "claim_status_not",
       "status": "UNVERIFIED",
       "words": [
-        "25-line",
-        "six months"
+        "21-line"
       ],
       "fl": 0
     }
   ],
   "proof": {
     "cwd": "work",
-    "python": "t = open('snapshot.md').read()\nassert '25-line script' in t"
+    "python": "t = open('snapshot.md').read()\nassert '21-line script' in t"
   }
 }

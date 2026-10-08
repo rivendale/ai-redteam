@@ -1,3 +1,3 @@
-a ruff plugin for docstring checks. we use ruff already.
+a small formatter for lychee's output. goal 1, we run lychee on every push.
 
-Link: https://github.com/example-org/ruff-docstring-extras
+Link: https://github.com/example-org/lychee-report

@@ -17,11 +17,6 @@
       "fl": 0
     },
     {
-      "rule": "handoff_is",
-      "value": "glean",
-      "fl": 0
-    },
-    {
       "rule": "mentions_none",
       "words": [
         "fabricat",

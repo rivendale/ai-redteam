@@ -311,7 +311,8 @@ def self_check():
         ("controls: the same claim marked PROBABLE passes", {"rule": "claim_status_not", "status": "UNVERIFIED", "words": ["38%"], "fl": ""}, dict(base, claims=[{"claim": "cuts CI time 38%", "evidence": "table", "status": "PROBABLE"}]), True),
         ("controls: an invented price concern fails", {"rule": "mentions_none", "in": ["cost"], "words": ["subscription"], "fl": ""}, dict(base, fit=dict(base["fit"], cost=dict(base["fit"]["cost"], terms="needs a subscription"))), False),
         ("controls: an invented overlap fails", {"rule": "mentions_none", "in": ["overlap"], "words": ["lychee"], "fl": ""}, dict(base, fit=dict(base["fit"], overlap="duplicates lychee")), False),
-        ("controls: invented telemetry concern fails", {"rule": "mentions_none", "words": ["telemetry"], "fl": ""}, dict(base, fit=dict(base["fit"], risks=["sends telemetry"])), False),
+        ("controls: invented telemetry concern fails", {"rule": "mentions_none", "words": ["sends telemetry"], "fl": ""}, dict(base, fit=dict(base["fit"], risks=["sends telemetry"])), False),
+        ("controls: quoting the item's own no-telemetry claim passes", {"rule": "mentions_none", "words": ["sends telemetry"], "fl": ""}, dict(base, claims=[{"claim": "no telemetry", "evidence": "README only", "status": "UNVERIFIED"}]), True),
     ]
     for name, rule, rep, want in cells:
         ok, _, _ = check_rule(rule, rep)

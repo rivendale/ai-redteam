@@ -18,7 +18,9 @@
     {
       "rule": "mentions_none",
       "words": [
-        "telemetry",
+        "sends telemetry",
+        "collects telemetry",
+        "phones home",
         "no license",
         "unlicensed",
         "install script",
