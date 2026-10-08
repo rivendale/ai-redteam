@@ -24,15 +24,14 @@ def check_case(d):
         probs.append("a control must not list planted defects")
     if not exp["control"] and not exp["planted"] and not any(m.get("rule") for m in exp.get("must", [])):
         probs.append("a defect case needs planted defects or a must rule")
-    patch = d / "work" / "change.patch"
-    if patch.exists():  # a pull-request case: the patch must apply to base/ and must not remove a file unless the case means it to
+    for patch in [d / "work" / n for n in ("change.patch", "fix.patch") if (d / "work" / n).exists()]:  # a pull-request case: the patch must apply to base/ and must not remove a file unless the case means it to
         import re
         if re.search(r"^@@ -\d+(,\d+)? \+0,0 @@", patch.read_text(), re.M):
-            probs.append("change.patch removes a whole file (a diff built from an incomplete 'after' tree?)")
+            probs.append(f"{patch.name} removes a whole file (a diff built from an incomplete 'after' tree?)")
         refs = set(re.findall(r'"args": \["([^"]+\.js)"', (d / "work").joinpath("change.patch").read_text()))
         for ref in refs:  # files an added config launches must exist in base/ or be added by the patch
             if not (d / "work" / "base" / ref).exists() and f"+++ b/{ref}" not in patch.read_text():
-                probs.append(f"change.patch launches {ref}, which is neither in base/ nor added by the patch")
+                probs.append(f"{patch.name} launches {ref}, which is neither in base/ nor added by the patch")
     for p in exp["planted"]:
         f = d / p["file"]
         if not f.exists():

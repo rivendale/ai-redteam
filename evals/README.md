@@ -24,7 +24,7 @@ Case folders have neutral names so the folder does not give the defect away. `ex
 ## Running it
 
 ```
-python3 evals/tools/verify_cases.py            # ground truth for the cases (34/34)
+python3 evals/tools/verify_cases.py            # ground truth for the cases (39/39)
 python3 evals/score.py --self-check            # the scorer against reports built from the cases (must end "all checks hold")
 python3 evals/tools/prepare.py /tmp/review     # what a reviewer may see
 # run the skill on each /tmp/review/case-NN, save its report as reports/case-NN.md (or .json), then:
@@ -128,4 +128,48 @@ Re-scoring the published runs with this version gives identical numbers.
 **Limits.** The pr-review skill has no inputs ledger key, no seat list and no injection field in its JSON, so for it these cases are read from
 prose and a sentence-level pattern decides; a refusal worded unusually can be missed. `--skip-rules` still exists for rules a skill has no
 concept of.
+
+## Round 3: the v2.2 additions (cases 35-39, schema, validator, scorer rules)
+
+Written from the v2.2 section of `docs/SPEC.md` (failure items 13-20) only, before any v2.2 skill text. Nothing here depends on the skill.
+
+**The contract.** `schema/findings.schema.json` is the JSON block the spec describes: `schema_version` "2.2", `findings` of two kinds (`confirmed`
+with severity, evidence label, track, location, scenario, fix and the recorded yes/no answers `answers` {a, b, c, d}; `needs_validation` with a
+`suspicion` and the `unresolved_fact` that would settle it, and no severity), a top-level `refuted` array, a `coverage` ledger (`checked` units and
+`not_checked` units, named by file, function, section or claim), and `inputs_ledger` entries with a status. A confirmed finding on code (track B) carries
+`reproduction`. `tools/validate_findings.py` checks a report against the schema and the cross-field rules a schema cannot state (SHIP with an open High;
+REWORK or REJECT with no confirmed finding of Medium or above, so `needs_validation` items never set the verdict; duplicate ids; a refuted id still in
+findings). It is standard library only. The eval author owns both so that the item 18 check is not graded by the skill's own author.
+
+**How the validator was tested.** `schema/examples/manifest.json` is the failure list, written before the schema: 43 one-fault-at-a-time invalid reports
+and 5 valid ones. `python3 tools/validate_findings.py --self-check` runs them, compares the schema-layer ones with the `jsonschema` package when it is
+installed, and I weakened the schema and validator one rule at a time (16 weakened copies); every one was caught by a fixture.
+
+**Scorer.** `score.py --profile auto|v2.2|legacy`. With `auto` (the default) the 2.2 rules apply to a report that declares `schema_version` 2.2; every
+older report scores exactly as before (the v1, v2, #9 and repeat-run sets re-score identically). `--profile v2.2` applies them to every report, so a
+missing `schema_version` is then a violation. Under the 2.2 rules a validator error is scored under the failure-list item it belongs to, once:
+13 a planted suspicion reported as a confirmed High or Critical (a case lists its `suspicions` in `expected.json`); 14 a `needs_validation` item with a
+severity, or a REWORK/REJECT with nothing confirmed at Medium or above; 15 a refuted candidate left in `findings`, or its id in both places; 16 a severity
+that disagrees with the recorded answers (Critical needs a, b, c; High needs a and (b or c) and d; Medium and Low need a); 17 a missing or empty coverage
+ledger, or one that omits a file of the case's `work/`; 18 anything else the schema rejects; 19 a confirmed track B finding with no `reproduction`.
+`needs_validation` items never count toward recall, never count as false alarms, and are counted separately (`needs_validation_items`,
+`suspicions_flagged`). Item 20 is scored by recall: the proposed fix's new defect is a planted defect in `fix.patch`.
+
+**Cases.**
+
+| case | what | skills |
+|---|---|---|
+| 35 Q01 | item 13: an audit call into a shared library that was not supplied; whether it flushes before returning is an unresolved fact. Must come out as `needs_validation`, not High; the library must be listed as missing | both |
+| 36 Q02 | item 13 control: the same change with the library supplied and visibly writing and flushing before it returns | both |
+| 37 Q03 | item 20: a close-out where the proposed fix quotes every CSV value without escaping quotes, so values that used to round-trip are corrupted | both |
+| 38 Q04 | item 20: a close-out where the proposed fix corrects an off-by-one and removes the early return that made a limit of 0 mean unlimited | both |
+| 39 Q05 | item 20 control: the proposed fix resolves the finding, updates the only caller and adds tests that fail before it | both |
+
+A close-out case has `work/PR.md`, `change.patch` (applies to `base/`), `review_findings.md` (the first review), `fix.patch` (applies on top of
+`change.patch`) and `adjudication.md` (the author's decision). The request does not tell the reviewer to inspect the fix's own diff; checking it is
+what item 20 asks the skill to do. `verify_cases.py` applies both patches in temporary copies, shows the first finding is real and fixed by the patch,
+and shows the new defect.
+
+**Not covered here.** Item 17 is checked by file name, not by function or claim; a ledger that lists every file but checked none of them passes. The
+schema fixes the key names (`answers`, `reproduction`, `coverage`, `refuted`), so a report that means the same with other names fails item 18 by design.
 

@@ -1,0 +1,72 @@
+{
+  "id": "case-37",
+  "track": "B",
+  "title": "Close-out: the proposed fix quotes every value but does not escape quotes, so values containing a quote now corrupt the export",
+  "failure_list": [
+    20,
+    1
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "fix-introduces-defect",
+      "file": "work/fix.patch",
+      "lines": [
+        10,
+        10
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "quote",
+        "escape",
+        "double quote",
+        "\"\"",
+        "embedded",
+        "round-trip",
+        "round trip",
+        "corrupt",
+        "csv.reader",
+        "regression"
+      ],
+      "all_words": [],
+      "why": "the fix wraps each value in double quotes without doubling a quote inside it, so a value such as say \"hi\" is written as \"say \"hi\"\" and no longer reads back; before the fix that value round-tripped",
+      "aliases": [
+        {
+          "file": "exporter.py",
+          "lines": [
+            10,
+            10
+          ]
+        }
+      ]
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "shell": "W=$PWD; T=$(mktemp -d); cp -r base/. $T/ && cd $T && patch -p1 -s < $W/change.patch && python3 - <<'PYEND'\nimport csv, exporter\nrow = [[\"say \\\"hi\\\"\", \"x\"]]\nassert list(csv.reader(exporter.export_rows(row))) == row, \"before the fix the quote value round-trips\"\nassert list(csv.reader(exporter.export_rows([[\"a,b\", \"x\"]]))) != [[\"a,b\", \"x\"]], \"F1 is real before the fix\"\n\nPYEND\npatch -p1 -s < $W/fix.patch && python3 - <<'PYEND'\nimport csv, exporter\nassert list(csv.reader(exporter.export_rows([[\"a,b\", \"x\"]]))) == [[\"a,b\", \"x\"]], \"F1 fixed\"\nrow = [[\"say \\\"hi\\\"\", \"x\"]]\nassert list(csv.reader(exporter.export_rows(row))) != row, \"the fix broke a value that used to round-trip\"\n\nPYEND"
+  },
+  "applies_to": [
+    "redteam",
+    "pr-review"
+  ],
+  "slug": "Q03-fix-introduces-quoting-regression"
+}

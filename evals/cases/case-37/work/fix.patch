@@ -1,0 +1,28 @@
+--- a/exporter.py
++++ b/exporter.py
+@@ -6,5 +6,5 @@
+ 
+ 
+ def export_rows(rows):
+-    """Lines of a CSV file for `rows` (lists of values), header excluded."""
+-    return [",".join(str(v) for v in row) for row in rows]
++    """Lines of a CSV file for `rows` (lists of values), header excluded. Every value is quoted."""
++    return [",".join('"%s"' % v for v in row) for row in rows]
+--- a/tests/test_exporter.py
++++ b/tests/test_exporter.py
+@@ -1,10 +1,14 @@
++import csv
+ import unittest
+ import exporter
+ 
+ 
+ class T(unittest.TestCase):
+     def test_plain_row(self):
+-        self.assertEqual(exporter.export_rows([["ann", "ok"]]), ["ann,ok"])
++        self.assertEqual(list(csv.reader(exporter.export_rows([["ann", "ok"]]))), [["ann", "ok"]])
++
++    def test_comma_value(self):
++        self.assertEqual(list(csv.reader(exporter.export_rows([["ann", "a,b"]]))), [["ann", "a,b"]])
+ 
+ 
+ if __name__ == "__main__":

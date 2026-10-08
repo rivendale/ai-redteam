@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "redteam findings block, schema version 2.2",
+  "description": "The machine-readable JSON block at the end of a redteam or pr-review report. Written from the v2.2 section of docs/SPEC.md. Rules that compare fields across the report (the verdict against the findings, unique ids, a refuted id absent from findings) are in tools/validate_findings.py, not here.",
+  "type": "object",
+  "required": ["schema_version", "verdict", "inputs_ledger", "coverage", "findings", "refuted"],
+  "properties": {
+    "schema_version": {"const": "2.2"},
+    "verdict": {"enum": ["SHIP", "SHIP WITH FIXES", "REWORK", "REJECT"]},
+    "confidence": {"enum": ["high", "medium", "low"]},
+    "inputs_ledger": {"type": "array", "items": {"$ref": "#/$defs/ledgerItem"}},
+    "coverage": {"$ref": "#/$defs/coverage"},
+    "seats": {"type": "array"},
+    "sensitivity_gate": {"type": "object"},
+    "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
+    "refuted": {"type": "array", "items": {"$ref": "#/$defs/refutedItem"}}
+  },
+  "$defs": {
+    "ledgerItem": {
+      "type": "object",
+      "required": ["item", "status"],
+      "properties": {
+        "item": {"type": "string", "minLength": 1},
+        "status": {"enum": ["seen", "not_seen", "not_openable"]},
+        "matters": {"type": "boolean"}
+      }
+    },
+    "coverage": {
+      "description": "The units of the work that were checked, and the units that were not, so a later run can target the gaps. Units are named by file, function, section heading or claim number.",
+      "type": "object",
+      "required": ["checked", "not_checked"],
+      "properties": {
+        "checked": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["unit", "kind"],
+            "properties": {
+              "unit": {"type": "string", "minLength": 1},
+              "kind": {"enum": ["file", "function", "section", "claim", "assumption", "config", "data"]},
+              "note": {"type": "string"}
+            }
+          }
+        },
+        "not_checked": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["unit", "reason"],
+            "properties": {"unit": {"type": "string", "minLength": 1}, "reason": {"type": "string", "minLength": 1}}
+          }
+        }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "required": ["id", "status"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "status": {"enum": ["confirmed", "needs_validation"]}
+      },
+      "allOf": [
+        {"if": {"required": ["status"], "properties": {"status": {"const": "confirmed"}}}, "then": {"$ref": "#/$defs/confirmed"}},
+        {"if": {"required": ["status"], "properties": {"status": {"const": "needs_validation"}}}, "then": {"$ref": "#/$defs/needsValidation"}}
+      ]
+    },
+    "confirmed": {
+      "description": "A finding with a location, a concrete failure scenario and a fix. Severity follows from the yes/no answers: (a) concrete scenario with stated conditions, (b) CONFIRMED rather than PROBABLE, (c) breaks the request, loses data, breaches security or creates legal exposure, (d) likely under realistic use. Critical needs a, b, c; High needs a and (b or c) and d; Medium and Low need a. A finding that fails (a) is needs_validation. A confirmed finding on code (track B) carries a failing test or exact reproduction steps.",
+      "type": "object",
+      "required": ["severity", "evidence_level", "track", "location", "scenario", "fix", "answers"],
+      "properties": {
+        "severity": {"enum": ["Critical", "High", "Medium", "Low"]},
+        "evidence_level": {"enum": ["CONFIRMED", "PROBABLE"]},
+        "track": {"enum": ["A", "B", "C", "D", "R"]},
+        "location": {"type": "string", "minLength": 1},
+        "scenario": {"type": "string", "minLength": 20},
+        "fix": {"type": "string", "minLength": 1},
+        "reproduction": {"type": "string", "minLength": 10},
+        "answers": {
+          "type": "object",
+          "required": ["a", "b", "c", "d"],
+          "properties": {"a": {"type": "boolean"}, "b": {"type": "boolean"}, "c": {"type": "boolean"}, "d": {"type": "boolean"}},
+          "additionalProperties": false
+        }
+      },
+      "allOf": [
+        {"if": {"required": ["track"], "properties": {"track": {"const": "B"}}}, "then": {"required": ["reproduction"]}},
+        {"if": {"required": ["severity"], "properties": {"severity": {"const": "Critical"}}},
+         "then": {"properties": {"answers": {"properties": {"a": {"const": true}, "b": {"const": true}, "c": {"const": true}}}}}},
+        {"if": {"required": ["severity"], "properties": {"severity": {"const": "High"}}},
+         "then": {"properties": {"answers": {"properties": {"a": {"const": true}, "d": {"const": true}},
+                                             "anyOf": [{"properties": {"b": {"const": true}}}, {"properties": {"c": {"const": true}}}]}}}},
+        {"if": {"required": ["severity"], "properties": {"severity": {"enum": ["Medium", "Low"]}}},
+         "then": {"properties": {"answers": {"properties": {"a": {"const": true}}}}}}
+      ]
+    },
+    "needsValidation": {
+      "description": "A suspicion with the exact unresolved fact that would settle it. It has no severity and never sets the verdict.",
+      "type": "object",
+      "required": ["suspicion", "unresolved_fact", "location"],
+      "properties": {
+        "track": {"enum": ["A", "B", "C", "D", "R"]},
+        "location": {"type": "string", "minLength": 1},
+        "suspicion": {"type": "string", "minLength": 10},
+        "unresolved_fact": {"type": "string", "minLength": 10}
+      },
+      "not": {"required": ["severity"]}
+    },
+    "refutedItem": {
+      "description": "A candidate withdrawn after the confirm-or-refute round, with the evidence. It is never shown as CONFIRMED.",
+      "type": "object",
+      "required": ["id", "candidate", "evidence"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "candidate": {"type": "string", "minLength": 1},
+        "evidence": {"type": "string", "minLength": 10},
+        "status": {"const": "refuted"}
+      },
+      "not": {"required": ["evidence_level"], "properties": {"evidence_level": {"const": "CONFIRMED"}}}
+    }
+  }
+}

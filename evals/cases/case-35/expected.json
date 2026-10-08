@@ -1,0 +1,59 @@
+{
+  "id": "case-35",
+  "track": "B",
+  "title": "Audit record added with a library that was not supplied: its flush behavior is an unresolved fact, not a High",
+  "failure_list": [
+    13,
+    10
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "ledger_lists",
+      "items": [
+        "company_audit"
+      ]
+    },
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT",
+        "REWORK"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "shell": "W=$PWD; T=$(mktemp -d); cp -r base/. $T/ && cd $T && patch -p1 -s < $W/change.patch && python3 - <<'PYEND'\nimport subprocess, sys\nr = subprocess.run([sys.executable, \"-m\", \"unittest\", \"-q\", \"tests.test_orders\"], capture_output=True, text=True, env={\"PYTHONPATH\": \".\", \"PYTHONDONTWRITEBYTECODE\": \"1\"})\nassert r.returncode == 0, r.stderr\nr = subprocess.run([sys.executable, \"-c\", \"import orders\"], capture_output=True, text=True, env={\"PYTHONPATH\": \".\", \"PYTHONDONTWRITEBYTECODE\": \"1\"})\nassert r.returncode != 0 and \"company_audit\" in r.stderr, \"the library must be genuinely absent\"\n\nPYEND"
+  },
+  "applies_to": [
+    "redteam",
+    "pr-review"
+  ],
+  "suspicions": [
+    {
+      "id": "S1",
+      "file": "orders.py",
+      "any_words": [
+        "company_audit",
+        "record(",
+        "audit",
+        "flush",
+        "drop",
+        "asynchron",
+        "deliver",
+        "shutdown",
+        "queue",
+        "durab"
+      ],
+      "why": "whether record() is written before it returns or queued and lost when the process exits is not knowable from what was supplied"
+    }
+  ],
+  "slug": "Q01-suspicion-without-scenario"
+}

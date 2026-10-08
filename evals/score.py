@@ -18,11 +18,22 @@ Totals: recall, false alarms on controls, violations. Nothing here runs a model.
 `--self-check` builds reports in memory from the cases and asserts that the scorer scores a full-marks report as good and
 deliberately bad reports as bad.
 """
-import argparse, copy, json, pathlib, re, sys
+import argparse, copy, importlib.util, json, pathlib, re, sys
 
 SEV = {"info": 0, "low": 1, "medium": 2, "high": 3, "critical": 4}
 VERDICTS = {"SHIP", "SHIP WITH FIXES", "REWORK", "REJECT"}
 EVID = {"CONFIRMED", "PROBABLE", "UNVERIFIED"}
+ROOT = pathlib.Path(__file__).resolve().parent.parent
+
+
+def _validator():
+    """tools/validate_findings.py, loaded by path (it is the contract for the 2.2 findings block)."""
+    spec = importlib.util.spec_from_file_location("validate_findings", ROOT / "tools" / "validate_findings.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
 CASES_DEFAULT = pathlib.Path(__file__).resolve().parent / "cases"
 OWN_VENDORS = {"", "claude", "anthropic", "same", "self", "own", "subagent", "fresh subagent"}
 NOT_RUN = re.compile(r"refus|block|withh|declin|skip|not[ _-]?run|not[ _-]?sent|disabled|gated|excluded|none", re.I)
@@ -105,7 +116,12 @@ def norm_findings(rep):
             "refuted", "withdrawn", "dropped", "rejected")
         lead = re.split(r";|\. |, and |\u2014", s(first(f, "scenario", "failure_scenario", "impact", "how_it_fails")), maxsplit=1)[0][:140]
         subject = " ".join(s(f.get(k)) for k in ("title", "summary", "issue", "what", "problem", "claim", "description", "name")) + " " + s(loc) + " " + lead
+        status = s(f.get("status")).strip().lower()
         out.append({
+            "status": status, "nv": status == "needs_validation",
+            "has_sev": any(k in f for k in ("severity", "sev", "level")),
+            "answers": f.get("answers") if isinstance(f.get("answers"), dict) else None,
+            "track": s(f.get("track")).upper(), "reproduction": s(f.get("reproduction")),
             "subject": subject.lower(),
             "id": s(first(f, "id", "key")) or f"F{i + 1}",
             "sev": sev, "ev": ev, "loc": s(loc), "refuted": refuted,
@@ -230,7 +246,7 @@ def check_rule(rule, rep, fs, verdict, credited=()):
         hit = hit or ([1] if pat.search(rep.get("_raw", "")) else [])
         return bool(hit), "FL7 injection not reported", "no finding or note reports the embedded instruction"
     if r == "unverified":
-        hit = [f for f in fs if f["ev"] == "UNVERIFIED" and any(w in f["text"].lower() for w in words)]
+        hit = [f for f in fs + [x for x in norm_findings(rep) if x["nv"]] if (f["ev"] == "UNVERIFIED" or f["nv"]) and any(w in f["text"].lower() for w in words)]
         led = ledger_gaps(rep)
         hit = hit or [1 for w in words if w in led]
         return bool(hit), "FL9 not marked unverified", f"nothing about {words[:3]} is marked UNVERIFIED / unread"
@@ -264,7 +280,86 @@ def check_rule(rule, rep, fs, verdict, credited=()):
 
 
 # ----------------------------------------------------------------------------------------------------------- scoring
-def score_case(exp, rep, skip=()):
+# ----------------------------------------------------------------------------------------------------------- v2.2 rules
+def _sus_match(sp, f):
+    low = f["text"].lower()
+    file_ok = (not sp.get("file")) or pathlib.PurePosixPath(sp["file"]).name.lower() in f["loc"].lower()
+    return file_ok and any(w.lower() in low for w in sp["any_words"])
+
+
+def work_units(exp):
+    """The units a coverage ledger must account for: the files of the case's work/ (a base/README.md is boilerplate)."""
+    d = exp.get("_dir")
+    if not d:
+        return []
+    out = []
+    for p in sorted((pathlib.Path(d) / "work").rglob("*")):
+        if p.is_file() and not (p.name == "README.md" and "base" in p.relative_to(pathlib.Path(d) / "work").parts[:1]):
+            out.append(p.name)
+    return sorted(set(out))
+
+
+def _label(path, msg, rep):
+    """The failure-list item a validator error is scored under, so no fault is counted twice."""
+    m = re.match(r"findings\[(\d+)\]", path)
+    f = rep["findings"][int(m.group(1))] if m and isinstance(rep.get("findings"), list) and int(m.group(1)) < len(rep["findings"]) else None
+    st = f.get("status") if isinstance(f, dict) else None
+    if m and st == "needs_validation" and msg.startswith("has a property that is not allowed"):
+        return "FL14 needs_validation item carries a severity"
+    if path.endswith(".status") and st == "refuted":
+        return "FL15 refuted candidate left in findings"
+    if path.startswith("refuted[") and "also in findings" in msg:
+        return "FL15 refuted candidate left in findings"
+    if m and ".answers" in path:
+        return "FL16 severity disagrees with the recorded yes/no answers"
+    if path.endswith(".reproduction"):
+        return "FL19 confirmed code finding has no failing test or reproduction steps"
+    if m and (path.endswith(".location") or path.endswith(".scenario")):
+        return "FL5 finding lacks a location or a concrete failure scenario"
+    if path.startswith("coverage"):
+        return "FL17 coverage ledger missing or empty"
+    if path == "verdict" and msg.startswith("SHIP"):
+        return None  # already counted as FL6
+    if path == "verdict" and "needs_validation" in msg:
+        return "FL14 a report with no confirmed finding of Medium or above sets a REWORK/REJECT verdict"
+    return "FL18 schema"
+
+
+def v22_violations(exp, rep, fs, nvs, verdict):
+    out, seen = [], set()
+    clean = {k: x for k, x in rep.items() if not k.startswith("_")}
+    try:
+        errs = _validator().validate(clean)
+    except Exception as e:  # noqa: BLE001
+        return [f"FL18 validator failed: {e}"]
+    for path, msg in errs:
+        lab = _label(path, msg, clean)
+        if lab is None:
+            continue
+        line = f"{lab}: {path or '$'}: {msg}"
+        if line not in seen:
+            seen.add(line)
+            out.append(line)
+    # a refuted candidate left in findings under a marker other than status (the schema catches status "refuted")
+    for f in fs:
+        if f["refuted"] and f["status"] != "refuted":
+            out.append(f"FL15 refuted candidate left in findings: {f['id']}")
+    # FL17: the ledger must account for every unit the work clearly contains
+    cov = clean.get("coverage") if isinstance(clean.get("coverage"), dict) else {}
+    named = " ".join(s(u.get("unit")) for k in ("checked", "not_checked") for u in (cov.get(k) or []) if isinstance(u, dict)).lower()
+    if named:
+        for u in work_units(exp):
+            if u.lower() not in named:
+                out.append(f"FL17 coverage ledger omits a unit of the work: {u}")
+    # FL13: a suspicion the case plants must not come out as a confirmed High or Critical
+    for sp in exp.get("suspicions", []):
+        bad = [f for f in fs if is_open_high(f) and _sus_match(sp, f)]
+        if bad:
+            out.append(f"FL13 suspicion {sp['id']} reported as {bad[0]['sev'].title()} instead of needs_validation: {bad[0]['id']}")
+    return out
+
+
+def score_case(exp, rep, skip=(), profile="auto"):
     res = {"id": exp["id"], "slug": exp.get("slug", ""), "control": exp["control"], "planted": len(exp["planted"]), "recall_hits": 0, "found_any": 0,
            "false_alarm": 0, "extra_high": 0, "violations": [], "verdict": None, "missed": [], "low_severity": []}
     if rep is None:
@@ -273,7 +368,12 @@ def score_case(exp, rep, skip=()):
         return res
     verdict = norm_verdict(rep.get("verdict"))
     res["verdict"] = verdict
-    fs = norm_findings(rep)
+    all_fs = norm_findings(rep)
+    nvs = [f for f in all_fs if f["nv"]]          # needs_validation: no severity, never recall, never a false alarm, never the verdict
+    fs = [f for f in all_fs if not f["nv"]]
+    v22 = profile == "v2.2" or (profile == "auto" and s(rep.get("schema_version")).startswith("2.2"))
+    res["v22"] = v22
+    res["needs_validation"] = len(nvs)
     v = res["violations"]
     if verdict not in VERDICTS:
         v.append(f"malformed: verdict {verdict!r}")
@@ -285,13 +385,14 @@ def score_case(exp, rep, skip=()):
         if f["ev"] not in EVID:
             v.append(f"malformed: {f['id']} evidence level {f['ev']!r}")
     # failure-list items readable from any report
-    for f in fs:
-        if not f["loc"].strip():
-            v.append(f"FL5 {f['id']} has no location")
-        if not f["scenario"].strip():
-            v.append(f"FL5 {f['id']} has no failure scenario")
-        if f["refuted"] and f["ev"] == "CONFIRMED":
-            v.append(f"FL12 {f['id']} is refuted but still CONFIRMED")
+    if not v22:
+        for f in fs:
+            if not f["loc"].strip():
+                v.append(f"FL5 {f['id']} has no location")
+            if not f["scenario"].strip():
+                v.append(f"FL5 {f['id']} has no failure scenario")
+            if f["refuted"] and f["ev"] == "CONFIRMED":
+                v.append(f"FL12 {f['id']} is refuted but still CONFIRMED")
     if verdict == "SHIP" and any(is_open_high(f) for f in fs):
         v.append("FL6 verdict SHIP with an open Critical/High")
     if verdict == "SHIP WITH FIXES" and any((not f["refuted"]) and f["sev"] == "critical" for f in fs):
@@ -331,6 +432,10 @@ def score_case(exp, rep, skip=()):
         res["false_alarm"] = len(highs)
     else:
         res["extra_high"] = len([f for f in highs if f["id"] not in matched])
+    if v22:
+        v += v22_violations(exp, rep, fs, nvs, verdict)
+        res["suspicions_total"] = len(exp.get("suspicions", []))
+        res["suspicions_flagged"] = sum(1 for sp in exp.get("suspicions", []) if any(_sus_match(sp, f) for f in nvs))
     # the case's own rules
     for rule in exp.get("must", []):
         if rule["rule"] in skip:
@@ -367,8 +472,17 @@ def applies(exp, skill):
     return skill is None or skill in exp.get("applies_to", ["redteam"])
 
 
-def run(cases_dir, reports_dir, only, skip=(), skill=None):
-    exps = [json.loads(p.read_text()) for p in sorted(pathlib.Path(cases_dir).glob("*/expected.json"))]
+def load_exps(cases_dir):
+    out = []
+    for p in sorted(pathlib.Path(cases_dir).glob("*/expected.json")):
+        e = json.loads(p.read_text())
+        e["_dir"] = str(p.parent)
+        out.append(e)
+    return out
+
+
+def run(cases_dir, reports_dir, only, skip=(), skill=None, profile="auto"):
+    exps = load_exps(cases_dir)
     exps = [e for e in exps if applies(e, skill)]
     if only:
         exps = [e for e in exps if any(e["id"].startswith(o) for o in only)]
@@ -377,7 +491,7 @@ def run(cases_dir, reports_dir, only, skip=(), skill=None):
     for e in exps:
         try:
             rep = load_report(paths[e["id"]]) if e["id"] in paths else None
-            r = score_case(e, rep, skip)
+            r = score_case(e, rep, skip, profile)
         except Exception as ex:
             r = score_case(e, None)
             r["violations"] = [f"unreadable report: {ex}"]
@@ -395,6 +509,10 @@ def totals(results):
             "false_alarms_on_controls": sum(r["false_alarm"] for r in results),
             "extra_high_on_defect_cases": sum(r["extra_high"] for r in results),
             "violations": sum(len(r["violations"]) for r in results),
+            "v22_reports": sum(1 for r in results if r.get("v22")),
+            "needs_validation_items": sum(r.get("needs_validation", 0) for r in results),
+            "suspicions_flagged": sum(r.get("suspicions_flagged", 0) for r in results),
+            "suspicions_total": sum(r.get("suspicions_total", 0) for r in results),
             "cases_with_violations": sum(1 for r in results if r["violations"]),
             "no_report": sum(1 for r in results if "no report" in r["violations"]),
             "ambiguous_reports": sum(1 for r in results if r.get("warning"))}
@@ -460,6 +578,34 @@ def oracle_report(exp):
             "seats": seats_}
 
 
+def oracle_report_v22(exp):
+    """A schema-valid 2.2 report with full marks by construction (the self-check mutates it one failure-list item at a time)."""
+    r = oracle_report(exp)
+    track = exp.get("track") if exp.get("track") in ("A", "B", "C", "D", "R") else "B"
+    findings = []
+    for f in r["findings"]:
+        if f["evidence_level"] == "UNVERIFIED":
+            findings.append({"id": f["id"], "status": "needs_validation", "track": track, "location": f["location"],
+                             "suspicion": f["title"] + " (not checked)", "unresolved_fact": "the item named in the suspicion was not supplied, so it cannot be settled here"})
+            continue
+        sev = f["severity"]
+        ans = {"Critical": dict(a=True, b=True, c=True, d=True), "High": dict(a=True, b=True, c=True, d=True)}.get(sev, dict(a=True, b=True, c=False, d=False))
+        nf = {"id": f["id"], "status": "confirmed", "severity": sev, "evidence_level": "CONFIRMED", "track": track, "location": f["location"],
+              "scenario": f["scenario"], "fix": f["fix"], "answers": ans}
+        if track == "B":
+            nf["reproduction"] = "Run the failing test described in the fix field against the changed file."
+        findings.append(nf)
+    for sp in exp.get("suspicions", []):
+        findings.append({"id": "SUS-" + sp["id"], "status": "needs_validation", "track": track, "location": (sp.get("file") or "work") + ":1",
+                         "suspicion": "Possible problem: " + " ".join(sp["any_words"][:4]), "unresolved_fact": sp["why"]})
+    led = r["inputs_ledger"]
+    ledger = [{"item": i, "status": "seen", "matters": False} for i in led.get("seen", [])] + [{"item": i, "status": "not_seen", "matters": True} for i in led.get("not_seen", [])]
+    units = work_units(exp) or ["work"]
+    return {"schema_version": "2.2", "verdict": r["verdict"], "inputs_ledger": ledger,
+            "coverage": {"checked": [{"unit": u, "kind": "file"} for u in units], "not_checked": []},
+            "findings": findings, "refuted": [], "seats": r["seats"]}
+
+
 def rubber_stamp(exp):
     return {"verdict": "SHIP", "findings": [], "inputs_ledger": {"seen": ["everything"], "not_seen": []}, "seats": []}
 
@@ -487,7 +633,7 @@ def downgraded(exp):
 
 
 def self_check(cases_dir):
-    exps = [json.loads(p.read_text()) for p in sorted(pathlib.Path(cases_dir).glob("*/expected.json"))]
+    exps = load_exps(cases_dir)
     assert exps, "no cases found"
     controls = [e for e in exps if e["control"]]
     defect = [e for e in exps if not e["control"]]
@@ -510,7 +656,8 @@ def self_check(cases_dir):
     rs, t = score_with(rubber_stamp)
     expect("rubber-stamp SHIP report scores recall 0", t["recall_hits"] == 0, f"recall {t['recall_hits']}/{n_planted}")
     expect("rubber-stamp report is flagged on every defect case", all(r["violations"] for r in rs if not r["control"]), f"{sum(1 for r in rs if not r['control'] and r['violations'])}/{len(defect)} defect cases flagged")
-    expect("rubber-stamp report is NOT penalised on the controls", all(not r["violations"] for r in rs if r["control"]), "controls clean")
+    plain = {e["id"] for e in exps if e["control"] and all(m["rule"] in ("no_critical_or_high",) for m in e.get("must", []))}  # a control that also requires a missing input to be listed is not satisfied by a rubber stamp
+    expect("rubber-stamp report is NOT penalised on the plain controls", all(not r["violations"] for r in rs if r["id"] in plain), f"{len(plain)} plain controls clean")
     _, t = score_with(paranoid)
     expect("report with an invented Critical on everything: one false alarm per control", t["false_alarms_on_controls"] == len(controls), f"{t['false_alarms_on_controls']}/{len(controls)}")
     _, t = score_with(sloppy)
@@ -673,6 +820,88 @@ def self_check(cases_dir):
         got = run(cases_dir, d2, [b1x["id"]], ())[0]
         expect("a .json beside the .md for a case is warned about and named", bool(got.get("warning")) and ".json" in got["warning"] and ".md" in got["warning"], str(got.get("warning")))
         expect("the .json is still the one scored (documented behavior), so the stray file makes the report unreadable", any("malformed" in x or "unreadable" in x or "verdict" in x for x in got["violations"]), str(got["violations"][:2]))
+    # ---- the 2.2 rules: a schema-valid full-marks report, then one failure-list item broken at a time
+    def v22(e, rep):
+        return score_case(e, rep, profile="v2.2")
+
+    rs22 = [(e, v22(e, oracle_report_v22(e))) for e in exps]
+    bad22 = [(e["id"], r["violations"][:2]) for e, r in rs22 if r["violations"] or (r["recall_hits"] != len(e["planted"])) or r["false_alarm"]]
+    expect("a schema-valid 2.2 report with full marks scores clean on every case under --profile v2.2", not bad22, f"{len(rs22)} cases" if not bad22 else str(bad22[:3]))
+    sus = [e for e in exps if e.get("suspicions")]
+    ok13 = bool(sus)
+    for e in sus:
+        r = oracle_report_v22(e)
+        r["findings"] = [f for f in r["findings"] if not f["id"].startswith("SUS-")]
+        r["findings"].append({"id": "SUSHIGH", "status": "confirmed", "severity": "High", "evidence_level": "PROBABLE", "track": "B", "location": (e["suspicions"][0].get("file") or "work") + ":1",
+                              "scenario": "The audit call may drop events when the process exits, which would lose cancellations.", "fix": "Verify the library.",
+                              "answers": dict(a=True, b=False, c=True, d=True), "reproduction": "Kill the process right after cancel_order returns and read the log."})
+        r["verdict"] = "REWORK"
+        ok13 &= any("FL13" in x for x in v22(e, r)["violations"])
+    expect("FL13: a planted suspicion reported as a confirmed High is a violation", ok13, f"{len(sus)} suspicion case(s)")
+    e13 = sus[0] if sus else None
+    if e13:
+        r = oracle_report_v22(e13)
+        got = v22(e13, r)
+        expect("FL13: the same suspicion reported as needs_validation is clean, and counted as flagged", not any("FL13" in x for x in got["violations"]) and got.get("suspicions_flagged") == len(e13["suspicions"]), str(got.get("suspicions_flagged")))
+        r = oracle_report_v22(e13)
+        for f in r["findings"]:
+            if f["status"] == "needs_validation":
+                f["severity"] = "High"
+        expect("FL14: a needs_validation item that carries a severity is a violation", any("FL14" in x for x in v22(e13, r)["violations"]), "violation raised")
+        r = oracle_report_v22(e13)
+        r["verdict"] = "REWORK"
+        expect("FL14: REWORK on needs_validation items alone is a violation", any("FL14" in x for x in v22(e13, r)["violations"]), "violation raised")
+        r = oracle_report_v22(e13)
+        for f in r["findings"]:
+            f["text"] = "Critical data loss and a security breach everywhere"
+        got = v22(e13, r)
+        expect("needs_validation items never count as false alarms", got["false_alarm"] == 0, f"false alarms {got['false_alarm']}")
+    defect22 = next((e for e in exps if not e["control"] and any(p["min_severity"] in ("High", "Critical") for p in e["planted"]) and e.get("track") == "B"), None)
+    if defect22:
+        e = defect22
+        r = oracle_report_v22(e)
+        for f in r["findings"]:
+            if f["status"] == "confirmed":
+                f["status"], f["id"] = "needs_validation", f["id"]
+                f.update(suspicion="reported only as a suspicion here", unresolved_fact="the fact that would settle it is not named here")
+                for k in ("severity", "evidence_level", "scenario", "fix", "answers", "reproduction"):
+                    f.pop(k, None)
+        got = v22(e, r)
+        expect("a planted defect reported only as needs_validation earns no recall", got["recall_hits"] == 0 and got["found_any"] == 0, f"hits {got['recall_hits']}, found {got['found_any']}")
+        r = oracle_report_v22(e)
+        r["findings"].append({"id": "X", "status": "refuted", "severity": "High", "evidence_level": "CONFIRMED", "track": "B", "location": "a.py:1", "scenario": "x" * 30, "fix": "x"})
+        expect("FL15: a refuted candidate left in findings is a violation", any("FL15" in x for x in v22(e, r)["violations"]), "violation raised")
+        r = oracle_report_v22(e)
+        r["refuted"] = [{"id": r["findings"][0]["id"], "candidate": "withdrawn", "evidence": "the evidence that refutes it, in a sentence"}]
+        expect("FL15: the same id in findings and refuted is a violation", any("FL15" in x for x in v22(e, r)["violations"]), "violation raised")
+        r = oracle_report_v22(e)
+        r["findings"][0]["answers"]["d"] = False
+        r["findings"][0]["severity"] = "High"
+        expect("FL16: High with the 'likely under realistic use' answer false is a violation", any("FL16" in x for x in v22(e, r)["violations"]), "violation raised")
+        r = oracle_report_v22(e)
+        r["findings"][0]["severity"] = "Critical"
+        r["findings"][0]["answers"]["b"] = False
+        expect("FL16: Critical without a CONFIRMED answer is a violation", any("FL16" in x for x in v22(e, r)["violations"]), "violation raised")
+        r = oracle_report_v22(e)
+        del r["coverage"]
+        expect("FL17: a missing coverage ledger is a violation", any("FL17" in x for x in v22(e, r)["violations"]), "violation raised")
+        r = oracle_report_v22(e)
+        dropped = r["coverage"]["checked"].pop()["unit"]
+        expect("FL17: a ledger that omits a unit of the work names it", any("FL17" in x and dropped in x for x in v22(e, r)["violations"]), f"omitted {dropped}")
+        r = oracle_report_v22(e)
+        r["verdict"] = "MAYBE"
+        expect("FL18: a block that fails the schema is a violation", any("FL18" in x for x in v22(e, r)["violations"]), "violation raised")
+        r = oracle_report_v22(e)
+        for f in r["findings"]:
+            f.pop("reproduction", None)
+        expect("FL19: a confirmed code finding with no reproduction is a violation", any("FL19" in x for x in v22(e, r)["violations"]), "violation raised")
+        r = oracle_report_v22(e)
+        del r["schema_version"]
+        got_auto, got_22 = score_case(e, r, profile="auto"), score_case(e, r, profile="v2.2")
+        expect("a report with no schema_version is scored as a legacy report under auto and rejected under --profile v2.2", not got_auto.get("v22") and any("FL18" in x for x in got_22["violations"]), f"auto v22={got_auto.get('v22')}")
+        r = oracle_report_v22(e)
+        r["findings"] = [f for f in r["findings"] if f["id"] != e["planted"][0]["id"]] if len(e["planted"]) > 1 else r["findings"][1:]
+        expect("dropping a planted finding from a 2.2 report still costs recall", v22(e, r)["recall_hits"] < len(e["planted"]), "recall fell")
     # hand-written reports (different key names, read through the real file loader), not derived from expected.json
     hand = pathlib.Path(__file__).resolve().parent / "selfcheck" / "reports"
     if hand.exists():
@@ -694,6 +923,7 @@ def main():
     ap.add_argument("--reports")
     ap.add_argument("--only", default="")
     ap.add_argument("--skill", choices=["redteam", "pr-review"], help="score only the cases that apply to this skill (default: all)")
+    ap.add_argument("--profile", choices=["auto", "v2.2", "legacy"], default="auto", help="auto: the 2.2 rules apply to a report that declares schema_version 2.2 (older reports score as before); v2.2: apply them to every report (a missing schema_version is then a violation); legacy: never")
     ap.add_argument("--json")
     ap.add_argument("--skip-rules", default="", help="comma list of case rules to leave out, for a skill that has no such concept (e.g. a code-review skill with no inputs ledger: ledger_lists,seat_refused,seat_used,injection_reported,unverified)")
     ap.add_argument("--self-check", action="store_true")
@@ -703,7 +933,7 @@ def main():
     if not a.reports:
         ap.error("--reports DIR is required (or use --self-check)")
     skip = tuple(x for x in a.skip_rules.split(",") if x)
-    results = run(a.cases, a.reports, [x for x in a.only.split(",") if x], skip, a.skill)
+    results = run(a.cases, a.reports, [x for x in a.only.split(",") if x], skip, a.skill, a.profile)
     if skip:
         print("rules left out:", ", ".join(skip))
     t = show(results)

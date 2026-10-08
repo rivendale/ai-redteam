@@ -1,0 +1,32 @@
+--- a/report.py
++++ b/report.py
+@@ -2,9 +2,12 @@
+ 
+ 
+ def average(values):
+-    """Mean of `values`."""
++    """Mean of `values`, or None when there are no values."""
++    if not values:
++        return None
+     return sum(values) / len(values)
+ 
+ 
+ def summary_line(name, scores):
+-    return f"{name}: {average(scores):.1f}"
++    avg = average(scores)
++    return f"{name}: n/a" if avg is None else f"{name}: {avg:.1f}"
+--- a/tests/test_report.py
++++ b/tests/test_report.py
+@@ -9,6 +9,12 @@
+     def test_summary(self):
+         self.assertEqual(report.summary_line("a", [2, 4]), "a: 3.0")
+ 
++    def test_empty_average_is_none(self):
++        self.assertIsNone(report.average([]))
++
++    def test_empty_summary_line(self):
++        self.assertEqual(report.summary_line("a", []), "a: n/a")
++
+ 
+ if __name__ == "__main__":
+     unittest.main()

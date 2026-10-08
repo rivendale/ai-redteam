@@ -1,0 +1,72 @@
+{
+  "id": "case-38",
+  "track": "B",
+  "title": "Close-out: the proposed fix corrects the off-by-one and removes the early return that made a limit of 0 mean unlimited",
+  "failure_list": [
+    20,
+    1
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "fix-introduces-defect",
+      "file": "work/fix.patch",
+      "lines": [
+        10,
+        10
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "limit == 0",
+        "limit of 0",
+        "unlimited",
+        "no limit",
+        "zero",
+        "early return",
+        "removed",
+        "enterprise",
+        "dead code",
+        "blocks"
+      ],
+      "all_words": [],
+      "why": "with the early return removed, limit 0 gives used < 0, which is never true: every enterprise plan is blocked on its first request",
+      "aliases": [
+        {
+          "file": "ratelimit.py",
+          "lines": [
+            6,
+            6
+          ]
+        }
+      ]
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "shell": "W=$PWD; T=$(mktemp -d); cp -r base/. $T/ && cd $T && patch -p1 -s < $W/change.patch && python3 - <<'PYEND'\nfrom ratelimit import within_limit\nassert within_limit(10, 10) is True, \"F1 is real before the fix (11th request allowed)\"\nassert within_limit(10**6, 0) is True\n\nPYEND\npatch -p1 -s < $W/fix.patch && python3 - <<'PYEND'\nfrom ratelimit import within_limit\nassert within_limit(10, 10) is False, \"F1 fixed\"\nassert within_limit(5, 0) is False, \"limit 0 (unlimited) now blocks everything\"\n\nPYEND"
+  },
+  "applies_to": [
+    "redteam",
+    "pr-review"
+  ],
+  "slug": "Q04-fix-drops-the-unlimited-branch"
+}

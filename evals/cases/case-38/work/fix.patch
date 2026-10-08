@@ -1,0 +1,24 @@
+--- a/ratelimit.py
++++ b/ratelimit.py
+@@ -3,6 +3,4 @@
+ 
+ def within_limit(used, limit):
+     """True if a plan that has made `used` requests today may make another. A limit of 0 means no limit."""
+-    if limit == 0:
+-        return True
+-    return used <= limit
++    return used < limit
+--- a/tests/test_ratelimit.py
++++ b/tests/test_ratelimit.py
+@@ -6,8 +6,9 @@
+     def test_under_limit(self):
+         self.assertTrue(within_limit(3, 10))
+ 
+-    def test_zero_is_unlimited(self):
+-        self.assertTrue(within_limit(10**6, 0))
++    def test_boundary(self):
++        self.assertTrue(within_limit(9, 10))
++        self.assertFalse(within_limit(10, 10))
+ 
+ 
+ if __name__ == "__main__":

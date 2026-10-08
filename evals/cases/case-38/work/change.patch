@@ -1,0 +1,28 @@
+--- /dev/null
++++ b/ratelimit.py
+@@ -0,0 +1,8 @@
++"""Per-plan daily request limit."""
++
++
++def within_limit(used, limit):
++    """True if a plan that has made `used` requests today may make another. A limit of 0 means no limit."""
++    if limit == 0:
++        return True
++    return used <= limit
+--- /dev/null
++++ b/tests/test_ratelimit.py
+@@ -0,0 +1,14 @@
++import unittest
++from ratelimit import within_limit
++
++
++class T(unittest.TestCase):
++    def test_under_limit(self):
++        self.assertTrue(within_limit(3, 10))
++
++    def test_zero_is_unlimited(self):
++        self.assertTrue(within_limit(10**6, 0))
++
++
++if __name__ == "__main__":
++    unittest.main()

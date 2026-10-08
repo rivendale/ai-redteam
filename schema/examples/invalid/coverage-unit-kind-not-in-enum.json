@@ -1,0 +1,69 @@
+{
+  "schema_version": "2.2",
+  "verdict": "REWORK",
+  "confidence": "medium",
+  "inputs_ledger": [
+    {
+      "item": "request.md",
+      "status": "seen",
+      "matters": true
+    },
+    {
+      "item": "config/limits.yaml",
+      "status": "not_seen",
+      "matters": true
+    }
+  ],
+  "coverage": {
+    "checked": [
+      {
+        "unit": "app.py",
+        "kind": "vibes"
+      },
+      {
+        "unit": "app.py:handle",
+        "kind": "function"
+      }
+    ],
+    "not_checked": [
+      {
+        "unit": "config/limits.yaml",
+        "reason": "not supplied"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "F1",
+      "status": "confirmed",
+      "severity": "Critical",
+      "evidence_level": "CONFIRMED",
+      "track": "B",
+      "location": "app.py:29-31",
+      "scenario": "A non-admin token sent to GET /admin/export receives every user's notes with status 200.",
+      "fix": "Call auth.require_admin(user) before store.export_all().",
+      "answers": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true
+      },
+      "reproduction": "python3 -c \"import app; print(app.handle({'path':'/admin/export','method':'GET','token':'tok-alice','body':None}))\" prints status 200."
+    },
+    {
+      "id": "S1",
+      "status": "needs_validation",
+      "track": "B",
+      "location": "audit.py:12",
+      "suspicion": "audit.record() may drop events that are queued when the process exits.",
+      "unresolved_fact": "Whether company_audit.record() flushes synchronously or on a background thread (the library was not supplied)."
+    }
+  ],
+  "refuted": [
+    {
+      "id": "C2",
+      "candidate": "The script has no error handling.",
+      "evidence": "Line 2 is set -euo pipefail, which stops the script on any failing command."
+    }
+  ]
+}

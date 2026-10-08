@@ -1,0 +1,183 @@
+{
+  "valid": [
+    "claims-finding-no-reproduction.json",
+    "clean-control.json",
+    "full-example.json",
+    "high-probable-by-c.json",
+    "only-needs-validation.json"
+  ],
+  "invalid": {
+    "no-schema-version.json": {
+      "layer": "schema",
+      "expect": "schema_version"
+    },
+    "wrong-schema-version.json": {
+      "layer": "schema",
+      "expect": "schema_version"
+    },
+    "verdict-not-in-enum.json": {
+      "layer": "schema",
+      "expect": "verdict"
+    },
+    "no-verdict.json": {
+      "layer": "schema",
+      "expect": "verdict"
+    },
+    "findings-not-array.json": {
+      "layer": "schema",
+      "expect": "findings"
+    },
+    "finding-is-a-string.json": {
+      "layer": "schema",
+      "expect": "findings[0]"
+    },
+    "confirmed-no-location.json": {
+      "layer": "schema",
+      "expect": "findings[0]"
+    },
+    "confirmed-no-scenario.json": {
+      "layer": "schema",
+      "expect": "findings[0]"
+    },
+    "confirmed-scenario-too-short.json": {
+      "layer": "schema",
+      "expect": "findings[0].scenario"
+    },
+    "confirmed-no-fix.json": {
+      "layer": "schema",
+      "expect": "findings[0]"
+    },
+    "confirmed-no-answers.json": {
+      "layer": "schema",
+      "expect": "findings[0]"
+    },
+    "confirmed-no-severity.json": {
+      "layer": "schema",
+      "expect": "findings[0]"
+    },
+    "confirmed-severity-not-in-enum.json": {
+      "layer": "schema",
+      "expect": "findings[0].severity"
+    },
+    "confirmed-evidence-not-in-enum.json": {
+      "layer": "schema",
+      "expect": "findings[0].evidence_level"
+    },
+    "confirmed-no-track.json": {
+      "layer": "schema",
+      "expect": "findings[0]"
+    },
+    "answers-not-boolean.json": {
+      "layer": "schema",
+      "expect": "findings[0].answers.a"
+    },
+    "answers-missing-d.json": {
+      "layer": "schema",
+      "expect": "findings[0].answers"
+    },
+    "track-b-no-reproduction.json": {
+      "layer": "schema",
+      "expect": "findings[0]"
+    },
+    "track-b-reproduction-empty.json": {
+      "layer": "schema",
+      "expect": "findings[0].reproduction"
+    },
+    "needs-validation-has-severity.json": {
+      "layer": "schema",
+      "expect": "findings[1]"
+    },
+    "needs-validation-no-unresolved-fact.json": {
+      "layer": "schema",
+      "expect": "findings[1]"
+    },
+    "needs-validation-no-suspicion.json": {
+      "layer": "schema",
+      "expect": "findings[1]"
+    },
+    "refuted-inside-findings.json": {
+      "layer": "schema",
+      "expect": "findings[0].status"
+    },
+    "refuted-missing.json": {
+      "layer": "schema",
+      "expect": "refuted"
+    },
+    "refuted-item-labeled-confirmed.json": {
+      "layer": "schema",
+      "expect": "refuted[0]"
+    },
+    "refuted-item-no-evidence.json": {
+      "layer": "schema",
+      "expect": "refuted[0]"
+    },
+    "coverage-missing.json": {
+      "layer": "schema",
+      "expect": "coverage"
+    },
+    "coverage-checked-empty.json": {
+      "layer": "schema",
+      "expect": "coverage.checked"
+    },
+    "coverage-unit-kind-not-in-enum.json": {
+      "layer": "schema",
+      "expect": "coverage.checked[0].kind"
+    },
+    "ledger-status-not-in-enum.json": {
+      "layer": "schema",
+      "expect": "inputs_ledger[0].status"
+    },
+    "ledger-missing.json": {
+      "layer": "schema",
+      "expect": "inputs_ledger"
+    },
+    "critical-without-b.json": {
+      "layer": "schema",
+      "expect": "findings[0]"
+    },
+    "critical-without-c.json": {
+      "layer": "schema",
+      "expect": "findings[0]"
+    },
+    "critical-without-a.json": {
+      "layer": "schema",
+      "expect": "findings[0]"
+    },
+    "high-without-d.json": {
+      "layer": "schema",
+      "expect": "findings[0]"
+    },
+    "high-without-b-or-c.json": {
+      "layer": "schema",
+      "expect": "findings[0]"
+    },
+    "medium-without-a.json": {
+      "layer": "schema",
+      "expect": "findings[0]"
+    },
+    "ship-with-open-critical.json": {
+      "layer": "cross",
+      "expect": "verdict"
+    },
+    "ship-with-fixes-with-critical.json": {
+      "layer": "cross",
+      "expect": "verdict"
+    },
+    "rework-with-only-needs-validation.json": {
+      "layer": "cross",
+      "expect": "verdict"
+    },
+    "reject-with-no-findings.json": {
+      "layer": "cross",
+      "expect": "verdict"
+    },
+    "duplicate-finding-ids.json": {
+      "layer": "cross",
+      "expect": "findings[1].id"
+    },
+    "refuted-id-also-in-findings.json": {
+      "layer": "cross",
+      "expect": "refuted[0].id"
+    }
+  }
+}
