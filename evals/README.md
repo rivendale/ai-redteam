@@ -50,8 +50,10 @@ ledger) but not the key names, so common spellings are accepted:
 ## How a case is scored
 
 - **Recall.** A planted defect counts when a finding names the planted file and either sits within 3 lines of the planted lines or
-  uses the defect's wording, at or above the minimum severity. Each finding is credited to at most one defect, closest lines first.
-  A finding rated too low is reported as found but not counted.
+  uses the defect's wording, at or above the minimum severity. Each finding is credited to at most one defect, and the credit is
+  assigned as a whole: the assignment with the most defects found at the minimum severity wins, then the most found at all, then the
+  better matches (lines and wording, then the stronger report, then the closer one). A finding rated too low is reported as found but
+  not counted. (Before 2026-10-08 the credit was handed out greedily, best pair first; see "Scorer: best assignment" below.)
 - **False alarms.** On a control (`"planted": []`) every open Critical or High is a false alarm. On a defect case, Critical or High
   findings that match no planted defect are shown as `extra_high` and not counted: the key may not list every real defect.
 - **Failure-list violations** readable from any report: a finding with no location or no failure scenario (5); SHIP with an open
@@ -268,3 +270,26 @@ FL12 the sender's summary trusted). A control passes when its verdict is not a w
 The scorer's self-check builds a reference report from each case's rules (so every rule is satisfiable), checks that a bare 'adopt' fails every defect case and a blanket
 'skip' fails every control, and runs a grid per rule. Mutating the rule code leaves only message-text and slice-length constants alive. `verify_cases.py --cases
 evals/assess/cases` checks that the fact each defect rests on is in the snapshot.
+
+## Scorer: best assignment (2026-10-08)
+
+The first scorer credited findings greedily: it sorted every (defect, finding) pair and took them best first. When two planted defects
+can both be matched by the same finding through wording, the defect listed first took it and the other got nothing, even though a
+spare finding fitted the first. Found in the v2.3.1 gate (case-14, run 3: the misquote defect took the finding about the 18% figure
+because that finding contains "unless"; the 18% defect had no other candidate and the real misquote finding went unused). The credit is
+now the best assignment, which cannot lose a defect that a re-pairing could keep. A self-check grid covers the shape (4 cells).
+
+Effect on the published report sets, same reports, `--profile auto`, recall counted with the minimum severity (recall, found at any
+severity, false alarms and violations compared before and after; only the sets below move):
+
+| set | recall before -> after | found at any severity |
+|---|---|---|
+| 2026-10-07 reports-v1 | 19 -> 20 | 20 -> 20 |
+| 2026-10-07-codex-seat codex-1 | 33 -> 33 | 35 -> 36 |
+| 2026-10-07-repeat full-v1 (3 runs) | 91 -> 93 | 94 -> 94 |
+| 2026-10-08-round4 redteam-pre-v22 (3 runs) | 35 -> 38 (cases 40-49 only) | 36 -> 38 |
+| 2026-10-08-round4 redteam-v22 (3 runs) | 38 -> 39 | 39 -> 39 |
+
+False alarms and violations are unchanged in every set. 2026-10-07 reports-v2, 2026-10-07-pr9, 2026-10-08-v22 and the pr-review sets do
+not move.
+
