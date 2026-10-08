@@ -3,7 +3,7 @@
   "verdict": "try",
   "item": {
     "type": "product",
-    "identity": "acme/linkcheck@4f2c1a9 (MIT, last push 2026-09-30, not archived)",
+    "identity": "LinkPad onboarding flow, read as of 2026-10-08",
     "resolved": true
   },
   "claims": [
@@ -34,10 +34,10 @@
     }
   },
   "next_action": {
-    "action": "Run it on the docs folder once and compare its dead-link list with lychee's",
+    "action": "Borrow the three-step onboarding idea for our own setup page",
     "owner": "operator",
-    "done_when": "both lists are in a file and the differences are explained",
-    "stop_condition": "stop if it reports nothing lychee does not",
+    "done_when": "the idea card exists",
+    "stop_condition": "stop after one card",
     "handoff": "harvest"
   },
   "confidence": "medium",

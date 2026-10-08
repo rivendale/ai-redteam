@@ -8,6 +8,7 @@
     "no-context-low.json",
     "skip.json",
     "try-post-harvest.json",
+    "try-product-harvest.json",
     "try-product-none.json",
     "try-repo.json",
     "unresolved-low.json",
@@ -114,7 +115,7 @@
       "layer": "schema",
       "expect": "next_action"
     },
-    "try-product-handoff-harvest.json": {
+    "try-product-handoff-glean.json": {
       "layer": "schema",
       "expect": "next_action.handoff"
     },
