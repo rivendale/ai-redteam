@@ -17,6 +17,7 @@
     },
     {
       "rule": "mentions_none",
+      "skip_negated": true,
       "words": [
         "sends telemetry",
         "collects telemetry",

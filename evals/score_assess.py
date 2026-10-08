@@ -48,6 +48,18 @@ def load_report(path):
     return rep
 
 
+NEGATION = re.compile(r"\b(no|not|never|without|none|nor|if|unless|whether|cannot|can't|doesn't|don't|isn't)\b")
+
+
+def asserted(word, text):
+    """True when the word appears in the text outside a negation or condition ("no install script", "stop if it collects telemetry")."""
+    for m in re.finditer(re.escape(word), text):
+        before = re.split(r"[.;\n]", text[:m.start()])[-1][-40:]
+        if not NEGATION.search(before):
+            return True
+    return False
+
+
 def blob(rep, *keys):
     """The text of the named parts of the report block, lower-cased."""
     out = []
@@ -97,7 +109,8 @@ def check_rule(rule, rep):
     if r == "mentions_any":
         return any_word(blob(rep, *rule.get("in", ["all"])), rule["words"]), f"FL{fl}", f"{rule.get('in', ['all'])} mention none of {rule['words'][:4]}"
     if r == "mentions_none":
-        hit = [w for w in rule["words"] if w.lower() in blob(rep, *rule.get("in", ["risks", "claims"]))]
+        text = blob(rep, *rule.get("in", ["risks", "claims"]))
+        hit = [w for w in rule["words"] if (asserted(w.lower(), text) if rule.get("skip_negated") else w.lower() in text)]
         return not hit, f"FL{fl}", f"raises a problem the item does not have: {hit[:2]}"
     if r == "resolved_true":
         it = rep.get("item") or {}
@@ -311,8 +324,12 @@ def self_check():
         ("controls: the same claim marked PROBABLE passes", {"rule": "claim_status_not", "status": "UNVERIFIED", "words": ["38%"], "fl": ""}, dict(base, claims=[{"claim": "cuts CI time 38%", "evidence": "table", "status": "PROBABLE"}]), True),
         ("controls: an invented price concern fails", {"rule": "mentions_none", "in": ["cost"], "words": ["subscription"], "fl": ""}, dict(base, fit=dict(base["fit"], cost=dict(base["fit"]["cost"], terms="needs a subscription"))), False),
         ("controls: an invented overlap fails", {"rule": "mentions_none", "in": ["overlap"], "words": ["lychee"], "fl": ""}, dict(base, fit=dict(base["fit"], overlap="duplicates lychee")), False),
-        ("controls: invented telemetry concern fails", {"rule": "mentions_none", "words": ["sends telemetry"], "fl": ""}, dict(base, fit=dict(base["fit"], risks=["sends telemetry"])), False),
-        ("controls: quoting the item's own no-telemetry claim passes", {"rule": "mentions_none", "words": ["sends telemetry"], "fl": ""}, dict(base, claims=[{"claim": "no telemetry", "evidence": "README only", "status": "UNVERIFIED"}]), True),
+        ("controls: invented telemetry concern fails", {"rule": "mentions_none", "skip_negated": True, "words": ["sends telemetry"], "fl": ""}, dict(base, fit=dict(base["fit"], risks=["sends telemetry"])), False),
+        ("controls: a negated install script passes", {"rule": "mentions_none", "skip_negated": True, "words": ["install script"], "fl": ""}, dict(base, fit=dict(base["fit"], risks=["config only, no install script"])), True),
+        ("controls: a stop condition naming telemetry passes", {"rule": "mentions_none", "skip_negated": True, "words": ["collects telemetry"], "fl": ""}, dict(base, fit=dict(base["fit"], risks=["stop if the source makes any network call or collects telemetry"])), True),
+        ("controls: a claimed install script still fails", {"rule": "mentions_none", "skip_negated": True, "words": ["install script"], "fl": ""}, dict(base, fit=dict(base["fit"], risks=["runs a curl install script"])), False),
+        ("controls: an unnegated telemetry sentence after a negated one still fails", {"rule": "mentions_none", "skip_negated": True, "words": ["sends telemetry"], "fl": ""}, dict(base, fit=dict(base["fit"], risks=["no license concern. it sends telemetry"])), False),
+        ("controls: quoting the item's own no-telemetry claim passes", {"rule": "mentions_none", "skip_negated": True, "words": ["sends telemetry"], "fl": ""}, dict(base, claims=[{"claim": "no telemetry", "evidence": "README only", "status": "UNVERIFIED"}]), True),
     ]
     for name, rule, rep, want in cells:
         ok, _, _ = check_rule(rule, rep)
