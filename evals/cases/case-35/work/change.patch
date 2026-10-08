@@ -1,3 +1,12 @@
+--- a/handlers.py
++++ b/handlers.py
+@@ -4,5 +4,5 @@
+ 
+ def cancel(request, db):
+     """POST /orders/<id>/cancel. request["user"] is the signed-in user, set by the login middleware."""
+-    orders.cancel_order(db, request["order_id"])
++    orders.cancel_order(db, request["order_id"], request["user"])
+     return {"status": 204}
 --- a/orders.py
 +++ b/orders.py
 @@ -1,11 +1,13 @@
@@ -6,7 +15,7 @@
  
  
 -def cancel_order(db, order_id):
-+def cancel_order(db, order_id, actor=None):
++def cancel_order(db, order_id, actor):
      row = db.get_order(order_id)
      if row is None:
          raise KeyError(order_id)
@@ -17,13 +26,14 @@
      return True
 --- /dev/null
 +++ b/tests/test_orders.py
-@@ -0,0 +1,37 @@
+@@ -0,0 +1,43 @@
 +import sys
 +import types
 +import unittest
 +
 +calls = []
 +sys.modules["company_audit"] = types.SimpleNamespace(record=lambda event, **fields: calls.append((event, fields)))
++import handlers  # noqa: E402
 +import orders  # noqa: E402
 +
 +
@@ -49,8 +59,13 @@
 +    def test_shipped_is_refused_and_not_recorded(self):
 +        calls.clear()
 +        with self.assertRaises(ValueError):
-+            orders.cancel_order(FakeDb("shipped"), "o2")
++            orders.cancel_order(FakeDb("shipped"), "o2", actor="alice")
 +        self.assertEqual(calls, [])
++
++    def test_the_handler_passes_the_signed_in_user(self):
++        calls.clear()
++        self.assertEqual(handlers.cancel({"order_id": "o1", "user": "bo"}, FakeDb("open")), {"status": 204})
++        self.assertEqual(calls[0][1]["actor"], "bo")
 +
 +
 +if __name__ == "__main__":

@@ -61,6 +61,15 @@ def check_case(d):
     return exp, probs
 
 
+def ignored_files():
+    """Case files that git ignores would be on this disk but missing from a commit and from CI. Empty when git is unavailable."""
+    try:
+        r = subprocess.run(["git", "ls-files", "--others", "--ignored", "--exclude-standard", str(ROOT)], capture_output=True, text=True, timeout=30, cwd=ROOT)
+    except (OSError, subprocess.SubprocessError):
+        return []
+    return [l for l in r.stdout.splitlines() if l and "__pycache__" not in l and not l.endswith(".pyc")]
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", default="")
@@ -81,6 +90,10 @@ def main():
         print(f"  {status:4} {d.name:8} {exp.get('slug', ''):52} {tag}{'  (no machine proof; see expected.json why)' if proofless else ''}")
         for p in real:
             print(f"         - {p}")
+    ign = ignored_files()
+    for f in ign:
+        print(f"  FAIL git ignores a case file, so it would not be committed: {f}")
+    bad += bool(ign)
     print(f"{len(dirs) - bad}/{len(dirs)} cases verified")
     return 1 if bad else 0
 
