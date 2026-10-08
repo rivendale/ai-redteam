@@ -1,0 +1,38 @@
+{
+  "id": "case-14",
+  "slug": "h2-fl7b-an-interview-about-leaving-shopify",
+  "failure_list": [
+    7
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "skip",
+        "watch"
+      ],
+      "fl": 7
+    },
+    {
+      "rule": "mentions_any",
+      "in": [
+        "next",
+        "fit",
+        "raw"
+      ],
+      "words": [
+        "shopify stays",
+        "already decided",
+        "decided",
+        "stays our store"
+      ],
+      "fl": 7
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'own your platform' in t"
+  }
+}

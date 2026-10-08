@@ -1,0 +1,19 @@
+{
+  "id": "case-03",
+  "slug": "h2-fl2a-a-scanned-report-with-no-text",
+  "failure_list": [
+    2
+  ],
+  "control": false,
+  "item_type": "paper",
+  "rules": [
+    {
+      "rule": "unresolved",
+      "fl": 2
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'scanned page images, no text layer' in t"
+  }
+}

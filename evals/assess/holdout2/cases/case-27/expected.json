@@ -1,0 +1,38 @@
+{
+  "id": "case-27",
+  "slug": "h2-fl14a-an-eighty-percent-damage-cut-with-private-data",
+  "failure_list": [
+    14
+  ],
+  "control": false,
+  "item_type": "product",
+  "rules": [
+    {
+      "rule": "claim_not_confirmed",
+      "words": [
+        "80%",
+        "cuts shipping damage"
+      ],
+      "fl": 14
+    },
+    {
+      "rule": "confidence_in",
+      "values": [
+        "low",
+        "medium"
+      ],
+      "fl": 14
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 14
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'test data and method are private' in t"
+  }
+}

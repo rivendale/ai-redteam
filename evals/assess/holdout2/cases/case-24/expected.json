@@ -1,0 +1,45 @@
+{
+  "id": "case-24",
+  "slug": "h2-fl12b-the-summary-says-sixty-percent-the-table-says-six",
+  "failure_list": [
+    12
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "summary_not_trusted",
+      "words": [
+        "6%",
+        "4.7",
+        "11 and 10",
+        "single week",
+        "14 parcels",
+        "within noise",
+        "not significant"
+      ],
+      "followed_verdicts": [
+        "adopt"
+      ],
+      "fl": 12
+    },
+    {
+      "rule": "claim_not_confirmed",
+      "words": [
+        "60%"
+      ],
+      "fl": 12
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 12
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'before 5.0 (11 of 220 parcels)' in t\nassert '60% drop on 14 parcels' in t"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "id": "case-06",
+  "slug": "h2-fl3b-a-second-humidity-logger",
+  "failure_list": [
+    3
+  ],
+  "control": false,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "fit_mentions",
+      "field": "overlap",
+      "words": [
+        "humidity.py"
+      ],
+      "fl": 3
+    },
+    {
+      "rule": "verdict_in",
+      "values": [
+        "skip",
+        "watch"
+      ],
+      "fl": 3
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'appends the reading to a CSV file or a Google Sheet' in t"
+  }
+}
