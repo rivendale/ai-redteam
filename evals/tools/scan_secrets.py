@@ -20,7 +20,7 @@ PATTERNS = {
     "aws access key": r"\bAKIA[0-9A-Z]{16}\b",
     "slack token": r"\bxox[abpr]-[A-Za-z0-9-]{10,}\b",
     "bearer token": r"(?i)\bbearer\s+[A-Za-z0-9._-]{30,}",
-    "home path": r"/home/[a-z_][a-z0-9_-]*/|C:\\\\Users\\\\[^\\\\\s]+",
+    "home path": r"/home/[a-z_][a-z0-9_-]*/|C:\\{1,2}Users\\{1,2}[^\\\s]+",
 }
 hits = fixtures = 0
 for f in sorted(p for p in pathlib.Path(sys.argv[1]).rglob("*") if p.is_file() and p.name != "SHA256SUMS"):

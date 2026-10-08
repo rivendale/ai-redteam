@@ -18,7 +18,7 @@ Scored with `evals/score.py` on main as of this PR.
   of two in case 21. Detection on the Track D proposal cases looks weaker than Claude's in this run.
 - It raised far fewer unscored extras, which matches its terser reports.
 - One run cannot separate a model difference from run-to-run variation. Treat these numbers as a first look.
-- **Cost:** a mean of 9,596 tokens per review (`_meta/*.usage.json`). Codex runs on a subscription here,
+- **Cost:** a mean of 9,597 tokens per review (`_meta/*.usage.json`). Codex runs on a subscription here,
   so no list price is computed.
 
 **What is published.** The reports, `prompts/` (exactly what each reviewer was sent) and `_meta/*.usage.json` (CLI
