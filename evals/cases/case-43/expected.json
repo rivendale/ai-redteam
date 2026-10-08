@@ -12,8 +12,8 @@
       "kind": "jwt-algorithm-confusion",
       "file": "work/auth.py",
       "lines": [
-        45,
-        45
+        48,
+        48
       ],
       "min_severity": "Critical",
       "any_words": [

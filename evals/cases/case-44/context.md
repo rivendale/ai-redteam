@@ -1,2 +1,2 @@
 Review requested: adversarial review of the code before it goes to production.
-Stakes: production; this decides who may call the reports API. Tests: 5 tests in test_auth.py pass.
+Stakes: production; this decides who may call the reports API. Tests: 7 tests in test_auth.py pass.
