@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "risk_score": 0.12
+  },
+  {
+    "id": 2,
+    "risk_score": 0.18
+  },
+  {
+    "id": 3,
+    "risk_score": 0.22
+  },
+  {
+    "id": 4,
+    "risk_score": 0.31
+  },
+  {
+    "id": 5,
+    "risk_score": 0.34
+  },
+  {
+    "id": 6,
+    "risk_score": 0.38
+  },
+  {
+    "id": 7,
+    "risk_score": 0.47
+  },
+  {
+    "id": 8,
+    "risk_score": 0.52
+  },
+  {
+    "id": 9,
+    "risk_score": 0.61
+  },
+  {
+    "id": 10,
+    "risk_score": 0.73
+  },
+  {
+    "id": 11,
+    "risk_score": 0.81
+  },
+  {
+    "id": 12,
+    "risk_score": 0.9
+  }
+]

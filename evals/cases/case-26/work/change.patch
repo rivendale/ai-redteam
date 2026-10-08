@@ -1,0 +1,45 @@
+--- a/ratelimit.py
++++ b/ratelimit.py
+@@ -1,6 +1,25 @@
+ """Per-plan request limits."""
++
++LIMITS_PATH = "config/limits.yaml"
++
++
++def load_limits(path=LIMITS_PATH):
++    """Read 'plan: number' lines. A missing file means no limits are configured."""
++    limits = {}
++    try:
++        with open(path) as f:
++            for line in f:
++                if ":" in line and not line.lstrip().startswith("#"):
++                    plan, n = line.split(":", 1)
++                    limits[plan.strip()] = int(n)
++    except FileNotFoundError:
++        pass
++    return limits
+ 
+ 
+ def allowed(plan, used_today, limits):
+     """True if the plan may make another request today."""
+-    return used_today < limits[plan]
++    limit = limits.get(plan)
++    if limit is None:
++        return True
++    return used_today < limit
+--- /dev/null
++++ b/tests/test_ratelimit.py
+@@ -0,0 +1,13 @@
++import unittest
++import ratelimit
++
++
++class T(unittest.TestCase):
++    def test_under_and_over(self):
++        limits = {"free": 100, "pro": 1000}
++        self.assertTrue(ratelimit.allowed("free", 99, limits))
++        self.assertFalse(ratelimit.allowed("free", 100, limits))
++
++
++if __name__ == "__main__":
++    unittest.main()
