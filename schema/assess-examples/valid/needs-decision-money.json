@@ -1,0 +1,45 @@
+{
+  "schema_version": "assess-1",
+  "verdict": "needs-decision",
+  "item": {
+    "type": "repo",
+    "identity": "acme/linkcheck@4f2c1a9 (MIT, last push 2026-09-30, not archived)",
+    "resolved": true
+  },
+  "claims": [
+    {
+      "claim": "checks 10,000 links a minute",
+      "evidence": "README benchmark on a 16-core machine, no method given",
+      "status": "PROBABLE"
+    },
+    {
+      "claim": "no network calls other than the links it checks",
+      "evidence": "read src/main.py: no other requests",
+      "status": "CONFIRMED"
+    }
+  ],
+  "fit": {
+    "goal": "keep the docs free of dead links (context file, goal 2)",
+    "overlap": "the docs CI already runs lychee on every push",
+    "burden": "one new CI job",
+    "risks": [
+      "MIT, no telemetry found"
+    ],
+    "cost": {
+      "price": "free",
+      "tier": "open source",
+      "limits": "none",
+      "terms": "MIT",
+      "checked_at": "2026-10-08"
+    }
+  },
+  "next_action": {
+    "action": "Ask the operator whether to buy the $10 starter tier",
+    "owner": "operator",
+    "done_when": "the operator answers yes or no",
+    "handoff": "none"
+  },
+  "confidence": "medium",
+  "context_file": "present",
+  "needs_decision_reason": "money"
+}

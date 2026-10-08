@@ -1,0 +1,45 @@
+{
+  "schema_version": "assess-1",
+  "verdict": "try",
+  "item": {
+    "type": "post",
+    "identity": "the 'ten prompts' thread by an unknown author, 2026-10-01",
+    "resolved": true
+  },
+  "claims": [
+    {
+      "claim": "checks 10,000 links a minute",
+      "evidence": "README benchmark on a 16-core machine, no method given",
+      "status": "PROBABLE"
+    },
+    {
+      "claim": "no network calls other than the links it checks",
+      "evidence": "read src/main.py: no other requests",
+      "status": "CONFIRMED"
+    }
+  ],
+  "fit": {
+    "goal": "keep the docs free of dead links (context file, goal 2)",
+    "overlap": "the docs CI already runs lychee on every push",
+    "burden": "one new CI job",
+    "risks": [
+      "MIT, no telemetry found"
+    ],
+    "cost": {
+      "price": "free",
+      "tier": "open source",
+      "limits": "none",
+      "terms": "MIT",
+      "checked_at": "2026-10-08"
+    }
+  },
+  "next_action": {
+    "action": "Pull the three prompts that apply and test them on one real task",
+    "owner": "operator",
+    "done_when": "each has a keep or drop note",
+    "stop_condition": "stop after one task",
+    "handoff": "harvest"
+  },
+  "confidence": "medium",
+  "context_file": "present"
+}
