@@ -51,10 +51,13 @@ hand off to `glean` (code or papers) or `harvest` (text or sites) in rivendale/o
    - `watch`: not now; name what would change the answer.
    - `skip`: give the reason.
    - `needs-decision`: anything that spends money, adds an account or subscription, sends data to a new party, or
-     changes a standing rule. Say which. The operator decides; you never do. This holds even when you lean to
-     `skip`: give your lean and the reason in the VERDICT sentence, and leave the choice to the operator.
+     changes a standing rule. Say which. The operator decides; you never do. Use it when the item would serve a
+     goal and using it needs one of those: that trade-off is the operator's, even if you lean against it. When the item
+     serves no goal, or does a job something already in use or already decided does, the verdict is `skip` or `watch`,
+     whatever it costs: declining what we do not need spends nothing and changes no rule.
 6. **One next action,** with who does it and how to tell it is done. When the answer is to borrow ideas, name the
-   hand-off: `glean` for code or a paper, `harvest` for text, a site or a product page. Using a tool or buying a product is not
+   hand-off by the item's type, not by what it contains: `glean` for a repo or a paper, `harvest` for a post, a site or a
+   product page (a post that includes a script is still `harvest`). Using a tool or buying a product is not
    borrowing; its hand-off is `none`.
 
 Confidence is **high** only when the item is resolved, every claim the verdict rests on is CONFIRMED, PROBABLE or REFUTED,
