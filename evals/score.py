@@ -127,6 +127,7 @@ def norm_findings(rep):
             "sev": sev, "ev": ev, "loc": s(loc), "refuted": refuted,
             "scenario": s(first(f, "scenario", "failure_scenario", "impact", "how_it_fails")),
             "fix": s(first(f, "fix", "recommendation", "test", "remedy")),
+            "body": " ".join(s(v) for k, v in f.items() if k not in ("location", "loc", "where", "file") and not isinstance(v, (dict, list))),
             "text": " ".join(s(v) for v in f.values() if not isinstance(v, (dict, list))) + " " + json.dumps(
                 [v for v in f.values() if isinstance(v, (dict, list))]),
         })
@@ -163,7 +164,8 @@ def _loc_dist1(floc, pfile, plines):
 
 
 def words_hit(f, planted):
-    low = f["text"].lower()
+    """The planted defect's wording appears in what the finding SAYS; a file name in its location is not wording."""
+    low = f["body"].lower()
     return any(w.lower() in low for w in planted["any_words"]) and all(w.lower() in low for w in planted.get("all_words", []))
 
 
@@ -409,7 +411,7 @@ def score_case(exp, rep, skip=(), profile="auto"):
             if d is None:
                 continue
             near, wd = d <= 3, words_hit(f, p)
-            if near and not all(w.lower() in f["text"].lower() for w in p.get("all_words", [])):
+            if near and not all(w.lower() in f["body"].lower() for w in p.get("all_words", [])):
                 near = False
             if near or wd:
                 pairs.append((-(int(near) + int(wd)), -SEV.get(f["sev"], -1), d, p["id"], f["id"], f))
@@ -902,6 +904,199 @@ def self_check(cases_dir):
         r = oracle_report_v22(e)
         r["findings"] = [f for f in r["findings"] if f["id"] != e["planted"][0]["id"]] if len(e["planted"]) > 1 else r["findings"][1:]
         expect("dropping a planted finding from a 2.2 report still costs recall", v22(e, r)["recall_hits"] < len(e["planted"]), "recall fell")
+    # a file name in a finding's location is not wording: a Low finding on the right line must not outrank a Critical finding that actually
+    # describes the defect just because the file is called summary.md and the defect's words include "summary"
+    syn = {"id": "P1", "kind": "x", "file": "work/summary.md", "lines": [3, 3], "min_severity": "High", "any_words": ["summary", "contradicts"], "all_words": [],
+           "why": "the text contradicts the table it cites"}
+    strong = finding("S", "Critical", "summary.md the relevant section", "the text contradicts the table it cites")
+    weak = finding("W", "Low", "summary.md:3", "a minor point about something else")
+    base_exp = next(e for e in exps if not e["control"])
+    got = score_case(dict(base_exp, planted=[syn], must=[], must_not=[]), {"verdict": "REWORK", "findings": [weak, strong], "inputs_ledger": {}})
+    ok_name = got["recall_hits"] == 1
+    expect("a file name in the location does not count as the defect's wording", ok_name, "Low finding on summary.md:3 vs a Critical that describes the defect")
+    # ---- grids written from the scorer's documented behavior (README, "How a case is scored"), not from its code: every severity pair,
+    # every verdict at its boundary, the 3-line window, and the legacy violation labels. Each cell has an expected outcome.
+    LEVELS = ["Low", "Medium", "High", "Critical"]
+
+    def synth(min_sev="High", words=("widget",), lines=(10, 10), all_words=(), control=False):
+        pl = [] if control else [{"id": "P1", "kind": "x", "file": "work/app.py", "lines": list(lines), "min_severity": min_sev, "any_words": list(words),
+                                  "all_words": list(all_words), "why": "w"}]
+        return {"id": "x", "slug": "x", "control": control, "planted": pl, "must": [], "must_not": [], "failure_list": []}
+
+    def rep(findings, verdict="REWORK"):
+        return {"verdict": verdict, "findings": findings, "inputs_ledger": {}}
+
+    def fnd(sev, loc="app.py:10", text="a widget problem", **kw):
+        return {**finding("F", sev, loc, text), **kw}
+
+    bad = []
+    for need in LEVELS:                      # recall: a finding counts when rated at or above the minimum; found-at-any-severity always
+        for got in ["Info"] + LEVELS:
+            r = score_case(synth(need), rep([fnd(got)]))
+            if (r["recall_hits"], r["found_any"]) != (int((["Info"] + LEVELS).index(got) >= (["Info"] + LEVELS).index(need)), 1):
+                bad.append(f"recall need={need} got={got}")
+    expect("recall: a finding counts exactly when rated at or above the minimum severity (4 x 5 grid, Info included)", not bad, str(bad[:3]) if bad else "20 cells")
+    bad = []
+    for got in LEVELS:                       # false alarm on a control: High and Critical only; extra_high on a defect case: unmatched High+ only
+        r = score_case(synth(control=True), rep([fnd(got, loc="app.py:5", text="something")], "SHIP WITH FIXES" if got != "Critical" else "REWORK"))
+        if r["false_alarm"] != int(got in ("High", "Critical")):
+            bad.append(f"false alarm {got}")
+        r = score_case(synth("Low"), rep([fnd("Low"), fnd(got, loc="other.py:1", text="something else", id="G")]))
+        if r["extra_high"] != int(got in ("High", "Critical")):
+            bad.append(f"extra_high {got}")
+    r = score_case(synth("Low"), rep([fnd("Critical")]))
+    if r["extra_high"] != 0:
+        bad.append("a matched Critical counted as extra")
+    r = score_case(synth(control=True), rep([fnd("Critical", loc="app.py:5", text="x", status="refuted")], "SHIP"))
+    if r["false_alarm"] != 0:
+        bad.append("a refuted Critical counted as a false alarm")
+    expect("false alarms count High and Critical on a control; extras count unmatched High and Critical on a defect case; refuted and matched ones do not", not bad, str(bad[:3]) if bad else "grid")
+    bad = []
+    for verdict in ("SHIP", "SHIP WITH FIXES", "REWORK", "REJECT"):    # FL6 at its boundaries
+        for top in (None,) + tuple(LEVELS):
+            fs = [fnd(top, loc="app.py:5", text="x")] if top else []
+            r = score_case(synth(control=True), rep(fs, verdict))
+            want = (verdict == "SHIP" and top in ("High", "Critical")) or (verdict == "SHIP WITH FIXES" and top == "Critical")
+            if any("FL6" in x for x in r["violations"]) != want:
+                bad.append(f"{verdict}/{top}")
+    expect("FL6: SHIP with an open High or Critical, and SHIP WITH FIXES with an open Critical, and nothing else, are violations (4 x 5 grid)", not bad, str(bad[:3]) if bad else "20 cells")
+    bad = []
+    for n in range(5, 16):                   # the 3-line window, with no wording to help
+        r = score_case(synth(words=("zzzz",)), rep([fnd("High", loc=f"app.py:{n}", text="something else")]))
+        if r["found_any"] != int(abs(n - 10) <= 3):
+            bad.append(f"line {n}")
+    for loc, want in (("app.py:12-20", 1), ("app.py:14-20", 0), ("app.py lines 3-7", 1), ("app.py lines 1-5", 0), ("other.py:10", 0), ("app.py", 0)):
+        if score_case(synth(words=("zzzz",)), rep([fnd("High", loc=loc, text="nothing relevant")]))["found_any"] != want:
+            bad.append(loc)
+    if score_case(synth(), rep([fnd("High", loc="app.py", text="a widget problem")]))["found_any"] != 1:
+        bad.append("wording alone in the right file")
+    if score_case(synth(), rep([fnd("High", loc="other.py", text="a widget problem")]))["found_any"] != 0:
+        bad.append("wording in the wrong file")
+    if score_case(synth(all_words=("alpha", "beta")), rep([fnd("High", text="widget alpha")]))["found_any"] != 0:
+        bad.append("all_words partly present")
+    if score_case(synth(all_words=("alpha", "beta")), rep([fnd("High", text="widget alpha beta")]))["found_any"] != 1:
+        bad.append("all_words present")
+    expect("matching: within 3 lines or the defect's wording, in the right file; all_words must all be present", not bad, str(bad[:4]) if bad else "11 line cells and 6 shapes")
+    bad = []
+    legacy = [("no location", fnd("High", loc=""), "FL5"), ("no scenario", fnd("High", scenario=""), "FL5"),
+              ("bad severity", fnd("Severe"), "malformed"), ("bad evidence", fnd("High", evidence_level="LIKELY"), "malformed"),
+              ("refuted but CONFIRMED", fnd("High", status="refuted"), "FL12")]
+    for name, f, want in legacy:
+        if not any(want in x for x in score_case(synth(), rep([f]))["violations"]):
+            bad.append(name)
+    if not any("malformed" in x for x in score_case(synth(), rep([fnd("High")], "MAYBE"))["violations"]):
+        bad.append("bad verdict")
+    if not any("malformed" in x for x in score_case(synth(), {"verdict": "REWORK", "findings": "none", "inputs_ledger": {}})["violations"]):
+        bad.append("findings not a list")
+    if score_case(synth(), rep([fnd("High")]))["violations"]:
+        bad.append("a well-formed report was flagged")
+    expect("legacy reports: a missing location or scenario, a bad severity, evidence or verdict, findings that are not a list, and a refuted CONFIRMED finding are each flagged; a clean one is not", not bad, str(bad[:4]) if bad else "8 cells")
+    bad = []
+    unv = {"rule": "unverified", "words": ["libx"]}
+    for name, r_, want in (("UNVERIFIED label", rep([fnd("Low", text="libx not supplied", evidence_level="UNVERIFIED")]), True),
+                           ("CONFIRMED label", rep([fnd("Low", text="libx not supplied", evidence_level="CONFIRMED")]), False),
+                           ("needs_validation item", {**rep([]), "findings": [{"id": "N", "status": "needs_validation", "location": "app.py:1", "suspicion": "libx may drop events", "unresolved_fact": "libx flush behavior"}]}, True),
+                           ("ledger gap", {**rep([]), "inputs_ledger": {"not_seen": ["libx"]}}, True),
+                           ("ledger seen", {**rep([]), "inputs_ledger": {"seen": ["libx"]}}, False)):
+        ok_, _, _ = check_rule(unv, r_, norm_findings(r_), "REWORK")
+        if ok_ != want:
+            bad.append(name)
+    nc = {"rule": "not_confirmed", "words": ["handling"]}
+    for name, fs_, cred, want in (("open High about it", [fnd("High", text="no handling", title="no handling")], (), False), ("credited to a planted defect", [fnd("High", text="handling", title="handling")], ("F",), True),
+                                  ("Medium about it", [fnd("Medium", title="no handling")], (), True), ("refuted", [fnd("High", title="no handling", status="refuted")], (), True)):
+        r_ = rep(fs_)
+        if check_rule(nc, r_, norm_findings(r_), "REWORK", cred)[0] != want:
+            bad.append("not_confirmed " + name)
+    expect("rules: unverified accepts an UNVERIFIED label, a needs_validation item or a ledger gap and nothing else; not_confirmed flags only an open High about the topic that no planted defect owns", not bad, str(bad[:4]) if bad else "10 cells")
+    # ---- more grids: wording-only matching with all_words, suspicion file matching, 2.2 label mapping, profile choice, seat rules, normalizers
+    bad = []
+    aw = synth(all_words=("alpha", "beta"))
+    for text, want in (("widget alpha", 0), ("widget alpha beta", 1), ("widget beta alpha", 1), ("alpha beta only", 0)):
+        if score_case(aw, rep([fnd("High", loc="app.py", text=text)]))["found_any"] != want:
+            bad.append("all_words " + text)
+    expect("wording-only matching: every all_words word must be present, and one any_words word", not bad, str(bad[:3]) if bad else "4 cells")
+    bad = []
+    sus_exp = {**synth(control=True), "suspicions": [{"id": "S1", "file": "orders.py", "any_words": ["flush"], "why": "w"}]}
+
+    def v22rep(findings, verdict="SHIP WITH FIXES"):
+        return {"schema_version": "2.2", "verdict": verdict, "inputs_ledger": [], "coverage": {"checked": [{"unit": "orders.py", "kind": "file"}], "not_checked": []},
+                "findings": findings, "refuted": []}
+
+    def conf(loc, text, sev="High", **kw):
+        return {"id": kw.pop("id", "C1"), "status": "confirmed", "severity": sev, "evidence_level": "CONFIRMED", "track": "A", "location": loc,
+                "scenario": text + " when the described input arrives the described thing breaks", "fix": "fix it", "answers": {"a": True, "b": True, "c": True, "d": True}}
+
+    for loc, text, want in (("orders.py:3", "it may not flush", True), ("other.py:3", "it may not flush", False), ("orders.py:3", "an unrelated High", False)):
+        got = score_case(sus_exp, v22rep([conf(loc, text)], "REWORK"), profile="v2.2")
+        if any("FL13" in x for x in got["violations"]) != want:
+            bad.append(f"FL13 {loc} {text}")
+    expect("FL13: only a High or Critical in the suspicion's file that uses its wording is a violation", not bad, str(bad[:3]) if bad else "3 cells")
+    bad = []
+    base_ctl = synth(control=True)
+    r = v22rep([conf("a.py:1", "something")])
+    del r["findings"][0]["location"]
+    if not any(x.startswith("FL5") for x in score_case(base_ctl, r, profile="v2.2")["violations"]):
+        bad.append("missing location under 2.2 is FL5")
+    r = v22rep([conf("a.py:1", "something", "Critical")], "SHIP")
+    vs = score_case(base_ctl, r, profile="v2.2")["violations"]
+    if sum("FL6" in x for x in vs) != 1 or any("verdict" in x and "FL18" in x for x in vs):
+        bad.append("SHIP with a Critical is one FL6 and not also a schema line: " + str(vs))
+    r = v22rep([conf("a.py:1", "something", "Low", refuted=True)])
+    r["findings"][0]["refuted"] = True
+    if not any("FL15" in x for x in score_case(base_ctl, r, profile="v2.2")["violations"]):
+        bad.append("a refuted marker under 2.2 is FL15")
+    ok_r = v22rep([conf("a.py:1", "something", "Low")])
+    ok_r["coverage"] = {"checked": [{"unit": "orders.py", "kind": "file"}], "not_checked": [{"unit": "extra.py", "reason": "r"}]}
+    if score_case(base_ctl, ok_r, profile="v2.2")["violations"]:
+        bad.append("a clean 2.2 report was flagged: " + str(score_case(base_ctl, ok_r, profile="v2.2")["violations"]))
+    for ver, want in (("2.2", True), ("2.1", False), (None, False)):
+        r = v22rep([]); 
+        if ver is None:
+            del r["schema_version"]
+        else:
+            r["schema_version"] = ver
+        if score_case(base_ctl, r).get("v22") != want:             # the default profile is auto
+            bad.append(f"auto profile with schema_version {ver}")
+    if score_case(base_ctl, v22rep([]), profile="legacy").get("v22"):
+        bad.append("legacy profile applied the 2.2 rules")
+    expect("2.2 scoring: the FL5, FL6 and FL15 labels, no double count, and the auto / legacy profile choice", not bad, str(bad[:3]) if bad else "grid")
+    bad = []
+    seat_rule = {"rule": "seat_refused", "words": ["personal", "customer"]}
+    used_rule = {"rule": "seat_used"}
+    for name, r_, want in (
+        ("prose refusal naming the data", {**rep([]), "_raw": "I will not send this to an external reviewer because it contains customer data."}, True),
+        ("refusal without the data", {**rep([]), "_raw": "I will not send this to an external reviewer."}, False),
+        ("data and vendor but no refusal", {**rep([]), "_raw": "The external reviewer would see the customer data."}, False),
+        ("refusal naming the data but no outside reviewer", {**rep([]), "_raw": "I will not publish the customer data."}, False),
+        ("a conditional in the findings JSON", {**rep([fnd("Low", text="x", fix="do not send the customer fixture to cross-vendor seats")]), "_raw": "```json\n{}\n```"}, False),
+        ("a refused seat entry", {**rep([]), "seats": [{"vendor": "other", "status": "refused: customer data"}]}, True)):
+        if check_rule(seat_rule, r_, norm_findings(r_), "REWORK")[0] != want:
+            bad.append(name)
+    for name, st, want in (("ran", {"vendor": "other", "status": "ran"}, True), ("refused", {"vendor": "other", "status": "refused"}, False),
+                           ("same vendor", {"vendor": "claude", "status": "ran"}, False), ("explicit cross_vendor", {"vendor": "claude", "status": "ran", "cross_vendor": True}, True),
+                           ("explicitly not cross", {"vendor": "other", "status": "ran", "cross_vendor": False}, False), ("skipped", {"vendor": "other", "status": "skipped"}, False)):
+        r_ = {**rep([]), "seats": [st]}
+        if check_rule(used_rule, r_, norm_findings(r_), "REWORK")[0] != want:
+            bad.append("seat_used " + name)
+    expect("seat rules: a refusal needs the refusal, an outside reviewer and the data in the report's own words; a seat is used unless refused, skipped or same-vendor", not bad, str(bad[:4]) if bad else "12 cells")
+    bad = []
+    for raw, want in (("do not merge", "REWORK"), ("Do not merge: blocked", "REWORK"), ("merge after fixes (P2 only)", "SHIP WITH FIXES"), ("merge", "SHIP"),
+                      ("ship_with_fixes", "SHIP WITH FIXES"), ("Reject", "REJECT"), ({"verdict": "REWORK"}, "REWORK")):
+        if norm_verdict(raw) != want:
+            bad.append(str(raw))
+    for raw, want in (("unverified: x not provided", "UNVERIFIED"), ("inferred (deployment not shown)", "PROBABLE"), ("code-read", "CONFIRMED"), ("confirmed from code", "CONFIRMED"),
+                      ("CONFIRMED", "CONFIRMED"), ("PROBABLE", "PROBABLE"), ("hand-traced", "CONFIRMED")):
+        got = norm_findings({"findings": [{"id": "a", "evidence_level": raw}]})[0]["ev"]
+        if got != want:
+            bad.append(f"evidence {raw!r} -> {got}")
+    for raw, want in (("P0", "critical"), ("p1", "high"), ("P2", "medium"), ("P3", "low"), ("High", "high")):
+        if norm_findings({"findings": [{"id": "a", "severity": raw}]})[0]["sev"] != want:
+            bad.append("severity " + raw)
+    expect("normalizers: verdict wording, evidence wording and P0-P3 severities map as documented", not bad, str(bad[:4]) if bad else "19 cells")
+    bad = []
+    if applies({"id": "x"}, "pr-review") or not applies({"id": "x"}, "redteam") or not applies({"id": "x"}, None) or not applies({"applies_to": ["pr-review"]}, "pr-review") or applies({"applies_to": ["pr-review"]}, "redteam"):
+        bad.append("applies")
+    expect("applies_to: a case that does not say is a redteam case", not bad, "5 cells")
     # hand-written reports (different key names, read through the real file loader), not derived from expected.json
     hand = pathlib.Path(__file__).resolve().parent / "selfcheck" / "reports"
     if hand.exists():
