@@ -1,0 +1,32 @@
+{
+  "id": "case-20",
+  "track": "C",
+  "title": "A quarterly ridership report whose totals, rates and caveat all recompute from its table (clean control)",
+  "failure_list": [
+    4
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import csv\nr = list(csv.DictReader(open('data.csv')))\nq2, q3 = r\nt = open('report.md').read()\ntr = int(q3['trips']) / int(q2['trips']) - 1\nassert round(tr * 100, 1) == 15.0 and '15.0%' in t\na = int(q2['trips']) / (int(q2['bikes']) * int(q2['days']))\nb = int(q3['trips']) / (int(q3['bikes']) * int(q3['days']))\nassert round(a, 2) == 1.51 and round(b, 2) == 1.67 and round((b / a - 1) * 100, 1) == 10.8 and '10.8%' in t"
+  },
+  "applies_to": [
+    "redteam",
+    "plain"
+  ],
+  "slug": "H15c-control-ridership-numbers-that-recompute"
+}

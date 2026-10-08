@@ -1,0 +1,63 @@
+{
+  "id": "case-13",
+  "track": "D",
+  "title": "A proposal that has 22 technicians hand-fill a 40-column sheet every morning to produce a report the telemetry already supports",
+  "failure_list": [
+    3
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "unneeded-manual-work",
+      "file": "work/proposal.md",
+      "lines": [
+        11,
+        11
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "manual",
+        "telemetry",
+        "already",
+        "daily",
+        "25 minutes",
+        "46 hours",
+        "cheaper",
+        "automate",
+        "alert",
+        "duplicate",
+        "burden"
+      ],
+      "all_words": [],
+      "why": "the proposal asks 22 technicians for 46 hours a week of hand-entered data that the 5-minute telemetry and the dashboard's stuck rule already provide, and nothing in it explains how a weekly report lowers complaints"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('proposal.md').read()\nassert '25 minutes per technician per day' in t and 'every 5 minutes' in t and 'already shows a bike as' in t"
+  },
+  "applies_to": [
+    "redteam",
+    "plain"
+  ],
+  "slug": "H09-a-daily-manual-sheet-that-duplicates-the-telemetry"
+}

@@ -1,0 +1,63 @@
+{
+  "id": "case-18",
+  "track": "A",
+  "title": "A 'five-year total cost of ownership' memo that compares only the price per battery and so picks the supplier whose batteries wear out four times",
+  "failure_list": [
+    11
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "drift-price-for-tco",
+      "file": "work/memo.md",
+      "lines": [
+        9,
+        9
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "total cost",
+        "tco",
+        "five years",
+        "5 years",
+        "cycle life",
+        "replacement",
+        "upfront",
+        "price per battery",
+        "lifetime",
+        "does not answer",
+        "request"
+      ],
+      "all_words": [],
+      "why": "the request asked for five-year total cost; the memo compares only the price per battery. With 1,825 cycles in five years, Zesto's 600-cycle life means four batteries ($1,385 per bike) against Volta's one ($410)"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import csv\nrows = list(csv.DictReader(open('suppliers.csv')))\nimport math\ndef tco(r):\n    n = math.ceil(1825 / int(r['cycle_life']))\n    return n * int(r['price_usd']) + (n - 1) * int(r['swap_labor_usd'])\nbest = min(rows, key=tco)['supplier']\ncheapest = min(rows, key=lambda r: int(r['price_usd']))['supplier']\nassert best == 'Volta' and cheapest == 'Zesto'"
+  },
+  "applies_to": [
+    "redteam",
+    "plain"
+  ],
+  "slug": "H14-a-price-table-presented-as-total-cost-of-ownership"
+}

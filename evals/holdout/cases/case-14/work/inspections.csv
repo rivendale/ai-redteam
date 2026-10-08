@@ -1,0 +1,5 @@
+group,bikes
+cracked,30
+sound,2970
+sensor_detects_cracked,0.95
+sensor_flags_sound,0.05

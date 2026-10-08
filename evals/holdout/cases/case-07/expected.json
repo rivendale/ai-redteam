@@ -1,0 +1,32 @@
+{
+  "id": "case-07",
+  "track": "B",
+  "title": "The same endpoint with login, a turn cap, a token budget, an input cap, a per-rider rate limit and a global ceiling, and tests for each (clean control)",
+  "failure_list": [
+    4
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "shell": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -q test_planner && n=$(grep -c '    def test_' test_planner.py) && grep -q \"Tests: $n tests\" ../context.md"
+  },
+  "applies_to": [
+    "redteam",
+    "plain"
+  ],
+  "slug": "H04c-control-capped-and-signed-in"
+}

@@ -50,6 +50,8 @@ jobs:
         run: python3 evals/tools/verify_cases.py --cases evals/assess/holdout/cases
       - name: Eval case proofs (every planted defect demonstrated, every control's tests pass)
         run: python3 evals/tools/verify_cases.py
+      - name: Redteam hold-out case proofs
+        run: python3 evals/tools/verify_cases.py --cases evals/holdout/cases
       - name: Byte-compile every Python file
         run: python3 -m compileall -q -x '/evals/cases/' .
       - name: Parse every JSON file

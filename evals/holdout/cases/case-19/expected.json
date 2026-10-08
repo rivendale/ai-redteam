@@ -1,0 +1,32 @@
+{
+  "id": "case-19",
+  "track": "A",
+  "title": "The same data with the five-year cost computed for each supplier and the recommendation that follows from it (clean control)",
+  "failure_list": [
+    4
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import csv, math\nrows = list(csv.DictReader(open('suppliers.csv')))\nt = open('memo.md').read()\nfor r in rows:\n    n = math.ceil(1825 / int(r['cycle_life']))\n    c = n * int(r['price_usd']) + (n - 1) * int(r['swap_labor_usd'])\n    assert ('$%s |' % format(c, ',')) in t, (r['supplier'], c)\nassert 'We recommend Volta' in t"
+  },
+  "applies_to": [
+    "redteam",
+    "plain"
+  ],
+  "slug": "H14c-control-the-memo-computes-the-five-year-cost"
+}
