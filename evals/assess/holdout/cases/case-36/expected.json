@@ -1,6 +1,6 @@
 {
   "id": "case-36",
-  "slug": "h-ctl8-a-lfs-lock-helper-under-a-permitted-license",
+  "slug": "h-ctl8-a-placeholder-checker-for-the-translations-we-export",
   "failure_list": [
     0
   ],
@@ -59,15 +59,25 @@
         "overlap"
       ],
       "words": [
-        "crowdin",
         "crashlytics",
         "jenkins"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "fit_mentions",
+      "field": "goal",
+      "words": [
+        "goal 3",
+        "translation",
+        "language",
+        "placeholder"
       ],
       "fl": 0
     }
   ],
   "proof": {
     "cwd": "work",
-    "python": "t = open('snapshot.md').read()\nassert 'Git LFS file locking' in t\nassert 'License: zlib' in t"
+    "python": "t = open('snapshot.md').read()\nassert '{0}, {name}, %s, %d and %1$s' in t\nassert 'License: zlib' in t"
   }
 }

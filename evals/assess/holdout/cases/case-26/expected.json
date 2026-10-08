@@ -26,6 +26,6 @@
   ],
   "proof": {
     "cwd": "work",
-    "python": "t = open('snapshot.md').read()\nassert 'Glossary-first pre-translation' in t"
+    "python": "t = open('snapshot.md').read()\nassert 'Spot-check a translation with a back-translation sample' in t\nassert '27 of those 31' in t"
   }
 }

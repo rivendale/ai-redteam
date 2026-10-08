@@ -1,6 +1,6 @@
 {
   "id": "case-33",
-  "slug": "h-ctl5-a-linter-free-for-commercial-use",
+  "slug": "h-ctl5-a-build-profiler-that-is-free-for-commercial-use",
   "failure_list": [
     0
   ],
@@ -50,10 +50,19 @@
         "trial period"
       ],
       "fl": 0
+    },
+    {
+      "rule": "fit_mentions",
+      "field": "goal",
+      "words": [
+        "goal 1",
+        "build"
+      ],
+      "fl": 0
     }
   ],
   "proof": {
     "cwd": "work",
-    "python": "t = open('snapshot.md').read()\nassert 'free for commercial and personal use' in t"
+    "python": "t = open('snapshot.md').read()\nassert 'free for commercial and personal use' in t\nassert 'IL2CPP Android build' in t"
   }
 }

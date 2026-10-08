@@ -357,3 +357,19 @@ Run both skills unchanged, three runs each, with `CASES=evals/holdout/cases eval
 Checked before it was committed: every proof holds (each control's own tests run and pass, and the arithmetic in the two memo controls is recomputed in the proof),
 a perfect report built from each case scores full recall with no violation, a bare SHIP scores no recall on any defect case, a paranoid report is flagged on every
 control, and the secret scan finds 0. Each control was read cold by a reviewer who had not seen the answers. The first read found three real flaws (a false test count, a non-ASCII token that raised instead of giving 401, a pin that was only a placeholder) and the controls were fixed; a second, fresh read found none. Proofs now also check that the context's "Tests: N tests" line matches the file.
+
+### Hold-out set: three cases changed after the first run (2026-10-08)
+
+The first run of the assess hold-out (skill v1.2, three runs, main's scorer) gave 30, 31 and 31 of 36 (92 of 108, 85%); that is the published hold-out result and it stays
+as it is. Reading the reports showed three of my cases at fault, and they were changed. **Any case changed after a run is a dev case from then on**, so a rerun of these
+three is reported as a second, separate number and is not merged with the 85%.
+
+| case | what the reports showed | change |
+|---|---|---|
+| 33 (control) | skip or watch in 3 of 3 runs, each with "goal: none found": a HLSL linter serves none of the four goals | now a build-time profiler under free-commercial terms, serving goal 1; Unity 6, macOS, Windows and batch mode stated |
+| 36 (control) | watch in 3 of 3 runs, "goal: none found": an LFS lock helper serves none of the goals | now a placeholder checker for the Crowdin exports, serving goal 3; release binaries, no toolchain; what Crowdin's own check does not cover is stated |
+| 26 (FL13) | needs-decision (money) in 3 of 3 runs, because the post's script called a model and the context lists no model provider | a post about a back-translation spot check done by a teammate: no code, no tool, no spend |
+
+Left as they were, on purpose: cases 05 and 06 (FL3). In all six runs the report names the overlap (Crashlytics; Crowdin) and then answers needs-decision while writing "if not, close
+as skip", which defers an answer that the context file already gives (case 05: "Firebase stays") or that a skip does not need an operator for (case 06). Case 32 (a post whose snapshot
+contains a script) drew a `glean` hand-off in two of three runs, which `assess-1` does not allow for a post; that is also left as it was. Those three are not case faults.

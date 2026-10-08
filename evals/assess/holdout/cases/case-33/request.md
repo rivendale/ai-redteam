@@ -1,3 +1,3 @@
-shaderlint checks hlsl in unity projects. free for commercial use it says. useful?
+ilbuildtimer shows where an android il2cpp build spends its time. free for commercial use it says. goal 1?
 
-Link: https://shaderlint.example.test/pricing
+Link: https://ilbuildtimer.example.test/terms
