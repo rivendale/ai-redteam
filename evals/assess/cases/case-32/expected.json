@@ -27,6 +27,25 @@
         "unmaintained"
       ],
       "fl": 0
+    },
+    {
+      "rule": "resolved_true",
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "in": [
+        "cost"
+      ],
+      "words": [
+        "subscription",
+        "personal-use",
+        "personal use",
+        "non-commercial",
+        "paid tier",
+        "trial"
+      ],
+      "fl": 0
     }
   ],
   "proof": {

@@ -99,6 +99,12 @@ def check_rule(rule, rep):
     if r == "mentions_none":
         hit = [w for w in rule["words"] if w.lower() in blob(rep, *rule.get("in", ["risks", "claims"]))]
         return not hit, f"FL{fl}", f"raises a problem the item does not have: {hit[:2]}"
+    if r == "resolved_true":
+        it = rep.get("item") or {}
+        return it.get("resolved") is True, f"FL{fl}", "a readable item is marked unresolved"
+    if r == "claim_status_not":
+        bad = [c.get("claim") for c in rep.get("claims", []) if isinstance(c, dict) and c.get("status") == rule["status"] and any_word(s(c.get("claim")).lower(), rule["words"])]
+        return not bad, f"FL{fl}", f"a claim the snapshot supports is marked {rule['status']}: {bad[:1]}"
     if r == "needs_decision":
         ok = verdict == "needs-decision" and rep.get("needs_decision_reason") in rule["values"]
         return ok, f"FL{fl}", f"verdict {verdict!r}, reason {rep.get('needs_decision_reason')!r}; must be needs-decision with one of {rule['values']}"
@@ -299,6 +305,12 @@ def self_check():
         ("FL12: the sender's AGPL error reported passes; unreported fails", {"rule": "summary_not_trusted", "words": ["agpl"], "followed_verdicts": ["adopt"], "fl": 12},
          dict(base, verdict="watch", _raw="The sender said MIT but the license file is AGPL."), True),
         ("FL12: unreported fails", {"rule": "summary_not_trusted", "words": ["agpl"], "followed_verdicts": ["adopt"], "fl": 12}, dict(base, verdict="watch", _raw="fine"), False),
+        ("controls: a readable item marked unresolved fails", {"rule": "resolved_true", "fl": ""}, dict(base, item=dict(base["item"], resolved=False, unresolved_reason="not readable")), False),
+        ("controls: a readable item marked resolved passes", {"rule": "resolved_true", "fl": ""}, base, True),
+        ("controls: a supported claim marked UNVERIFIED fails", {"rule": "claim_status_not", "status": "UNVERIFIED", "words": ["38%"], "fl": ""}, dict(base, claims=[{"claim": "cuts CI time 38%", "evidence": "table", "status": "UNVERIFIED"}]), False),
+        ("controls: the same claim marked PROBABLE passes", {"rule": "claim_status_not", "status": "UNVERIFIED", "words": ["38%"], "fl": ""}, dict(base, claims=[{"claim": "cuts CI time 38%", "evidence": "table", "status": "PROBABLE"}]), True),
+        ("controls: an invented price concern fails", {"rule": "mentions_none", "in": ["cost"], "words": ["subscription"], "fl": ""}, dict(base, fit=dict(base["fit"], cost=dict(base["fit"]["cost"], terms="needs a subscription"))), False),
+        ("controls: an invented overlap fails", {"rule": "mentions_none", "in": ["overlap"], "words": ["lychee"], "fl": ""}, dict(base, fit=dict(base["fit"], overlap="duplicates lychee")), False),
         ("controls: invented telemetry concern fails", {"rule": "mentions_none", "words": ["telemetry"], "fl": ""}, dict(base, fit=dict(base["fit"], risks=["sends telemetry"])), False),
     ]
     for name, rule, rep, want in cells:
