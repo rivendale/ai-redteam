@@ -24,6 +24,19 @@ are 5 of 6, every other rule 6 of 6); at least 90% of case-runs (106 of 108). **
 The two single failures: case 28 run 2 marked the sender's summary of a preprint ("claims 3x lower error") CONFIRMED; case 18
 run 3 marked a host's follower count CONFIRMED, which the scorer reads as popularity offered as evidence.
 
+**Both are scorer faults, not the skill's (laptop's read of the reports, 2026-10-09):**
+- Case 28: the attribution claim ("the preprint claims 3x lower error") is true; the same report marked the substantive claim
+  UNVERIFIED, answered watch at medium confidence. The rule matched the attribution's words.
+- Case 18: the count was marked PROBABLE, and the verdict was skip. The rule's conclusion word "shows" matched the noun "show" in
+  "top-ten show". No report offered popularity as evidence.
+
+The scorer fix is in its own PR (branch `assess-scorer-attribution`). With it, the same reports score **36, 36 and 36 of 36
+(labelled: corrected scorer)**. **The published hold-out result stays 106 of 108 (98%) as run.**
+
+**Summary across three fresh sets:** the set author (who also wrote sets 1 and 2) can name no remaining skill failure. The one
+named failure, v1.2's over-deferral on hold-out 1, is what v1.3 fixes. Case and scorer faults were the main source of failures
+on sets 2 and 3.
+
 ## The full record
 
 | set | skill | result |
