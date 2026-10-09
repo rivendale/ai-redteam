@@ -1,0 +1,83 @@
+{
+  "id": "case-32",
+  "slug": "h3-ctl4-a-key-binding-post-with-its-timings",
+  "failure_list": [
+    0
+  ],
+  "control": true,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "try",
+        "adopt",
+        "watch"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "skip_negated": true,
+      "words": [
+        "sends telemetry",
+        "collects telemetry",
+        "phones home",
+        "install script",
+        "curl",
+        "project is abandoned",
+        "repo is abandoned",
+        "looks abandoned",
+        "appears abandoned",
+        "unmaintained"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "resolved_true",
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "skip_negated": true,
+      "in": [
+        "cost"
+      ],
+      "words": [
+        "subscription",
+        "personal-use",
+        "personal use",
+        "non-commercial",
+        "paid tier",
+        "free trial",
+        "trial period"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "fit_mentions",
+      "field": "goal",
+      "words": [
+        "goal 1",
+        "editing"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "claim_status_not",
+      "status": [
+        "UNVERIFIED",
+        "REFUTED"
+      ],
+      "words": [
+        "62, 58",
+        "41, 44"
+      ],
+      "fl": 0
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert '62, 58, 60' in t\nassert '41, 44, 40' in t"
+  }
+}

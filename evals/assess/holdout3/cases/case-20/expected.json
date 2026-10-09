@@ -1,0 +1,19 @@
+{
+  "id": "case-20",
+  "slug": "h3-fl10b-a-stats-product-and-no-context-file",
+  "failure_list": [
+    10
+  ],
+  "control": false,
+  "item_type": "product",
+  "rules": [
+    {
+      "rule": "no_invented_goal",
+      "fl": 10
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'Plans from $12/month' in t"
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "id": "case-36",
+  "slug": "h3-ctl8-a-script-that-turns-a-transcript-into-an-episode-page",
+  "failure_list": [
+    0
+  ],
+  "control": true,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "try",
+        "adopt"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "skip_negated": true,
+      "words": [
+        "sends telemetry",
+        "collects telemetry",
+        "phones home",
+        "install script",
+        "curl",
+        "project is abandoned",
+        "repo is abandoned",
+        "looks abandoned",
+        "appears abandoned",
+        "unmaintained"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "fit_mentions",
+      "field": "goal",
+      "words": [
+        "goal 3",
+        "transcript"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "resolved_true",
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "skip_negated": true,
+      "in": [
+        "cost"
+      ],
+      "words": [
+        "subscription",
+        "personal-use",
+        "personal use",
+        "non-commercial",
+        "paid tier",
+        "free trial",
+        "trial period"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "claim_status_not",
+      "status": [
+        "UNVERIFIED",
+        "REFUTED"
+      ],
+      "words": [
+        "13-line"
+      ],
+      "fl": 0
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nimport re\nb = re.search(r'```python\\n(.*?)```', t, re.S).group(1)\nn = len(b.rstrip('\\n').splitlines())\nassert ('%d-line Python script' % n) in t, n"
+  }
+}

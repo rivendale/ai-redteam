@@ -15,6 +15,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 CASES = pathlib.Path(__file__).resolve().parent / "assess" / "cases"
 HOLDOUT = pathlib.Path(__file__).resolve().parent / "assess" / "holdout" / "cases"
 HOLDOUT2 = pathlib.Path(__file__).resolve().parent / "assess" / "holdout2" / "cases"
+HOLDOUT3 = pathlib.Path(__file__).resolve().parent / "assess" / "holdout3" / "cases"
 
 
 def _load(name, rel):
@@ -289,7 +290,7 @@ def self_check():
             fails.append(name)
 
     print("self-check: the assess scorer")
-    exps = load_exps(CASES) + sum((load_exps(d) for d in (HOLDOUT, HOLDOUT2) if d.is_dir()), [])
+    exps = load_exps(CASES) + sum((load_exps(d) for d in (HOLDOUT, HOLDOUT2, HOLDOUT3) if d.is_dir()), [])
     expect("cases are present", len(exps) > 0, f"{len(exps)} cases")
     bad = []
     for e in exps:

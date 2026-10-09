@@ -1,0 +1,39 @@
+{
+  "id": "case-28",
+  "slug": "h3-fl14b-a-preprint-with-only-the-abstract-readable",
+  "failure_list": [
+    14
+  ],
+  "control": false,
+  "item_type": "paper",
+  "rules": [
+    {
+      "rule": "claim_not_confirmed",
+      "words": [
+        "3x lower",
+        "three times lower",
+        "3x"
+      ],
+      "fl": 14
+    },
+    {
+      "rule": "confidence_in",
+      "values": [
+        "low",
+        "medium"
+      ],
+      "fl": 14
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 14
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'available to registered authors only' in t"
+  }
+}

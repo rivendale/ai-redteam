@@ -1,0 +1,85 @@
+{
+  "id": "case-34",
+  "slug": "h3-ctl6-a-shortcode-that-adds-a-signup-link-under-the-license-rule",
+  "failure_list": [
+    0
+  ],
+  "control": true,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "try",
+        "adopt"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "skip_negated": true,
+      "words": [
+        "sends telemetry",
+        "collects telemetry",
+        "phones home",
+        "has no license",
+        "is unlicensed",
+        "install script",
+        "curl",
+        "project is abandoned",
+        "repo is abandoned",
+        "looks abandoned",
+        "appears abandoned",
+        "unmaintained"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "resolved_true",
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "skip_negated": true,
+      "in": [
+        "cost"
+      ],
+      "words": [
+        "subscription",
+        "personal-use",
+        "personal use",
+        "non-commercial",
+        "paid tier",
+        "free trial",
+        "trial period"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "skip_negated": true,
+      "in": [
+        "overlap"
+      ],
+      "words": [
+        "reaper",
+        "loudness"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "fit_mentions",
+      "field": "goal",
+      "words": [
+        "goal 2",
+        "newsletter",
+        "signup"
+      ],
+      "fl": 0
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'renders a box with a short pitch' in t\nassert '7be30d95a1c4f82e6b0d3a97c5e1f4082b6d9a13' in t"
+  }
+}

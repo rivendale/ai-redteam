@@ -1,0 +1,44 @@
+{
+  "id": "case-17",
+  "slug": "h3-fl9a-twelve-thousand-stars-and-nothing-since-2021",
+  "failure_list": [
+    9
+  ],
+  "control": false,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "no_popularity_evidence",
+      "fl": 9
+    },
+    {
+      "rule": "mentions_any",
+      "in": [
+        "risks",
+        "raw",
+        "next"
+      ],
+      "words": [
+        "last commit",
+        "last push",
+        "2021",
+        "unmaintained",
+        "stale",
+        "apple silicon",
+        "no reply"
+      ],
+      "fl": 9
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 9
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert '12,000 stars' in t\nassert 'does not run on Apple silicon' in t"
+  }
+}

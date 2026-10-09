@@ -1,0 +1,23 @@
+{
+  "id": "case-11",
+  "slug": "h3-fl6a-a-paid-editing-assistant-that-fits-goal-one",
+  "failure_list": [
+    6
+  ],
+  "control": false,
+  "item_type": "product",
+  "rules": [
+    {
+      "rule": "needs_decision",
+      "values": [
+        "money",
+        "account"
+      ],
+      "fl": 6
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert '$30 per month' in t\nassert 'Create an account to start' in t"
+  }
+}

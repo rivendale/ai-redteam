@@ -1,0 +1,52 @@
+{
+  "id": "case-02",
+  "slug": "h3-fl1b-minus-sixteen-lufs-on-every-episode-says-the-table-otherwise",
+  "failure_list": [
+    1
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "claim_not_confirmed",
+      "words": [
+        "on every episode",
+        "hits the target on every",
+        "hits -16 lufs on every"
+      ],
+      "fl": 1
+    },
+    {
+      "rule": "mentions_any",
+      "in": [
+        "claims",
+        "risks",
+        "raw"
+      ],
+      "words": [
+        "-17.9",
+        "-14.8",
+        "-17.4",
+        "6 of 10",
+        "six of ten",
+        "4 of 10",
+        "four of ten",
+        "not every",
+        "off target",
+        "misses"
+      ],
+      "fl": 1
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 1
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert '| 4 | -17.9 |' in t\nassert 'It hits the target on every episode' in t"
+  }
+}

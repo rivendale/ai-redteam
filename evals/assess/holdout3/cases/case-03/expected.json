@@ -1,0 +1,19 @@
+{
+  "id": "case-03",
+  "slug": "h3-fl2a-an-audio-file-with-no-transcript",
+  "failure_list": [
+    2
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "unresolved",
+      "fl": 2
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'no transcript, no show notes' in t"
+  }
+}
