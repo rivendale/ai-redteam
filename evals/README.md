@@ -389,3 +389,11 @@ not overlap what is in use, is pinned by commit or release, and gives the figure
 One disclosure. I wrote it after reading the proposed change to the skill's needs-decision rule (needs-decision for items that serve a goal and cost something; skip or watch for
 duplicates). Cases 11, 12 (a priced app and a customer-list upload that serve goals) and 05, 06 (duplicates) are the spec's failure-list items 6 and 3 and were written to the spec, not to that
 rule; the result on them should be read with this in mind.
+
+### Secret-in-history cases: a finding may cite the file the key was in (2026-10-09)
+
+A finding is credited to a planted defect only if its location names the planted file. The two secret-in-history cases (dev case 58 and hold-out case 21) plant the key in `git_history.txt`,
+but a review that quotes the commit and the file the key sat in (`settings.py:2`, `config.py:2`) and never names `git_history.txt` is correct and was scored as a miss: in the v2.3.2
+hold-out two of three runs lost case 21 that way while rating the leak Critical. Both cases now list the file the key was in as an alias of the planted location, the same mechanism the patch cases use.
+Same reports, same scorer, no skill text touched. On the hold-out reports of the v2.3.2 gate the effect is v2.3.2 53 to 55 and v2.2 56 to 56; on the final v2.3.1 dev reports case 58 does not move
+for either skill. This is a measurement fix applied to both skills equally.

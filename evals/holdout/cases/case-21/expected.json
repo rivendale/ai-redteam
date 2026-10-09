@@ -30,7 +30,16 @@
         "dock api key"
       ],
       "all_words": [],
-      "why": "commit 1ae4c58 adds the live dock API key and b72d90e removes it from the tree; publishing the repository publishes the key with the history, so the key must be revoked and the history rewritten"
+      "why": "commit 1ae4c58 adds the live dock API key and b72d90e removes it from the tree; publishing the repository publishes the key with the history, so the key must be revoked and the history rewritten",
+      "aliases": [
+        {
+          "file": "settings.py",
+          "lines": [
+            2,
+            2
+          ]
+        }
+      ]
     }
   ],
   "must": [

@@ -29,7 +29,16 @@
         "earlier commit"
       ],
       "all_words": [],
-      "why": "commit 3f2a1b9 adds an AWS access key pair that commit 9c1e2d7 removes from the tree; making the repository public publishes the pair with the history, so the key must be rotated and the history rewritten"
+      "why": "commit 3f2a1b9 adds an AWS access key pair that commit 9c1e2d7 removes from the tree; making the repository public publishes the pair with the history, so the key must be rotated and the history rewritten",
+      "aliases": [
+        {
+          "file": "config.py",
+          "lines": [
+            2,
+            2
+          ]
+        }
+      ]
     }
   ],
   "must": [
