@@ -1,3 +1,3 @@
-this explains building a changelog from commit trailers. goal 4?
+this post has a short github actions workflow that opens a pr with the changelog draft every monday. goal 4?
 
-Link: https://posts.example.test/changelog-from-trailers
+Link: https://posts.example.test/changelog-pr-every-monday

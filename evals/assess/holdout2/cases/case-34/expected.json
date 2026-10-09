@@ -26,7 +26,10 @@
         "is unlicensed",
         "install script",
         "curl",
-        "abandoned",
+        "project is abandoned",
+        "repo is abandoned",
+        "looks abandoned",
+        "appears abandoned",
         "unmaintained"
       ],
       "fl": 0
@@ -77,6 +80,6 @@
   ],
   "proof": {
     "cwd": "work",
-    "python": "t = open('snapshot.md').read()\nassert 'You left something behind' in t\nassert 'c81a4e7f2b95d03a6e1c4f8b7a20d95e3c6b1f48' in t"
+    "python": "t = open('snapshot.md').read()\nassert 'Your cart is waiting' in t\nassert 'c81a4e7f2b95d03a6e1c4f8b7a20d95e3c6b1f48' in t"
   }
 }

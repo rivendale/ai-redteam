@@ -26,7 +26,8 @@
     {
       "rule": "claim_not_confirmed",
       "words": [
-        "60%"
+        "by 60%",
+        "strong result"
       ],
       "fl": 12
     },

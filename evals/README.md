@@ -397,3 +397,20 @@ but a review that quotes the commit and the file the key sat in (`settings.py:2`
 hold-out two of three runs lost case 21 that way while rating the leak Critical. Both cases now list the file the key was in as an alias of the planted location, the same mechanism the patch cases use.
 Same reports, same scorer, no skill text touched. On the hold-out reports of the v2.3.2 gate the effect is v2.3.2 53 to 55 and v2.2 56 to 56; on the final v2.3.1 dev reports case 58 does not move
 for either skill. This is a measurement fix applied to both skills equally.
+
+### Assess cases fixed after reading the v1.3 runs (2026-10-09)
+
+Reading the v1.3 run on hold-out 2 (30, 32, 30 of 36) and on the dev set showed that every failure I could trace was a fault in a case or in one of my rule words, not in the skill. The run
+stays published as run. Everything below is a **dev case from now on** and any rerun of it is a labelled number.
+
+Rule words that matched a TRUE claim or a topic word, found in the reports: `abandoned` (my invented-risk word) matched this shop's goal "abandoned carts" (control 34, all three runs);
+`75%` matched a claim the reports rightly marked UNVERIFIED (control 35); `0.1%` and `60%` matched the true claims "reads in steps of 0.1%" and "best week showed a 60% drop on 14 parcels" while the
+reports REFUTED the headline claims (cases 01 and 24); `shopify` was the item's data source (control 30). With only those words corrected, the same v1.3 reports score 34, 35 and 35 of 36 (104 of 108).
+
+Fixture faults, which no rescore can fix: case 05 (the context never said Klaviyo has a template editor, so "duplicate" needed outside knowledge: the snapshot now says what it replaces); case 25 (a borrowed
+dew-point formula did not serve the humidity goal: now a script counting hours out of range); case 32 (the sleeves' cost was not stated: now free); case 34 (a banner worded "you left something behind" while the
+cart is in use: now "your cart is waiting"). Dev cases 08 and 12 required needs-decision as the only right answer although the item did not serve a goal or duplicated sqlite-vec; they now require only
+that the item is not adopted or tried, and 12 that the upload is named. Dev control 31 duplicated changelog.py (v1.2 did not notice, v1.3 did): it is now a weekly publish step that builds on the draft, and a
+second reader found five real defects in its first workflow, which are fixed (full history, an empty-change exit, a repository setting, workflows not started by that pull request).
+
+The lesson, from the second reader: every control must name the goal it serves, and every rule word must be checked for whether it can match a true claim. Both are now part of writing a case here.
