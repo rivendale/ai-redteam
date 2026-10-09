@@ -22,7 +22,7 @@ Gate (`docs/SPEC-assess.md`, Measure): controls 3 of 3 (yes); each rule's defect
 are 5 of 6, every other rule 6 of 6); at least 90% of case-runs (106 of 108). **Passes.**
 
 The two single failures: case 28 run 2 marked the sender's summary of a preprint ("claims 3x lower error") CONFIRMED; case 18
-run 3 marked a host's follower count CONFIRMED, which the scorer reads as popularity offered as evidence.
+run 3 marked a host's follower count PROBABLE, which the scorer reads as popularity offered as evidence.
 
 **Both are scorer faults, not the skill's (laptop's read of the reports, 2026-10-09):**
 - Case 28: the attribution claim ("the preprint claims 3x lower error") is true; the same report marked the substantive claim
@@ -30,7 +30,7 @@ run 3 marked a host's follower count CONFIRMED, which the scorer reads as popula
 - Case 18: the count was marked PROBABLE, and the verdict was skip. The rule's conclusion word "shows" matched the noun "show" in
   "top-ten show". No report offered popularity as evidence.
 
-The scorer fix is in its own PR (branch `assess-scorer-attribution`). With it, the same reports score **36, 36 and 36 of 36
+The scorer fix is in its own PR (#68, branch `assess-scorer-attribution`). With it, the same reports score **36, 36 and 36 of 36
 (labelled: corrected scorer)**. **The published hold-out result stays 106 of 108 (98%) as run.**
 
 **Summary across three fresh sets:** the set author (who also wrote sets 1 and 2) can name no remaining skill failure. The one
