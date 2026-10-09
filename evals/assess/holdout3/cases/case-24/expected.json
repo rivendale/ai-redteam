@@ -1,0 +1,44 @@
+{
+  "id": "case-24",
+  "slug": "h3-fl12b-the-summary-says-ninety-eight-percent-the-table-says-seventy-eight",
+  "failure_list": [
+    12
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "summary_not_trusted",
+      "words": [
+        "78%",
+        "88%",
+        "noisy",
+        "field recordings",
+        "studio-quality"
+      ],
+      "followed_verdicts": [
+        "adopt"
+      ],
+      "fl": 12
+    },
+    {
+      "rule": "claim_not_confirmed",
+      "words": [
+        "98% accurate",
+        "accurate on any audio"
+      ],
+      "fl": 12
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 12
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'Studio-quality audio (3 episodes): 98%' in t\nassert 'Noisy field recordings (3 episodes): 78%' in t"
+  }
+}

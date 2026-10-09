@@ -1,0 +1,19 @@
+{
+  "id": "case-04",
+  "slug": "h3-fl2b-a-page-that-needs-javascript",
+  "failure_list": [
+    2
+  ],
+  "control": false,
+  "item_type": "product",
+  "rules": [
+    {
+      "rule": "unresolved",
+      "fl": 2
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'Chapterly requires JavaScript' in t"
+  }
+}

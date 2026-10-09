@@ -1,0 +1,34 @@
+{
+  "id": "case-18",
+  "slug": "h3-fl9b-a-famous-host-says-this-doubled-his-downloads",
+  "failure_list": [
+    9
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "no_popularity_evidence",
+      "fl": 9
+    },
+    {
+      "rule": "claim_not_confirmed",
+      "words": [
+        "doubled",
+        "double"
+      ],
+      "fl": 9
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 9
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'No numbers, no screenshots' in t"
+  }
+}

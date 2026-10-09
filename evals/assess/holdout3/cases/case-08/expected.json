@@ -1,0 +1,33 @@
+{
+  "id": "case-08",
+  "slug": "h3-fl4b-music-free-only-under-a-thousand-downloads",
+  "failure_list": [
+    4
+  ],
+  "control": false,
+  "item_type": "product",
+  "rules": [
+    {
+      "rule": "fit_mentions",
+      "field": "cost",
+      "words": [
+        "1,000",
+        "commercial",
+        "$15",
+        "3,000"
+      ],
+      "fl": 4
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 4
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'fewer than 1,000 downloads per episode' in t\nassert '$15 per month' in t"
+  }
+}

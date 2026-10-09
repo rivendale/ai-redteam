@@ -1,0 +1,38 @@
+{
+  "id": "case-14",
+  "slug": "h3-fl7b-a-talk-about-going-to-video",
+  "failure_list": [
+    7
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "skip",
+        "watch"
+      ],
+      "fl": 7
+    },
+    {
+      "rule": "mentions_any",
+      "in": [
+        "next",
+        "fit",
+        "raw"
+      ],
+      "words": [
+        "audio only",
+        "stays audio",
+        "already decided",
+        "decided"
+      ],
+      "fl": 7
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'If you are audio only you are invisible' in t"
+  }
+}

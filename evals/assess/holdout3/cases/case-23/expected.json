@@ -1,0 +1,35 @@
+{
+  "id": "case-23",
+  "slug": "h3-fl12a-the-summary-says-apache-offline-no-telemetry",
+  "failure_list": [
+    12
+  ],
+  "control": false,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "summary_not_trusted",
+      "words": [
+        "sspl",
+        "server side public",
+        "telemetry",
+        "tracklabs_telemetry"
+      ],
+      "followed_verdicts": [
+        "adopt"
+      ],
+      "fl": 12
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 12
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'Server Side Public License v1' in t\nassert 'TRACKLABS_TELEMETRY=off' in t"
+  }
+}

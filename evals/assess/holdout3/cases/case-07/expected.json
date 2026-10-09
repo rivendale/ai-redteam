@@ -1,0 +1,34 @@
+{
+  "id": "case-07",
+  "slug": "h3-fl4a-thirty-free-minutes-a-month",
+  "failure_list": [
+    4
+  ],
+  "control": false,
+  "item_type": "product",
+  "rules": [
+    {
+      "rule": "fit_mentions",
+      "field": "cost",
+      "words": [
+        "30 minutes",
+        "$20",
+        "plus",
+        "180",
+        "45 minutes"
+      ],
+      "fl": 4
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 4
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'Free: 30 minutes of audio per month' in t\nassert '$20/month' in t"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "id": "case-16",
+  "slug": "h3-fl8b-a-monetization-recap-and-the-transcript-goal",
+  "failure_list": [
+    8
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "mentions_none",
+      "in": [
+        "next"
+      ],
+      "words": [
+        "recap the conference",
+        "summarize the conference",
+        "summarise the conference",
+        "conference summary",
+        "attend the conference"
+      ],
+      "fl": 8
+    },
+    {
+      "rule": "fit_mentions",
+      "field": "goal",
+      "words": [
+        "goal 3",
+        "transcript"
+      ],
+      "fl": 8
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 8
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert '12 minutes of correction per 45-minute episode' in t"
+  }
+}

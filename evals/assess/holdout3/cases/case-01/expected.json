@@ -1,0 +1,48 @@
+{
+  "id": "case-01",
+  "slug": "h3-fl1a-ninety-nine-percent-noise-removal-measured-on-a-fan",
+  "failure_list": [
+    1
+  ],
+  "control": false,
+  "item_type": "post",
+  "rules": [
+    {
+      "rule": "claim_not_confirmed",
+      "words": [
+        "of background noise",
+        "works on voices"
+      ],
+      "fl": 1
+    },
+    {
+      "rule": "mentions_any",
+      "in": [
+        "claims",
+        "risks",
+        "raw"
+      ],
+      "words": [
+        "fan",
+        "no speech",
+        "only one recording",
+        "single recording",
+        "one recording",
+        "not speech",
+        "voices"
+      ],
+      "fl": 1
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 1
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'It contains no speech' in t\nassert 'desk fan for ten seconds' in t"
+  }
+}

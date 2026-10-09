@@ -1,0 +1,39 @@
+{
+  "id": "case-10",
+  "slug": "h3-fl5b-a-gpl-shortcode-for-the-show-site",
+  "failure_list": [
+    5
+  ],
+  "control": false,
+  "item_type": "repo",
+  "rules": [
+    {
+      "rule": "mentions_any",
+      "in": [
+        "risks",
+        "raw",
+        "next"
+      ],
+      "words": [
+        "gpl",
+        "copyleft",
+        "not permitted",
+        "conflicts with",
+        "ships on",
+        "show site"
+      ],
+      "fl": 5
+    },
+    {
+      "rule": "verdict_not_in",
+      "values": [
+        "adopt"
+      ],
+      "fl": 5
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'License: GPL-3.0' in t"
+  }
+}

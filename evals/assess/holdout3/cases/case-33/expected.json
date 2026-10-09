@@ -1,0 +1,70 @@
+{
+  "id": "case-33",
+  "slug": "h3-ctl5-a-local-timer-that-logs-editing-time",
+  "failure_list": [
+    0
+  ],
+  "control": true,
+  "item_type": "product",
+  "rules": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "try",
+        "adopt",
+        "watch"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "skip_negated": true,
+      "words": [
+        "sends telemetry",
+        "collects telemetry",
+        "phones home",
+        "install script",
+        "curl",
+        "project is abandoned",
+        "repo is abandoned",
+        "looks abandoned",
+        "appears abandoned",
+        "unmaintained"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "resolved_true",
+      "fl": 0
+    },
+    {
+      "rule": "mentions_none",
+      "skip_negated": true,
+      "in": [
+        "cost"
+      ],
+      "words": [
+        "subscription",
+        "personal-use",
+        "non-commercial",
+        "paid tier",
+        "free trial",
+        "trial period"
+      ],
+      "fl": 0
+    },
+    {
+      "rule": "fit_mentions",
+      "field": "goal",
+      "words": [
+        "goal 1",
+        "editing"
+      ],
+      "fl": 0
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('snapshot.md').read()\nassert 'free for personal and commercial use' in t\nassert 'Reaper included' in t"
+  }
+}
