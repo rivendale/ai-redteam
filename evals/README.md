@@ -423,8 +423,8 @@ each of the 14 failure-list rules and eight controls. It is meant to be run once
 Three checks were applied to every case before the PR, because the first two sets failed on exactly these: (1) every control names a goal in the context file that it serves; (2) every rule word was
 searched for in the snapshot, to see whether a TRUE claim could contain it (the earlier words `abandoned`, `0.1%`, `60%` and `75%` all matched true statements); (3) a duplicate is derivable from the text the
 reviewer is given: the context file states what is already in use ("loudness.py normalizes each finished episode to -16 LUFS", "the signup form on the show site" in Mailchimp, "every cut ... is made by hand
-in Reaper; nothing automates cutting"), or the snapshot names what it replaces. Two independent readers (no expected answers) gave a verdict, the goal and the source of any overlap on 21 distinct cases; their
-reads changed ten before this commit: a model download with no license, size or checksum, a log format left open, a timer whose idle counting was unstated, a duplicate pair of timing posts (one replaced), a silence
+in Reaper; nothing automates cutting"), or the snapshot names what it replaces. Two independent reads (no expected answers) gave a verdict, the goal and the source of any overlap on 15 distinct cases (the second read repeated four of them); they
+led to changes in six places before this commit: a model download with no license, size or checksum, a log format left open, a timer whose idle counting was unstated, a duplicate pair of timing posts (one replaced), a silence
 trimmer that did not fit the Reaper workflow (replaced by a project template), and the context's silence on whether cutting is automated.
 
 Disclosure. I wrote it knowing v1.3's text and its failures on sets 1 and 2, and knowing the intent of its needs-decision rule. FL3 and FL6 cases were written to the spec: the duplicates are free tools with no
