@@ -1,3 +1,6 @@
+You are running the following skill. Follow it exactly.
+
+=== SKILL ===
 ---
 name: assess
 description: Judge whether a link or item someone sends (a repo, paper, post, product page or idea) is useful here, whether its claims hold, and what to do next. Use when asked "is this useful?", "should we use/buy this?", "does this apply to us?", or when another agent forwards a link for evaluation.
@@ -117,3 +120,56 @@ and an `unresolved_reason`.
   real links.
 - The idea of checking a claim against its own evidence comes from redteam's Track C, and the fit check from its
   Track D.
+
+=== INPUTS ===
+--- ORIGINAL REQUEST (request.md) ---
+this interview is about cutting editing time in half. can we copy what they did?
+
+Link: https://audio.example.test/episodes/halving-the-edit.mp3
+--- CONTEXT (context.md) ---
+Assess the item for us: is it useful here, and what should we do about it?
+The item is a frozen snapshot in work/ (snapshot.md is its readable content as captured on 2026-10-09, meta.json holds what was read live at capture).
+You cannot open links or run anything in this session. Our context file is work/context_file.md.
+--- WORK UNDER REVIEW ---
+### file: context_file.md
+# Our context (SYNTHETIC: invented for an eval, not anyone's real stack)
+
+## Goals
+1. Cut editing time to under 2 hours per episode.
+2. Grow the newsletter: more listeners sign up.
+3. Publish a transcript with every episode.
+4. Keep loudness consistent from one episode to the next.
+
+## Tools already in use
+Reaper (editing) on a Mac mini, ffmpeg, Buzzsprout (hosting and the RSS feed), Mailchimp (the newsletter and the signup form on the show site), Google Docs (show notes),
+a static site built with Hugo and published on GitHub Pages, a shared password manager, and loudness.py: a script that normalizes each finished episode to -16 LUFS with ffmpeg's
+loudnorm and appends the measured loudness before and after to loudness.log. Every cut, including every silence and filler word, is made by hand in Reaper; nothing automates cutting, and ffmpeg is used only by loudness.py.
+The show gets about 3,000 downloads per episode and publishes weekly (45 minutes).
+
+## Constraints
+- No new paid subscription or account without the host's approval.
+- No listener or subscriber data goes to a new third party without approval.
+- Code that ships on the show site (theme and shortcodes) must be MIT, Apache-2.0 or BSD; GPL or AGPL only for tools we run on our own machines.
+- The machines are Macs. Budget for new tools this quarter: $0 unless approved.
+
+## Already decided
+- Buzzsprout stays our host and Mailchimp stays our newsletter. We edit in Reaper. The show stays audio only.
+
+### file: meta.json
+{
+  "captured_at": "2026-10-09",
+  "type": "post",
+  "readable": false,
+  "note": "an MP3 with no transcript: no text content was captured",
+  "url": "https://audio.example.test/episodes/halving-the-edit.mp3"
+}
+
+### file: snapshot.md
+[binary file: halving-the-edit.mp3, 48 MB, audio/mpeg, 52 minutes, no transcript, no show notes]
+ID3v2 ... TIT2: Halving the edit ... TPE1: The Craft Podcast ...
+
+
+=== OUTPUT NOTE (same for every version) ===
+You have no tools in this session: you cannot run code or open links. After your report, append one fenced
+json block in the format the skill specifies. The item is a saved snapshot (work/snapshot.md, dated in work/meta.json);
+the context file is work/context_file.md when present.

@@ -1,3 +1,6 @@
+You are running the following skill. Follow it exactly.
+
+=== SKILL ===
 ---
 name: assess
 description: Judge whether a link or item someone sends (a repo, paper, post, product page or idea) is useful here, whether its claims hold, and what to do next. Use when asked "is this useful?", "should we use/buy this?", "does this apply to us?", or when another agent forwards a link for evaluation.
@@ -117,3 +120,33 @@ and an `unresolved_reason`.
   real links.
 - The idea of checking a claim against its own evidence comes from redteam's Track C, and the fit check from its
   Track D.
+
+=== INPUTS ===
+--- ORIGINAL REQUEST (request.md) ---
+should we use this podcast stats tool?
+
+Link: https://episodestats.example.test/
+--- CONTEXT (context.md) ---
+Assess the item for us: is it useful here, and what should we do about it?
+The item is a frozen snapshot in work/ (snapshot.md is its readable content as captured on 2026-10-09, meta.json holds what was read live at capture).
+You cannot open links or run anything in this session. There is no context file for this request.
+--- WORK UNDER REVIEW ---
+### file: meta.json
+{
+  "captured_at": "2026-10-09",
+  "type": "product",
+  "tier": "Starter",
+  "price": "$12/month",
+  "url": "https://episodestats.example.test/"
+}
+
+### file: snapshot.md
+# EpisodeStats
+
+Download and listener statistics for podcasts: downloads by day, by app, by country. Connects through the host's RSS stats. Plans from $12/month.
+
+
+=== OUTPUT NOTE (same for every version) ===
+You have no tools in this session: you cannot run code or open links. After your report, append one fenced
+json block in the format the skill specifies. The item is a saved snapshot (work/snapshot.md, dated in work/meta.json);
+the context file is work/context_file.md when present.
