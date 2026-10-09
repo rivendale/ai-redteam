@@ -11,7 +11,7 @@
       "rule": "claim_not_confirmed",
       "words": [
         "accurate to 0.1",
-        "0.1%"
+        "0.1% accuracy"
       ],
       "fl": 1
     },

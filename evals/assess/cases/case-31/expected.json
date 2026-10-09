@@ -1,6 +1,6 @@
 {
   "id": "case-31",
-  "slug": "ctl3-a-reproducible-changelog-post",
+  "slug": "ctl3-a-weekly-publish-step-for-the-changelog-draft",
   "failure_list": [
     0
   ],
@@ -66,13 +66,13 @@
         "REFUTED"
       ],
       "words": [
-        "21-line"
+        "25-line"
       ],
       "fl": 0
     }
   ],
   "proof": {
     "cwd": "work",
-    "python": "t = open('snapshot.md').read()\nassert '21-line script' in t"
+    "python": "t = open('snapshot.md').read()\nimport re\nb = re.search(r'```yaml\\n(.*?)```', t, re.S).group(1)\nn = len(b.rstrip('\\n').splitlines())\nassert ('%d-line GitHub' % n) in t, n"
   }
 }

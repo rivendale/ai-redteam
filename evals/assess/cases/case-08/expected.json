@@ -17,11 +17,10 @@
       "fl": 4
     },
     {
-      "rule": "needs_decision",
+      "rule": "verdict_not_in",
       "values": [
-        "money",
-        "account",
-        "data_to_new_party"
+        "adopt",
+        "try"
       ],
       "fl": 4
     }

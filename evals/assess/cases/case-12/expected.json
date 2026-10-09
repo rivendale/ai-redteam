@@ -8,10 +8,28 @@
   "item_type": "product",
   "rules": [
     {
-      "rule": "needs_decision",
+      "rule": "verdict_not_in",
       "values": [
-        "data_to_new_party",
-        "account"
+        "adopt",
+        "try"
+      ],
+      "fl": 6
+    },
+    {
+      "rule": "mentions_any",
+      "in": [
+        "risks",
+        "next",
+        "raw",
+        "overlap"
+      ],
+      "words": [
+        "upload",
+        "cloud",
+        "third party",
+        "new party",
+        "leave",
+        "copy of the text"
       ],
       "fl": 6
     }

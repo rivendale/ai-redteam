@@ -26,7 +26,10 @@
         "is unlicensed",
         "install script",
         "curl",
-        "abandoned",
+        "project is abandoned",
+        "repo is abandoned",
+        "looks abandoned",
+        "appears abandoned",
         "unmaintained"
       ],
       "fl": 0
@@ -60,7 +63,7 @@
       ],
       "words": [
         "humidity",
-        "shopify"
+        "dht22"
       ],
       "fl": 0
     },
