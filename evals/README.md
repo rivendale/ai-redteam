@@ -430,3 +430,14 @@ trimmer that did not fit the Reaper workflow (replaced by a project template), a
 Disclosure. I wrote it knowing v1.3's text and its failures on sets 1 and 2, and knowing the intent of its needs-decision rule. FL3 and FL6 cases were written to the spec: the duplicates are free tools with no
 account and no standing rule that a switch would change (only skip or watch fit), and the priced app and the subscriber-list upload serve a goal and cost money or data (needs-decision fits). If v1.3 passes
 this set, the result is for a skill I could read; the earlier sets are why I would not call that a free pass.
+
+### Assess scorer: a claim about what the item says, and the noun "show" (2026-10-09)
+
+Reading the two single failures of v1.3 on hold-out 3 (106 of 108 as run) showed two scorer faults, both mine, both of the kind already met in sets 1 and 2:
+- `claim_not_confirmed` failed a report for marking "the preprint claims 3x lower error (sender's summary)" CONFIRMED, while the same report marked the claim itself ("transcribes noisy audio with 3x lower word error")
+  UNVERIFIED. CONFIRMED on a claim that begins "the preprint claims" says the item says it, which is true. A CONFIRMED claim that is about what the item says is now ignored when another claim with the same words is
+  UNVERIFIED, REFUTED or PROBABLE; if nothing else addresses it, it still fails.
+- `no_popularity_evidence` read the noun in "the author hosts a top-ten show with 300,000 followers" as the verb "shows" in its list of conclusion words ("shows the trick works"). The verb now needs an object word
+  ("shows that/it/they/the/this").
+Rescoring every published assess run with the corrected scorer: hold-out 3 moves from 36, 35, 35 to 36, 36, 36 of 36; hold-out 1 (v1.2, #58 cases), hold-out 2 (v1.3, cases as run) and the dev runs of v1.2 do not move. The result
+as run (106 of 108, 98%) stays the published number; 108 of 108 is the number with the corrected scorer, and is labelled as such.
