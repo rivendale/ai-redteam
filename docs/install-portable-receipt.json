@@ -1,0 +1,70 @@
+{
+  "source_commit": "96641b8ce3c3ced4be25399a9758a632d09b268c",
+  "checked_on": "2026-10-16",
+  "existing_project_instructions_preserved": true,
+  "checks": [
+    {
+      "host": "cursor",
+      "empty_directory_copy": "pass",
+      "existing_install_refused": true,
+      "files": [
+        {
+          "path": ".cursor/skills/redteam/SKILL.md",
+          "sha256": "d440a9d37fadb2b4feea2b48013cefa6c550289f1ebb479cedb3cd5656566743"
+        },
+        {
+          "path": ".cursor/skills/assess/SKILL.md",
+          "sha256": "ce5c28ea16d192a73646b951b775ea38a086bd4c3fa60a9456e0262a20063ee1"
+        },
+        {
+          "path": ".cursor/skills/pr-review/SKILL.md",
+          "sha256": "0d1d2d27efef81cf198d5fa2519cc1fbf68495e4b45849d0ff72f16695247b18"
+        }
+      ],
+      "runtime_agent_load": "not tested",
+      "model_calls": 0
+    },
+    {
+      "host": "copilot",
+      "empty_directory_copy": "pass",
+      "existing_install_refused": true,
+      "files": [
+        {
+          "path": ".github/skills/redteam/SKILL.md",
+          "sha256": "d440a9d37fadb2b4feea2b48013cefa6c550289f1ebb479cedb3cd5656566743"
+        },
+        {
+          "path": ".github/skills/assess/SKILL.md",
+          "sha256": "ce5c28ea16d192a73646b951b775ea38a086bd4c3fa60a9456e0262a20063ee1"
+        },
+        {
+          "path": ".github/skills/pr-review/SKILL.md",
+          "sha256": "0d1d2d27efef81cf198d5fa2519cc1fbf68495e4b45849d0ff72f16695247b18"
+        }
+      ],
+      "runtime_agent_load": "not tested",
+      "model_calls": 0
+    },
+    {
+      "host": "codex",
+      "empty_directory_copy": "pass",
+      "existing_install_refused": true,
+      "files": [
+        {
+          "path": ".agents/skills/redteam/SKILL.md",
+          "sha256": "d440a9d37fadb2b4feea2b48013cefa6c550289f1ebb479cedb3cd5656566743"
+        },
+        {
+          "path": ".agents/skills/assess/SKILL.md",
+          "sha256": "ce5c28ea16d192a73646b951b775ea38a086bd4c3fa60a9456e0262a20063ee1"
+        },
+        {
+          "path": ".agents/skills/pr-review/SKILL.md",
+          "sha256": "0d1d2d27efef81cf198d5fa2519cc1fbf68495e4b45849d0ff72f16695247b18"
+        }
+      ],
+      "runtime_agent_load": "not tested",
+      "model_calls": 0
+    }
+  ]
+}

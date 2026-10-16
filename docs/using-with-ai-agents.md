@@ -26,6 +26,9 @@ change; re-check before relying on a row.
 skill triggers, so the description must name the user's words ("red team", "fact-check", "review this PR"), not the
 skill's internals.
 
+For current project-local Cursor, Copilot and Codex paths and empty-directory installation receipts, see
+[portable skill installation](install-portable-skills.md). Historical CLI observations below remain dated measurements.
+
 ## Install and invoke
 
 Pin to a reviewed commit, never to `main`: a skill is instructions, and tracking a branch lets a future push change
@@ -45,10 +48,10 @@ production data`, or `/pr-review`. After a plugin install the skills are namespa
 It also triggers on plain requests that match the description ("red team this", "is this PR ready to merge?").
 The skill name is `pr-review`, not `review`, because Claude Code's built-in command owns `review`.
 
-**Codex CLI**: Codex loads `AGENTS.md` from the working directory (re-checked on 0.161.0) and uses plugins from a
-marketplace (`codex plugin add`). Without the plugin, point it at the skill: "Follow skills/redteam/SKILL.md and
-review <target>". Its instruction budget is `project_doc_max_bytes`, 32768 bytes by default in 0.161.0; what happens
-past it was not tested here, so keep instruction files well under it.
+**Codex CLI**: use the current `.agents/skills/` project-local layout in
+[portable skill installation](install-portable-skills.md). Codex reads repository instructions from the root down
+to the working directory. The earlier instruction-load test on version 0.161.0 is historical; native skill loading
+was not exercised in that test. Verify loading in a fresh session as described below.
 
 **Gemini CLI**: as measured on 0.60.0 (2026-09-21), Gemini reads its own instruction file name, not `AGENTS.md`,
 and has its own skill store (`gemini skills install <git url>`, and on 0.63.0 also `skills link`); it did not see
