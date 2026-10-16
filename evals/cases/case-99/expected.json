@@ -1,0 +1,31 @@
+{
+  "id": "case-99",
+  "track": "C",
+  "title": "The same numbers from a randomized, concurrent test, reported as inconclusive with the interval (clean control)",
+  "failure_list": [
+    33
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import csv, math\nr = {x['arm']: x for x in csv.DictReader(open('results.csv'))}\nc = 46 / 1200\nv = 49 / 1200\nassert r['control']['first_day'] == r['variant']['first_day'] and r['control']['last_day'] == r['variant']['last_day']\nse = math.sqrt(c * (1 - c) / 1200 + v * (1 - v) / 1200)\nassert (v - c) - 1.96 * se < 0 < (v - c) + 1.96 * se\nt = open('report.md').read()\nassert '+0.25' in t and 'randomized' in t"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "T3c-control-a-bounded-conclusion"
+}

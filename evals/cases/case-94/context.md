@@ -1,0 +1,1 @@
+Review requested: claims review (Track C): check every number against its source. Stakes: the memo decides a $151,200-a-year spend. Supplied: memo.md, pricing.md, bench/pilot_p95.csv and bench/README.md.

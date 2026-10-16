@@ -1,0 +1,99 @@
+{
+  "id": "case-93",
+  "track": "C",
+  "title": "Rollout memo whose headline latency gain comes from a benchmark file that was not supplied, and whose payback claim has no data behind it",
+  "failure_list": [
+    2,
+    9,
+    10
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "unsupported-load-bearing-number",
+      "file": "work/memo.md",
+      "lines": [
+        6,
+        6
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "38%",
+        "p95",
+        "pilot_p95",
+        "not supplied",
+        "source",
+        "unverified",
+        "cannot verify",
+        "410",
+        "254",
+        "benchmark"
+      ],
+      "all_words": [],
+      "why": "the whole case rests on a 38% latency gain whose source file was not supplied; the number can be neither confirmed nor refuted"
+    },
+    {
+      "id": "P2",
+      "kind": "unsupported-payback-claim",
+      "file": "work/memo.md",
+      "lines": [
+        7,
+        7
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "pay for itself",
+        "payback",
+        "conversion",
+        "revenue",
+        "no evidence",
+        "unsupported",
+        "no data"
+      ],
+      "all_words": [],
+      "why": "'faster pages lift conversion, so it pays for itself within a quarter' has no conversion or revenue figure anywhere"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT",
+        "SHIP WITH FIXES"
+      ]
+    },
+    {
+      "rule": "unverified",
+      "words": [
+        "38%",
+        "p95",
+        "410",
+        "254"
+      ]
+    },
+    {
+      "rule": "ledger_lists",
+      "items": [
+        "pilot_p95.csv"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import os\nm = open('memo.md').read()\nassert 'bench/pilot_p95.csv' in m and not os.path.exists('bench/pilot_p95.csv')\nassert 3 * 1400 == 4200 and 9 * 1400 == 12600 and 12600 * 12 == 151200 and '$1,400' in open('pricing.md').read() and 'Regions served by the company: 9' in open('pricing.md').read()\nassert 'conversion' in m and 'revenue' not in m"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "T1-absent-source-for-the-headline-number"
+}

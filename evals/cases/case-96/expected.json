@@ -1,0 +1,87 @@
+{
+  "id": "case-96",
+  "track": "C",
+  "title": "A retention report that compares October's setup-completers with July's whole cohort, against the weakest month of the baseline",
+  "failure_list": [
+    33
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "changed-cohort-in-the-comparison",
+      "file": "work/report.md",
+      "lines": [
+        6,
+        6
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "58%",
+        "81",
+        "140",
+        "completed",
+        "completers",
+        "cohort",
+        "survivor",
+        "selection",
+        "52%",
+        "like-for-like",
+        "denominator"
+      ],
+      "all_words": [],
+      "why": "58% is 81 of the 140 July v2 users who finished setup; the v2 cohort as a whole retained 104 of 200 (52%), and the baseline is all sign-ups"
+    },
+    {
+      "id": "P2",
+      "kind": "baseline-chosen-from-the-weakest-month",
+      "file": "work/report.md",
+      "lines": [
+        7,
+        7
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "april",
+        "41%",
+        "baseline",
+        "46.7",
+        "may",
+        "june",
+        "cherry",
+        "weakest",
+        "lowest",
+        "three months",
+        "140 of 300"
+      ],
+      "all_words": [],
+      "why": "April (41 of 100) is the lowest baseline month; April to June pooled is 140 of 300 (46.7%), so the like-for-like gain is about 5 points, not 17"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import csv\nrows = list(csv.DictReader(open('signups.csv')))\ndef ret(sel):\n    r = [x for x in rows if sel(x)]\n    return sum(int(x['retained_day30']) for x in r), len(r)\nassert ret(lambda x: x['month'] == '2026-04') == (41, 100)\nassert ret(lambda x: x['flow'] == 'v1') == (140, 300)\nassert ret(lambda x: x['flow'] == 'v2') == (104, 200)\nassert ret(lambda x: x['flow'] == 'v2' and x['completed_setup'] == '1') == (81, 140)\nassert round(81 / 140 * 100) == 58 and round(104 / 200 * 100) == 52 and round(140 / 300 * 100, 1) == 46.7"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "T2-completers-compared-with-everyone-and-the-weakest-month-as-baseline"
+}

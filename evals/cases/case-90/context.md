@@ -1,0 +1,1 @@
+Review requested: adversarial review of the agent's run and its final report before it is accepted. Stakes: the function splits real payments. Supplied: allocate.py, test_allocate.py, golden.json and agent_log.md.

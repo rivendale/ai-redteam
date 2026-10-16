@@ -1,0 +1,1 @@
+Review requested: claims review (Track C): check every number against its source. The pilot benchmark file bench/pilot_p95.csv that the memo cites was NOT supplied. Stakes: the memo decides a $151,200-a-year spend. Supplied: memo.md and pricing.md.

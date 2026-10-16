@@ -1,0 +1,31 @@
+{
+  "id": "case-94",
+  "track": "C",
+  "title": "The same rollout memo with its benchmark supplied (the 38% recomputes) and a recommendation sized to what the pilot measured (clean control)",
+  "failure_list": [
+    2
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import csv\nrows = list(csv.DictReader(open('bench/pilot_p95.csv')))\nb = sum(int(r['p95_before_ms']) for r in rows) / 3\na = sum(int(r['p95_after_ms']) for r in rows) / 3\nassert (b, a) == (410.0, 254.0) and round((b - a) / b * 100) == 38\nassert 3 * 1400 == 4200 and 9 * 1400 == 12600 and 6 * 1400 == 8400 and 'Regions served by the company: 9' in open('pricing.md').read()"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "T1c-control-the-benchmark-is-supplied-and-recomputes"
+}

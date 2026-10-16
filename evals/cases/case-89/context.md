@@ -1,0 +1,1 @@
+Review requested: adversarial review of the agent's run and its final report before it is accepted. Stakes: the export contains customer data. Supplied: SPEC.md, export.py, test_export.py and agent_log.md.

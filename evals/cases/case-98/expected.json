@@ -1,0 +1,88 @@
+{
+  "id": "case-98",
+  "track": "C",
+  "title": "A checkout test reported as proof of a lift: 46 vs 49 orders in 1,200 visitors each, the two arms in different weeks",
+  "failure_list": [
+    33
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "conclusion-stronger-than-the-evidence",
+      "file": "work/report.md",
+      "lines": [
+        3,
+        3
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "confirms",
+        "proven",
+        "proof",
+        "significant",
+        "interval",
+        "46",
+        "49",
+        "0.25",
+        "noise",
+        "inconclusive",
+        "overclaim",
+        "p-value",
+        "confidence"
+      ],
+      "all_words": [],
+      "why": "3.83% vs 4.08% on 1,200 visitors each is a 0.25-point difference with an interval of about -1.6 to +2.1 points; it does not confirm or prove a lift"
+    },
+    {
+      "id": "P2",
+      "kind": "causal-claim-from-non-concurrent-arms",
+      "file": "work/report.md",
+      "lines": [
+        6,
+        6
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "week",
+        "weeks",
+        "concurrent",
+        "randomi",
+        "sequential",
+        "before and after",
+        "seasonal",
+        "confound",
+        "holdout",
+        "design"
+      ],
+      "all_words": [],
+      "why": "design.md shows the arms are different weeks (before and after the launch), not randomized and concurrent, so any difference is confounded with the week"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import csv\nr = {x['arm']: x for x in csv.DictReader(open('results.csv'))}\nc = int(r['control']['orders']) / int(r['control']['visitors'])\nv = int(r['variant']['orders']) / int(r['variant']['visitors'])\nassert round(c * 100, 2) == 3.83 and round(v * 100, 2) == 4.08\nimport math\nse = math.sqrt(c * (1 - c) / 1200 + v * (1 - v) / 1200)\nassert (v - c) - 1.96 * se < 0 < (v - c) + 1.96 * se\nassert 'before' in open('design.md').read() and 'holdout' in open('design.md').read()"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "T3-proven-from-a-week-before-and-a-week-after"
+}
