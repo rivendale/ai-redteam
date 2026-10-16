@@ -1,7 +1,6 @@
 {
   "source_commit": "96641b8ce3c3ced4be25399a9758a632d09b268c",
   "checked_on": "2026-10-16",
-  "existing_project_instructions_preserved": true,
   "checks": [
     {
       "host": "cursor",
@@ -66,5 +65,13 @@
       "runtime_agent_load": "not tested",
       "model_calls": 0
     }
-  ]
+  ],
+  "multi_host_same_project": [
+    "cursor",
+    "copilot",
+    "codex"
+  ],
+  "existing_project_instructions_preserved": true,
+  "modified_support_refused_before_new_host_write": true,
+  "model_calls": 0
 }

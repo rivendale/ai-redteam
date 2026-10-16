@@ -16,10 +16,10 @@ files does not prove selection or loading. Copilot IDE/code-review behavior shou
 
 Clone the public repo and check out the full reviewed commit. Set `AI_REDTEAM_SOURCE` to that checkout,
 `AI_REDTEAM_TARGET` to an empty test project, and `AI_REDTEAM_HOST` to `cursor`, `copilot` or `codex`.
-Run the same snippet once for each host you use. It makes no model or network call and refuses existing installs.
+Run the same snippet once for each host you use, including multiple hosts in the same project. It makes no model or network call. It refuses an existing install for that host and reuses shared support only when its file hashes match the reviewed source exactly.
 
 ```python
-import os, shutil
+import hashlib, os, shutil
 from pathlib import Path
 source = Path(os.environ['AI_REDTEAM_SOURCE']).resolve()
 target = Path(os.environ['AI_REDTEAM_TARGET']).resolve()
@@ -28,7 +28,7 @@ roots = {'cursor': '.cursor/skills', 'copilot': '.github/skills', 'codex': '.age
 root = target / roots[host]
 support = target / '.ai-redteam'
 names = ('redteam', 'assess', 'pr-review')
-if support.exists() or any((root / name).exists() for name in names):
+if any((root / name).exists() for name in names):
     raise SystemExit('Existing install preserved; review its version before updating')
 for name in names:
     if not (source / 'skills' / name / 'SKILL.md').is_file():
@@ -36,10 +36,29 @@ for name in names:
 for name in ('docs', 'tools', 'schema', 'templates'):
     if not (source / name).is_dir():
         raise SystemExit('Source support files are missing')
+def support_hashes(base):
+    result = {}
+    for name in ('docs', 'tools', 'schema', 'templates'):
+        folder = base / name
+        if not folder.is_dir() or folder.is_symlink():
+            raise SystemExit('Support directory missing or linked')
+        for path in folder.rglob('*'):
+            if '__pycache__' in path.parts or path.suffix == '.pyc':
+                continue
+            if path.is_symlink():
+                raise SystemExit('Linked support file refused')
+            if path.is_file():
+                result[str(path.relative_to(base))] = hashlib.sha256(path.read_bytes()).hexdigest()
+    return result
+expected = support_hashes(source)
+if support.exists() and (support.is_symlink() or support_hashes(support) != expected):
+    raise SystemExit('Shared support differs; existing project preserved')
+if not support.exists():
+    for name in ('docs', 'tools', 'schema', 'templates'):
+        shutil.copytree(source / name, support / name,
+                        ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
 for name in names:
     shutil.copytree(source / 'skills' / name, root / name)
-for name in ('docs', 'tools', 'schema', 'templates'):
-    shutil.copytree(source / name, support / name)
 text = ('# Review skills\n\n'
         'Use the installed redteam, assess and pr-review skills when appropriate.\n'
         'Resolve their docs/, tools/, schema/ and templates/ references under .ai-redteam/.\n'
@@ -63,7 +82,7 @@ pointer, list the three discovered skill names, and identify the skill file chos
 Then confirm it can open the referenced support files. An installed folder, a successful copy command or a
 model saying it knows the skill is insufficient without the concrete paths and loaded instructions.
 
-The [installation receipt](install-portable-receipt.json) records empty-directory file-copy checks for each host.
+The [installation receipt](install-portable-receipt.json) records empty-directory checks and a Cursor-to-Copilot-to-Codex install into one project, including repeat-install and modified-support refusal. Reproduce it with `python3 tests/test_portable_install.py --source /path/to/pinned/ai-redteam --receipt /tmp/install-receipt.json`.
 No Cursor, Copilot or new Codex model session was launched for that receipt. Runtime discovery, tool permissions
 and review quality remain unverified there. See the [existing agent guide](using-with-ai-agents.md) for the
 independence and data-handling limits; its historical CLI observations are dated measurements.
