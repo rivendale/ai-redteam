@@ -3185,13 +3185,13 @@
           "recall": null,
           "false_alarms_on_controls": 0,
           "extra_high_on_defect_cases": 0,
-          "violations": 14,
+          "violations": 0,
           "v23_only_violations": 0,
-          "v22_reports": 2,
+          "v22_reports": 0,
           "needs_validation_items": 0,
           "suspicions_flagged": 0,
-          "suspicions_total": 1,
-          "cases_with_violations": 2,
+          "suspicions_total": 0,
+          "cases_with_violations": 0,
           "no_report": 0,
           "ambiguous_reports": 0
         },
@@ -3204,13 +3204,13 @@
           "recall": null,
           "false_alarms_on_controls": 0,
           "extra_high_on_defect_cases": 0,
-          "violations": 16,
+          "violations": 0,
           "v23_only_violations": 0,
-          "v22_reports": 2,
+          "v22_reports": 0,
           "needs_validation_items": 0,
           "suspicions_flagged": 0,
-          "suspicions_total": 1,
-          "cases_with_violations": 2,
+          "suspicions_total": 0,
+          "cases_with_violations": 0,
           "no_report": 0,
           "ambiguous_reports": 0
         },
@@ -3223,13 +3223,13 @@
           "recall": null,
           "false_alarms_on_controls": 0,
           "extra_high_on_defect_cases": 0,
-          "violations": 20,
+          "violations": 0,
           "v23_only_violations": 0,
-          "v22_reports": 2,
+          "v22_reports": 0,
           "needs_validation_items": 0,
           "suspicions_flagged": 0,
-          "suspicions_total": 1,
-          "cases_with_violations": 2,
+          "suspicions_total": 0,
+          "cases_with_violations": 0,
           "no_report": 0,
           "ambiguous_reports": 0
         }
@@ -4269,7 +4269,7 @@
           ]
         }
       ],
-      "agreement_metric": "case pass/fail and failed rule identity, corrected scorer; not defect recall",
+      "agreement_metric": "case pass/fail and failed rule identity; corrected scorer; not defect recall",
       "case_passes": {
         "values": [
           36,
@@ -4285,9 +4285,1064 @@
         35,
         35
       ]
+    },
+    "assess-as-run": {
+      "cases_per_run": 36,
+      "controls_per_run": 8,
+      "planted_per_run": 0,
+      "recall_hits": {
+        "values": [
+          0,
+          0,
+          0
+        ],
+        "min": 0,
+        "max": 0,
+        "spread": 0
+      },
+      "recall_pct": null,
+      "false_alarms": {
+        "values": [
+          0,
+          0,
+          0
+        ],
+        "min": 0,
+        "max": 0,
+        "spread": 0
+      },
+      "detection_agreement_cases": 34,
+      "verdict_agreement_cases": 34,
+      "cases": [
+        {
+          "id": "case-01",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-02",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-03",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-04",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-05",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-06",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-07",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-08",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-09",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-10",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-11",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-12",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-13",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-14",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-15",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-16",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-17",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-18",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "FAIL"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": false,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-19",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-20",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-21",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-22",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-23",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-24",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-25",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-26",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-27",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-28",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "FAIL",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": false,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-29",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-30",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-31",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-32",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-33",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-34",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-35",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-36",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        }
+      ],
+      "scorer_totals": [
+        {
+          "controls": [
+            8,
+            8
+          ],
+          "defects": [
+            28,
+            28
+          ]
+        },
+        {
+          "controls": [
+            8,
+            8
+          ],
+          "defects": [
+            27,
+            28
+          ]
+        },
+        {
+          "controls": [
+            8,
+            8
+          ],
+          "defects": [
+            27,
+            28
+          ]
+        }
+      ],
+      "agreement_metric": "case pass/fail and failed rule identity; original scorer; not defect recall",
+      "case_passes": {
+        "values": [
+          36,
+          35,
+          35
+        ],
+        "min": 35,
+        "max": 36,
+        "spread": 1
+      },
+      "published_as_run_case_passes": [
+        36,
+        35,
+        35
+      ]
     }
   },
   "scorers": [
+    {
+      "path": "evals/score_assess.py",
+      "commit": "d7dd3aac59ad274636e422dc50026699d9f76239",
+      "sha256": "0ad4d6007bd740b4150aa255113f9002ac3b27369ab584c7d937a75c2025be13"
+    },
     {
       "path": "evals/score.py",
       "commit": "13b4f3144d740b2825db4b55af55e40c8ab1baa7",
