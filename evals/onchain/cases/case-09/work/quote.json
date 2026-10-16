@@ -1,0 +1,6 @@
+{
+  "pair": "WETH/USDC",
+  "price_usdc_per_weth": 2500,
+  "time": 1790000000,
+  "slippage_tolerance_bps": 50
+}

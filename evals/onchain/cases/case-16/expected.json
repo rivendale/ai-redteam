@@ -1,0 +1,32 @@
+{
+  "id": "case-16",
+  "track": "W1",
+  "title": "The same V3Utils swap with a minimum computed from the quote and the Safe as recipient (clean control)",
+  "failure_list": [
+    2
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import json\na = json.load(open('plan.json'))['txs'][1]['args']['params']; q = json.load(open('quote.json')); ap = json.load(open('plan.json'))['txs'][0]\nassert int(ap['data'][-64:], 16) == 20000 * 10**6 and ap['args']['spender'] in [x['address'] for x in json.load(open('allowlist.json'))['spenders']]\nassert int(a['minAmountOut']) == int(q['expected_buy_weth'] * 10**18 * 0.995) and a['recipient'] == json.load(open('plan.json'))['safe']"
+  },
+  "notes": "V3Utils.sol: MIT, github.com/revert-finance/v3utils @ e29e49af.",
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "W16c-control-the-same-swap-with-a-minimum-from-the-quote"
+}

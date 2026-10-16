@@ -1,0 +1,1 @@
+Review requested: onchain transaction-plan review (Track W1): decode every call, check every address, amount, chain and claim against what was supplied. Nothing here will be signed by the reviewer. Supplied: plan.md, plan.json, address_book.json, tokens.json and history.csv. Stakes: 12,500 USDC leaves a multisig.

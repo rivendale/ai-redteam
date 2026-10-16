@@ -1,0 +1,48 @@
+{
+  "chainId": 1,
+  "safe": "0xf9f8f64ccd13186a16aa4ae9a0fd8db36e678b50",
+  "txs": [
+    {
+      "to": "0x52bffb929553576303d300c7cd3411ae7e6f32df",
+      "value": "0",
+      "operation": 0,
+      "data": "0xa9059cbb000000000000000000000000fc72ef4e4a5274c652b6bb48c78da0835ece707b0000000000000000000000000000000000000000000000000000000077359400",
+      "contractMethod": "transfer(address,uint256)",
+      "args": {
+        "recipient": "0xfc72ef4e4a5274c652b6bb48c78da0835ece707b",
+        "amount": "2000000000"
+      }
+    },
+    {
+      "to": "0xf9f8f64ccd13186a16aa4ae9a0fd8db36e678b50",
+      "value": "0",
+      "operation": 0,
+      "data": "0x610b5925000000000000000000000000aa48791c10897cf1582ce09ad85d68302575fbbb",
+      "contractMethod": "enableModule(address)",
+      "args": {
+        "module": "0xaa48791c10897cf1582ce09ad85d68302575fbbb"
+      }
+    },
+    {
+      "to": "0xe2b33f2c0cd77daf619912336a85c79e8f62b845",
+      "value": "0",
+      "operation": 1,
+      "data": "0xa1b2c3d40000000000000000000000000000000000000000000000000000000000000001",
+      "contractMethod": "run(uint256)",
+      "args": {
+        "x": "1"
+      }
+    },
+    {
+      "to": "0x52bffb929553576303d300c7cd3411ae7e6f32df",
+      "value": "0",
+      "operation": 0,
+      "data": "0xa9059cbb000000000000000000000000fc72ef4e4a5274c652b6bb48c78da0835ece707b000000000000000000000000000000000000000000000000000000001dcd6500",
+      "contractMethod": "transfer(address,uint256)",
+      "args": {
+        "recipient": "0xfc72ef4e4a5274c652b6bb48c78da0835ece707b",
+        "amount": "500000000"
+      }
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+Review requested: onchain transaction-plan review (Track W1): decode every call, check every address, amount, chain and claim against what was supplied. Nothing here will be signed by the reviewer. Supplied: plan.md, plan.json, allowlist.json and tokens.json. Stakes: the Safe holds 180,000 USDC.

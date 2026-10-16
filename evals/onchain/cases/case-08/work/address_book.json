@@ -1,0 +1,21 @@
+{
+  "note": "Reviewed by two owners, last changed 2026-10-12 (adds carol, ticket SAFE-31)",
+  "entries": [
+    {
+      "name": "safe",
+      "address": "0xf9f8f64ccd13186a16aa4ae9a0fd8db36e678b50"
+    },
+    {
+      "name": "treasury-ops",
+      "address": "0xfc72ef4e4a5274c652b6bb48c78da0835ece707b"
+    },
+    {
+      "name": "vendor-audit-firm",
+      "address": "0x28ee0f9d2364f496272ba476fafa0279780b9f2a"
+    },
+    {
+      "name": "owner-carol",
+      "address": "0x199ca5cc0b5db9d41d1683f8fc3d1e47d9e9a885"
+    }
+  ]
+}

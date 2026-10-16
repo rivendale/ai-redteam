@@ -1,0 +1,18 @@
+{
+  "domain": {
+    "name": "Permit2",
+    "chainId": 1,
+    "verifyingContract": "0x4174c2c6f667fcd63000230993b10a60fcf2a7be"
+  },
+  "primaryType": "PermitSingle",
+  "message": {
+    "details": {
+      "token": "0x52bffb929553576303d300c7cd3411ae7e6f32df",
+      "amount": "1461501637330902918203684832716283019655932542975",
+      "expiration": "4102444800",
+      "nonce": "0"
+    },
+    "spender": "0x4f2d5de39b23c607f106b315ac5fb9bd16a379dd",
+    "sigDeadline": "4102444800"
+  }
+}

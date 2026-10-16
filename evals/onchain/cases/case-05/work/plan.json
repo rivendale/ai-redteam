@@ -1,0 +1,17 @@
+{
+  "chainId": 1,
+  "safe": "0xf9f8f64ccd13186a16aa4ae9a0fd8db36e678b50",
+  "txs": [
+    {
+      "to": "0x52bffb929553576303d300c7cd3411ae7e6f32df",
+      "value": "0",
+      "operation": 0,
+      "data": "0x095ea7b3000000000000000000000000d2ebef0f8e6cbac36908e4b014ed01f8bdfdca1c000000000000000000000000000000000000000000000000000000012a05f200",
+      "contractMethod": "approve(address,uint256)",
+      "args": {
+        "spender": "0xd2ebef0f8e6cbac36908e4b014ed01f8bdfdca1c",
+        "amount": "5000000000"
+      }
+    }
+  ]
+}

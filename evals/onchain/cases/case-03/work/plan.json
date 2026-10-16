@@ -1,0 +1,17 @@
+{
+  "chainId": 1,
+  "safe": "0xf9f8f64ccd13186a16aa4ae9a0fd8db36e678b50",
+  "txs": [
+    {
+      "to": "0xdfee63395cd9e7c2bbe59dbbfdc5c97cd11b9e86",
+      "value": "0",
+      "operation": 0,
+      "data": "0xa9059cbb000000000000000000000000fc72ef4e4a5274c652b6bb48c78da0835ece707b00000000000000000000000000000000000000000000000014d1120d7b160000",
+      "contractMethod": "transfer(address,uint256)",
+      "args": {
+        "recipient": "0xfc72ef4e4a5274c652b6bb48c78da0835ece707b",
+        "amount": "1500000000000000000"
+      }
+    }
+  ]
+}

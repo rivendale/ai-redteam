@@ -1,0 +1,23 @@
+{
+  "chainId": 1,
+  "safe": "0xf9f8f64ccd13186a16aa4ae9a0fd8db36e678b50",
+  "txs": [
+    {
+      "to": "0x71d54020f95e857bd7f7b424047bd37c44c29067",
+      "value": "0",
+      "operation": 0,
+      "contractMethod": "swap((address,address,uint256,uint256,address,bytes,bool))",
+      "args": {
+        "params": {
+          "tokenIn": "0x52bffb929553576303d300c7cd3411ae7e6f32df",
+          "tokenOut": "0x1572e45184d78525cc58b4b47ada7b17d18f3072",
+          "amountIn": "20000000000",
+          "minAmountOut": "0",
+          "recipient": "0xf9f8f64ccd13186a16aa4ae9a0fd8db36e678b50",
+          "swapData": "0x<placeholder: allowanceTarget,data from the aggregator quote, filled at finalisation>",
+          "unwrap": false
+        }
+      }
+    }
+  ]
+}

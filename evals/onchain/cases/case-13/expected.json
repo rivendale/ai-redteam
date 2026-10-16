@@ -1,0 +1,106 @@
+{
+  "id": "case-13",
+  "track": "W1",
+  "title": "A sweep script with the signing key and a keyed RPC URL written into the source, and the URL printed to the log",
+  "failure_list": [
+    2,
+    6
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "private-key-in-source",
+      "file": "work/sweep.js",
+      "lines": [
+        4,
+        4
+      ],
+      "min_severity": "Critical",
+      "any_words": [
+        "private key",
+        "hardcoded",
+        "hard-coded",
+        "in source",
+        "committed",
+        "secret",
+        "env",
+        "key management",
+        "rotate"
+      ],
+      "all_words": [],
+      "why": "the wallet's private key is a string literal in a file the contractors can read"
+    },
+    {
+      "id": "P2",
+      "kind": "keyed-rpc-url-in-source",
+      "file": "work/sweep.js",
+      "lines": [
+        3,
+        3
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "rpc",
+        "api key",
+        "url",
+        "alchemy",
+        "hardcoded",
+        "hard-coded",
+        "secret",
+        "env"
+      ],
+      "all_words": [],
+      "why": "the RPC URL carries a provider API key"
+    },
+    {
+      "id": "P3",
+      "kind": "keyed-url-written-to-the-log",
+      "file": "work/sweep.js",
+      "lines": [
+        11,
+        11
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "log",
+        "console.log",
+        "connection.url",
+        "prints",
+        "printed",
+        "leaks",
+        "logs the",
+        "api key",
+        "url"
+      ],
+      "all_words": [],
+      "why": "the loop prints provider.connection.url, which includes the key, into run-log.txt every sweep"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import re\ns = open('sweep.js').read(); l = open('run-log.txt').read()\nassert re.search(r'Wallet\\(\"0x[0-9a-f]{64}\"', s) and re.search(r'/v2/[0-9a-f]{32}', s) and re.search(r'/v2/[0-9a-f]{32}', l) and 'connection.url' in s"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "W13-a-private-key-and-a-keyed-rpc-url-in-the-script-and-in-the-log"
+}

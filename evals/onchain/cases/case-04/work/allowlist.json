@@ -1,0 +1,9 @@
+{
+  "note": "Spenders approved by the owners",
+  "spenders": [
+    {
+      "name": "swap-router",
+      "address": "0xd2ebef0f8e6cbac36908e4b014ed01f8bdfdca1c"
+    }
+  ]
+}

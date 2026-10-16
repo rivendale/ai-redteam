@@ -1,0 +1,84 @@
+{
+  "id": "case-06",
+  "track": "W1",
+  "title": "A batch of two payments with a module enabled and an operation-1 call to an unknown contract in the middle, described as tidying",
+  "failure_list": [
+    2,
+    9
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "module-enabled-under-a-routine-description",
+      "file": "work/plan.json",
+      "lines": [
+        21,
+        21
+      ],
+      "min_severity": "Critical",
+      "any_words": [
+        "enablemodule",
+        "module",
+        "enable module",
+        "takeover",
+        "full control",
+        "unknown",
+        "not in the address book",
+        "setup",
+        "610b5925"
+      ],
+      "all_words": [],
+      "why": "transaction 2 is enableModule(address) for an address nobody has vetted; a module can move any asset without signatures; the plan calls it a setup tidy-up"
+    },
+    {
+      "id": "P2",
+      "kind": "delegatecall-to-an-unknown-contract",
+      "file": "work/plan.json",
+      "lines": [
+        29,
+        29
+      ],
+      "min_severity": "Critical",
+      "any_words": [
+        "delegatecall",
+        "operation=1",
+        "operation 1",
+        "operation: 1",
+        "unknown contract",
+        "arbitrary code",
+        "storage",
+        "takeover",
+        "not in the address book"
+      ],
+      "all_words": [],
+      "why": "operation 1 is a delegatecall: the unknown contract's code runs with the Safe's storage and balances"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import json\ntx = json.load(open('plan.json'))['txs']\nassert tx[1]['to'] == json.load(open('plan.json'))['safe'] and tx[1]['data'][2:10] == '610b5925'\nassert tx[2]['operation'] == 1 and tx[2]['to'] not in [e['address'] for e in json.load(open('address_book.json'))['entries']]\nassert 'routine' in open('plan.md').read() and 'delegatecall' not in open('plan.md').read().lower()"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "W06-a-module-and-a-delegatecall-inside-routine-payments"
+}

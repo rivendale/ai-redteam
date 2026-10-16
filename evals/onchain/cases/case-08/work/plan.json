@@ -1,0 +1,28 @@
+{
+  "chainId": 1,
+  "safe": "0xf9f8f64ccd13186a16aa4ae9a0fd8db36e678b50",
+  "txs": [
+    {
+      "to": "0xf9f8f64ccd13186a16aa4ae9a0fd8db36e678b50",
+      "value": "0",
+      "operation": 0,
+      "data": "0x0d582f13000000000000000000000000199ca5cc0b5db9d41d1683f8fc3d1e47d9e9a8850000000000000000000000000000000000000000000000000000000000000003",
+      "contractMethod": "addOwnerWithThreshold(address,uint256)",
+      "args": {
+        "owner": "0x199ca5cc0b5db9d41d1683f8fc3d1e47d9e9a885",
+        "threshold": "3"
+      }
+    },
+    {
+      "to": "0x52bffb929553576303d300c7cd3411ae7e6f32df",
+      "value": "0",
+      "operation": 0,
+      "data": "0xa9059cbb000000000000000000000000fc72ef4e4a5274c652b6bb48c78da0835ece707b000000000000000000000000000000000000000000000000000000001dcd6500",
+      "contractMethod": "transfer(address,uint256)",
+      "args": {
+        "recipient": "0xfc72ef4e4a5274c652b6bb48c78da0835ece707b",
+        "amount": "500000000"
+      }
+    }
+  ]
+}

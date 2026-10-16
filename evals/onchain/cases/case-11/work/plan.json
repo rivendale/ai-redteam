@@ -1,0 +1,17 @@
+{
+  "chainId": 137,
+  "safe": "0xf9f8f64ccd13186a16aa4ae9a0fd8db36e678b50",
+  "txs": [
+    {
+      "to": "0xba843310fa451629252e621f54af7d3f8c5fd918",
+      "value": "0",
+      "operation": 0,
+      "data": "0xa9059cbb000000000000000000000000fc72ef4e4a5274c652b6bb48c78da0835ece707b0000000000000000000000000000000000000000000001b1ae4d6e2ef5000000",
+      "contractMethod": "transfer(address,uint256)",
+      "args": {
+        "recipient": "0xfc72ef4e4a5274c652b6bb48c78da0835ece707b",
+        "amount": "8000000000000000000000"
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "chainId": 1,
+  "safe": "0xf9f8f64ccd13186a16aa4ae9a0fd8db36e678b50",
+  "txs": [
+    {
+      "to": "0x96cc92fc1815e873bde8ec206bdcd092d789a87d",
+      "value": "0",
+      "operation": 0,
+      "contractMethod": "deposit(uint256,address)",
+      "args": {
+        "assets": "60000000000",
+        "receiver": "0xf9f8f64ccd13186a16aa4ae9a0fd8db36e678b50"
+      }
+    }
+  ]
+}

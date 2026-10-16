@@ -1,0 +1,31 @@
+{
+  "id": "case-05",
+  "track": "W1",
+  "title": "An approval of exactly 5,000 USDC to an allow-listed router, with the swap and the reset in a separate plan (clean control)",
+  "failure_list": [
+    2
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import json\ntx = json.load(open('plan.json'))['txs']\nassert len(tx) == 1 and int(tx[0]['data'][-64:], 16) == 5000 * 10**6\nassert tx[0]['args']['spender'] in [s['address'] for s in json.load(open('allowlist.json'))['spenders']]\nassert all(t['data'][2:10] == '095ea7b3' for t in tx)"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "W05c-control-an-exact-approval-to-a-named-router"
+}
