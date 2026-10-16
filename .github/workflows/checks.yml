@@ -66,3 +66,7 @@ jobs:
       - name: Parse every JSON file
         run: |
           git ls-files -z '*.json' | xargs -0 -n1 python3 -m json.tool --no-ensure-ascii > /dev/null
+      - name: PR review Action security boundary tests
+        run: python3 tests/test_pr_review_action.py
+      - name: Portable multi-host installation tests
+        run: python3 tests/test_portable_install.py --source .

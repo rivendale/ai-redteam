@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-16",
+  "unit_tests": 13,
+  "passed": true,
+  "sensitivity_mutations": [
+    {
+      "mutation": "early-secret",
+      "tests_rejected": true
+    },
+    {
+      "mutation": "fork-flag",
+      "tests_rejected": true
+    },
+    {
+      "mutation": "unsafe-html",
+      "tests_rejected": true
+    },
+    {
+      "mutation": "head-checkout",
+      "tests_rejected": true
+    },
+    {
+      "mutation": "write-token",
+      "tests_rejected": true
+    },
+    {
+      "mutation": "checkout-step-run-env",
+      "tests_rejected": true
+    },
+    {
+      "mutation": "extra-run-env-step",
+      "tests_rejected": true
+    },
+    {
+      "mutation": "npm-install-prefix",
+      "tests_rejected": true
+    },
+    {
+      "mutation": "drop-repo-full-name",
+      "tests_rejected": true
+    },
+    {
+      "mutation": "reusable-secret-job",
+      "tests_rejected": true,
+      "syntax_error": false
+    },
+    {
+      "mutation": "always-bypasses-gate",
+      "tests_rejected": true,
+      "syntax_error": false
+    },
+    {
+      "mutation": "missing-broker-head-full-name",
+      "tests_rejected": true
+    }
+  ],
+  "real_credentials_used": false,
+  "real_provider_calls": 0,
+  "live_github_workflow": "not executed",
+  "dependabot_actor_and_author_tripwires": "passed",
+  "single_job_and_whole_workflow_allowlist": "passed",
+  "ci_steps": "Action boundary and portable installation tests added to checks.yml; live CI status pending"
+}
