@@ -1,6 +1,6 @@
 {
   "date": "2026-10-16",
-  "unit_tests": 9,
+  "unit_tests": 12,
   "passed": true,
   "sensitivity_mutations": [
     {
@@ -22,9 +22,26 @@
     {
       "mutation": "write-token",
       "tests_rejected": true
+    },
+    {
+      "mutation": "checkout-step-run-env",
+      "tests_rejected": true
+    },
+    {
+      "mutation": "extra-run-env-step",
+      "tests_rejected": true
+    },
+    {
+      "mutation": "npm-install-prefix",
+      "tests_rejected": true
+    },
+    {
+      "mutation": "drop-repo-full-name",
+      "tests_rejected": true
     }
   ],
   "real_credentials_used": false,
   "real_provider_calls": 0,
-  "live_github_workflow": "not executed"
+  "live_github_workflow": "not executed",
+  "dependabot_actor_and_author_tripwires": "passed"
 }

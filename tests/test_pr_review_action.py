@@ -36,6 +36,28 @@ class ActionTests(unittest.TestCase):
   e=env();e['AI_REDTEAM_ENABLED']='false';self.assertIsNone(m.review(event(),Tripwire(e),Transport()))
  def test_ordinary_pull_request_event_cannot_reach_secret(self):
   e=env();e['GITHUB_EVENT_NAME']='pull_request';self.assertIsNone(m.review(event(),Tripwire(e),Transport()))
+ def test_dependabot_actor_skips_before_secret_read(self):
+  e=env();e['GITHUB_ACTOR']='dependabot[bot]';self.assertIsNone(m.review(event(),Tripwire(e),Transport()))
+ def test_dependabot_author_skips_even_when_event_actor_is_human(self):
+  p=event();p['pull_request']['user']={'login':'dependabot[bot]'};self.assertIsNone(m.review(p,Tripwire(env()),Transport()))
+ def test_exact_allowlisted_secret_bearing_steps(self):
+  # Every added command/step changes the secret boundary and needs review.
+  s=(ROOT/'.github/workflows/pr-review.yml').read_text()
+  expected="""      - name: Check out trusted base only
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+      - name: Generate one bounded review round
+        env:
+          AI_REDTEAM_ENABLED: ${{ vars.AI_REDTEAM_ENABLED }}
+          AI_REDTEAM_MODEL: ${{ vars.AI_REDTEAM_MODEL }}
+          ANTHROPIC_API_KEY: ${{ secrets.AI_REDTEAM_MODEL_KEY }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 tools/pr_review_action.py
+"""
+  self.assertEqual(s.count('    steps:\n'),1);self.assertEqual(s.split('    steps:\n',1)[1],expected)
+  self.assertEqual(len(re.findall(r'^\s*(?:- )?run:',s,re.M)),1)
  def test_one_bounded_tool_free_model_request_with_frozen_head(self):
   t=Transport();r=m.review(event(),env(),t);self.assertEqual(r['head'],HEAD);self.assertEqual(r['merge_base'],MERGE);self.assertEqual(sum(url.endswith('/messages') for url,_,_ in t.calls),1)
   self.assertTrue(all(data is None for url,_,data in t.calls if not url.endswith('/messages')))
@@ -48,11 +70,11 @@ class ActionTests(unittest.TestCase):
   with self.assertRaises(m.Refuse):m.review(event(),env(),Transport(event(True)))
  def test_workflow_gate_is_false_for_fork_before_secret_job(self):
   s=(ROOT/'.github/workflows/pr-review.yml').read_text();expr=re.search(r'^    if: \$\{\{ (.+) \}\}$',s,re.M)[1]
-  def evaluate(fork,name='example/review'):
+  def evaluate(fork,name='example/review',actor='human',author='human'):
    text=expr
-   for key,value in {'vars.AI_REDTEAM_ENABLED':'true','github.event.pull_request.head.repo.fork':fork,'github.event.pull_request.head.repo.full_name':name,'github.repository':'example/review'}.items():text=text.replace(key,repr(value))
-   text=text.replace('&&','and').replace('== false','== False');node=ast.parse(text,mode='eval');self.assertTrue(all(isinstance(n,(ast.Expression,ast.BoolOp,ast.And,ast.Compare,ast.Eq,ast.Constant)) for n in ast.walk(node)));return eval(compile(node,'workflow-gate','eval'),{'__builtins__':{}},{})
-  self.assertFalse(evaluate(True));self.assertFalse(evaluate(True,'elsewhere/fork'));self.assertTrue(evaluate(False))
+   for key,value in {'vars.AI_REDTEAM_ENABLED':'true','github.event.pull_request.head.repo.fork':fork,'github.event.pull_request.head.repo.full_name':name,'github.repository':'example/review','github.actor':actor,'github.event.pull_request.user.login':author}.items():text=text.replace(key,repr(value))
+   text=text.replace('&&','and').replace('== false','== False');node=ast.parse(text,mode='eval');self.assertTrue(all(isinstance(n,(ast.Expression,ast.BoolOp,ast.And,ast.Compare,ast.Eq,ast.NotEq,ast.Constant)) for n in ast.walk(node)));return eval(compile(node,'workflow-gate','eval'),{'__builtins__':{}},{})
+  self.assertFalse(evaluate(True));self.assertFalse(evaluate(True,'elsewhere/fork'));self.assertTrue(evaluate(False));self.assertFalse(evaluate(False,'elsewhere/fork'));self.assertFalse(evaluate(False,actor='dependabot[bot]'));self.assertFalse(evaluate(False,author='dependabot[bot]'))
   self.assertIn('contents: read',s);self.assertIn('pull-requests: read',s);self.assertNotIn(': write',s)
   self.assertIn('ref: ${{ github.event.pull_request.base.sha }}',s);self.assertIn('persist-credentials: false',s)
   self.assertNotIn('run: ${{',s);self.assertNotIn('pull_request.head.sha }}',s)

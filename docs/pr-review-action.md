@@ -17,7 +17,7 @@ when combined with untrusted checkout, so it must never check out or execute the
 opt-in and same-repository/non-fork gate. It checks out only the server-supplied base SHA with persisted Git
 credentials disabled. Python rechecks eligibility before reading either token, fetches PR data through read-only
 GitHub API requests, and verifies the head/base again before publishing. Fork PRs do not start the secret-bearing
-job. See [GitHub's secure-use guidance](https://docs.github.com/en/actions/reference/security/secure-use).
+job. Dependabot actors and PR authors also skip before either token is read, including a human-triggered event on a Dependabot PR. See [GitHub's secure-use guidance](https://docs.github.com/en/actions/reference/security/secure-use).
 
 Only the model request step receives the secret. It goes in a request header to a fixed provider host, never in
 argv, prompts, output files or logs. The model receives the skill and PR data as text; it has no tools or shell.
@@ -40,7 +40,7 @@ validation. The generated text is one untrusted review input, not a completed PR
 ## Denying-direction validation
 
 Run `python3 tests/test_pr_review_action.py`. The fork tests use a secret-access tripwire and a transport spy:
-a fork must reach neither a key read nor a network request. The same-repo name with a fork flag also refuses.
+a fork must reach neither a key read nor a network request. The same-repo name with a fork flag also refuses. The exact two-step sequence and sole run command are allowlisted, so an added command, step or dependency-install prefix fails the fixture.
 The test evaluates the actual workflow gate for fork and ordinary inputs, checks read-only permissions and
 trusted-base checkout, and verifies an eligible run with a mock provider. Tests make no real network/model call.
 

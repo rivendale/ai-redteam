@@ -22,6 +22,7 @@ def review(event,env,transport=exchange):
  # This gate precedes even reading the automatic GitHub token or model key.
  repo=env.get('GITHUB_REPOSITORY','');pr=event.get('pull_request',{})
  if (env.get('AI_REDTEAM_ENABLED')!='true' or env.get('GITHUB_EVENT_NAME')!='pull_request_target'
+     or env.get('GITHUB_ACTOR')=='dependabot[bot]' or pr.get('user',{}).get('login')=='dependabot[bot]'
      or event.get('repository',{}).get('full_name')!=repo or not trusted_pr(pr,repo)):return None
  if not re.fullmatch(r'[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+',repo):raise Refuse('invalid repository')
  number=event.get('number');head=pr.get('head',{}).get('sha');base=pr.get('base',{}).get('sha')
@@ -69,7 +70,7 @@ def main():
   event=json.loads(raw)
   if not isinstance(event,dict):raise Refuse('invalid event')
   result=review(event,os.environ)
-  if result is None:print('Review skipped: not an enabled same-repository PR.');return 0
+  if result is None:print('Review skipped: ineligible repository, actor or configuration.');return 0
   summary=render(result);path=Path(os.environ['GITHUB_STEP_SUMMARY']);path.write_text(summary)
   print('One review round recorded for head '+result['head']+'.');return 0
  except (ValueError,TypeError,KeyError,OSError):print('PR review refused or failed; no review published. Check configuration, input limits and service availability.',file=sys.stderr);return 1
