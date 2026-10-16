@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Offline trust-boundary tests. Never reads the real process environment or network."""
-import ast,copy,importlib.util,json,re,sys,unittest
+import ast,copy,hashlib,importlib.util,json,re,sys,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('review_action',ROOT/'tools/pr_review_action.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
@@ -43,6 +43,9 @@ class ActionTests(unittest.TestCase):
  def test_exact_allowlisted_secret_bearing_steps(self):
   # Every added command/step changes the secret boundary and needs review.
   s=(ROOT/'.github/workflows/pr-review.yml').read_text()
+  self.assertEqual(re.findall(r'^jobs:',s,re.M),['jobs:'])
+  self.assertEqual(re.findall(r'^  ([^ :]+):',s.split('jobs:\n',1)[1],re.M),['review'])
+  self.assertEqual(hashlib.sha256(s.encode()).hexdigest(),'31120e04be5f5a80cb63c6817e1d2a8a8f8b3776721d4ff385f89fba00058dab','any workflow change needs a fresh review of this allowlist')
   expected="""      - name: Check out trusted base only
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -73,7 +76,7 @@ class ActionTests(unittest.TestCase):
   def evaluate(fork,name='example/review',actor='human',author='human'):
    text=expr
    for key,value in {'vars.AI_REDTEAM_ENABLED':'true','github.event.pull_request.head.repo.fork':fork,'github.event.pull_request.head.repo.full_name':name,'github.repository':'example/review','github.actor':actor,'github.event.pull_request.user.login':author}.items():text=text.replace(key,repr(value))
-   text=text.replace('&&','and').replace('== false','== False');node=ast.parse(text,mode='eval');self.assertTrue(all(isinstance(n,(ast.Expression,ast.BoolOp,ast.And,ast.Compare,ast.Eq,ast.NotEq,ast.Constant)) for n in ast.walk(node)));return eval(compile(node,'workflow-gate','eval'),{'__builtins__':{}},{})
+   text=text.replace('always()','True').replace('||','or').replace('&&','and').replace('== false','== False');node=ast.parse(text,mode='eval');self.assertTrue(all(isinstance(n,(ast.Expression,ast.BoolOp,ast.And,ast.Or,ast.Compare,ast.Eq,ast.NotEq,ast.Constant)) for n in ast.walk(node)));return eval(compile(node,'workflow-gate','eval'),{'__builtins__':{}},{})
   self.assertFalse(evaluate(True));self.assertFalse(evaluate(True,'elsewhere/fork'));self.assertTrue(evaluate(False));self.assertFalse(evaluate(False,'elsewhere/fork'));self.assertFalse(evaluate(False,actor='dependabot[bot]'));self.assertFalse(evaluate(False,author='dependabot[bot]'))
   self.assertIn('contents: read',s);self.assertIn('pull-requests: read',s);self.assertNotIn(': write',s)
   self.assertIn('ref: ${{ github.event.pull_request.base.sha }}',s);self.assertIn('persist-credentials: false',s)

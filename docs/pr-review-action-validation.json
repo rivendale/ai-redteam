@@ -38,10 +38,21 @@
     {
       "mutation": "drop-repo-full-name",
       "tests_rejected": true
+    },
+    {
+      "mutation": "reusable-secret-job",
+      "tests_rejected": true,
+      "syntax_error": false
+    },
+    {
+      "mutation": "always-bypasses-gate",
+      "tests_rejected": true,
+      "syntax_error": false
     }
   ],
   "real_credentials_used": false,
   "real_provider_calls": 0,
   "live_github_workflow": "not executed",
-  "dependabot_actor_and_author_tripwires": "passed"
+  "dependabot_actor_and_author_tripwires": "passed",
+  "single_job_and_whole_workflow_allowlist": "passed"
 }

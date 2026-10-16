@@ -40,7 +40,7 @@ validation. The generated text is one untrusted review input, not a completed PR
 ## Denying-direction validation
 
 Run `python3 tests/test_pr_review_action.py`. The fork tests use a secret-access tripwire and a transport spy:
-a fork must reach neither a key read nor a network request. The same-repo name with a fork flag also refuses. The exact two-step sequence and sole run command are allowlisted, so an added command, step or dependency-install prefix fails the fixture.
+a fork must reach neither a key read nor a network request. The same-repo name with a fork flag also refuses. The sole job, full reviewed workflow bytes, exact two-step sequence and sole run command are allowlisted, so an added command, step or dependency-install prefix fails the fixture.
 The test evaluates the actual workflow gate for fork and ordinary inputs, checks read-only permissions and
 trusted-base checkout, and verifies an eligible run with a mock provider. Tests make no real network/model call.
 
