@@ -33,11 +33,16 @@ jobs:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5.1.0
         with:
           persist-credentials: false
+          fetch-depth: 0
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6.3.0
         with:
           python-version: ${{ matrix.python }}
       - name: Scorer self-check
         run: python3 evals/score.py --self-check
+      - name: Published variance regression (offline only)
+        run: |
+          python3 tests/test_variance.py
+          python3 tests/test_variance_published.py --source .
       - name: Findings validator self-check
         run: python3 tools/validate_findings.py --self-check
       - name: Assess validator self-check
@@ -61,3 +66,7 @@ jobs:
       - name: Parse every JSON file
         run: |
           git ls-files -z '*.json' | xargs -0 -n1 python3 -m json.tool --no-ensure-ascii > /dev/null
+      - name: PR review Action security boundary tests
+        run: python3 tests/test_pr_review_action.py
+      - name: Portable multi-host installation tests
+        run: python3 tests/test_portable_install.py --source .

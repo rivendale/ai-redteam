@@ -36,6 +36,8 @@ class ActionTests(unittest.TestCase):
   e=env();e['AI_REDTEAM_ENABLED']='false';self.assertIsNone(m.review(event(),Tripwire(e),Transport()))
  def test_ordinary_pull_request_event_cannot_reach_secret(self):
   e=env();e['GITHUB_EVENT_NAME']='pull_request';self.assertIsNone(m.review(event(),Tripwire(e),Transport()))
+ def test_foreign_nonfork_repo_cannot_reach_secrets(self):
+  p=event();p['pull_request']['head']['repo']['full_name']='elsewhere/review';t=Transport();self.assertIsNone(m.review(p,Tripwire(env()),t));self.assertEqual(t.calls,[])
  def test_dependabot_actor_skips_before_secret_read(self):
   e=env();e['GITHUB_ACTOR']='dependabot[bot]';self.assertIsNone(m.review(event(),Tripwire(e),Transport()))
  def test_dependabot_author_skips_even_when_event_actor_is_human(self):

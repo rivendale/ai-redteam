@@ -1,0 +1,10 @@
+{
+  "source": "evals/results/2026-10-09-gate-v232/README.md",
+  "sets_gate_recomputed": [
+    true,
+    true
+  ],
+  "manifest_versions_agree": true,
+  "new_model_runs": 0,
+  "catalog_provenance": "incomplete: no invented run_at or bar_locked"
+}

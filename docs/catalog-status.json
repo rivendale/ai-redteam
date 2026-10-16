@@ -1,0 +1,23 @@
+{
+  "status": "unavailable-provenance",
+  "schema_note": "This is a status record, not a toolbox-result-1 result.",
+  "redteam": {
+    "eval_status": "unavailable-provenance",
+    "missing": [
+      "actual run-start timestamp",
+      "verified public pre-run bar lock"
+    ]
+  },
+  "assess": {
+    "eval_status": "unavailable-provenance",
+    "missing": [
+      "actual run-start timestamp",
+      "verified public pre-run bar lock"
+    ]
+  },
+  "pr-review": {
+    "eval": {
+      "none": "No qualifying independent hold-out result is published."
+    }
+  }
+}
