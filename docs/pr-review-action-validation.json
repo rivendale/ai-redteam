@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-16",
+  "unit_tests": 9,
+  "passed": true,
+  "sensitivity_mutations": [
+    {
+      "mutation": "early-secret",
+      "tests_rejected": true
+    },
+    {
+      "mutation": "fork-flag",
+      "tests_rejected": true
+    },
+    {
+      "mutation": "unsafe-html",
+      "tests_rejected": true
+    },
+    {
+      "mutation": "head-checkout",
+      "tests_rejected": true
+    },
+    {
+      "mutation": "write-token",
+      "tests_rejected": true
+    }
+  ],
+  "real_credentials_used": false,
+  "real_provider_calls": 0,
+  "live_github_workflow": "not executed"
+}

@@ -1,0 +1,28 @@
+name: Bounded PR review
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, ready_for_review]
+permissions:
+  contents: read
+  pull-requests: read
+concurrency:
+  group: ai-redteam-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  review:
+    if: ${{ vars.AI_REDTEAM_ENABLED == 'true' && github.event.pull_request.head.repo.fork == false && github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out trusted base only
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+      - name: Generate one bounded review round
+        env:
+          AI_REDTEAM_ENABLED: ${{ vars.AI_REDTEAM_ENABLED }}
+          AI_REDTEAM_MODEL: ${{ vars.AI_REDTEAM_MODEL }}
+          ANTHROPIC_API_KEY: ${{ secrets.AI_REDTEAM_MODEL_KEY }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 tools/pr_review_action.py
