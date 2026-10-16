@@ -1,0 +1,7099 @@
+{
+  "schema": "published-variance-1",
+  "source_commit": "96641b8ce3c3ced4be25399a9758a632d09b268c",
+  "new_model_runs": 0,
+  "redteam_scorer_commit": "13b4f3144d740b2825db4b55af55e40c8ab1baa7",
+  "redteam_profile": "v2.3",
+  "cohorts": {
+    "redteam-dev": {
+      "cases_per_run": 85,
+      "controls_per_run": 33,
+      "planted_per_run": 84,
+      "recall_hits": {
+        "values": [
+          80,
+          80,
+          80
+        ],
+        "min": 80,
+        "max": 80,
+        "spread": 0
+      },
+      "recall_pct": {
+        "values": [
+          95.23809523809524,
+          95.23809523809524,
+          95.23809523809524
+        ],
+        "min": 95.23809523809524,
+        "max": 95.23809523809524,
+        "spread": 0.0
+      },
+      "false_alarms": {
+        "values": [
+          2,
+          2,
+          4
+        ],
+        "min": 2,
+        "max": 4,
+        "spread": 2
+      },
+      "detection_agreement_cases": 75,
+      "verdict_agreement_cases": 64,
+      "cases": [
+        {
+          "id": "case-01",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-02",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP",
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-03",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-04",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-05",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-06",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-07",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-08",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-09",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-10",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-11",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-12",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-13",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-14",
+          "control": false,
+          "planted": 3,
+          "recall_hits": [
+            3,
+            3,
+            3
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-15",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP",
+            "SHIP",
+            "SHIP"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-16",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-17",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-18",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP WITH FIXES",
+            "SHIP",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-19",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-20",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REJECT",
+            "REJECT",
+            "REJECT"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-21",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REJECT",
+            "REJECT",
+            "REJECT"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-22",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP",
+            "SHIP",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-23",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REJECT",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-24",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-25",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": false,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-26",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-27",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            1,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP WITH FIXES",
+            "SHIP",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": false,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-28",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-29",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP",
+            "SHIP",
+            "SHIP"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-30",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-31",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REJECT",
+            "REJECT",
+            null
+          ],
+          "invalid": [
+            false,
+            false,
+            true
+          ],
+          "detection_agreement": false,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-32",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP",
+            "SHIP",
+            "SHIP"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-33",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REJECT",
+            "REJECT",
+            "REJECT"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-34",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REJECT",
+            "REJECT",
+            "REJECT"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-35",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-36",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP",
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-37",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-38",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-39",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP",
+            "SHIP",
+            "SHIP"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-40",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REJECT",
+            "REJECT",
+            "REJECT"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-41",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REJECT",
+            "REJECT",
+            "REJECT"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-42",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP",
+            "SHIP",
+            "SHIP"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-43",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REJECT",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-44",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-45",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REJECT",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-46",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-47",
+          "control": false,
+          "planted": 3,
+          "recall_hits": [
+            3,
+            3,
+            3
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REJECT",
+            "REJECT",
+            "REJECT"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-48",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-49",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-50",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REJECT",
+            "REJECT",
+            "REJECT"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-51",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            1,
+            1
+          ],
+          "verdicts": [
+            "SHIP WITH FIXES",
+            "REWORK",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": false,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-52",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-53",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP",
+            "SHIP",
+            "SHIP"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-54",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REJECT",
+            "REJECT"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-55",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP WITH FIXES",
+            "SHIP",
+            "SHIP"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-56",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-57",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP WITH FIXES",
+            "SHIP",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-58",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            0,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": false,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-59",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP",
+            "SHIP",
+            "SHIP"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-62",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-63",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP",
+            "SHIP",
+            "SHIP"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-64",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            0,
+            0,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            null,
+            null,
+            "REWORK"
+          ],
+          "invalid": [
+            true,
+            true,
+            false
+          ],
+          "detection_agreement": false,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-65",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            1
+          ],
+          "verdicts": [
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": false,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-66",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-67",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP",
+            "SHIP",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-68",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-69",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP",
+            "SHIP",
+            "SHIP"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-70",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-71",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-72",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            1,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": false,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-73",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            1
+          ],
+          "verdicts": [
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": false,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-74",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-75",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            1,
+            1,
+            1
+          ],
+          "verdicts": [
+            "REWORK",
+            "SHIP WITH FIXES",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-76",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REJECT",
+            "REWORK",
+            "REJECT"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-77",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-78",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-79",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP",
+            "SHIP WITH FIXES",
+            "SHIP"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-80",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-81",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP",
+            "SHIP",
+            "SHIP"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-82",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            1,
+            2,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": false,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-83",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-84",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REJECT",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-85",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-86",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REJECT",
+            "REJECT",
+            "REJECT"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-87",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP",
+            "SHIP",
+            "SHIP"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        }
+      ],
+      "scorer_totals": [
+        {
+          "cases": 85,
+          "controls": 33,
+          "planted": 84,
+          "recall_hits": 80,
+          "found_any": 82,
+          "recall": 0.9523809523809523,
+          "false_alarms_on_controls": 2,
+          "extra_high_on_defect_cases": 52,
+          "violations": 18,
+          "v23_only_violations": 9,
+          "v22_reports": 84,
+          "needs_validation_items": 264,
+          "suspicions_flagged": 1,
+          "suspicions_total": 1,
+          "cases_with_violations": 7,
+          "no_report": 0,
+          "ambiguous_reports": 0
+        },
+        {
+          "cases": 85,
+          "controls": 33,
+          "planted": 84,
+          "recall_hits": 80,
+          "found_any": 81,
+          "recall": 0.9523809523809523,
+          "false_alarms_on_controls": 2,
+          "extra_high_on_defect_cases": 61,
+          "violations": 9,
+          "v23_only_violations": 1,
+          "v22_reports": 84,
+          "needs_validation_items": 248,
+          "suspicions_flagged": 1,
+          "suspicions_total": 1,
+          "cases_with_violations": 5,
+          "no_report": 0,
+          "ambiguous_reports": 0
+        },
+        {
+          "cases": 85,
+          "controls": 33,
+          "planted": 84,
+          "recall_hits": 80,
+          "found_any": 82,
+          "recall": 0.9523809523809523,
+          "false_alarms_on_controls": 4,
+          "extra_high_on_defect_cases": 61,
+          "violations": 12,
+          "v23_only_violations": 9,
+          "v22_reports": 84,
+          "needs_validation_items": 268,
+          "suspicions_flagged": 1,
+          "suspicions_total": 1,
+          "cases_with_violations": 10,
+          "no_report": 0,
+          "ambiguous_reports": 0
+        }
+      ],
+      "agreement_metric": "same planted items missed or downgraded and same control alarm count; not identical prose or extra findings"
+    },
+    "redteam-holdout": {
+      "cases_per_run": 22,
+      "controls_per_run": 6,
+      "planted_per_run": 20,
+      "recall_hits": {
+        "values": [
+          18,
+          18,
+          17
+        ],
+        "min": 17,
+        "max": 18,
+        "spread": 1
+      },
+      "recall_pct": {
+        "values": [
+          90.0,
+          90.0,
+          85.0
+        ],
+        "min": 85.0,
+        "max": 90.0,
+        "spread": 5.0
+      },
+      "false_alarms": {
+        "values": [
+          1,
+          2,
+          0
+        ],
+        "min": 0,
+        "max": 2,
+        "spread": 2
+      },
+      "detection_agreement_cases": 18,
+      "verdict_agreement_cases": 16,
+      "cases": [
+        {
+          "id": "case-01",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-02",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-03",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-04",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP",
+            "SHIP",
+            "SHIP"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-05",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            null,
+            null
+          ],
+          "invalid": [
+            false,
+            true,
+            true
+          ],
+          "detection_agreement": false,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-06",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-07",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            1,
+            2,
+            0
+          ],
+          "verdicts": [
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": false,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-08",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-09",
+          "control": false,
+          "planted": 2,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REJECT",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-10",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP WITH FIXES",
+            "SHIP",
+            "SHIP"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-11",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-12",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REJECT"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-13",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-14",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-15",
+          "control": false,
+          "planted": 3,
+          "recall_hits": [
+            2,
+            2,
+            2
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": false,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-16",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-17",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-18",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-19",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP",
+            "SHIP",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-20",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP",
+            "SHIP",
+            "SHIP"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-21",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            0,
+            1,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REJECT",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": false,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-22",
+          "control": false,
+          "planted": 1,
+          "recall_hits": [
+            1,
+            1,
+            1
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "REWORK",
+            "REWORK",
+            "REWORK"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        }
+      ],
+      "scorer_totals": [
+        {
+          "cases": 22,
+          "controls": 6,
+          "planted": 20,
+          "recall_hits": 18,
+          "found_any": 19,
+          "recall": 0.9,
+          "false_alarms_on_controls": 1,
+          "extra_high_on_defect_cases": 16,
+          "violations": 4,
+          "v23_only_violations": 0,
+          "v22_reports": 22,
+          "needs_validation_items": 58,
+          "suspicions_flagged": 0,
+          "suspicions_total": 0,
+          "cases_with_violations": 4,
+          "no_report": 0,
+          "ambiguous_reports": 0
+        },
+        {
+          "cases": 22,
+          "controls": 6,
+          "planted": 20,
+          "recall_hits": 18,
+          "found_any": 19,
+          "recall": 0.9,
+          "false_alarms_on_controls": 2,
+          "extra_high_on_defect_cases": 12,
+          "violations": 3,
+          "v23_only_violations": 1,
+          "v22_reports": 21,
+          "needs_validation_items": 52,
+          "suspicions_flagged": 0,
+          "suspicions_total": 0,
+          "cases_with_violations": 3,
+          "no_report": 0,
+          "ambiguous_reports": 0
+        },
+        {
+          "cases": 22,
+          "controls": 6,
+          "planted": 20,
+          "recall_hits": 17,
+          "found_any": 17,
+          "recall": 0.85,
+          "false_alarms_on_controls": 0,
+          "extra_high_on_defect_cases": 14,
+          "violations": 1,
+          "v23_only_violations": 0,
+          "v22_reports": 21,
+          "needs_validation_items": 61,
+          "suspicions_flagged": 0,
+          "suspicions_total": 0,
+          "cases_with_violations": 1,
+          "no_report": 0,
+          "ambiguous_reports": 0
+        }
+      ],
+      "agreement_metric": "same planted items missed or downgraded and same control alarm count; not identical prose or extra findings"
+    },
+    "pr-review-controls": {
+      "cases_per_run": 2,
+      "controls_per_run": 2,
+      "planted_per_run": 0,
+      "recall_hits": {
+        "values": [
+          0,
+          0,
+          0
+        ],
+        "min": 0,
+        "max": 0,
+        "spread": 0
+      },
+      "recall_pct": null,
+      "false_alarms": {
+        "values": [
+          0,
+          0,
+          0
+        ],
+        "min": 0,
+        "max": 0,
+        "spread": 0
+      },
+      "detection_agreement_cases": 2,
+      "verdict_agreement_cases": 0,
+      "cases": [
+        {
+          "id": "case-35",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP WITH FIXES",
+            "SHIP",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-36",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "SHIP",
+            "SHIP WITH FIXES",
+            "SHIP WITH FIXES"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": false
+        }
+      ],
+      "scorer_totals": [
+        {
+          "cases": 2,
+          "controls": 2,
+          "planted": 0,
+          "recall_hits": 0,
+          "found_any": 0,
+          "recall": null,
+          "false_alarms_on_controls": 0,
+          "extra_high_on_defect_cases": 0,
+          "violations": 0,
+          "v23_only_violations": 0,
+          "v22_reports": 0,
+          "needs_validation_items": 0,
+          "suspicions_flagged": 0,
+          "suspicions_total": 0,
+          "cases_with_violations": 0,
+          "no_report": 0,
+          "ambiguous_reports": 0
+        },
+        {
+          "cases": 2,
+          "controls": 2,
+          "planted": 0,
+          "recall_hits": 0,
+          "found_any": 0,
+          "recall": null,
+          "false_alarms_on_controls": 0,
+          "extra_high_on_defect_cases": 0,
+          "violations": 0,
+          "v23_only_violations": 0,
+          "v22_reports": 0,
+          "needs_validation_items": 0,
+          "suspicions_flagged": 0,
+          "suspicions_total": 0,
+          "cases_with_violations": 0,
+          "no_report": 0,
+          "ambiguous_reports": 0
+        },
+        {
+          "cases": 2,
+          "controls": 2,
+          "planted": 0,
+          "recall_hits": 0,
+          "found_any": 0,
+          "recall": null,
+          "false_alarms_on_controls": 0,
+          "extra_high_on_defect_cases": 0,
+          "violations": 0,
+          "v23_only_violations": 0,
+          "v22_reports": 0,
+          "needs_validation_items": 0,
+          "suspicions_flagged": 0,
+          "suspicions_total": 0,
+          "cases_with_violations": 0,
+          "no_report": 0,
+          "ambiguous_reports": 0
+        }
+      ],
+      "agreement_metric": "same planted items missed or downgraded and same control alarm count; not identical prose or extra findings"
+    },
+    "assess-corrected": {
+      "cases_per_run": 36,
+      "controls_per_run": 8,
+      "planted_per_run": 0,
+      "recall_hits": {
+        "values": [
+          0,
+          0,
+          0
+        ],
+        "min": 0,
+        "max": 0,
+        "spread": 0
+      },
+      "recall_pct": null,
+      "false_alarms": {
+        "values": [
+          0,
+          0,
+          0
+        ],
+        "min": 0,
+        "max": 0,
+        "spread": 0
+      },
+      "detection_agreement_cases": 36,
+      "verdict_agreement_cases": 36,
+      "cases": [
+        {
+          "id": "case-01",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-02",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-03",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-04",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-05",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-06",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-07",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-08",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-09",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-10",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-11",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-12",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-13",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-14",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-15",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-16",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-17",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-18",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-19",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-20",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-21",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-22",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-23",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-24",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-25",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-26",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-27",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-28",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-29",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-30",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-31",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-32",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-33",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-34",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-35",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-36",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        }
+      ],
+      "scorer_totals": [
+        {
+          "controls": [
+            8,
+            8
+          ],
+          "defects": [
+            28,
+            28
+          ]
+        },
+        {
+          "controls": [
+            8,
+            8
+          ],
+          "defects": [
+            28,
+            28
+          ]
+        },
+        {
+          "controls": [
+            8,
+            8
+          ],
+          "defects": [
+            28,
+            28
+          ]
+        }
+      ],
+      "agreement_metric": "case pass/fail and failed rule identity; corrected scorer; not defect recall",
+      "case_passes": {
+        "values": [
+          36,
+          36,
+          36
+        ],
+        "min": 36,
+        "max": 36,
+        "spread": 0
+      },
+      "published_as_run_case_passes": [
+        36,
+        35,
+        35
+      ]
+    },
+    "assess-as-run": {
+      "cases_per_run": 36,
+      "controls_per_run": 8,
+      "planted_per_run": 0,
+      "recall_hits": {
+        "values": [
+          0,
+          0,
+          0
+        ],
+        "min": 0,
+        "max": 0,
+        "spread": 0
+      },
+      "recall_pct": null,
+      "false_alarms": {
+        "values": [
+          0,
+          0,
+          0
+        ],
+        "min": 0,
+        "max": 0,
+        "spread": 0
+      },
+      "detection_agreement_cases": 34,
+      "verdict_agreement_cases": 34,
+      "cases": [
+        {
+          "id": "case-01",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-02",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-03",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-04",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-05",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-06",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-07",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-08",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-09",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-10",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-11",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-12",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-13",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-14",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-15",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-16",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-17",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-18",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "FAIL"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": false,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-19",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-20",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-21",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-22",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-23",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-24",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-25",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-26",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-27",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-28",
+          "control": false,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "FAIL",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": false,
+          "verdict_agreement": false
+        },
+        {
+          "id": "case-29",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-30",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-31",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-32",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-33",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-34",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-35",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        },
+        {
+          "id": "case-36",
+          "control": true,
+          "planted": 0,
+          "recall_hits": [
+            0,
+            0,
+            0
+          ],
+          "false_alarms": [
+            0,
+            0,
+            0
+          ],
+          "verdicts": [
+            "PASS",
+            "PASS",
+            "PASS"
+          ],
+          "invalid": [
+            false,
+            false,
+            false
+          ],
+          "detection_agreement": true,
+          "verdict_agreement": true
+        }
+      ],
+      "scorer_totals": [
+        {
+          "controls": [
+            8,
+            8
+          ],
+          "defects": [
+            28,
+            28
+          ]
+        },
+        {
+          "controls": [
+            8,
+            8
+          ],
+          "defects": [
+            27,
+            28
+          ]
+        },
+        {
+          "controls": [
+            8,
+            8
+          ],
+          "defects": [
+            27,
+            28
+          ]
+        }
+      ],
+      "agreement_metric": "case pass/fail and failed rule identity; original scorer; not defect recall",
+      "case_passes": {
+        "values": [
+          36,
+          35,
+          35
+        ],
+        "min": 35,
+        "max": 36,
+        "spread": 1
+      },
+      "published_as_run_case_passes": [
+        36,
+        35,
+        35
+      ]
+    }
+  },
+  "scorers": [
+    {
+      "path": "evals/score_assess.py",
+      "commit": "d7dd3aac59ad274636e422dc50026699d9f76239",
+      "sha256": "0ad4d6007bd740b4150aa255113f9002ac3b27369ab584c7d937a75c2025be13"
+    },
+    {
+      "path": "evals/score.py",
+      "commit": "13b4f3144d740b2825db4b55af55e40c8ab1baa7",
+      "sha256": "784792c65b2705442171d3332777da9306a6f978367acf4e54eaf14a0c89924d"
+    },
+    {
+      "path": "evals/score_assess.py",
+      "commit": "96641b8ce3c3ced4be25399a9758a632d09b268c",
+      "sha256": "d77a199b50a40ceffed5becc8b65157f4fc1f07a7ce2a94534ed90802d2d2cb2"
+    }
+  ],
+  "published_report_hashes": [
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-01.md",
+      "sha256": "f4e68e74d5d4b847bef0ca6ea298c9a7ac9d2917fdbfa983840a6df6de6af44b"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-02.md",
+      "sha256": "d1ecb30e87e73b664ca80be9874dc194f22a34fb96f9781451e5e39b04eb5d54"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-03.md",
+      "sha256": "ae31e3545622125d76f9ccd5b0c738246c7b18572a10ffa129c1e467aaf9dfb9"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-04.md",
+      "sha256": "ce3db3a0a8deac0614a640eb2ddf3302a6ff528a50b074c14a10d1b37f9f3421"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-05.md",
+      "sha256": "dbe627aa0faf25f310948ff7b017c4ddb92026e8f8f747b366155504fdc317d0"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-06.md",
+      "sha256": "a7db817529e03e2a21a7ade0d46d1477b09567c20856836e1a777378d41526df"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-07.md",
+      "sha256": "7530f1d2155797f4ef5d76e7dc8fca7bd59a7d70c51e832a36f8c11e1e7bbb24"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-08.md",
+      "sha256": "d28cb63e810e11dac58337844572cd3cb096604ad2c4b5af212127675e304100"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-09.md",
+      "sha256": "82b9de2bec9b018e8bf9f283d1b90f5b16483e22502c20cd23e5e919bcc126ac"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-10.md",
+      "sha256": "5f3582c1f3eb60344b010cc040aacb4d6a517d0e284937683ecc5508c556ddcb"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-11.md",
+      "sha256": "5e86c8567754006630467beab434ce310d81cacaa1f180066667925a85150f90"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-12.md",
+      "sha256": "c8f9fdc58cd519f8356ce00173b86cc96fb9d4f4c331dcdb51ae8708db2e9c3c"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-13.md",
+      "sha256": "283e477e5bccb732555f43a7d47fa19ece75fabccb5b289da9e2a568aae266b8"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-14.md",
+      "sha256": "c15f1e278d67d7f8c2c4bc446d7a3621d0de9e40912b742df7972a50cdb05f5c"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-15.md",
+      "sha256": "23647c55a033943285109526c0bd6146ee9e1fb4bc966e05ab073bd841924762"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-16.md",
+      "sha256": "24f26269a9d48cf514707aff13bc58493a402d78f9a5d5d057e138a741d804f2"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-17.md",
+      "sha256": "74ec35c39d4c718416919330a6401bc6ef8df8da77a9a9cef1a307eaa036ede9"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-18.md",
+      "sha256": "adf10ed92d78fb71b57b26f5aff73f4a113d126bf6891b0c3296dd3b9f1aa4a6"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-19.md",
+      "sha256": "9375d7d6abd5589a0549162fd7fe1804c75e0da2dbcc4a713f4cf53af8b7735c"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-20.md",
+      "sha256": "192e4b88bacc873c1415539c045fe05b97dc4f9be4703303963cd6d68f3d5194"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-21.md",
+      "sha256": "91f11911ab9bb056972931b9ca124cba12d4a6861c4bdc82014dba8623d3c914"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-22.md",
+      "sha256": "59db35789d9f15cdd75aea71645625b9fbbed0c74e82cde3c34d115e81e4f687"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-23.md",
+      "sha256": "a07f8b771f59b30563a2f2c7d3c67c919fac6f880504467d8a7b524f9479c2fd"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-24.md",
+      "sha256": "12e99596abf6a6b8afd30fe1dd1ad7e83c3404bc047ac4a74fe751c84567e9cc"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-25.md",
+      "sha256": "7a60e9174a92e43d0d4fe5f60ef14cff7efcd1b3e1176fb719f52b5ed4edfb8f"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-26.md",
+      "sha256": "13e9740aabe4044b1d3ceee1f60c65d8f5a2bfb152335a98a584ad323bff186c"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-27.md",
+      "sha256": "ac38025f5ccf2193b244de3fff0d2ab784cc4eaa9116d6ae0660da11a08a67d7"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-28.md",
+      "sha256": "b4b1543d72c249f56342bfcf62d8faa5d0824d9c44b07d799ab56f7620b83a48"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-29.md",
+      "sha256": "0fdc3fdd7d98b75337906c3329c8c83a1fa7f6634f04b4c685d2e334d3dfef43"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-30.md",
+      "sha256": "0ef09ab9d10e016f3832afc5f51a66ab19f8a1e565b3aa1cce1cb7bf4384cf60"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-31.md",
+      "sha256": "2afd3c824ca20c22090fbfa6a7ec9fd15a13f57bd8934adc75b7e6e586de82a9"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-32.md",
+      "sha256": "0018c8a2bf755286ceaf76c53813e0c44069caf72049585337fb0879cb715abf"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-33.md",
+      "sha256": "800224523424cd2e9c3c2626a1077eee61f92b1dbcdda0a25b275f57b93dbcc2"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-34.md",
+      "sha256": "492c765255dda5743d06d3bd17ccf8dff9e779609c84181fc80e8e26f8ffc79f"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-35.md",
+      "sha256": "55b0fc841e76ba7a169c7e0c96fadf1c3639104598750ce13d24c1a83d3c5635"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-36.md",
+      "sha256": "a76f8d1794a4d59667644a1f5ff9cea5c2a9cdd611ab219f153791d796bea5de"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-37.md",
+      "sha256": "1fe5dfa54480381bfcb96e20a85de60a8b0aef89206cd93b22c4f88328cd6eb2"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-38.md",
+      "sha256": "72aea88c0056259d45e6e0b0ce1cb19e13b75c0dce81db196e175743b967643a"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-39.md",
+      "sha256": "8f5bb671bd4639c3eed8246bc7174910d87a5a31422642c5b3f11528f59856b4"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-40.md",
+      "sha256": "2d4424f4669b4aa4b2334ef3f9f047d28092609ea745c4c88c8f3d64f0c36cc8"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-41.md",
+      "sha256": "78dc57a53fffaca23a4546a08a4a370670d92663409331311c048d526d122b58"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-42.md",
+      "sha256": "10547038e354d6b419dfe637fc20b3e1495e27b6f3ac5f56832954a9bc09ec69"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-43.md",
+      "sha256": "6dd8c679bc0623ab6c67325bc119692af8071fa5ba4961df6a6fb57d9b93cb2b"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-44.md",
+      "sha256": "2750c08f21d8ce272cebb0e7db3736bba97835152fa07878952ee35659736989"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-45.md",
+      "sha256": "f48ca18ac1dc16e9dd9476d66bacc4487150462d91946920334451b436336878"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-46.md",
+      "sha256": "c64fcb324495c7350f720ecbcfed4ca1eb84217742d06205069afa27f24406b9"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-47.md",
+      "sha256": "5eefe00cbae97bc1227c9f4f84d118d60d4f6123009277d71b732cfe8a7c3cc2"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-48.md",
+      "sha256": "730fc160ea64ee1ef789f3909ebde89134d4d96382b57b9fa07deffa36961c16"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-49.md",
+      "sha256": "bacd48eddf8d659e23f1210b8e80cc5be96fa1333a5aa90d3108aebafb69ef70"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-50.md",
+      "sha256": "fb00643d1fdfc5838508077221a0b685ab34778ed52def3e999d90dc1d8fe326"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-51.md",
+      "sha256": "0df72aa0b95e218bb0324798e0c5edae77f22a48c6c7349df55b3ceaab96346b"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-52.md",
+      "sha256": "cd942b5172bf7d034c34b0e04bdd4960849c83857d5df3ea1a99573aa3102c23"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-53.md",
+      "sha256": "117672e632127089e5a08b72eb79965fe9a128abfc059fffb39744de4cb3cda7"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-54.md",
+      "sha256": "c3592f30955af075b50c4777cd8445eef28ce9cd6af20466facdfa3f28382d8c"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-55.md",
+      "sha256": "67c871e0720cf46e852c6e5d9003a1c45ea43b9623f81329ae30799684275ecb"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-56.md",
+      "sha256": "4fda585406317401516dd9c8df8a8f56d119fd01d581b357e4f0b367f742556a"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-57.md",
+      "sha256": "8b3b63f851439330eda01d81bdb3dad43acc2575613fb8d209380a59ddb65c58"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-58.md",
+      "sha256": "0cf4e83f67c638be6bff49d31274dfde7a2a1c5cf48405c2a8f87049b2f7135e"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-59.md",
+      "sha256": "fe16e0a621ce62517c48250828f3c0fc1662f5a424e5664d2f714a8a99875dd0"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-62.md",
+      "sha256": "e5648ea97e18d22673d0e4a32664f54eac9c9e3c40126367d7698f71b23feaab"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-63.md",
+      "sha256": "4c60da80e6a6617181ca0d781a04c5582cdb1c079f5820816fefb66d8c76bba2"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-64.md",
+      "sha256": "d4ea2e0ab4a6a81ebffe9639fd48be7696c34bb329aec083bf5b9c0f2f75f4a4"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-65.md",
+      "sha256": "42b7674264b4b7816bdae578b458a006d3fde26587071e2fc04351bd0253344d"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-66.md",
+      "sha256": "189d44db658a69c4dd249d6c1f0a2db4b5ec4876f0a5611d9a6c643ee0a3447a"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-67.md",
+      "sha256": "55aab32fb8be4610eef3082ac30fb19f5a298f7f170545aa2a4d28ef155b4d49"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-68.md",
+      "sha256": "bee9eb778cd105b98b93c952901627bd46e8bbd62c1c9593df8e363198649573"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-69.md",
+      "sha256": "be8bbc732c3dc67824bdd62237e0bda0cb9382ebaf9fae2f92242790f8d68435"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-70.md",
+      "sha256": "9cfc1a3348eebae2b2e0cd6384d4022ec76c305d850959ec3432c6fa0d9d4238"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-71.md",
+      "sha256": "cc4b873a8e2e12ce94c2993b37f4fc8418b872a00be73def059b93ec563e720b"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-72.md",
+      "sha256": "9791709905411e8ac37dae30ff70a2c3412c8ff3312f495cbf17a1b53306e39a"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-73.md",
+      "sha256": "4d902e7ab4aada62a1d0ab56b51313d73926351ca2ea96f56926e8f33fd02d43"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-74.md",
+      "sha256": "3a2ff5ebad720a9ec7118a4e7e34944077aba1894a24a43f2e020c118c85e12f"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-75.md",
+      "sha256": "15c101a26538f1222f5e3cd71171a77e894ab628a2be461e38760636d7065f51"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-76.md",
+      "sha256": "e054bba94c3b4119e7c512800bf1301380563c0b684e1fb6e147f89459e6b8de"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-77.md",
+      "sha256": "764c461ad7d5c663ecf7d76b261b26f803f874a870d1f746f1afec131cb12b26"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-78.md",
+      "sha256": "c5d30f8517dc661ab8907d0c30a1a4c442475a4d731ad92ab13c170bcc983e78"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-79.md",
+      "sha256": "c99e53cf27a92911ed333eb9528cd1265fd2210b891f9b195ec551b3762ddac0"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-80.md",
+      "sha256": "d8d7d058ef6ae6e4c3f8f6838da88fc83bb7928a16686d71b79ae82d842d43f4"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-81.md",
+      "sha256": "ede3b61657a59f76350e687808a19270fa328ece7ab95edc84af424ee235edc4"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-82.md",
+      "sha256": "eb02fa939e4f663dda547dc56cd35ceb903972b6d106c5bb7fe9fcdd5fad9d21"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-83.md",
+      "sha256": "6127d814b2badce3c661fa476e208580896cccb4c84a515145cd589dfc32b419"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-84.md",
+      "sha256": "5c1454fcfd3fc1738f2e7faf4d7b4a26210b5e0e2ac7acd0a2acd5c6416ad84b"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-85.md",
+      "sha256": "d26ec744b2736833461c0d0d61200ec60935fdf815bc28116bcf7023d7b686ea"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-86.md",
+      "sha256": "59a606bf3b71448021aba62e77abe2374a5b252c5455146cfc1056b9bab6672e"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-1/case-87.md",
+      "sha256": "15111933e2c9a22ee527867f3caff429af26d91f04a8276772164bd695dc9266"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-01.md",
+      "sha256": "b8b652c617d9275b8d767cf77bad44a166cb2fda156eff14fa6172e59524effe"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-02.md",
+      "sha256": "89457d16a226ee715ff3bcf7ecd9b940f7217d736edb8f8a5d9f23bea9555ec7"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-03.md",
+      "sha256": "9edf9d988523a23050ed2af1f88f95404703b9fd43fb9c1c0795a4c2fb0e842a"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-04.md",
+      "sha256": "4f7c3a8ab911874a1359ff541cd961589b22b1d8812785784a521e765224ee66"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-05.md",
+      "sha256": "8b7dc080ad4c75f0c6724695e8950dc3de146a266e36ca59e27d815f05e50a68"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-06.md",
+      "sha256": "b1f7eceaf5b4718dd5a78bd454b7a03c2701bff23a6c2a5abd39a7252339aeb6"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-07.md",
+      "sha256": "d926ee6ab0cb68d3c5811a9febea836ad52ecffc8465cdfdc0c6e8716669d101"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-08.md",
+      "sha256": "68497364d4df869331852f291012499c08b215a004be6b5d362fb180d83a1869"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-09.md",
+      "sha256": "ca5035fe2c62d9c91c0b8b3814c1810e54ef7294e1ad193144dfc6007aa35f80"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-10.md",
+      "sha256": "d5f88572d0f516bff5ce52a30ddd410b9701306fe0a834cc02b6447808295dd2"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-11.md",
+      "sha256": "9b1ffbc43907df62674451b59079370191848e3ffbb2654927e4213d6f85d02d"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-12.md",
+      "sha256": "f23587f8f0e726165c8a3bffbde124e2d4bb37d7d7932947cddc0e5065a16510"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-13.md",
+      "sha256": "c13b08c3d091a6cf518c74a86d979c92a3fbbaabe73744807f5491ead8bd83e4"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-14.md",
+      "sha256": "c0b3f399ab2b3c839d3059d55a3342fac2092d4e532dbaaba14b20205bd72196"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-15.md",
+      "sha256": "165e6402359c724c909f821af90b2225534994b27cffd054493af3e35e45acec"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-16.md",
+      "sha256": "87eac1e41743c980d76c5f26ea8cf4a3a8b3ad52f3dc49e10bb3d0b50f5aeac0"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-17.md",
+      "sha256": "9e4c0b387a684b33da29283d6141daf86a8cdc502668f184fbd871e1798b10d3"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-18.md",
+      "sha256": "25dcff4ae5a5d112c0f5499a4cd6d77746e443b6e92bcf0a894fe43be79f872f"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-19.md",
+      "sha256": "3d8db4c861703bcc62c69dcd7b9d9006112e56400d9c73a2d58c1f8044bd4f89"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-20.md",
+      "sha256": "b3a8ff2088f4c101d048d8ffa52a0a0a451d8dfb23eab3bb3ff2fdaae7bc2a18"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-21.md",
+      "sha256": "49136a9373b3ec4a5653e7c8eb145f51d607409d5e4f62553f116688259440b5"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-22.md",
+      "sha256": "4ae3d8be276c9db432f19a04deeb625e9dba18107643dba4ea5828f84a37f2fb"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-23.md",
+      "sha256": "058b31f33486e153cbaa6072ff749f9e1e0217a06953eae176f7902629e54349"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-24.md",
+      "sha256": "ba514f5d99701a61062cec0b00f7ae0bd67e6d94434cc215809ea1f2ef4edc44"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-25.md",
+      "sha256": "4844c764e40fade067924f248d5f9fdaa4c0da2731c09759dd2c52d1244dfe51"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-26.md",
+      "sha256": "f29cb8a01a8780f3ba1add74aee275d3ce17b97ce2c40b1b584f305a7f30d4fa"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-27.md",
+      "sha256": "bdb98fcf45e2c8b694267cedd5bbdfa5904378b41c201996fdbfe93f45013bae"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-28.md",
+      "sha256": "67b902d2d924187363e83bf7290a0875d6259e86af6ca07d9f48fcc563aee2ff"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-29.md",
+      "sha256": "bb8014147ec2e36447ee4f4aa1675d1f0de82167bce811eaac608e3dd454ab4a"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-30.md",
+      "sha256": "5d7337643e2fd14d6b4f90660de1a5a4bf2e6c46d7d6ab5e1c93753394f23165"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-31.md",
+      "sha256": "175310e47fd8ece033a83b5522f99f22527b49caed8a0b942303b860591fb0ac"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-32.md",
+      "sha256": "3491224787b3caccbc96ff4a9a04f433c398081d8d891ca4d8beef5499326730"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-33.md",
+      "sha256": "06cb5ea6251b27abef922433057b67e1ef15465b6d9d8f8d18fc536d95480601"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-34.md",
+      "sha256": "9aae44972e51449d80f93501508c67d9adbd8a5e7f6963d2db625612f1f4fac8"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-35.md",
+      "sha256": "35569a5d97bdcdf99dbd6facbcf5d20ea2ecb08aaa2ae8184124f7b847e423e8"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-36.md",
+      "sha256": "4f7750cd11d3157119264527c1a010d030701afb1d2851592beddf0cae6a430f"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-37.md",
+      "sha256": "2b9da59e16bb86237c4e657d775875d8e16bd9e0a317a494cad157e6fd571544"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-38.md",
+      "sha256": "3a940c542c2a935f5aabad0620db40e24d272ddeaf6c11736c791e4c6c9c27a8"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-39.md",
+      "sha256": "7bdcdc662ca714eb9a916df0ec65e5b90f4ef9a9950028281569a28a9b13ed59"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-40.md",
+      "sha256": "dc8b85dfd16d70458f0b726f49c3fe9915834fb5c9ea055aaa5bf515436fcf7f"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-41.md",
+      "sha256": "c88c665062e03cc18217b339ee9f9601e4979602625178cc1babd4bbcc018139"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-42.md",
+      "sha256": "11aea51f17daf94624222c396e007746fa9ca686607668f46f88f59d01b259f0"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-43.md",
+      "sha256": "65e5fff42e25c0b67d120809f9925374f3ff315b797fa00278dacb7bc5b075c3"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-44.md",
+      "sha256": "0b4981503d8843c3e0c4b56ffc193d7f56c5a83e8ed3c4ebf4c715e9416707ca"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-45.md",
+      "sha256": "b61104b8a84f06536c4e183bf9ba1a24b480364c617a2380010b21490c666f08"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-46.md",
+      "sha256": "39a610b59dc53d7e21fef5a24e68efb216d66722daabebe6e3b5857ed1c2c03a"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-47.md",
+      "sha256": "fc2d511d36392e0f9f76458bcc156078daaef40381b342c09e2e841febf21385"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-48.md",
+      "sha256": "75c9c791f37bcdd286605c7895897d56feafef58aa723d5317534becfeb31cb7"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-49.md",
+      "sha256": "16ca3cc0dca93a9d1ec7e382c82d68a72f0f18036360450fe259d1147c961f45"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-50.md",
+      "sha256": "9fa5520150a717e509107e6664d514a46c986dc222956d10797c721d0d03e0e4"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-51.md",
+      "sha256": "28cd8074791ff343b3c42879b2c2bddb044bb207004131b154cbb6d08b385d77"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-52.md",
+      "sha256": "d52622a7961f8d683c34bc3ccc615c839198778ba3b11866b163f27e56013ad0"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-53.md",
+      "sha256": "3d05f26c9328f327e57e72d8ae0306b115105b219c0219bcd2f21dd814a4a9ff"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-54.md",
+      "sha256": "6faffee97ce4ac4d597aa4c0fa3b52a912ffff6b4fe5c0b20abf6a7b17672dcf"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-55.md",
+      "sha256": "5b63884ab395bc31816cf313dcb56e01b481dd6b498bbcb2af4b3f2b2e700d11"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-56.md",
+      "sha256": "b090acf664eaf9ce40d99c3d86500f677c28fea2e50ccadd26bdee6b52413264"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-57.md",
+      "sha256": "a2628850307ca0fcb5ca7d1c085256a53aa058951332c5e3ccd0f6a95b00e601"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-58.md",
+      "sha256": "b842deb730eb6b7ef8667f4aff2d27005ad5d9346ff96b013a4770abcba78baa"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-59.md",
+      "sha256": "4fc558ba963ba27c032e3a740dccfed59b213e08f4b790f000f231a6a3278d62"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-62.md",
+      "sha256": "bb86550564133692e3d1f0f09d450bff72a278066f20b7e83e00df80755d7c9f"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-63.md",
+      "sha256": "31496715f04a731b3f6ff1a0c6468b9865fd6499c28ec0f485b93588293caadd"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-64.md",
+      "sha256": "34052e53f3fa5183d5f3c2a8dd759bd306145ac6c47f57100fb8d9be4f9dc1b1"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-65.md",
+      "sha256": "063a31333faeeb30cbc3ed6fe51de0eb259ec7eb7b290ee0ccca6222cc10552f"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-66.md",
+      "sha256": "622f8049b5ec8385a3614c80d45dfb0b257d93a5bb7d7107f94198ad33215737"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-67.md",
+      "sha256": "153387a838b3a16b5a6fb09882b93acf94d6ccddc681e838c35ba943a4747b5d"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-68.md",
+      "sha256": "543067042dca5f288ce2176e6ff9d2d6919c7dddfe75fd873d2bd6cea20e00b3"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-69.md",
+      "sha256": "349b9d8e711a70e6481a8c00ba921ea19612f0cbf467ade2c632d55ac99ba751"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-70.md",
+      "sha256": "a12ec479bee31598d0363ff9d4b4986be5655590daefddbec9c32d41d72f7896"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-71.md",
+      "sha256": "eb8277c898427dcd682f05bd79bc394579366c2a24fc5a2e3c69a720b5475156"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-72.md",
+      "sha256": "321f69fc284178f4b0faacbb7e1585800d2c7902f727235becb56acfdc722234"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-73.md",
+      "sha256": "680db0dc6dc306d9e653c2552b3d9fd63c9c4577cbbae4f250a101a7f3b0acb9"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-74.md",
+      "sha256": "e9af558590353c4f5f733622185c3098ae7c5950fe585bbf2b6074ba52aa7ce4"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-75.md",
+      "sha256": "427af68f76eb302c1930a2b2e16aa27cad9888f90ba1e248ca67573da49f8ab4"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-76.md",
+      "sha256": "6adc9067ee93ff913403e8626cedd3c340a6a66127eafe9637be47bd8cf68503"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-77.md",
+      "sha256": "f96e7ba7d0089d082c54d48941052ea675ebd856780ec5ce4b877c2a652538ec"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-78.md",
+      "sha256": "8c329a5eefe03459552c1c8ab7f8531cc31a88dc2eb10fe1a79f0e1cc08b111a"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-79.md",
+      "sha256": "6c69752de6460d67fe8855b22fcf9e36c3285d7f6d446c4428496b5fe70b6cb4"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-80.md",
+      "sha256": "375112f11e2ff89bd727d16d78f5e3bd614d9402664373da29fcb76ea0acc2bb"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-81.md",
+      "sha256": "24e69f411103fa568cf2c3e3b99cd788254e8f1913960f7556974eedce850f50"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-82.md",
+      "sha256": "a8fa5f110ec9894a67628a883e4915ff871e9a828f4a398f2ce9feff9df9689f"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-83.md",
+      "sha256": "565e8e346e72ee4a9c3581fc324792136ff4a409b123fa1c2c1534266d2e1f91"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-84.md",
+      "sha256": "6d5fb49559996cf2d8eecac5c7a0eda069e19d463a293956cb8a530c332b5f09"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-85.md",
+      "sha256": "d5fe2e53cf6adc8ce590a6b52423b03b5824a934ee05f94eb867e3810240fcdc"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-86.md",
+      "sha256": "040f629f8489f3197612f42aeba77ab12e2cc92afda4ab087b7bab187758a0ff"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-2/case-87.md",
+      "sha256": "8380d8b317e6b29769a11dfc74d0b30db1c7a01eea96d695a2c382aae9a15f4a"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-01.md",
+      "sha256": "8ac156dd76540532d3031140e7e4dc289db65b5d1e00c91e6d6b3c6de7605021"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-02.md",
+      "sha256": "ca89f6acb36e728d77ce524af7107507eda1e5316ffddf2612ba448f9e267895"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-03.md",
+      "sha256": "474f30df64e480425babdd5d9c7b6483ed6ed2305d4774e71e98f3347ba466a0"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-04.md",
+      "sha256": "9a55e50e150e2d547016c2ee62fa474a49635b9754f99c2fc0655ce9b957c47e"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-05.md",
+      "sha256": "d520d730daf474c8959c2bc34013c24b11ca1a95ad2469e3006c05a5385ab9a8"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-06.md",
+      "sha256": "5c4a790a63b2e536da94596ab6e7ec35402d7ecfe64ecd20fd9de320fc1682e3"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-07.md",
+      "sha256": "8858467a19ac6c368c449457e5a8452b25266dfecff121c6686e961e64d85187"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-08.md",
+      "sha256": "02a555413bb10fe294d96465380653538c42f7cce8dd628cd683941026f1063a"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-09.md",
+      "sha256": "8be1adfc178afe43c8afa82a2274f81f13c86a5c2bfd2fe3cf4077a8e23697c8"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-10.md",
+      "sha256": "a9791d13c6b10a369e0b0f848e949d6e13a7e94cc049a533ee0f155b75d85601"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-11.md",
+      "sha256": "a75908202f40acfb0dd0d024ff463477dd1c283c199d228082f3663f331ce3f1"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-12.md",
+      "sha256": "f744ecc21035e5c550d582d82063bc56e6012623fdb86574c76755f2b3907a7b"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-13.md",
+      "sha256": "f21f693bc11f9ab7f9c6b537140a038127089974b25f70e55f466f941554fb10"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-14.md",
+      "sha256": "280af1835b4f8d7d9143def2b1955a63a7dcf6e55ff3690b8ec703a572cc0abc"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-15.md",
+      "sha256": "b5ac1afb496af6abe90cc2249ba6bfc46bb6cac0cf3d3421a398e8b8e153aed8"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-16.md",
+      "sha256": "7ff0e98ef164846eb3b9e60153d54e40340eef5a21829ad2db7babc8f9ff6d98"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-17.md",
+      "sha256": "6adfc18eaf2da5c991b0ac5aed357ee01ed34b0d871c60748d1e079df5a39e99"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-18.md",
+      "sha256": "e6e03653971590bc2f1bcb01674f5eac7f8cdf4f2973a897c97b4e93a8380a99"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-19.md",
+      "sha256": "a0f2bc54568ad26d49662e3ae4dda03163ad187b9cc31cfd5fd534247bed7395"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-20.md",
+      "sha256": "b233b8f42b8a437be3c21c15ebc6609ba4ecbb830374b18e8613dd64ade332b5"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-21.md",
+      "sha256": "49a59d90cc1d41df8aa86cdefef20102d9955469fdd72983a37638da98e3dd20"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-22.md",
+      "sha256": "105a3403d3fa6f92345857a8a26b0783e12a23f755b349471c493be798a00d73"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-23.md",
+      "sha256": "e7005f8ee8f10aad9081279723f65812c5e859d7240b5981a5e3b0416fb2907c"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-24.md",
+      "sha256": "0db757ff6af2acb3ea774384aa9813df90268171ef826162ef8b33684fbe9949"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-25.md",
+      "sha256": "9cebdfb76ce3404cd036149151e33344bd217048e09cf78cd2e83a986794e6c1"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-26.md",
+      "sha256": "39e6be2d009463e86e926f95bb89ec1bddc94eeac1b3030774148e755dd28011"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-27.md",
+      "sha256": "ae36a6c5fc3a11c731c8be10eac70bace4c16e21986004c1c018647ba765667f"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-28.md",
+      "sha256": "4a93dffa4af5f423d640515ea23f6c464d514c0fb64a27b98619509865ac9fc7"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-29.md",
+      "sha256": "31e51e75bbb99807e70469d9717a1ebe3349eaea79fe3cc43b1bda801c09b59c"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-30.md",
+      "sha256": "6181391ea45bc303c65002c5fc4a5914af56e48686d0490cabee49612be2cdf2"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-31.md",
+      "sha256": "ebee55728180fb72eb17cc61b4b3be524049da3b85c5c55ca1d25457b2aac01a"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-32.md",
+      "sha256": "4120595e86de22fd9aee88126af641c451b36fc23e69d73bbe937a8ffe663848"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-33.md",
+      "sha256": "36298ddf049e3a349cbf8e07b66e164e5fe97ecb67a29d8b1aa1240036e66f8c"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-34.md",
+      "sha256": "c3c6ac23cdc3642f2636ece763f7d26e8819c701781ca408ddeeb621457bd24e"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-35.md",
+      "sha256": "b68e061213cff64bc135c4ba07e42e7a471ced55e8c3f1f89c75b2d7d6505ab4"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-36.md",
+      "sha256": "8ed0197c053d3ac5e752eabff1f27c2c7377d530810721fbdfffa25384d2a5de"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-37.md",
+      "sha256": "f469ae684e66eb6bb1b4cd75f7a1d7f8cab769cb1fd240ec3ccef82440f3ffc4"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-38.md",
+      "sha256": "0f63d44a4680a6c63c06819165cd018656f4bae679312931c3645350e5c262f7"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-39.md",
+      "sha256": "72534211cc687b10f3bd2a672589a0824e5e9a2500f49f22b99610fa9fff933d"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-40.md",
+      "sha256": "9460b960a69e90bdcaa29034ea45838748461d9c1d8dbdfae3708ac16add5bbd"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-41.md",
+      "sha256": "9d6abf94f43c38a43426e067b59ea85c0fd74782351506cea5b3e3f559e8b191"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-42.md",
+      "sha256": "fe2305a8bb4bed788e12ece0781ba13c85157fdd0ddef5547195f876362572bb"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-43.md",
+      "sha256": "04c2a4ffc1fd344b993c8dc3cb8bef4e97f365e88446b7b33df860abbcf04f93"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-44.md",
+      "sha256": "cef8b01a38204282aab247090c32498a5d498fd7c6f44f0435832cd2894eff23"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-45.md",
+      "sha256": "3c32c334b1ed22a898948feb374149b67c7562b33d1e70117026a19f70e25bc8"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-46.md",
+      "sha256": "cd3542c41db900352c2e5c522df83e0e87fe07e999dd6186801a041b4b6505f4"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-47.md",
+      "sha256": "c7d657fc4289dfde2ab8e16124464da913d587cebf28622ef1ec6c1f90935fa3"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-48.md",
+      "sha256": "4cdc5efc6d20092cd2790440912cd15b518facb0d464ef256a18166350f1f0c5"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-49.md",
+      "sha256": "7e7c72766ff49345541d1f9ec1f8ef935a133b6ac094301adfe71e3bedce757a"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-50.md",
+      "sha256": "a555a33309be3e169b1d22767b866c8982babd3c3cfa950e8ac9502d5abc1905"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-51.md",
+      "sha256": "eeb65f59c8fd190b9660240870574b60d50535c3acff4a54834531a475584d47"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-52.md",
+      "sha256": "577a06c3c1ffeb52a4caa9c86c8feba2fd79567fdc21dbf78f832f050ad977f1"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-53.md",
+      "sha256": "4d7dd25261fa66e9b55c8d22994fcdd16b4e34fb3d1c9dd8d732dbffa7764316"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-54.md",
+      "sha256": "8209cc78064ab29a70acc8e87108af9804370661b95e0e10139fed3506b6efba"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-55.md",
+      "sha256": "0402b932e5b3152ab26c7b041d65fe150604c1c577fc6406041849fc36a419c9"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-56.md",
+      "sha256": "6b540024f1b411a7ca4951d4938f6ff9a0a7d7c8a0cf9341c13f0c2e8a613e0c"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-57.md",
+      "sha256": "d71c0d77db90cd4a55c0ec6d71edecf5fabc8ad5f4f3e7d308b7d168470bc4b3"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-58.md",
+      "sha256": "7a8ab8e28e42136b32c4932eee0ed135cea46ade704b2d4377185af22db8d293"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-59.md",
+      "sha256": "d2bf5993c7cf4b02474bb33846b0c0f03091fe83fe6be1d938d73547b26e8074"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-62.md",
+      "sha256": "714a99e5cfc9a10265f0182ea501af186d9bb152d395096320758ad4bf0b3876"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-63.md",
+      "sha256": "6921819aa543824bac0970140106b384e247d05975fdfa93457e5c144f15f54a"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-64.md",
+      "sha256": "05a716191653fa6e7963038c091879c0c463a83f2934b56f49cdd65503f52a6f"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-65.md",
+      "sha256": "9134e1c61e93e21a011e8075931f567a35fa81574b5aa46ed67c1bd675546544"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-66.md",
+      "sha256": "316f0b79f16bbddb5e59ed3c7e05fa6b0fdba288e33a7ff37e51736dd9dcf5d7"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-67.md",
+      "sha256": "67a381a428e03a962ec39af8fddef402588f7086d7428776587da85bab2e439f"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-68.md",
+      "sha256": "4dad2d9e7d9a1b732c881ac3416405a9dae0798d8ed876836ef643c0bfbbceb3"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-69.md",
+      "sha256": "1cf2ac279a10b1f49c7ce2cef1bd09a31f7768dda36f3becf4b3f96d3850b6a6"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-70.md",
+      "sha256": "2c6eeeb2f4a3a542f09eb2d58f8450c4ae4e05df853abb950de5e6bdfd14a71f"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-71.md",
+      "sha256": "1c5967e09366a79e452fa189bac4ce58970f1b8b0be80fde84cc5d9bc1480f9d"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-72.md",
+      "sha256": "d52ff12f9e86f624f7d1d7b47d3f4153faaad09128ca0d523d9e8f4dd458366d"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-73.md",
+      "sha256": "3ffdc15a66a017794bcaaa51d45584de314bfae3de7dead557b2911639fbab41"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-74.md",
+      "sha256": "69622cb0737e3c93cd4c71f57588834e6a6cedb4c78673f604eca6ff1ad4f60a"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-75.md",
+      "sha256": "7dc4ce3686553c5d577ef237b36e792927288cd8132503b760961299af4c659a"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-76.md",
+      "sha256": "24d32b1965c5d69b9f56795ac99cebf582a967bd70effd9c320c6dffd34469ea"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-77.md",
+      "sha256": "8750afc5b9d51f7557558c6b47dbedc575c7b602d399dbd6deba532c6d86ba54"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-78.md",
+      "sha256": "f739f164e1ba3fab01ab992c6ff62681c38a768d7e483b7cf5d5d9b2832cb471"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-79.md",
+      "sha256": "cb7307c77c063864bdb7ba7dcdf758943b486960ca0ac221321bdad5877d234e"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-80.md",
+      "sha256": "c2f44196879328b18504aca5c3d1e7f4b79a6841bec0e1b7632811f4b30dc994"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-81.md",
+      "sha256": "ea24466fa1be928bea148d725272d860bf35f98895c104ab4aa58159c8ec6b0f"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-82.md",
+      "sha256": "5336e99d40b53550018a18c143c8470ec9d0d8741e5f63dd0619b4539403c78e"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-83.md",
+      "sha256": "80add29bb372b03d49b9ed62c7833470dfe3c54ee249d0913d5cb19c8c755368"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-84.md",
+      "sha256": "43e8d9a8e8efc35392b64c7167d3557aca20767bcc8a2adec10b1b2672a95d20"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-85.md",
+      "sha256": "cf7899ee02e71b151b1dc33ca7435ce04ffc83859644a1cb46db8a610a6a72c2"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-86.md",
+      "sha256": "daaab348978eb1e3e68a0e001aee0af5cddd6f9caf3d2679c98910b3b1497faa"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/dev-v232-3/case-87.md",
+      "sha256": "9722a068f29486947be42c748700f1aa8735bb08de17f17d80434745bae7dead"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-1/case-01.md",
+      "sha256": "a11e00e8243fde3e2ec781257aa42d88916d78b34b383ce0814f44a51f971449"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-1/case-02.md",
+      "sha256": "7acc9d956eaf350d98c3f32ed678f31cd3d6bb3fd19da5061c08ea5b52e118b9"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-1/case-03.md",
+      "sha256": "e4b4b635b6a17659f422bc9041a8e430496850d1f9e7e39d87419a9ce8ffcff2"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-1/case-04.md",
+      "sha256": "f97826a0772a4e1b1304588e12077dc1a5e7c5c53edcd9849249ec06b6f8478f"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-1/case-05.md",
+      "sha256": "615a6856afee6dbeb29bddc73eca3edbdf85e906c88edadfd442e83aa285dc0e"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-1/case-06.md",
+      "sha256": "661b5d5ca751378e714f3c8395999f975a7ae898cc43cc896c909db14eaeefba"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-1/case-07.md",
+      "sha256": "4cfbd5d5aa912905717e748d6df65fa3a0e151d08c50d965d73b7c547e19cd61"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-1/case-08.md",
+      "sha256": "e0c16dbabb5f964c363a369a06727a7187b296af65f919861d16b987f685d7c6"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-1/case-09.md",
+      "sha256": "79d0f626b01e573e7d0dbe27de2de21350c9178cfab89f800ba5a58686ddca96"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-1/case-10.md",
+      "sha256": "51a45ade0690f88b23134e428edce5665eed2be893d543454286c3150f6ab090"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-1/case-11.md",
+      "sha256": "25513ba21cff625169f010f51580e7f75e39d7d394fe95363a3f825ebe8a24ee"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-1/case-12.md",
+      "sha256": "17addd2189969bf5a7b04b2eb4b4b0cfd8f37f51b76cba0e59179c20d0c9b737"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-1/case-13.md",
+      "sha256": "98bd0474ba8e8c8c77ff0349d9cc8fe0a1fc3be4bb07a07e588c6ce0ca026cfb"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-1/case-14.md",
+      "sha256": "79c40ed7f3b9e1c97854e97ee4cd95a77e56d8f24fd959ea3e9fa491c50b60a8"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-1/case-15.md",
+      "sha256": "9b6c3ed6ee7011a06ed5f1a63cd7871e263bd1c7040c17ac91b4c26639fc26a7"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-1/case-16.md",
+      "sha256": "461dbf352d809b74e68a8b7d328c6585ed07492b44d0ab0c0a4fb76d5d80182e"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-1/case-17.md",
+      "sha256": "ded79d559f143a28ad18fb006b8a5d73f539f5b7849445e842502820c178d8f6"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-1/case-18.md",
+      "sha256": "f51de566b4487c3f8d62b7f4eb53731f47f5555d8f47aec63c44a9af279f2286"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-1/case-19.md",
+      "sha256": "d8fcd8e32c5dd27066d4449024b302543616a231d889aa1998d1848e48c3117b"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-1/case-20.md",
+      "sha256": "ea2db80177e4ef516a6d2cbd521e25c89ab68a281df8a82d1dd5d43089b82a16"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-1/case-21.md",
+      "sha256": "847a61f206b49dc21473c6cf31e359c2d70943a84c4981b7cd43389180dc0b56"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-1/case-22.md",
+      "sha256": "9853c2cca841c2f8d7b2f2717460241436cec75b08cd3541659e624277c8b8c4"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-2/case-01.md",
+      "sha256": "3e117be932635b9bf792573556a3e126b01f2b3c4d6662f5b26b0774c96e12fa"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-2/case-02.md",
+      "sha256": "5e56abe0f5970609d9021e3e7927aba6a7f05d9d32cd353b87a95fb9c3cf5009"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-2/case-03.md",
+      "sha256": "6266d728cc8cda531a21e622f706123f0fc122db6547272f0bd3e033bc89e5f8"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-2/case-04.md",
+      "sha256": "48fda58e46c30d12f41557c085a0eb5dbbf23af86753f1e5ff6ca8f4a3c09a9e"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-2/case-05.md",
+      "sha256": "f22b88dbd37f2004c90214e5bf6e08304b482345e83e3dfa66dec954e057c125"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-2/case-06.md",
+      "sha256": "f1cc81353719dda3fd809f8407e5b057ae91a8ca11a27ce7ec173490722206eb"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-2/case-07.md",
+      "sha256": "82e71e3eb534d82d9640407cd593d5399fb5f7092022067b3c3935c065f69b3b"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-2/case-08.md",
+      "sha256": "897fe5cb00ffc21e28960a320c68a9af9bdef62453cde930630f91f692e2e8ba"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-2/case-09.md",
+      "sha256": "b16f3b9cf62d6e344c056a77d2e27dc9426cf4ccde825ecf0531dd8245252c87"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-2/case-10.md",
+      "sha256": "c478803bd844498d35a66ff9cfa80c0ccbb8686d86b79e4b54164d30cd4adca5"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-2/case-11.md",
+      "sha256": "4e39d5b72927069223bee8f385ae79a90144194afd88f426f80323159d9ac734"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-2/case-12.md",
+      "sha256": "1d24c1e4999e4d7f6bab63c5628087936713fe2347f6476414afe33be0717e46"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-2/case-13.md",
+      "sha256": "bacd839c6f23e6d3f943e63895da3d2538efa7898004bfaa7ce7af317e854658"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-2/case-14.md",
+      "sha256": "f125246d3914ddd294bb51f0a7bb7704e9ab80b10457827629bc7a75a941a1f8"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-2/case-15.md",
+      "sha256": "6686c0ac15282be05dca707a12cf83311e194bb2a7113fde101c48b1adf31281"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-2/case-16.md",
+      "sha256": "20b3c134bc6c19f457078b445cd0a425e93d7de02029e516fd070ac4d41483a6"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-2/case-17.md",
+      "sha256": "2f79d5002ea51a20b50f941c57e313dab2f7640fb86d8dd569f0bbd082f4257e"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-2/case-18.md",
+      "sha256": "d12e61946673b766fede1c407512aaa50adc65947312f272d68c830df392f304"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-2/case-19.md",
+      "sha256": "506574ff34e803abc74396eadbfb2c9f9a7214395f8f37b9c8e2c5306169e507"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-2/case-20.md",
+      "sha256": "75ee56e178db85529560edcc986a878d71a738649c8fd18ec04e4ef28ef925a4"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-2/case-21.md",
+      "sha256": "89f22bf6449bdbd8e31416b151205c04b20860abe7efc618f6820ba81f30c10d"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-2/case-22.md",
+      "sha256": "74d7a8bbe83a0584df1504ad96559d74472f7083a9e8600c343b321dd92e9d2c"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-3/case-01.md",
+      "sha256": "623dd8a83fbb09b7d6b8dec5a568d23472c9b8fe6d76758ebbd23f8828873009"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-3/case-02.md",
+      "sha256": "ac680510b1bb81d4ac157a8e1e9de7e269c065e9d871ee7adfda223afdfd3bc5"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-3/case-03.md",
+      "sha256": "58baf745637bedde42d226c8889a9fd674ca80458166a695d395af6e7fc3410d"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-3/case-04.md",
+      "sha256": "6b2f5ed03b41e031e37cdf808289fbcb2533cbb8c68ce262c71b99de2476d1ef"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-3/case-05.md",
+      "sha256": "8d7ff585ac72d5c044ca6f75de3754646f4f3be44417b0522bab677c6425215e"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-3/case-06.md",
+      "sha256": "8701dfdf9208707662b23cff65393a3510b303e27d4e5c9c996c073b1505f523"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-3/case-07.md",
+      "sha256": "d2b5667d50ed985b13c7a2639aa1722e06a08a400da804a170392016fc3ef30d"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-3/case-08.md",
+      "sha256": "8c0a611ccb0053ee9d5fe0861a40f4d3b1c7251f2f610fd46471f1a342ca2edb"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-3/case-09.md",
+      "sha256": "be7d0f47ea1f9e345553361d9a0f724ee902c4c73867f891e8a7eb4efcafcf22"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-3/case-10.md",
+      "sha256": "ebce341f9c990b299416d0569797374ba4cdccad4e6dec787235f64a0fb0a4e8"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-3/case-11.md",
+      "sha256": "16459de5afd69ce73e00067961dd54f12159bc206f2f56b779e1fb87b5a0114a"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-3/case-12.md",
+      "sha256": "05f07919a1e361fad9b3bf085eaaefb4cce73645ca476c54ad2220c7e6ccfa27"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-3/case-13.md",
+      "sha256": "a7b1c641fb549ebc47d99e2f68c2b00b7fce7eff3343d2803cc4488f8aae2c4e"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-3/case-14.md",
+      "sha256": "eb8acbe20ca354b0e727d8fcf0be5a87036e81ad013b2eb1a5cb33c7497d88a7"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-3/case-15.md",
+      "sha256": "f36b7a53ea1eacd5f07d503555f316bfb4c09d9a8e340fe1ea43d5da2ac4b7d8"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-3/case-16.md",
+      "sha256": "a8a78ad23535e7763a7db796807a09a63f705b072eb8f9490a844a7cd0d225e0"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-3/case-17.md",
+      "sha256": "3190af580941fc3b2d2379648544a569d1e54fed60d62593bc95222e19b57e37"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-3/case-18.md",
+      "sha256": "9a4b7536b5455e4d06709fa8d244da0936582f096de28cf271f2f362494ae303"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-3/case-19.md",
+      "sha256": "c60a60bef4ffb351d25f7a5ba00378d9e1cf2802c90f3dda4f1a30b463040413"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-3/case-20.md",
+      "sha256": "86759d81c4b8e7b4ee7ef2ba44473a5d6e11179fbf0e1a160008fc678e52fde0"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-3/case-21.md",
+      "sha256": "52ba845e9f61a4d50ad58352282ccf55b82aa61bae07f229618c0aec03a99e3c"
+    },
+    {
+      "path": "evals/results/2026-10-09-gate-v232/ho-v232-3/case-22.md",
+      "sha256": "54529918cbcc8fe8fcfafac346d1943ef018649366b68961380e80141ed809f5"
+    },
+    {
+      "path": "evals/results/2026-10-08-prreview-held/prreview-v22-1/case-35.md",
+      "sha256": "eee9c6c72c83f8b26c02d3cabd7b4074117a6a7dbae4273413b84921f247b8f6"
+    },
+    {
+      "path": "evals/results/2026-10-08-prreview-held/prreview-v22-1/case-36.md",
+      "sha256": "1acb5809a7ac2e1912dcd79b6af2b5dfe041461da1e07d65c2bc4198da066125"
+    },
+    {
+      "path": "evals/results/2026-10-08-prreview-held/prreview-v22-2/case-35.md",
+      "sha256": "a46772ea88ddc7b0b5fed072c562ff60e0cc7e428581a52d4aae0981f0a31b85"
+    },
+    {
+      "path": "evals/results/2026-10-08-prreview-held/prreview-v22-2/case-36.md",
+      "sha256": "21bd9b1ee581fe7ba9e062171a72f403a88a04b4921438bc832682f62e24e36a"
+    },
+    {
+      "path": "evals/results/2026-10-08-prreview-held/prreview-v22-3/case-35.md",
+      "sha256": "43067f717f0e3c939863e598c41a73b2793a0127158c3dac09291478b0af21c5"
+    },
+    {
+      "path": "evals/results/2026-10-08-prreview-held/prreview-v22-3/case-36.md",
+      "sha256": "7f0d46ac9e34eaa32545771554b26d4ca14597938fbac91db03de07600fb75b5"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-01.md",
+      "sha256": "9bc078f376a777066863322465eae62c8baee16f7863de73a2990a792c999e92"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-02.md",
+      "sha256": "8f8b54334deb3a55cef6446061efb6660be163ddbec827c33e7a1dc700efd9ae"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-03.md",
+      "sha256": "8fcee03c1e542b5b3f03407678b7d5bf0cea8a6e6ef1b66e4227c103f4b6f605"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-04.md",
+      "sha256": "cd18f3c2d59e0244f8e64fddf554db7b05d093a4440b3cf42f026893a1ab806b"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-05.md",
+      "sha256": "1773315b46791bf42e626c62c52e5603b89e9cd454e3df6cc1d899ce4ce81dca"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-06.md",
+      "sha256": "0b2dac39b75d6bca766c42a64b9007af11b04e14dec9a78c7cb1e52ad074ce80"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-07.md",
+      "sha256": "8890d37fafbe8a898c06039c9bf78bd80fb5305a3bef8b1d8bb3477dc0589c2c"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-08.md",
+      "sha256": "3fc4d816523accf4df1dc66b31462ab399430a0a79f6c2f4be5a8b0898cfa1e9"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-09.md",
+      "sha256": "037d108d74598b1e492c186718f417df0b398a2dbc8fbc3afe3aff902eefb4cb"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-10.md",
+      "sha256": "cf094573142c50b7981622da4eed64bc8aa470bbd37c6992f6a2a1355d8857bc"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-11.md",
+      "sha256": "400ef6861df3b640370c9dc6db52ad6aa76b34d25db18c62d2052fa4e192296d"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-12.md",
+      "sha256": "2e5f2242d5fedf3f4a461428e8ef2ac0182769800172bc5a914bd4404f3a580c"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-13.md",
+      "sha256": "e40880877fadf752ebb4d6b75132129199741444ae9253d57f6ac3a26aeab486"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-14.md",
+      "sha256": "6b0b2bb84787ea3df4f6fe68ccbf2428bef6bc83dcd3170c63e3dd0ad4d01999"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-15.md",
+      "sha256": "3dbf8ca1af3cab461a97a43d7080ca3251342fe6b2d38489f18c181232dc4af2"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-16.md",
+      "sha256": "3c33959e02fa83047eff0e5e4eca694049cfa6c068055cbad408e457336d46f4"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-17.md",
+      "sha256": "2f6c888f1100620feafa505ad813e86df7b622cdc5dd34a6111ffc73b0a20593"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-18.md",
+      "sha256": "99f08401e3d790bf4e5af954d53b6ca469c4fe2cb5c5f9ff9d667b5bcb91b582"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-19.md",
+      "sha256": "d0e6107f2b5cd84dbbf6aebbe0269dafe77712e81bfaaeacc8cda81aecb1b02f"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-20.md",
+      "sha256": "752e62f32b8638fe473dab6b6673d06429993f68d857439895de1cfaf95548a8"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-21.md",
+      "sha256": "696ff34fc1aa27c7e6fc54a3c6b5c00a4c577c8d70447672b3c37b1b5b2b08fc"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-22.md",
+      "sha256": "ca55579c6ff483f77e57c10ea5f102f88fa382df82fff05d61145230fd5b678a"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-23.md",
+      "sha256": "3756363623e50444a792493cd6e330d2fa44647852d6ec73f37d672245e5aa93"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-24.md",
+      "sha256": "f30053fdea48a82f9a4968ce2aa831a9321ab099c4224d0548a925eeff0d6853"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-25.md",
+      "sha256": "ca65df57651cd5c2b43470abcfaefa6cb0b98f10e005c3619a08d829587ca4a3"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-26.md",
+      "sha256": "5c199c7101e89efc33d2b2efc7041c810eaaad5ff98f5b633593b8d683e69b44"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-27.md",
+      "sha256": "976daddafd534cdcdec208978a2107bce4f03ccbb743852a1e15e7cf526f3e1d"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-28.md",
+      "sha256": "0e7b9409968dda9533b20eb7389b2b4dfaef2a1a0d988aae33d4f34ee1cdbdbe"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-29.md",
+      "sha256": "fed22aacd585391ce69424e948a37f61f0e6c4bc3a307a00bb1c91c80145be13"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-30.md",
+      "sha256": "801ae0006c79c1a8ae819580b9cd4edd2f7b9a0c74f33390ea9d287470772fe2"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-31.md",
+      "sha256": "710533c9d2bead7f375f1e79575ca8fc014b0a5839c66b64352bcfbce9590a53"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-32.md",
+      "sha256": "d12daf9410bfd78477895423f0dd28b6de9de0525de05a20eecbff255973be67"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-33.md",
+      "sha256": "6cb1de8374aa73bebfc74fd74766213e8db12f123a45e0ed37b2ea03ef44d42f"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-34.md",
+      "sha256": "b04f41f6ba73a47b6f982947cc17846008460c7c4bdc9014532268b824310d88"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-35.md",
+      "sha256": "fde58add7810c9bec24e528b2cc28d0a73b5480c50bd96c8a7482363276806ea"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-1/case-36.md",
+      "sha256": "542cb7ce6ed99668b0871327270cac2c456c3682876c3aa97a58cd4a9ce8f3ea"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-01.md",
+      "sha256": "161a2820412ca54c0690bab9ced295d08aac064c4e6e68a82f2b034a57a0cb93"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-02.md",
+      "sha256": "cb7363a9a577063f2979cacc3ee63b98a14d925dcad8145f83a5d825bd6f90a0"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-03.md",
+      "sha256": "5c481e9729ff120c69876457f74628a3cfd67f09dd2577ab1f101147d29b74b4"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-04.md",
+      "sha256": "2b14deda3374c9dc4e4c4a657b48c2929116879483f337e8740521239ecf1342"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-05.md",
+      "sha256": "6a2da0b3a69e4a74c2c368ee0b83f610f087ddee35d8c33e4c1fedf9d437d788"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-06.md",
+      "sha256": "50b21710772176a7beedede8a6a0399769cf495df28bfca373304afccf8d5fd3"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-07.md",
+      "sha256": "965475ab069e558159fc0cbe71acf59c18dd27e5ff4d4d26a07d387f02d92d81"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-08.md",
+      "sha256": "46c162b4050fd96be5b014acf2563fc514bd47d9f4dac7b9368500d1b31dfc42"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-09.md",
+      "sha256": "d1c57378b527b0107caeca7c7a5f9dd88be14637cff91039ff56914446d99e7b"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-10.md",
+      "sha256": "072a76d5cbf87ab22b5c94829d29ead62dce4e2ab0cc659c35f6fe314650f5cf"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-11.md",
+      "sha256": "59259d15130b893c273de2494e1fe35330a3078cedbccf949cc8087687bb18e1"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-12.md",
+      "sha256": "62a5407b4196b4aa1a90ce381af947ff6d12c5ae8930d5dd9e5112012f3bbf56"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-13.md",
+      "sha256": "11633d82696d131770f422f4693e53f0742d9c6c9e0deb6cab40837551816d66"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-14.md",
+      "sha256": "fb6ed6d467d83156b46222b43008f41e3ea1967c382df5f3c5804fefd0ffa14b"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-15.md",
+      "sha256": "f0f2c55d86a1a09d2ddfe6142cf30375d8baeb591c339d4a24ffcd0323e6f65f"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-16.md",
+      "sha256": "de6148e2d209de93bfb1d69b8788620aa3cd904a6764d11c8f7f51c1e9a698dd"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-17.md",
+      "sha256": "4fc7ec8a4a98dfe64c71e07ec97857db441b6b962c4df3061dd1b18f2686ab05"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-18.md",
+      "sha256": "0d9592bb599a9e6429c1e1bfb45b1d26aff5b0b050b429157202a56f12e4a492"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-19.md",
+      "sha256": "d43e25dc4a369328956b640b2e2f43e262fad040ad3d9a17c4efa8e6964fe4cc"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-20.md",
+      "sha256": "12a2b085840b18931ddac792ea3c6f83e29beef0976295165e8664befff4b4cb"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-21.md",
+      "sha256": "29e2969e1a7438289a29439163de6038f64e0e53615b0463f0950470b338cb5b"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-22.md",
+      "sha256": "876f75d041a8d53f18dd46cd8265aa4ae675bde3da25efbf6045ec4aabd70caa"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-23.md",
+      "sha256": "e13aef37cd1661a8421d7c31a96584bffab2a5cc35aed792ced98fd7f1395769"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-24.md",
+      "sha256": "1abbffccafcae3f4f80e8c20425c3fc187ef28d32b299d71eae4390c2b0dfebd"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-25.md",
+      "sha256": "171dfcd6aa00c487cf737c3e6e0d9bba77a033adf7aef37f80383dcff1beccf2"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-26.md",
+      "sha256": "dbfa2303716031ad35b161b606dcc1362d1faf0db9ab29cb1341e709f234fd17"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-27.md",
+      "sha256": "47e2b7a071985ecbe5e5a51ef5eef58b13e20de4d036b54c41f068ba33252090"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-28.md",
+      "sha256": "9e96a406ceba81f010cca29a35fa80db979c14d58073b8a2c700faa9bc9dacb9"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-29.md",
+      "sha256": "f277ef5c2489d5773ea4e8075b5350dc67c6c1e643db51c761dfb522807c281e"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-30.md",
+      "sha256": "1f5d0a4de0b475b3604be0e2885f23f2a89574dbc0f6a7917343dc219e93fdb6"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-31.md",
+      "sha256": "6f1a240de853fa0d94557e1ddfc87440a8312ab006ce7099919066ed337f8612"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-32.md",
+      "sha256": "4ec952c1713ceccc826acb83b55ce84f44c83da19253ad06f5ead4f2d696cdfb"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-33.md",
+      "sha256": "a5ccaef807d4effed1c063f47b52ee98ec97800d45fa238c3c5bf25c64641567"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-34.md",
+      "sha256": "a1599d7fef5a84ec30a324a792efd549630664421c1bdbf320068ff12ccef711"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-35.md",
+      "sha256": "dae2e58769b4d2b48712b278783bcaff02fcc3333e57106ab1dcc1e1c50bc222"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-2/case-36.md",
+      "sha256": "66bc7afe07b390da1c203782ad5b0188f8d74f7b2cbf0540f6b8faa8b7fdcae6"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-01.md",
+      "sha256": "42519dfe02631e734ee7c48dcbe01c063c472a627ebf1543dfc8a8f6aafd63f6"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-02.md",
+      "sha256": "f63b178244d81ddb5030ef2043f9405645d83d586b7814486f8187453370d3a7"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-03.md",
+      "sha256": "092427a4928b8004d138fef67dc1c6ebcebe17454c02fd1fa1a9aa9a42cd83ef"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-04.md",
+      "sha256": "e67643364b87f2cf24c859c7b36aaeb8ac943beec246ffa1df9d7bb9fd810c3a"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-05.md",
+      "sha256": "e6aed1d2369a3090ea66079944d377880124b31b3903fe38f7786dff4baf148b"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-06.md",
+      "sha256": "6546b61df96b2732c0798b8d6cee58a9e5cbaaec77b7594ad1dca965cdab9c0d"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-07.md",
+      "sha256": "c674e4bebdd2c68085e10831305b826fa3c238b038f3aab14a5bc2d9c6fda98a"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-08.md",
+      "sha256": "aec4fb26d8cc4bfbc8dbcbda4672854da47316af0e915ff345b30fdd79612b21"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-09.md",
+      "sha256": "8801c567b0032c28424dc3b6dfc5a769a37435f2e7720aa20db64b2e1949df2d"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-10.md",
+      "sha256": "1c9b38669f0a9b05b23eb5badc90df30639a1397d97126ef60e51c7e183ecc30"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-11.md",
+      "sha256": "4b8c7352d86c22c0247291b3fc590f00d820647c4a1ad5903c947f448807b295"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-12.md",
+      "sha256": "eb563245dac07b9493348fdee2589dc27f7da3630b48a7a7c5ba67093fc7f818"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-13.md",
+      "sha256": "7cd3292dbdcb835d8a5746c6b98b4fe6af37b902739cacff47ace93b3ad7b1c1"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-14.md",
+      "sha256": "1c74932da12243e66c1d2d60e1a0f0114d8efc5dcb2e01429dc2beb854ad7b9f"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-15.md",
+      "sha256": "f304c546c2d2ec35d0c23126dc300aba937b90f62dcafb0c2be5181f37e21741"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-16.md",
+      "sha256": "243bf0a2af8338b2b78e874c5c827c7df0b86254364b05fd4c646fc1b853ab31"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-17.md",
+      "sha256": "2802a5419030d3f0ed781c5953b25ed46bbb68ec99e11c43d3fe285ef57b2e76"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-18.md",
+      "sha256": "785edae99e29485f9e1fce38cad142e2bcf11c1d2546f3ac2e0e90730427124c"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-19.md",
+      "sha256": "3a0e82727e551d221b70cf1c22c72cae6201c2cfbf0fad9dd4290d598b32ff46"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-20.md",
+      "sha256": "f8925784f4d61141c913be3bb0a1a9dee9f8c1c70d2a18c7b0e2323079eeb8c6"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-21.md",
+      "sha256": "b36f71c930783cde48f02925422871c2748c003883c4c5a8e8b323c996d31c46"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-22.md",
+      "sha256": "a77c607293ea964184823487bfb738ffbf7dbedf0061be27170ccbc7e8548a69"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-23.md",
+      "sha256": "d9f939cf445e9de4d87c6bc9d799689c8b33ffa3d498662f70214d2817c1a6a6"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-24.md",
+      "sha256": "6e4d8b89b9c571d7b0867c04f951d5ea92744ee88728dea3df10d1750081979a"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-25.md",
+      "sha256": "5214ecb63e7794d753d6414b0c7e8d525e0adae4b35ba2c2c3005ca1bb8ebeb1"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-26.md",
+      "sha256": "b259b101913147afb86da3a313e895d0fe172bc200ce14ef04046420281ff229"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-27.md",
+      "sha256": "236787f2564dcec1963aed32ee10f21b5a172c403d809a729753335ba23541d8"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-28.md",
+      "sha256": "552c001bf63eb17deeae234fd4ddd947ac94cdc29f622275a0d5f6a0955f006e"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-29.md",
+      "sha256": "195e1c8c37630c9a2a0865cbe961abc0c6b2d8f01d8a3a4610b9c8599a939af1"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-30.md",
+      "sha256": "9de6a971e13b6f2d6fe8ee85d6ff52d8ee2ec50a04946c3e6a38f72880fb53df"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-31.md",
+      "sha256": "68cd3958a544d0bde4a510d3e4e5fb0dbeefaed0181734c7f8e2d7f4d8934430"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-32.md",
+      "sha256": "76c091592191201be10b70f5834751d5708b88cf71f03f053594e7ca366c2bd5"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-33.md",
+      "sha256": "4c41ebda00cddd784441540899daa6615933a2fc9e5ce7cb6d959fcaebf3b28b"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-34.md",
+      "sha256": "63fc15a98ac76d323e4577d455c83d5cba7f2576d1c01a734016f2e6585f64a8"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-35.md",
+      "sha256": "d4d86165c88c53795f4cf00b3c00677153c4b16aae6cce9e38b8fc81062e6139"
+    },
+    {
+      "path": "evals/results/2026-10-09-assess-holdout3/holdout3-v13-3/case-36.md",
+      "sha256": "16456caef2d20a4bcaac3715b3000efbc71372f8c1bc844dc0f03b41af9091bd"
+    }
+  ]
+}
