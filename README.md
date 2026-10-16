@@ -6,7 +6,7 @@
 
 Adversarial diagnostic review for AI-produced work. A second, independent pass that red-teams decisions, analysis, plans, and code before anyone relies on them, and a bounded reviewer that closes out a pull request.
 
-Each comes in two forms:
+The repository has three skills. Paste-in prompts are also available:
 
 | File | Use |
 |---|---|
@@ -14,6 +14,8 @@ Each comes in two forms:
 | [`prompts/adversarial-review.md`](prompts/adversarial-review.md) | Paste-in prompt for any model (Tracks A, B and R; Tracks C and D, the inputs ledger and the confirm-or-refute round are in the skill only) |
 | [`skills/pr-review/SKILL.md`](skills/pr-review/SKILL.md) | Claude skill; invoke with `/pr-review` |
 | [`prompts/pr-review.md`](prompts/pr-review.md) | Paste-in PR review prompt for any model |
+| [`skills/assess/SKILL.md`](skills/assess/SKILL.md) | Assess whether a link, tool, paper or idea serves the current goals and choose the next action |
+| [`prompts/assess.md`](prompts/assess.md) | Paste-in assess prompt for any model |
 
 ## What redteam does
 
@@ -32,10 +34,18 @@ Output is a verdict (SHIP / SHIP WITH FIXES / REWORK / REJECT), a severity-ranke
 
 One pull request, one exact head commit, reviewed in a throwaway checkout against its merge base. The review is sized by risk (Low: one read; Standard: one round; High, for auth and permissions including their configuration, migrations, money, personal data or regulated text: two rounds, ideally on two vendors where an endpoint is approved for the data), run by an instance with no memory of writing the change, and bounded to the runs its tier requires unless the owner approves more. Every finding (P0 to P3, `file:line`, a failure scenario, a suggested test) is adjudicated in writing as accepted with a regression test or rejected with evidence, and merge is recommended only when the tier's rounds have run and every expected check is present and green. It is named `pr-review`, not `review`, because Claude Code's built-in code-review command already answers to `/review`.
 
-## redteam vs pr-review: when to use which
+## What assess does
+
+`assess` checks an incoming link or item against the user's actual goals and existing context. It separates source
+claims from verified facts, checks overlap, cost and data requirements, and chooses a bounded next action. It can
+recommend a trial or borrowing path, ask for an owner decision, watch, or skip. It does not buy, install, publish
+or treat a sender's summary as evidence.
+
+## Which skill to use
 
 | Work | Use |
 |---|---|
+| Incoming links, products, papers and ideas: usefulness and next action | `assess` |
 | Decisions, plans, analysis, wording, small diffs | `redteam` |
 | Code pull requests | `pr-review` |
 | High-risk changes (auth, migrations, money, personal data, regulated text) | both |
@@ -64,21 +74,37 @@ Claude Code, personal (all projects):
 ```bash
 git clone https://github.com/rivendale/ai-redteam
 mkdir -p ~/.claude/skills
-cp -r ai-redteam/skills/redteam ai-redteam/skills/pr-review ~/.claude/skills/
+cp -r ai-redteam/skills/redteam ai-redteam/skills/pr-review ai-redteam/skills/assess ~/.claude/skills/
 ```
 
-Claude Code, single project: copy `skills/redteam` and `skills/pr-review` into that repo's `.claude/skills/`.
+Claude Code, single project: copy all three `skills/` folders into that repo's `.claude/skills/`.
+Keep a pinned source checkout available for the referenced docs, schemas and validation tools.
+For non-Claude hosts, follow [the agent guide](docs/using-with-ai-agents.md) and verify the instructions actually load.
 
 Claude apps: zip a skill's folder and upload it as a custom skill in settings.
 
 ## Use
 
 ```
+/assess <link or item>         # usefulness here and the next action
 /redteam                      # review the last substantive output in the session
 /redteam src/billing/         # review specific files or a diff
 /redteam the migration plan above; stakes: production data, no rollback window
 /pr-review 42                 # review pull request 42 at its current head
 ```
+
+## Published results and pending work
+
+- [redteam release gate](evals/results/2026-10-09-gate-v232/README.md): development and hold-out results,
+  the predeclared comparison rule, scorer limitations and the recall floor.
+- [assess hold-out record](evals/results/2026-10-09-assess-holdout3/README.md): the original result and clearly
+  separated corrected-scorer interpretation.
+- [pr-review held-text comparison](evals/results/2026-10-08-prreview-held/README.md): limited control evidence,
+  without claiming that the new rule has demonstrated a detection benefit.
+
+**Pending: rule-ablation runs.** They need separately authorized paid model runs. No ablation result is claimed,
+and this README does not imply the experiment is scheduled or funded. Published repeated runs measure variation;
+they do not isolate the causal contribution of an individual rule. Skill changes require independent evaluation.
 
 ## Getting a real second opinion
 
