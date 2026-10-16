@@ -1,0 +1,1 @@
+Review requested: onchain transaction-plan review (Track W1): decode every call, check every address, amount, chain and claim against what was supplied. Nothing here will be signed by the reviewer. Supplied: plan.md, plan.json, address_book.json, allowlist.json and quote.json. Stakes: 5,000 USDC; the swap is public in the mempool.

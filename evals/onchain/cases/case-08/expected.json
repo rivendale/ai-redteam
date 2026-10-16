@@ -1,0 +1,31 @@
+{
+  "id": "case-08",
+  "track": "W1",
+  "title": "A batch whose administrative call (add an owner, threshold unchanged) is named, sourced to a ticket and given a rollback (clean control)",
+  "failure_list": [
+    2
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import json\ntx = json.load(open('plan.json'))['txs']\nbook = {e['name']: e['address'] for e in json.load(open('address_book.json'))['entries']}\nassert tx[0]['data'][2:10] == '0d582f13' and tx[0]['args']['owner'] == book['owner-carol'] and int(tx[0]['data'][-64:], 16) == 3\nassert json.load(open('safe_state.json'))['threshold'] == 3 and all(t['operation'] == 0 for t in tx)"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "W08c-control-an-owner-change-that-names-itself-and-its-rollback"
+}

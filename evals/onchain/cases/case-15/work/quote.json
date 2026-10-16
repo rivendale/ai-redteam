@@ -1,0 +1,8 @@
+{
+  "aggregator": "example-aggregator",
+  "time": 1790000000,
+  "sell": "20000 USDC",
+  "expected_buy_weth": 8.0,
+  "price_impact_pct": 0.1,
+  "swapData": "<allowanceTarget,data>"
+}

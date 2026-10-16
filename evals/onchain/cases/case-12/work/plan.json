@@ -1,0 +1,17 @@
+{
+  "chainId": 8453,
+  "safe": "0xf9f8f64ccd13186a16aa4ae9a0fd8db36e678b50",
+  "txs": [
+    {
+      "to": "0x618da94516975b67fd4930397b6f89b92cb3297d",
+      "value": "0",
+      "operation": 0,
+      "data": "0xa9059cbb000000000000000000000000819f0f3c3c00a13827c8867dfc2ebabfa73d3ade00000000000000000000000000000000000000000000000000000001dcd65000",
+      "contractMethod": "transfer(address,uint256)",
+      "args": {
+        "recipient": "0x819f0f3c3c00a13827c8867dfc2ebabfa73d3ade",
+        "amount": "8000000000"
+      }
+    }
+  ]
+}

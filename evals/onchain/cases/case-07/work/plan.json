@@ -1,0 +1,26 @@
+{
+  "chainId": 1,
+  "safe": "0xf9f8f64ccd13186a16aa4ae9a0fd8db36e678b50",
+  "txs": [
+    {
+      "to": "0xf9f8f64ccd13186a16aa4ae9a0fd8db36e678b50",
+      "value": "0",
+      "operation": 0,
+      "data": "0x694e80c30000000000000000000000000000000000000000000000000000000000000001",
+      "contractMethod": "changeThreshold(uint256)",
+      "args": {
+        "threshold": "1"
+      }
+    },
+    {
+      "to": "0xf9f8f64ccd13186a16aa4ae9a0fd8db36e678b50",
+      "value": "0",
+      "operation": 0,
+      "data": "0xe19a9dd90000000000000000000000000000000000000000000000000000000000000000",
+      "contractMethod": "setGuard(address)",
+      "args": {
+        "guard": "0x0000000000000000000000000000000000000000"
+      }
+    }
+  ]
+}

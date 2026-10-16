@@ -1,0 +1,31 @@
+{
+  "id": "case-12",
+  "track": "W1",
+  "title": "The same invoice paid with native USDC on the right chain and six decimals (clean control)",
+  "failure_list": [
+    2
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import json\np = json.load(open('plan.json')); t = p['txs'][0]; tl = json.load(open('tokens.json'))['tokens']\nx = [k for k in tl if k['address'] == t['to']][0]\nassert p['chainId'] == x['chainId'] == 8453 and x['kind'].startswith('native') and int(t['args']['amount']) == 8000 * 10**x['decimals']\nassert t['args']['recipient'] in [e['address'] for e in json.load(open('address_book.json'))['entries']] and t['args']['recipient'] in open('invoice.txt').read()"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "W12c-control-native-usdc-on-base-with-six-decimals"
+}

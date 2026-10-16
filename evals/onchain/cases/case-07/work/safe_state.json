@@ -1,0 +1,7 @@
+{
+  "address": "0xf9f8f64ccd13186a16aa4ae9a0fd8db36e678b50",
+  "owners": 5,
+  "threshold": 3,
+  "guard": "0x16c4ce640c13d843d4e2b6536efffd848462fcf0",
+  "modules": []
+}

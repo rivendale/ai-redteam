@@ -1,0 +1,89 @@
+{
+  "id": "case-04",
+  "track": "W1",
+  "title": "An approval described as 5,000 USDC whose calldata approves the maximum to a spender outside the allow-list, with a Permit2 request that never expires",
+  "failure_list": [
+    2,
+    9
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "approval-calldata-contradicts-description-and-spender-unknown",
+      "file": "work/plan.json",
+      "lines": [
+        9,
+        9
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "unlimited",
+        "max",
+        "uint256",
+        "2**256",
+        "ffff",
+        "5,000",
+        "5000",
+        "allow-list",
+        "allowlist",
+        "unknown spender",
+        "not approved",
+        "spender"
+      ],
+      "all_words": [],
+      "why": "the calldata approves 2^256-1, not 5,000 USDC, to a spender that is not on the allow-list"
+    },
+    {
+      "id": "P2",
+      "kind": "permit-with-no-practical-expiry-and-maximum-amount",
+      "file": "work/permit.json",
+      "lines": [
+        16,
+        16
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "permit2",
+        "expiration",
+        "sigdeadline",
+        "4102444800",
+        "2100",
+        "never expires",
+        "amount",
+        "1461501637",
+        "max",
+        "unknown spender",
+        "eip-712"
+      ],
+      "all_words": [],
+      "why": "the permit grants the maximum 160-bit amount to the unknown spender until the year 2100"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import json\np = json.load(open('plan.json'))['txs'][0]\nd = p['data']\nassert d[2:10] == '095ea7b3' and int(d[-64:], 16) == 2**256 - 1 and p['args']['amount'] == '5000000000'\nal = [s['address'] for s in json.load(open('allowlist.json'))['spenders']]\nassert p['args']['spender'] not in al\nm = json.load(open('permit.json'))['message']\nassert int(m['sigDeadline']) > 4000000000 and int(m['details']['amount']) == 2**160 - 1"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "W04-the-approval-says-5000-and-the-calldata-says-everything"
+}

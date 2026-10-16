@@ -1,0 +1,1 @@
+The 4.2 'ETH' line appeared in the Safe's asset list on 2026-10-14 after an incoming transfer nobody sent on purpose; contract 0xdfee63395cd9e7c2bbe59dbbfdc5c97cd11b9e86. Native ether is held as the chain's native currency, not as a token.

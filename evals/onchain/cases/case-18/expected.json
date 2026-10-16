@@ -1,0 +1,32 @@
+{
+  "id": "case-18",
+  "track": "W1",
+  "title": "A proposal that cites an audit folder it was given, states what it does not establish, and claims no APR (clean control)",
+  "failure_list": [
+    7
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "rows = [float(l.split(',')[1]) for l in open('fees.csv').read().splitlines()[1:]]\nassert len(rows) == 30 and abs(sum(rows) - 414.0) < 0.01\nassert 'audit/PeckShield' in open('audit_listing.txt').read() and 'e29e49af' in open('audit_listing.txt').read()"
+  },
+  "notes": "audit_listing.txt: file names from github.com/revert-finance/v3utils @ e29e49af (MIT).",
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "W18c-control-an-audit-claim-bounded-to-what-was-supplied-and-no-apr"
+}

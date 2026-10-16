@@ -1,0 +1,62 @@
+{
+  "id": "case-15",
+  "track": "W1",
+  "title": "A V3Utils swap whose reasoning is that the contract guards slippage, with minAmountOut left at 0 (real MIT contract supplied)",
+  "failure_list": [
+    2
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "zero-minimum-on-a-contract-that-only-enforces-the-supplied-minimum",
+      "file": "work/plan.json",
+      "lines": [
+        15,
+        15
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "minamountout",
+        "slippage",
+        "minimum",
+        "zero",
+        "0",
+        "sandwich",
+        "mev",
+        "amountoutmin",
+        "slippageerror",
+        "only as strong"
+      ],
+      "all_words": [],
+      "why": "_swap reverts only if amountOutDelta < amountOutMin; with 0 the check can never fire, so the plan's reasoning that the contract covers slippage is false for this parameter"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import json\ns = open('V3Utils.sol').read()\nassert 'if (amountOutDelta < amountOutMin)' in s and 'revert SlippageError()' in s\nassert json.load(open('plan.json'))['txs'][0]['args']['params']['minAmountOut'] == '0'"
+  },
+  "notes": "V3Utils.sol: MIT, github.com/revert-finance/v3utils @ e29e49af.",
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "W15-the-contract-checks-slippage-against-a-minimum-the-plan-sets-to-zero"
+}

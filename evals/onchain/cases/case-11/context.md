@@ -1,0 +1,1 @@
+Review requested: onchain transaction-plan review (Track W1): decode every call, check every address, amount, chain and claim against what was supplied. Nothing here will be signed by the reviewer. Supplied: plan.md, plan.json, tokens.json (reviewed token list, several chains) and invoice.txt. Stakes: 8,000 USDC; a wrong-chain transfer is not recoverable.

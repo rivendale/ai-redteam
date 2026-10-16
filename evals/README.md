@@ -441,3 +441,12 @@ Reading the two single failures of v1.3 on hold-out 3 (106 of 108 as run) showed
   ("shows that/it/they/the/this").
 Rescoring every published assess run with the corrected scorer: hold-out 3 moves from 36, 35, 35 to 36, 36, 36 of 36; hold-out 1 (v1.2, #58 cases), hold-out 2 (v1.3, cases as run) and the dev runs of v1.2 do not move. The result
 as run (106 of 108, 98%) stays the published number; 108 of 108 is the number with the corrected scorer, and is labelled as such.
+
+## The onchain transaction-plan set (evals/onchain/cases, added 2026-10-16)
+
+18 development cases (10 with planted defects, 8 clean controls) for reviewing onchain transaction plans: address look-alikes and poisoning from history, a fake token imitating the native asset,
+approvals whose calldata contradicts the description, never-expiring Permit2 signatures, Safe administrative calls (enableModule, delegatecall, threshold, guard), swaps with a zero minimum, no
+deadline or a foreign recipient, wrong chain, bridged-versus-native USDC and decimals errors, keys and keyed RPC URLs in source and logs, and unsourced APR / TVL / "audited" claims. Every
+address, key and URL is invented. Two cases include unmodified MIT-licensed code from `revert-finance` (`V3Utils.sol` from v3utils at e29e49af, an excerpt of `lib/common.js` from liquidator-js
+at 6a94b77c), attributed in the file headers. Each control got two cold reads for defects the author missed. These are development cases: a separate hold-out is kept off this repository.
+Run and score as the others: `python3 evals/tools/verify_cases.py --cases evals/onchain/cases`, `python3 evals/score.py --cases evals/onchain/cases --reports OUTDIR --profile auto`.

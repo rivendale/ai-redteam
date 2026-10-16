@@ -1,0 +1,105 @@
+{
+  "id": "case-17",
+  "track": "W1",
+  "title": "A deposit justified by an APR, a TVL and an 'audited' claim with no source supplied for any of them",
+  "failure_list": [
+    7
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "unsourced-apr",
+      "file": "work/proposal.md",
+      "lines": [
+        3,
+        3
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "apr",
+        "18.4",
+        "source",
+        "unsourced",
+        "variable",
+        "historical",
+        "not supplied",
+        "cannot verify",
+        "no data"
+      ],
+      "all_words": [],
+      "why": "an APR stated as stable for a year, with no data supplied; APRs of vaults are variable and the 11,040 figure is derived from it"
+    },
+    {
+      "id": "P2",
+      "kind": "unsourced-tvl",
+      "file": "work/proposal.md",
+      "lines": [
+        4,
+        4
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "tvl",
+        "240",
+        "source",
+        "unsourced",
+        "not supplied",
+        "cannot verify",
+        "no data",
+        "liquidity"
+      ],
+      "all_words": [],
+      "why": "TVL stated with no source and used to argue liquidity depth"
+    },
+    {
+      "id": "P3",
+      "kind": "unsourced-audit-claim",
+      "file": "work/proposal.md",
+      "lines": [
+        5,
+        5
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "audit",
+        "audited",
+        "report",
+        "firm",
+        "unnamed",
+        "not named",
+        "no report",
+        "scope",
+        "source"
+      ],
+      "all_words": [],
+      "why": "two unnamed 'top firms' and no report; an audit claim is not evidence of low risk without scope and findings"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "s = open('proposal.md').read()\nimport os\nassert '18.4%' in s and '$240M' in s and 'Audited' in s and 'http' not in s\nassert sorted(os.listdir('.')) == ['plan.json', 'proposal.md']"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "W17-apr-tvl-and-audited-with-no-source"
+}

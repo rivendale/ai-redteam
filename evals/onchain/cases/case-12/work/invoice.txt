@@ -1,0 +1,1 @@
+Invoice INV-77. Amount due: 8,000.00 USDC (native USDC, Circle-issued) on Base (chain 8453). Payee address: 0x819f0f3c3c00a13827c8867dfc2ebabfa73d3ade. Not payable as bridged USDC.e or on another chain.

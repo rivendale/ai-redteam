@@ -1,0 +1,1 @@
+Review requested: onchain transaction-plan review (Track W1): decode every call, check every address, amount, chain and claim against what was supplied. Nothing here will be signed by the reviewer. Supplied: proposal.md and the plan (plan.json). No data export, audit report, link or screenshot was supplied for any figure in the proposal. Stakes: 60,000 USDC.

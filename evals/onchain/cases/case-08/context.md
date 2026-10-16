@@ -1,0 +1,1 @@
+Review requested: onchain transaction-plan review (Track W1): decode every call, check every address, amount, chain and claim against what was supplied. Nothing here will be signed by the reviewer. Supplied: plan.md, plan.json, address_book.json, tokens.json and safe_state.json. Stakes: the Safe holds the funds of five owners.

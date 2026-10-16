@@ -1,0 +1,9 @@
+{
+  "note": "Contracts approved by the owners",
+  "spenders": [
+    {
+      "name": "v3utils",
+      "address": "0x71d54020f95e857bd7f7b424047bd37c44c29067"
+    }
+  ]
+}

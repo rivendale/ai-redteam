@@ -1,0 +1,33 @@
+{
+  "id": "case-14",
+  "track": "W1",
+  "title": "A real MIT bot module that reads the signing key and the RPC URL from environment variables (clean control, attributed)",
+  "failure_list": [
+    2,
+    6
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "s = open('common_excerpt.js').read()\nassert 'process.env[\"PRIVATE_KEY_\" + mode]' in s and 'process.env[\"RPC_URL_\" + network.toUpperCase()]' in s and 'MIT License' in s and '6a94b77c7f4cc30da67c6680258922559a12587e' in s\nimport re\nassert not re.search(r'0x[0-9a-fA-F]{64}', s) and not re.search(r'/v2/[0-9a-zA-Z]{20,}', s)"
+  },
+  "notes": "common.js: MIT, github.com/revert-finance/liquidator-js @ 6a94b77c; attribution kept in the file header.",
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "W14c-control-keys-and-rpc-urls-come-from-the-environment"
+}
