@@ -1,0 +1,1 @@
+Review requested: claims review (Track C): check every number against the supplied report. Stakes: leadership decides on two support requisitions from this note. Supplied: summary.md and support_report.md.

@@ -1,0 +1,31 @@
+{
+  "id": "case-13",
+  "track": "C",
+  "title": "A large randomized, pre-registered test whose strong conclusion is exactly what the data supports (clean control for over-flagging)",
+  "failure_list": [
+    33
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import math\nc, v = 200 / 5000, 275 / 5000\nse = math.sqrt(c * (1 - c) / 5000 + v * (1 - v) / 5000)\nassert (v - c) - 1.96 * se > 0.005 and round((v - c) * 100, 1) == 1.5\nt = open('report.md').read()\nassert '5.50%' in t and '4.00%' in t and 'random' in t and 'in advance' in t and 'decision rule' in open('design.md').read()"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "T3d-control-a-strong-result-stated-strongly"
+}

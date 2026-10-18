@@ -1,0 +1,81 @@
+{
+  "id": "case-08",
+  "track": "C",
+  "title": "A results note citing a 27% drop in tickets to a report that is supplied and says 12.5%, and a headcount decision built on it",
+  "failure_list": [
+    2
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "figure-not-in-the-cited-source",
+      "file": "work/summary.md",
+      "lines": [
+        3,
+        3
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "27%",
+        "12.5",
+        "1,610",
+        "1,840",
+        "not in",
+        "source",
+        "recompute",
+        "36.8",
+        "32.2"
+      ],
+      "all_words": [],
+      "why": "the report gives 1,840 to 1,610 tickets (12.5%) and 36.8 to 32.2 per 1,000 orders (12.5%); 27% appears nowhere and cannot be derived from it"
+    },
+    {
+      "id": "P2",
+      "kind": "decision-built-on-the-unsupported-figure",
+      "file": "work/summary.md",
+      "lines": [
+        4,
+        4
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "requisition",
+        "two agents",
+        "headcount",
+        "agents",
+        "capacity",
+        "inflated",
+        "decision"
+      ],
+      "all_words": [],
+      "why": "the staffing recommendation inherits the overstated figure; about half the claimed saving is real"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('support_report.md').read()\ns = open('summary.md').read()\nassert '27%' in s and '27' not in t\nassert abs((1840 - 1610) / 1840 - 0.125) < 1e-9 and abs((36.8 - 32.2) / 36.8 - 0.125) < 1e-9\nassert 1840 / 50 == 36.8 and 1610 / 50 == 32.2"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "T1x-the-cited-report-does-not-contain-the-figure"
+}

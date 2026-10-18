@@ -1,0 +1,31 @@
+{
+  "id": "case-10",
+  "track": "C",
+  "title": "The same data compared like for like (all sign-ups, the whole baseline, an interval), with the completers' figure kept apart (clean control)",
+  "failure_list": [
+    33
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import csv\nrows = list(csv.DictReader(open('signups.csv')))\ndef ret(sel):\n    r = [x for x in rows if sel(x)]\n    return sum(int(x['retained_day30']) for x in r), len(r)\nassert ret(lambda x: x['month'] == '2026-04') == (41, 100)\nassert ret(lambda x: x['flow'] == 'v1') == (140, 300)\nassert ret(lambda x: x['flow'] == 'v2') == (104, 200)\nassert ret(lambda x: x['flow'] == 'v2' and x['completed_setup'] == '1') == (81, 140)\nt = open('report.md').read()\nassert '46.7%' in t and '52.0%' in t and '+5.3' in t and '57.9%' in t\nassert abs((104 / 200 - 140 / 300) * 100 - 5.33) < 0.01"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "T2c-control-same-cohort-same-baseline"
+}
