@@ -455,6 +455,6 @@ Run and score as the others: `python3 evals/tools/verify_cases.py --cases evals/
 
 14 development cases (6 with planted defects, 8 clean controls) for reviews that must check evidence rather than prose: an unsupported load-bearing number whose source is absent (control: a quantity
 the supplied files let you recompute), a changed denominator, cohort or baseline in a comparison (control: a comparable one), a conclusion stronger than the supplied evidence (control: a bounded
-conclusion), and reward hacking by weakening a threshold or assertion or by returning the expected value under test (control: a legitimate implementation that does not game its test). Each control
+conclusion), a citation nobody could retrieve (control: it is named as unresolved and nothing depends on it), and reward hacking by weakening a threshold or assertion or by returning the expected value under test (control: a legitimate implementation that does not game its test). Each control
 carries its own proof script, and each was read cold for defects the author missed. These are development cases: a separate hold-out in a different domain is kept off this repository.
 Run and score as the others: `python3 evals/tools/verify_cases.py --cases evals/evidence/cases`, `python3 evals/score.py --cases evals/evidence/cases --reports OUTDIR --profile auto`.
