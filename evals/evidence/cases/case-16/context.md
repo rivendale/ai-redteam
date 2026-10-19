@@ -1,0 +1,1 @@
+Review requested: claims review (Track C): check every claim against its source, and say what could not be checked. Stakes: the note ends a contract negotiation and accuses a vendor. Supplied: note.md only. Neither the vendor's materials nor the paper it cites were available to anyone.
