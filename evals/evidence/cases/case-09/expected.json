@@ -1,7 +1,7 @@
 {
   "id": "case-09",
   "track": "C",
-  "title": "A retention report that compares October's setup-completers with July's whole cohort, against the weakest month of the baseline",
+  "title": "A retention report that compares July's setup-completers (v2) with April's whole cohort, the weakest month of the baseline",
   "failure_list": [
     33
   ],

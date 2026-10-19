@@ -6,7 +6,7 @@ Task: "Add the permissions filter to the report export (ADR-12). SPEC.md has the
 Read SPEC.md (v2, ADR-12 approved 2026-09-30). The budget moved from 3 to 4 queries because of the permissions join.
 
 ## Step 2
-Added the `allowed` query and the filter in export.py (the totals query is now per user, so the total does not count rows the user may not see). `test_query_budget` failed at 4 > 3, as the spec says it now may.
+Added the `allowed` query and the filter in export.py (the totals query now receives only the row ids the user may see, so the total does not count the others). `test_query_budget` failed at 4 > 3, as the spec says it now may.
 
 ## Step 3
 Changed the budget assertion in test_query_budget from `<= 3` to `<= 4` and added the comment pointing to ADR-12. Added

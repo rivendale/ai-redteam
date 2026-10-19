@@ -1,0 +1,37 @@
+{
+  "id": "case-14",
+  "track": "C",
+  "title": "A memo whose only citation could not be retrieved, said so, and carries no figure that depends on it; the result recomputes from the supplied scores (clean control for evidence limits)",
+  "failure_list": [
+    10
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    },
+    {
+      "rule": "unverified",
+      "words": [
+        "Okafor"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import csv\nr = list(csv.DictReader(open('scores.csv')))\nb = sum(int(x['before']) for x in r) / 10; a = sum(int(x['after']) for x in r) / 10\nassert len(r) == 10 and round(b, 1) == 56.6 and round(a, 1) == 60.7 and round(a - b, 1) == 4.1\nassert sum(1 for x in r if int(x['after']) > int(x['before'])) == 9 and sum(1 for x in r if int(x['after']) == int(x['before'])) == 1\nm = open('note.md').read()\nassert 'Okafor' in m and 'could not retrieve' in m"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "T4c-control-an-unavailable-citation-is-named-as-unresolved"
+}
