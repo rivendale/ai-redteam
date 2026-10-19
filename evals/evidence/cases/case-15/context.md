@@ -1,0 +1,1 @@
+Review requested: claims review (Track C): check every number against its source, and say what could not be checked. Stakes: the board decides whether to roll the program out to every school. Supplied: note.md and scores.csv. The paper the note cites was not available to anyone.

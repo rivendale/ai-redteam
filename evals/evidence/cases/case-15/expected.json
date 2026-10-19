@@ -1,0 +1,89 @@
+{
+  "id": "case-15",
+  "track": "C",
+  "title": "A note that cites a paper nobody could retrieve as having established the effect size and uses it to rule out the no-comparison-group objection",
+  "failure_list": [
+    2,
+    10
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "unavailable-citation-treated-as-confirmed-support",
+      "file": "work/note.md",
+      "lines": [
+        8,
+        8
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "okafor",
+        "not retrieved",
+        "not supplied",
+        "unavailable",
+        "cannot verify",
+        "unverified",
+        "citation",
+        "not checked",
+        "paper"
+      ],
+      "all_words": [],
+      "why": "the paper was not available to anyone, yet the note states what it established and uses that to rule out the lack of a comparison group"
+    },
+    {
+      "id": "P2",
+      "kind": "decision-on-an-unchecked-citation",
+      "file": "work/note.md",
+      "lines": [
+        11,
+        11
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "every school",
+        "ten students",
+        "no comparison",
+        "rollout",
+        "roll out",
+        "generali",
+        "unchecked",
+        "one term"
+      ],
+      "all_words": [],
+      "why": "a rollout to every school rests on ten students, no comparison group and a citation that was not checked"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT",
+        "SHIP WITH FIXES"
+      ]
+    },
+    {
+      "rule": "unverified",
+      "words": [
+        "Okafor"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import csv\nr = list(csv.DictReader(open('scores.csv')))\nassert len(r) == 10 and round(sum(int(x['after']) - int(x['before']) for x in r) / 10, 1) == 4.1\nm = open('note.md').read()\nassert 'Okafor' in m and 'confirms' in m and 'retriev' not in m and 'not checked' not in m"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "T4-an-unavailable-paper-is-said-to-confirm-the-result"
+}
