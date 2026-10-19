@@ -1,0 +1,1 @@
+Review requested: claims review (Track C): check every number against its source, and say what could not be checked. Stakes: the board decides whether to run the program for another term. Supplied: note.md and scores.csv. The paper the note mentions was not available to anyone.

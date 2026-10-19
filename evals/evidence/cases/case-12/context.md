@@ -1,0 +1,1 @@
+Review requested: claims review (Track C): recompute the rates and check what the report claims against what the data and the design allow. Stakes: the old checkout is retired on the strength of this report. Supplied: report.md, results.csv and design.md.
