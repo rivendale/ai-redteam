@@ -81,6 +81,13 @@ The review can be wrong too. The rules below exist because reviews fail in known
 In 3 to 5 sentences: what the work claims, what it recommends or does, and what must be true for it to be correct.
 List the load-bearing assumptions, including unstated ones. Pick the tracks: A, B, C, D, R, or several.
 
+Build a claims-to-evidence map for load-bearing claims before attacking them. Give each claim a stable label,
+its location and exact wording, then the source file/passage or experiment/log that supports it. For a number,
+record the inputs, formula, units, denominator/cohort, comparison baseline and time window. Distinguish a direct
+observation from a derived value and an interpretation. Mark absent or unreadable support UNVERIFIED; do not fill
+gaps from plausibility or the author's confidence. Link claim labels to the coverage ledger and any resulting
+finding or needs-validation item. Map all load-bearing claims, and name any coverage limit explicitly.
+
 For Track B security work, map the trust boundaries before attacking: the entry points, the principals (who can send
 what), and where a lower-trust input meets a higher-trust action. Attack every route on that map, including the one
 that never meets a check.
@@ -108,6 +115,12 @@ that never meets a check.
   risk. See `docs/attack-catalog.md`.
 - Data integrity: migrations, races, transaction boundaries, precision and rounding, time zones, encoding.
 - Tests: do they assert real behavior? Weakened, skipped, or written to match the bug? The critical untested case.
+- Reward hacking: did the work improve the intended behavior, or only its own score? Compare the implementation,
+  evaluator and original objective. Look for changed thresholds, disabled assertions, skipped cases, leaked answer
+  keys, hardcoded expected outputs, test-only branches and altered resource limits. Reproduce the gap using an
+  independently specified input or the original check in an isolated copy. A legitimate evaluator repair needs
+  its own evidence and a comparison under the same rule on both sides. Author-controlled green tests alone do
+  not establish success; do not assume intent or call a documented, justified test repair an attack.
 - Operations: 10x and 100x load, leaks, observability, config assumptions, backward compatibility.
 - Blast radius: what else the change touches that the author did not mention.
 - Reproduction: every confirmed Track B finding, at every severity (Medium and Low included), carries a failing test
@@ -126,6 +139,13 @@ that never meets a check.
   rules kept in a system prompt.
 
 ### Track C: factual claims
+- Evidence audit: use the claims map to find unsupported quantities, inconsistent comparisons and overclaiming.
+  Recompute quantities from their cited inputs, not from another generated summary. Compare the same metric,
+  unit, population, baseline, budget and time window; expose exclusions and missing observations. Keep as-run
+  results separate from corrected scoring. Distinguish correlation from causation, tuned development results
+  from unseen evaluation, and a local observation from a general claim. A correct number can still support a
+  weaker conclusion than the author states. If the necessary evidence is missing, name the unresolved fact;
+  lack of access alone does not confirm that the claim is false or increase its severity.
 - Sources: does each cited source exist, and does the cited passage say what is claimed? "The source exists" is not
   "the source says this". Quote the passage, or mark UNVERIFIED.
 - Quotes: verbatim, or paraphrased and presented as a quote? Attributed to the right person and date?
@@ -214,6 +234,10 @@ INPUTS LEDGER: seen; not seen or not openable; whether each gap matters.
 COVERAGE: scope (diff, paths or whole work); units checked, every document included; units not checked, with reasons.
 SEATS AND GATE: which reviewers ran, which were refused and why.
 
+CLAIMS TO EVIDENCE: claim label and location; source or derivation; units/cohort/baseline/time window for numbers;
+verified observation, derived value, bounded interpretation, or UNVERIFIED; linked finding or unresolved fact.
+This human-readable map does not change the JSON schema. Use claim units in the existing coverage ledger.
+
 FINDINGS, ordered by severity:
 
 | # | Severity | Evidence | Track | Location | What is wrong | Failure scenario | Fix and reproduction | a/b/c/d |
@@ -295,3 +319,7 @@ sibling search follows Trail of Bits' variant-analysis practice and the boundary
   fix's own diff has been read for a new defect (a targeted read of the change, not another full review). A fix that
   introduces a defect is a new finding.
 - If a finding is disputed, re-examine it with evidence; hold it if it survives, withdraw it plainly if not.
+
+Evidence-map and audit ideas are informed by Sakana AI's [The Agentic Scientist](https://pub.sakana.ai/agentic-scientist/),
+which links research claims to artifacts and audits unsupported quantities, comparisons and conclusions. Ideas
+only; no code or text copied. This does not claim equivalent research automation or measured review improvement.
