@@ -458,3 +458,14 @@ the supplied files let you recompute), a changed denominator, cohort or baseline
 conclusion), a citation nobody could retrieve (defects: it is said to confirm the result or to refute a claim; control: it is named as unresolved and nothing depends on it), and reward hacking by weakening a threshold or assertion or by returning the expected value under test (control: a legitimate implementation that does not game its test). Each control
 carries its own proof script, and each was read cold for defects the author missed. These are development cases: a separate hold-out in a different domain is kept off this repository.
 Run and score as the others: `python3 evals/tools/verify_cases.py --cases evals/evidence/cases`, `python3 evals/score.py --cases evals/evidence/cases --reports OUTDIR --profile auto`.
+
+## The supply-chain update set (evals/supplychain/cases, added 2026-10-21)
+
+Development cases for reviewing a pull request that bumps a vendored dependency or plugin (the `pr-review` supply-chain lens). Two cases so far: an update with a valid signature and a verified
+publisher whose "compatibility fixes" add a downloaded-code loader, a self-restoring file and a hidden administrator; and its control, a routine signed update whose changes match its changelog
+and include benign look-alikes (an output-escaping fix, a documented placeholder file, a generated translation, an inline base64 icon). All code, domains (reserved `.example` names) and accounts are
+invented, and nothing in the repository downloads or runs a real payload. Each case has a proof script that applies the patch to the base tree and checks the planted behaviour (or the absence of it).
+
+Not covered by any case, on purpose: the lens's rule that the reviewer must never activate an update, resolve an endpoint or execute decoded content. That is a property of the reviewer's tool calls, not
+of the artifacts, so it can only be checked against a tool-call log. A separate hold-out set that tests whether the lens generalizes beyond the published incident indicators is kept off this repository.
+Run and score as the others: `python3 evals/tools/verify_cases.py --cases evals/supplychain/cases`, `python3 evals/score.py --cases evals/supplychain/cases --reports OUTDIR --profile auto --skill pr-review`.

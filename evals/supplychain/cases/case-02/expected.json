@@ -1,0 +1,33 @@
+{
+  "id": "case-02",
+  "track": "B",
+  "title": "The same kind of signed update from the same publisher whose changes match its changelog: an output-escaping fix, a documented placeholder file, a generated translation and an inline base64 icon (clean control)",
+  "failure_list": [
+    3,
+    9
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "shell": "W=$PWD; T=$(mktemp -d); cp -r base/. $T/ && cd $T && patch -p1 -s < $W/change.patch && python3 - <<'PYEND'\nimport pathlib, re\np = pathlib.Path(\"wp-content/plugins/acme-seo-pro\")\ntxt = {f.relative_to(p).as_posix(): f.read_text() for f in p.rglob(\"*\") if f.is_file()}\nassert \"Version: 2.4.2\" in txt[\"acme-seo-pro.php\"] and \"esc_html($GLOBALS\" in txt[\"includes/settings.php\"]\nurls = set(re.findall(r\"https?://[A-Za-z0-9.-]+\", \"\".join(txt.values())))\nassert urls == {\"https://updates.acme.example\"}, urls\nfor bad in (\"eval(\", \"wp_create_user\", \"set_role\", \"authorized_keys\", \"file_get_contents('http\", \"base64_decode\", \"gzinflate\"):\n    assert not any(bad in v for v in txt.values()), bad\nassert txt[\"includes/cache.php\"].count(\"wp_schedule_event\") == 1\nassert \"file_put_contents($f, '')\" in txt[\"includes/cache.php\"]\n\nPYEND"
+  },
+  "applies_to": [
+    "redteam",
+    "pr-review"
+  ],
+  "slug": "S1c-control-a-routine-signed-update-with-benign-lookalikes"
+}
