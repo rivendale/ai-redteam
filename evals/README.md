@@ -459,7 +459,7 @@ conclusion), a citation nobody could retrieve (defects: it is said to confirm th
 carries its own proof script, and each was read cold for defects the author missed. These are development cases: a separate hold-out in a different domain is kept off this repository.
 Run and score as the others: `python3 evals/tools/verify_cases.py --cases evals/evidence/cases`, `python3 evals/score.py --cases evals/evidence/cases --reports OUTDIR --profile auto`.
 
-## The supply-chain update set (evals/supplychain/cases, added 2026-10-21)
+## The supply-chain update set (evals/supplychain/cases, added 2026-10-20)
 
 Development cases for reviewing a pull request that bumps a vendored dependency or plugin (the `pr-review` supply-chain lens). Two cases so far: an update with a valid signature and a verified
 publisher whose "compatibility fixes" add a downloaded-code loader, a self-restoring file and a hidden administrator; and its control, a routine signed update whose changes match its changelog
