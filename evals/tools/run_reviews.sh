@@ -3,6 +3,8 @@
 # usage: run_reviews.sh SKILL.md OUTDIR [PARALLEL]   (ONLY=case-06,case-07 to run a subset; APPLIES=pr-review or plain for the cases that target it;
 # for the plain prompt pass prompts/adversarial-review.md as SKILL.md; CASES=evals/assess/cases with NOTE=assess for the
 # assess skill, whose output note asks for its own JSON block)
+# MODEL=<id> pins the reviewer model with --model (recommended: the lane passes --setting-sources "", so a model pinned in the user's settings is ignored and the account default is used).
+# Start it from an empty working directory (cd "$(mktemp -d)"), so no project instruction file in the current directory is loaded into the sealed session.
 # Each reviewer sees only: the skill text, the case's request/context/work (from tools/prepare.py), and the same
 # output-format note for every version. It never sees expected.json. No tools, no MCP servers, no settings files.
 set -u
@@ -34,7 +36,7 @@ review() {
   # --output-format json carries the report text plus model and token usage; the report is written unchanged to
   # case-NN.md and the raw output and usage to _meta/ (score.py reads case-NN.json in preference to the .md, so
   # nothing named case-*.json may sit beside the reports), so runs stay comparable and every result can state its cost.
-  timeout 900 claude -p --output-format json --tools "" --strict-mcp-config --mcp-config '{"mcpServers":{}}' \
+  timeout 900 claude -p ${MODEL:+--model "$MODEL"} --output-format json --tools "" --strict-mcp-config --mcp-config '{"mcpServers":{}}' \
     --setting-sources "" --permission-mode dontAsk --disallowedTools "Bash,Write,Edit,Read,WebFetch,WebSearch" \
     < "$OUT/$c.prompt" > "$OUT/_meta/$c.claude.json" 2> "$OUT/$c.err" || echo "$c failed rc=$?" >> "$OUT/failures.txt"
   python3 - "$OUT/_meta/$c.claude.json" "$OUT/$c.md" "$OUT/_meta/$c.usage.json" <<'PYX' || { echo "$c failed: unparsable json or run error" >> "$OUT/failures.txt"; rm -f "$OUT/$c.md"; }
