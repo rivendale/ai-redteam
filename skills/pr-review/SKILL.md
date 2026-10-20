@@ -17,6 +17,8 @@ Review one pull request at one exact commit, find what would break, and close it
 
 Pick the tier from what the change touches, not from its size or file type: a one-line config change that alters who can access what is High.
 
+For dependency or version-pin changes, apply the [supply-chain lens](#dependency-plugin-and-update-payload-changes) before assigning the tier; a version pin alone does not establish Low risk.
+
 | Tier | What it covers | Review |
 |---|---|---|
 | Low | Docs, version pins, tests only, and config that does not touch auth, permissions, secrets, network exposure or data handling | One independent read; the `redteam` skill is enough |
@@ -55,6 +57,50 @@ Before any code leaves this session, including to a subagent, decide which model
 | Suggested test | A test that would fail today and pass once fixed |
 
 A finding without a location and a concrete failure scenario is not a finding. Drop it.
+
+### Dependency, plugin and update-payload changes
+
+Apply this lens when the PR adds or bumps a dependency, vendors a plugin, changes an update
+payload, or changes its installer/update hooks. A version pin alone does not establish Low risk.
+Inspect the changed behavior before choosing Step 2's tier; new privilege or network exposure
+uses that step's High tier. A familiar publisher, signed package or trusted update channel does
+not replace this inspection.
+
+1. **Establish the comparison.** Compare the frozen base and head manifests/lockfiles and the
+   resolved executable payload, including vendored, generated, bundled and transitive code.
+   Inspect lifecycle/install scripts, registry-host or resolved-URL changes, removed or changed
+   integrity hashes, maintainer or package-name changes, CI `uses:` references and container
+   image-digest changes. These changes are not suspicious by themselves; trace their behavior
+   and provenance against the requested update.
+   Reconcile the diff's files and behavior with the stated change. An unexpectedly broad diff,
+   a missing payload, or an artifact/version mismatch needs an explanation. If the exact bytes
+   cannot be inspected, list them under FILES NEEDED BUT NOT PROVIDED and qualify coverage;
+   do not call a lockfile-only read a review of the package.
+2. **Trace new outbound destinations.** Identify added domains, URLs and dynamically assembled
+   endpoints, including downloaders, telemetry and update hooks. Compare destination and purpose
+   with the base and the requested feature. Record the changed file and line for each concern;
+   do not visit a suspicious endpoint to see what it serves.
+3. **Trace hidden execution.** Inspect obfuscated or encoded code, including base64/eval/gzinflate
+   chains. Follow its data flow to execution or file writes through static inspection; never
+   execute decoded content or activate the update. Benign encoded assets or documented minified
+   bundles are not malicious merely because they are encoded. If behavior cannot be established
+   safely, state precisely what remains unreviewed.
+4. **Check privilege and persistence.** Look for code that creates users, elevates roles, adds
+   SSH keys or writes authorized_keys, including constructed paths. Trace new scheduled jobs,
+   cron callbacks and other triggers that re-create removed files. Follow both the initial
+   write and the mechanism that restores it; inspecting only the first dropped file misses
+   a self-restoring payload. Compare each behavior with the authorized feature.
+5. **Report evidence, not a keyword verdict.** Every flag cites the changed `file:line` and a
+   concrete failure scenario using Step 5's existing P0/P1/P2/P3 format. State the new behavior,
+   its trigger and the expected boundary. Separate a supported finding from an unresolved
+   access/coverage gap. Do not invent a line for an unseen archive, infer malicious intent,
+   inflate severity because evidence is unavailable, or flag all ordinary updates. Absence
+   of known incident strings does not prove an update safe. Keep Step 7's adjudication and
+   Step 8's merge gates unchanged.
+
+Public motivating example: the vendor's [Rank Math PRO incident advisory](https://rankmath.com/kb/pro-3-0-123-security-incident/)
+describes compromised update packages and a backdoor that could return after removal. This is a
+behavioral review lens, not a signature list or a claim to detect every supply-chain attack.
 
 ## Step 6: Bound the spend
 
