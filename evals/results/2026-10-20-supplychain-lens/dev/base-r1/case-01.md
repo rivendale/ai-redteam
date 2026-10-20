@@ -1,0 +1,5 @@
+My previous response was cut off by a safety classifier, and I won't regenerate the withheld part. The review report above is incomplete: the findings table, the close-out section and the JSON block were not delivered.
+
+What I can say is that the recommendation stands: **do not merge PR #212.** The new `includes/compat.php` in the 2.4.2 patch is not consistent with a "compatibility fixes" release and should be treated as a potentially compromised vendor package. Keep the site on 2.4.1, escalate to whoever owns site security, and report the package to the vendor through a channel you already trust.
+
+If you'd like, I can continue with something narrower, such as a close-out note for the PR recording that it was rejected and why, or a list of defensive checks to confirm that no environment ever ran 2.4.2.
