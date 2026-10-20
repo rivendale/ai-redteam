@@ -17,6 +17,8 @@ Review one pull request at one exact commit, find what would break, and close it
 
 Pick the tier from what the change touches, not from its size or file type: a one-line config change that alters who can access what is High.
 
+For dependency or version-pin changes, apply the [supply-chain lens](#dependency-plugin-and-update-payload-changes) before assigning the tier; a version pin alone does not establish Low risk.
+
 | Tier | What it covers | Review |
 |---|---|---|
 | Low | Docs, version pins, tests only, and config that does not touch auth, permissions, secrets, network exposure or data handling | One independent read; the `redteam` skill is enough |
@@ -66,6 +68,10 @@ not replace this inspection.
 
 1. **Establish the comparison.** Compare the frozen base and head manifests/lockfiles and the
    resolved executable payload, including vendored, generated, bundled and transitive code.
+   Inspect lifecycle/install scripts, registry-host or resolved-URL changes, removed or changed
+   integrity hashes, maintainer or package-name changes, CI `uses:` references and container
+   image-digest changes. These changes are not suspicious by themselves; trace their behavior
+   and provenance against the requested update.
    Reconcile the diff's files and behavior with the stated change. An unexpectedly broad diff,
    a missing payload, or an artifact/version mismatch needs an explanation. If the exact bytes
    cannot be inspected, list them under FILES NEEDED BUT NOT PROVIDED and qualify coverage;
