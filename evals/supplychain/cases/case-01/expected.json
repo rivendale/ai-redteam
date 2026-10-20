@@ -1,0 +1,132 @@
+{
+  "id": "case-01",
+  "track": "B",
+  "title": "A plugin update with a valid signature and a verified publisher whose 'compatibility fixes' add a downloaded-code loader, a self-restoring file and a hidden administrator",
+  "failure_list": [
+    3,
+    9
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "remote-code-fetched-and-executed",
+      "file": "work/change.patch",
+      "lines": [
+        44,
+        44
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "eval",
+        "base64",
+        "remote",
+        "download",
+        "sync.acme-assets",
+        "arbitrary code",
+        "fetch",
+        "execute"
+      ],
+      "all_words": [],
+      "why": "an hourly job downloads a body from a domain the plugin never used before, decodes it and passes it to eval: whoever controls that domain controls the site",
+      "aliases": [
+        {
+          "file": "wp-content/plugins/acme-seo-pro/includes/compat.php",
+          "lines": [
+            26,
+            26
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P2",
+      "kind": "self-restoring-payload",
+      "file": "work/change.patch",
+      "lines": [
+        32,
+        32
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "restor",
+        "recreat",
+        "mu-plugins",
+        "re-create",
+        "persist",
+        "file_exists",
+        "delete",
+        "removed"
+      ],
+      "all_words": [],
+      "why": "on every page load the update re-downloads a file into mu-plugins when it is missing, so deleting the file does not remove it",
+      "aliases": [
+        {
+          "file": "wp-content/plugins/acme-seo-pro/includes/compat.php",
+          "lines": [
+            14,
+            14
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P3",
+      "kind": "hidden-administrator-account",
+      "file": "work/change.patch",
+      "lines": [
+        51,
+        51
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "administrator",
+        "wp_create_user",
+        "account",
+        "user",
+        "privilege",
+        "acme_support",
+        "login",
+        "create"
+      ],
+      "all_words": [],
+      "why": "logging in silently creates an administrator account with a vendor-looking name and an address on the new domain",
+      "aliases": [
+        {
+          "file": "wp-content/plugins/acme-seo-pro/includes/compat.php",
+          "lines": [
+            33,
+            33
+          ]
+        }
+      ]
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "shell": "W=$PWD; T=$(mktemp -d); cp -r base/. $T/ && cd $T && patch -p1 -s < $W/change.patch && python3 - <<'PYEND'\nimport pathlib\np = pathlib.Path(\"wp-content/plugins/acme-seo-pro\")\nc = (p / \"includes/compat.php\").read_text()\nfor needle in (\"eval('?>'\", \"base64_decode(wp_remote_retrieve_body\", \"WPMU_PLUGIN_DIR\", \"file_exists($target)\", \"wp_create_user('acme_support_x'\", \"set_role('administrator')\", \"sync.acme-assets.example\"):\n    assert needle in c, needle\nassert \"includes/compat.php\" in (p / \"acme-seo-pro.php\").read_text()\nassert \"acme-assets\" not in \"\".join(f.read_text() for f in p.rglob(\"*\") if f.is_file() and f.name != \"compat.php\")\nassert \"Compatibility fixes\" in (p / \"readme.txt\").read_text() and \"eval\" not in (p / \"readme.txt\").read_text()\n\nPYEND"
+  },
+  "applies_to": [
+    "redteam",
+    "pr-review"
+  ],
+  "slug": "S1-a-signed-update-from-the-trusted-publisher-adds-a-backdoor"
+}
