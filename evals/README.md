@@ -461,9 +461,9 @@ Run and score as the others: `python3 evals/tools/verify_cases.py --cases evals/
 
 ## The supply-chain update set (evals/supplychain/cases, added 2026-10-20)
 
-Development cases for reviewing a pull request that bumps a vendored dependency or plugin (the `pr-review` supply-chain lens). Two cases so far: an update with a valid signature and a verified
+Development cases for reviewing a pull request that bumps a vendored dependency or plugin (the `pr-review` supply-chain lens). Six cases so far (three defects, each with a clean control): an update with a valid signature and a verified
 publisher whose "compatibility fixes" add a downloaded-code loader, a self-restoring file and a hidden administrator; and its control, a routine signed update whose changes match its changelog
-and include benign look-alikes (an output-escaping fix, a documented placeholder file, a generated translation, an inline base64 icon). All code, domains (reserved `.example` names) and accounts are
+and include benign look-alikes (an output-escaping fix, a documented placeholder file, a generated translation, an inline base64 icon). The other two pairs: a package-lock change for a patch bump that points the package at a different registry host, marks it as running an install script and adds an unrelated package (control: a lockfile change of version and integrity only); and a CI-action update to a look-alike owner on a moving branch with a piped installer and a wider token (control: pinning the same action to its commit). All code, domains (reserved `.example` names) and accounts are
 invented, and nothing in the repository downloads or runs a real payload. Each case has a proof script that applies the patch to the base tree and checks the planted behaviour (or the absence of it).
 
 Not covered by any case, on purpose: the lens's rule that the reviewer must never activate an update, resolve an endpoint or execute decoded content. That is a property of the reviewer's tool calls, not

@@ -1,0 +1,41 @@
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -8,7 +8,7 @@
+       "name": "slug-service",
+       "version": "1.0.0",
+       "dependencies": {
+-        "tiny-slugger": "^2.0.3",
++        "tiny-slugger": "^2.0.4",
+         "left-trim": "^1.1.0"
+       }
+     },
+@@ -18,9 +18,15 @@
+       "integrity": "sha512-FisK5b/KO2CLDKoCkGP4CCD82J9sYpkalOMXk7JzCPgAcuO7/425vW012AczMV0KkGyRej/2V50DDdVB+fZEqQ=="
+     },
+     "node_modules/tiny-slugger": {
+-      "version": "2.0.3",
+-      "resolved": "https://registry.npmjs.org/tiny-slugger/-/tiny-slugger-2.0.3.tgz",
+-      "integrity": "sha512-AixRuRuzIkWyV46ul1kpAtxJlEJU7aBOAR3I0J1wgR8adl5T+3zTbamhFbTDaZTdgTTiOmanb6gMiNjKQRlm2g=="
++      "version": "2.0.4",
++      "resolved": "https://pkg-cache.example/tiny-slugger/-/tiny-slugger-2.0.4.tgz",
++      "integrity": "sha512-wEIbgAQKinKq8Ir51DPi+lselA2tIzPZRxkqzmqMohvakAkEzzSKc8BLHx5qOBidcM2xOnTanCiJnwAAPZbcJw==",
++      "hasInstallScript": true
++    },
++    "node_modules/post-fetcher": {
++      "version": "0.0.1",
++      "resolved": "https://pkg-cache.example/post-fetcher/-/post-fetcher-0.0.1.tgz",
++      "dev": false
+     }
+   }
+ }
+--- a/package.json
++++ b/package.json
+@@ -3,7 +3,7 @@
+   "version": "1.0.0",
+   "main": "src/slug.js",
+   "dependencies": {
+-    "tiny-slugger": "^2.0.3",
++    "tiny-slugger": "^2.0.4",
+     "left-trim": "^1.1.0"
+   }
+ }

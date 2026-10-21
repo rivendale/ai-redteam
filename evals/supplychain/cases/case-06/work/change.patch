@@ -1,0 +1,11 @@
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -7,7 +7,7 @@
+     runs-on: ubuntu-24.04
+     steps:
+       - uses: actions/checkout@0000000000000000000000000000000000000001
+-      - uses: acme-org/setup-tool@v2
++      - uses: acme-org/setup-tool@3f9a2c1d5b7e4a6081c2d3e4f5a6b7c8d9e0f1a2  # v2.4.0
+         with:
+           tool-version: "4.2"
+       - run: make test
