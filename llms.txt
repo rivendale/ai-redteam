@@ -15,6 +15,7 @@ Agents: start at AGENTS.md. People: start at README.md.
 - [prompts/adversarial-review.md](prompts/adversarial-review.md): redteam as a paste-in prompt for any model
 - [prompts/pr-review.md](prompts/pr-review.md): pr-review as a paste-in prompt
 - [prompts/assess.md](prompts/assess.md): assess as a paste-in prompt for chat assistants
+- [prompts/cross-disciplinary-review.md](prompts/cross-disciplinary-review.md): review a claim across disciplines, prior work first (prompt only, no skill)
 - [templates/assess-context.md](templates/assess-context.md): the blank context file assess reads (keep a filled copy private)
 
 ## Docs
