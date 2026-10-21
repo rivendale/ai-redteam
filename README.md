@@ -16,6 +16,7 @@ The repository has three skills. Paste-in prompts are also available:
 | [`prompts/pr-review.md`](prompts/pr-review.md) | Paste-in PR review prompt for any model |
 | [`skills/assess/SKILL.md`](skills/assess/SKILL.md) | Assess whether a link, tool, paper or idea serves the current goals and choose the next action |
 | [`prompts/assess.md`](prompts/assess.md) | Paste-in assess prompt for any model |
+| [`prompts/cross-disciplinary-review.md`](prompts/cross-disciplinary-review.md) | Paste-in prompt for reviewing a claim across disciplines: prior work first, one seat per field (prompt only, no skill) |
 
 ## What redteam does
 
