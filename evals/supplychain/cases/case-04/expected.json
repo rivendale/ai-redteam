@@ -1,0 +1,33 @@
+{
+  "id": "case-04",
+  "track": "B",
+  "title": "The same bump as a normal lockfile change: new version, new integrity hash, same registry, no install script, no new package (clean control)",
+  "failure_list": [
+    3,
+    9
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "shell": "W=$PWD; T=$(mktemp -d); cp -r base/. $T/ && cd $T && patch -p1 -s < $W/change.patch && python3 - <<'PYEND'\nimport json\nlk = json.load(open(\"package-lock.json\"))[\"packages\"]\nassert {v[\"resolved\"].split(\"/\")[2] for k, v in lk.items() if k and \"resolved\" in v} == {\"registry.npmjs.org\"}\nassert not any(v.get(\"hasInstallScript\") for v in lk.values()) and set(lk) == {\"\", \"node_modules/left-trim\", \"node_modules/tiny-slugger\"}\nassert lk[\"node_modules/tiny-slugger\"][\"version\"] == \"2.0.4\"\n\nPYEND"
+  },
+  "applies_to": [
+    "redteam",
+    "pr-review"
+  ],
+  "slug": "S2c-control-a-patch-bump-that-changes-only-version-and-integrity"
+}

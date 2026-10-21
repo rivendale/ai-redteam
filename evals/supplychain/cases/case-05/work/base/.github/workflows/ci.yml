@@ -1,0 +1,13 @@
+name: ci
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@0000000000000000000000000000000000000001
+      - uses: acme-org/setup-tool@v2
+        with:
+          tool-version: "4.2"
+      - run: make test
