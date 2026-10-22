@@ -10,6 +10,8 @@ for d in sys.argv[1:]:
     cost = sum(r.get("total_cost_usd") or 0 for r in rows)
     secs = sum(r.get("duration_ms") or 0 for r in rows) / 1000
     models = sorted({m for r in rows for m in r.get("models", [])})
+    mixed = sum(1 for r in rows if r.get("mixed_model")); stopped = sum(1 for r in rows if r.get("safety_stops"))
     print(f"{d}: {len(rows)} reviews, models {models}, input {tok('input_tokens')}, cache read "
           f"{tok('cache_read_input_tokens')}, cache write {tok('cache_creation_input_tokens')}, output "
-          f"{tok('output_tokens')}, list-price cost ${cost:.2f} (${cost/len(rows):.3f}/review), {secs/len(rows):.0f}s/review")
+          f"{tok('output_tokens')}, list-price cost ${cost:.2f} (${cost/len(rows):.3f}/review), {secs/len(rows):.0f}s/review"
+          + (f", {stopped} safety-stopped, {mixed} finished by a different model" if (stopped or mixed) else ""))

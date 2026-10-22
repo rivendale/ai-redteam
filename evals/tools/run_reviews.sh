@@ -40,19 +40,38 @@ review() {
     --setting-sources "" --permission-mode dontAsk --disallowedTools "Bash,Write,Edit,Read,WebFetch,WebSearch" \
     < "$OUT/$c.prompt" > "$OUT/_meta/$c.claude.json" 2> "$OUT/$c.err" || echo "$c failed rc=$?" >> "$OUT/failures.txt"
   python3 - "$OUT/_meta/$c.claude.json" "$OUT/$c.md" "$OUT/_meta/$c.usage.json" <<'PYX' || { echo "$c failed: unparsable json or run error" >> "$OUT/failures.txt"; rm -f "$OUT/$c.md"; }
-import json, sys
+import json, os, sys
 d = json.load(open(sys.argv[1]))
 # A failed run can still exit 0 (is_error true, or a non-success subtype): record it as a failure, never as a report,
 # or the case scores as a total miss and reads like a recall regression (second read of #13).
 if d.get("is_error") or d.get("subtype", "success") != "success":
     sys.exit(f"run error: subtype={d.get('subtype')} is_error={d.get('is_error')}")
 open(sys.argv[2], "w").write(d.get("result", ""))
-json.dump({"models": list((d.get("modelUsage") or {}).keys()), "usage": d.get("usage"),
+# After a safety stop the CLI can silently finish the review with a DIFFERENT model (seen on 2026-10-22: Opus 4.8 wrote most of
+# the output of reviews that were pinned to Opus 5.5). Record which model produced how many output tokens and flag such a review,
+# so a mixed-model report is never scored as if the pinned model had written it.
+usage_by_model = d.get("modelUsage") or {}
+out_by_model = {m: (u or {}).get("outputTokens", 0) for m, u in usage_by_model.items()}
+wanted = os.environ.get("MODEL") or os.environ.get("ANTHROPIC_MODEL") or ""
+producers = sorted(m for m, t in out_by_model.items() if t)         # every model that actually produced output tokens
+# With a pinned model, anything else that produced output is a fallback. Without one (the account default), the requested identity is
+# unknown, but two producers are still observable and the review is mixed: never report a mixed review as a single-model result.
+other = sorted(m for m in producers if m != wanted) if wanted else (producers if len(producers) > 1 else [])
+mixed = bool(other) if wanted else len(producers) > 1
+flagged = mixed or bool(d.get("safety_stops"))
+json.dump({"models": list(usage_by_model.keys()), "output_tokens_by_model": out_by_model, "requested_model": wanted or None,
+           "requested_model_known": bool(wanted), "producers": producers, "single_model": len(producers) == 1,
+           "fallback_models": other, "safety_stops": d.get("safety_stops") or 0, "mixed_model": mixed,
+           "usage": d.get("usage"),
            "total_cost_usd": d.get("total_cost_usd"), "duration_ms": d.get("duration_ms"),
            "num_turns": d.get("num_turns")}, open(sys.argv[3], "w"), indent=1)
+if flagged:
+    with open(os.path.join(os.path.dirname(os.path.dirname(sys.argv[3])), "fallback.txt"), "a") as f:
+        f.write(f"{os.path.basename(sys.argv[2])[:-3]} safety_stops={d.get('safety_stops') or 0} fallback_models={','.join(other) or '-'} requested_model_known={'yes' if wanted else 'no'}\n")
 PYX
 }
 export -f review
 ls -d "$prep"/case-* | xargs -P "$par" -I{} bash -c 'review "$@"' _ {}
 echo "reports: $(ls "$out"/case-*.md 2>/dev/null | wc -l) of $(ls -d "$prep"/case-* | wc -l)"
+[ -s "$out/fallback.txt" ] && echo "WARNING: $(wc -l < "$out/fallback.txt") review(s) had a safety stop or were finished by a different model (see $out/fallback.txt); do not score them as the pinned model without saying so"
 rm -rf "$prep"
