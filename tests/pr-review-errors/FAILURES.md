@@ -10,3 +10,9 @@
 - Successful, skipped, and fork-denied runs change behavior or gain secret access.
 
 Validation uses synthetic HTTP errors and a mocked opener. No key, network, model call, or retry.
+
+Independent review follow-up, October 22, 2026:
+- BadStatusLine or IncompleteRead escapes the transport and leaks its message through a traceback.
+- Deeply nested JSON raises RecursionError and escapes the CLI boundary.
+- A local refusal still hides which fixed input/configuration guard fired.
+- An unexpected internal exception bypasses the fixed diagnostic boundary.
