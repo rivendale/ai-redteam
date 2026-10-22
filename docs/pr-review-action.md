@@ -132,3 +132,8 @@ The trusted-base checkout action now uses the same full v5.1.0 commit as the off
 The exact-workflow security allowlist was updated for that single pin change; all eligibility guards remain.
 Run `python3 tests/test_pr_review_room.py` for the request budget, all incomplete stop-reason categories,
 a hostile value, completed text and the retained character ceiling. Tests make no provider call.
+
+The non-streaming provider request has a 480-second socket timeout. This sizes for the full
+output budget at an assumed 40 tokens per second plus 60 seconds of margin, inside the
+10-minute job limit. This is a budget assumption, not a latency guarantee. GitHub requests
+retain their 90-second timeout. Timeouts still report `provider timeout`; no retry is added.

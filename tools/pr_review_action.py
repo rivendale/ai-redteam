@@ -5,6 +5,8 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 LIMIT=2*1024*1024
 MODEL_MAX_TOKENS=16384
+# One non-streaming generation; leave margin inside the 10-minute job deadline.
+PROVIDER_TIMEOUT_SECONDS=480
 STOP_REASONS=frozenset(('max_tokens','stop_sequence','tool_use','pause_turn','refusal','model_context_window_exceeded'))
 LOCAL_CODES={
  'redirect refused':'redirect','response exceeds limit':'response_limit',
@@ -57,7 +59,7 @@ def exchange(url,headers,data=None):
  service='provider' if url=='https://api.anthropic.com/v1/messages' else 'github'
  try:
   request=urllib.request.Request(url,headers=headers,data=data,method='POST' if data is not None else 'GET')
-  with urllib.request.build_opener(NoRedirect).open(request,timeout=90) as response:raw=response.read(LIMIT+1)
+  with urllib.request.build_opener(NoRedirect).open(request,timeout=PROVIDER_TIMEOUT_SECONDS if service=='provider' else 90) as response:raw=response.read(LIMIT+1)
  except urllib.error.HTTPError as error:
   kind=provider_error_type(error) if service=='provider' else 'unknown_error'
   error.close()
