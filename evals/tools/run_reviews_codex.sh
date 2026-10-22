@@ -31,7 +31,13 @@ cleanup() {
   fi
   rm -rf "$chome" "$prep" "$probe_home"
 }
-trap cleanup EXIT; trap 'exit 143' TERM; trap 'exit 130' INT
+# A foreground child defers a Bash trap until it exits, so the reviews run in their own process group in the background and the lane
+# waits on them with `wait`, which a trapped signal interrupts at once; the handler then ends the whole group before cleanup runs.
+xpid=
+# `timeout` moves its command into a process group of its own, so a group kill alone misses it: walk the process tree as well.
+kill_tree() { local c; for c in $(pgrep -P "$1" 2>/dev/null); do kill_tree "$c"; done; kill -TERM "$1" 2>/dev/null; }
+stop_reviews() { if [ -n "$xpid" ]; then kill_tree "$xpid"; kill -TERM -- "-$xpid" 2>/dev/null; sleep 0.3; kill -KILL -- "-$xpid" 2>/dev/null; wait "$xpid" 2>/dev/null; fi; }
+trap 'stop_reviews; exit 143' TERM; trap 'stop_reviews; exit 130' INT; trap 'stop_reviews; cleanup' EXIT
 [ -f "$real_home/auth.json" ] || { echo "no auth.json under $real_home: sign in to Codex first" >&2; exit 2; }
 probe_home=$(mktemp -d)
 probe() { env -i HOME="$1" PATH="$PATH" bash -c "$2 --version" >/dev/null 2>&1; }
@@ -81,7 +87,10 @@ PY2
   rm -rf "$w" "$h"
 }
 export -f review
-ls -d "$prep"/case-* | xargs -P "$par" -I{} bash -c 'review "$@"' _ {}
+ls -d "$prep"/case-* | setsid xargs -P "$par" -I{} bash -c 'review "$@"' _ {} &
+xpid=$!
+wait "$xpid"
+xpid=
 [ -s "$out/fallback.txt" ] && echo "WARNING: some reviews were finished by a different model than CODEX_MODEL (see $out/fallback.txt)" >&2
 echo "reports: $(ls "$out"/case-*.md 2>/dev/null | wc -l) of $(ls -d "$prep"/case-* | wc -l)"
 python3 "$here/evals/tools/scan_secrets.py" "$out" || { echo "SECRET SCAN FAILED: do not publish $out"; exit 1; }
