@@ -95,4 +95,12 @@ class ParserFailureTests(unittest.TestCase):
    def broken(*args):raise kind(b'fixture')
    r=m.check_pr('example/review',7,'a'*40,'c'*40,1,broken,{})
    self.assertEqual(r['status'],'partial');self.assertIn('known-bad check did not run',m.render(r))
+class ManifestPathTests(unittest.TestCase):
+ def test_nested_requirement_files_are_queried(self):
+  for path in ('requirements/base.txt','service/requirements/dev.in','constraints/build.txt'):
+   r=m.scan_changes([change(path,'','Example_Pkg==1.2.3\n')],Recorded())
+   self.assertEqual(r['status'],'complete');self.assertEqual(r['queries'],[{'package':{'ecosystem':'PyPI','name':'example-pkg'},'version':'1.2.3'}])
+ def test_unrecognized_require_syntax_has_gap(self):
+  r=m.scan_changes([change('go.mod','','require(\nexample.org/a v1.2.3\n)\n')],Recorded())
+  self.assertEqual(r['status'],'partial')
 if __name__=='__main__':unittest.main()

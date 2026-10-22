@@ -20,3 +20,5 @@ Independent review follow-up, October 22, 2026:
 - HTTP parser exceptions escape the OSV and GitHub-content paths without publishing a coverage gap.
 - A large diff is refused before the independent dependency lookup, hiding a bad lockfile bump.
 - More than 200 files prevents enumeration without an explicit known-bad coverage report.
+- Nested requirements/base.txt and constraints/development.in are overlooked by filename-only recognition.
+- An unrecognized go.mod require form silently yields no references and no coverage gap.
