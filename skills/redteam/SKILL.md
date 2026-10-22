@@ -138,6 +138,37 @@ that never meets a check.
   not by version or schema hash; a retrieval index without per-tenant filtering at query time; secrets or approval
   rules kept in a system prompt.
 
+### Self-hosted service exposure (Track B; plans in Tracks A and D)
+
+For each service, especially an admin console or code-hosting surface, name the owner and
+map internet reachability through the actual DNS, proxy, ingress, firewall and listener
+configuration. A login page, TLS or an "internal" label does not establish a network boundary.
+For a plan, name the proposed enforced boundary and the artifact that will verify deployment.
+Do not scan real targets or change services during the review.
+
+Require an inventory of running service versions, image digests, embedded runtimes and last
+verification dates, with a named patch owner, routine cadence and urgent-advisory response path.
+Trace the update through rollout/restart and a read of the consuming process version. An
+installed package, rebuilt image or earlier patch ticket does not establish what runs now.
+For an internet-reachable admin/code-hosting surface, inspect the pre-authentication attack
+paths too; application login does not protect code that runs before authentication.
+
+A confirmed finding names the actual exposure and the missing control, its location, a concrete
+failure scenario and the patch/inventory/boundary evidence needed to fix it. Follow the existing
+severity questions, evidence states, reproduction, boundary and sibling-search requirements.
+Missing access or an unknown version limits coverage; it does not confirm RCE or compromise.
+An enforced private-only boundary and a maintained, verified patch plan are clean evidence,
+not reasons for a generic warning. Patching a vulnerability does not establish that previous
+compromise or stolen credentials have been removed.
+
+Use dated vendor advisories for affected/fixed versions. Separate verified fixes from reports
+of incomplete fixes, and record later corrections. Do not suppress a vendor-recommended update
+on an unconfirmed bypass claim. The [GitLab patch advisory](https://docs.gitlab.com/releases/patches/patch-release-gitlab-19-5-1-released/)
+is a public motivation for reviewing exposed code-hosting services, not evidence about the target.
+See the [failure list](../../docs/failures/week-1021-exposure.md) and
+[independent eval request](../../docs/week-1021-exposure-eval-request.md). This candidate is unscored;
+it does not change schema 2.3 or claim to replace vulnerability scanning or operational ownership.
+
 ### Track C: factual claims
 - Evidence audit: use the claims map to find unsupported quantities, inconsistent comparisons and overclaiming.
   Recompute quantities from their cited inputs, not from another generated summary. Compare the same metric,
