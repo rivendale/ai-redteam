@@ -1,0 +1,11 @@
+# exported 2026-10-18 from the host (nft list ruleset, full)
+table inet filter {
+  chain input {
+    type filter hook input priority 0; policy drop;
+    iifname "lo" accept
+    ct state established,related accept
+    udp dport 51820 accept                          # VPN transport
+    iifname "wg0" tcp dport { 22, 443 } accept      # SSH and the code host, VPN peers only
+  }
+  chain forward { type filter hook forward priority 0; policy drop; }
+}

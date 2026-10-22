@@ -1,0 +1,32 @@
+{
+  "id": "case-02",
+  "track": "A",
+  "title": "The same service done properly: no public listener, default-deny rules exported from the host, a named patch owner with cadence and a same-day urgent path, and an inventory of versions read from the running processes (clean control)",
+  "failure_list": [
+    1,
+    3
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "shell": "python3 - <<'PYEND'\nt = open('plan.md').read()\nassert 'default-deny' in t and 'within 24 hours' in t and 'policy drop' in open('firewall-rules.txt').read() and 'Running version' in open('inventory.md').read()\nPYEND"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "EX02-control-the-same-code-hosting-service-reachable-only-over-a-vpn-with-deployed-rules-a-named-patch-owner-and-a-running-version-inventory"
+}

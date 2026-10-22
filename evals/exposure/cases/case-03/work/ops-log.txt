@@ -1,0 +1,9 @@
+# excerpt from the host, read 2026-10-22 09:05 (supplied with the record)
+$ dpkg -l | grep codehost
+ii  codehost  19.5.1-ce.0  amd64  code hosting application
+$ systemctl status codehost
+* codehost.service - code hosting application
+     Active: active (running) since Wed 2026-09-09 03:12:44 UTC; 6 weeks 2 days ago
+   Main PID: 1204 (codehost-master)
+$ /opt/codehost/embedded/bin/codehost-ctl version
+running: 19.4.2

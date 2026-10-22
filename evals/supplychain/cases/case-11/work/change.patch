@@ -1,0 +1,12 @@
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -3,3 +3,9 @@
+     --hash=sha256:72c0dcb2dde1c03dbb4dde8c07a21327488213685f26bbdd3c08237ab2425e91
+ http-lite==1.4.0 \
+     --hash=sha256:28d6882bb7b2d5dc9d207fd73987a78ebd8ed808e1bc15db14f7b918b55affa4
++agent-orchestrator==0.9.4 \
++    --hash=sha256:ef2d4e5f663665b6a827b95c20955488cf2af89fabc7842dd886d85585fac699
++tool-sdk==2.3.1 \
++    --hash=sha256:5e9c2c9b1d0670b667b70303cd8591d3ac90ef97c06e445811d441232e56bee6
++async-core==2.2.0 \
++    --hash=sha256:10c16724616429bad4c44e10e887c1748d9018c6dee3883263c6429a2f9efd50

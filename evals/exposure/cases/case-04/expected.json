@@ -1,0 +1,32 @@
+{
+  "id": "case-04",
+  "track": "A",
+  "title": "A deliberately public status page: static hosting, no admin surface, scoped deploy token, named patch owner and cadence, pinned versions, and the vendor fix applied while an unconfirmed incomplete-patch rumour is merely tracked (clean control)",
+  "failure_list": [
+    1,
+    3
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "shell": "python3 - <<'PYEND'\nt = open('plan.md').read()\nassert 'deliberately public' in t and 'no administrator console' in t and 'install 2.9.3 now as the vendor advises' in t\nPYEND"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "EX04-control-an-intentionally-public-static-status-page-with-an-owner-pinned-versions-and-a-vendor-fix-applied-despite-an-unconfirmed-rumour"
+}

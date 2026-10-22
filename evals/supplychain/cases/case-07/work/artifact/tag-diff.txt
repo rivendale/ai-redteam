@@ -1,0 +1,9 @@
+diff --git a/llm_router/retry.py b/llm_router/retry.py
+--- a/llm_router/retry.py
++++ b/llm_router/retry.py
+@@ -10,7 +10,9 @@ class Retry:
+-    def wait(self, attempt):
+-        return 0.5 * attempt
++    def wait(self, attempt):
++        # jittered exponential backoff for 429/503
++        return min(30.0, 0.5 * (2 ** attempt)) * (0.5 + random.random() / 2)

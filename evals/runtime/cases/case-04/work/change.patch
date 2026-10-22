@@ -1,0 +1,14 @@
+--- a/worker/Dockerfile
++++ b/worker/Dockerfile
+@@ -1,9 +1,9 @@
+-FROM node:24.22.0-bookworm-slim@sha256:e37b89c5afa36c913b91c070df40f185b7fd55d32daaac4398396131a9d12487 AS build
++FROM node:24.22.1-bookworm-slim@sha256:4c30193dbe1dc4bfbb023158c9756bb0afdd0405d744aa56786aa763726f04aa AS build
+ WORKDIR /srv
+ COPY package.json .
+ COPY src ./src
+ 
+-FROM node:24.22.0-bookworm-slim@sha256:e37b89c5afa36c913b91c070df40f185b7fd55d32daaac4398396131a9d12487
++FROM node:24.22.1-bookworm-slim@sha256:4c30193dbe1dc4bfbb023158c9756bb0afdd0405d744aa56786aa763726f04aa
+ WORKDIR /srv
+ COPY --from=build /srv /srv
+ USER node

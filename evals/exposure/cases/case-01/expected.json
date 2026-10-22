@@ -1,0 +1,85 @@
+{
+  "id": "case-01",
+  "track": "A",
+  "title": "A plan to self-host a code-hosting service with its administrator console on the public internet behind only a login, a floating image tag, no patch owner or cadence and no version inventory, while CI runners hold deploy keys",
+  "failure_list": [
+    1,
+    3
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "internet-reachable-admin-and-code-hosting-surface",
+      "file": "work/plan.md",
+      "lines": [
+        10,
+        10
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "internet",
+        "public",
+        "exposed",
+        "admin",
+        "/admin",
+        "443",
+        "vpn",
+        "allowlist",
+        "pre-auth",
+        "unauthenticated",
+        "network boundary",
+        "firewall"
+      ],
+      "all_words": [],
+      "why": "the code host and its administrator console are reachable by anyone; a login page and two-factor authentication do not protect the code that runs before authentication, so one pre-authentication flaw exposes all source and the production deploy keys"
+    },
+    {
+      "id": "P2",
+      "kind": "no-patch-owner-cadence-or-inventory",
+      "file": "work/plan.md",
+      "lines": [
+        15,
+        15
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "patch",
+        "cadence",
+        "update",
+        "inventory",
+        "latest",
+        "advisory",
+        "urgent"
+      ],
+      "all_words": [],
+      "why": "no named owner, no routine, no urgent-advisory path and no inventory of the running version or image digest, on a service whose critical flaws are published and exploited within hours"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "shell": "python3 - <<'PYEND'\nt = open('plan.md').read()\nassert 'Port 443 open to the internet' in t and '/admin' in t and 'when someone remembers' in t and 'latest' in t\nPYEND"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "EX01-a-self-hosted-code-hosting-server-and-admin-console-open-to-the-internet-with-no-patch-owner-and-no-inventory"
+}

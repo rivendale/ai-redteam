@@ -1,0 +1,1 @@
+2026-10-21 14:20 UTC, security-reviewer (a different person from the PR author), PR thread comment: approved the cooldown exception for ADV-2026-0412 after comparing the wheel hash with the advisory page and reading the 6-line parser diff in artifact/tag-diff.txt.

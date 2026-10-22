@@ -1,0 +1,84 @@
+{
+  "id": "case-03",
+  "track": "A",
+  "title": "A patch record for a critical code-hosting flaw that treats the installed package as the running version: the host log shows the service has not restarted since September and reports the old version, and no follow-up is planned",
+  "failure_list": [
+    1,
+    3
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "installed-version-taken-for-running-version",
+      "file": "work/patch-record.md",
+      "lines": [
+        6,
+        6
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "running",
+        "restart",
+        "installed",
+        "19.4.2",
+        "not applied",
+        "old version",
+        "process",
+        "uptime",
+        "ops-log"
+      ],
+      "all_words": [],
+      "why": "the log excerpt shows the process started on 2026-09-09 and reports 19.4.2; installing the package did not change what runs, so the server is still vulnerable although the ticket says patched"
+    },
+    {
+      "id": "P2",
+      "kind": "patch-taken-as-proof-of-no-earlier-compromise",
+      "file": "work/patch-record.md",
+      "lines": [
+        19,
+        19
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "rotate",
+        "credential",
+        "deploy key",
+        "compromise",
+        "exposure window",
+        "logs",
+        "earlier",
+        "since",
+        "follow-up"
+      ],
+      "all_words": [],
+      "why": "even once the running version is fixed, the window since publication of the flaw is unreviewed and the deploy keys the server holds are not rotated; 'never exposed to the internet' is asserted for office and VPN access only"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "shell": "python3 - <<'PYEND'\nt = open('patch-record.md').read(); l = open('ops-log.txt').read()\nassert 'patched' in t and 'running: 19.4.2' in l and 'since Wed 2026-09-09' in l\nPYEND"
+  },
+  "applies_to": [
+    "redteam"
+  ],
+  "slug": "EX03-a-ticket-closed-as-patched-because-the-new-package-is-installed-while-the-service-has-run-the-old-version-since-september"
+}

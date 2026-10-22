@@ -1,0 +1,17 @@
+--- a/Dockerfile
++++ b/Dockerfile
+@@ -1,4 +1,4 @@
+-FROM python:3.12-slim@sha256:0b15827cac5930149321dc18ad00b22cf5f8f0afcbdf53e0fe6336d6978e0fcc
++FROM python:3
+ WORKDIR /srv
+ COPY app ./app
+ CMD ["python", "-m", "app.notify"]
+--- a/app/notify.py
++++ b/app/notify.py
+@@ -4,4 +4,5 @@
+ 
+ 
+ def send(order_id: str) -> None:
+-    requests.post(WEBHOOK, json={"order": order_id}, timeout=5)
++    # TODO: turn verification back on once the partner fixes their certificate chain
++    requests.post(WEBHOOK, json={"order": order_id}, timeout=5, verify=False)

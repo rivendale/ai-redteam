@@ -1,0 +1,6 @@
+diff --git a/llm_router/client.py b/llm_router/client.py
+--- a/llm_router/client.py
++++ b/llm_router/client.py
+@@ -41 +41 @@ class Client:
+-        timeout = 30
++        timeout = 60  # long completions were cut off
