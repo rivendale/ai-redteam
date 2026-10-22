@@ -38,7 +38,7 @@ The separate baseline capabilities-to-README anchor was also repaired. The origi
 
 ## Result-source boundary
 
-The public comparison account supports 192 reviews and the no-gain conclusion. Exact requested
-42/42 development and 27/29 hold-out aggregates are not in that public record as checked October 22.
+The public comparison account supports 192 reviews and the no-gain conclusion. The exact requested
+development and hold-out aggregates are not in that public record as checked October 22.
 They are omitted from the README until a public source can be cited; the draft PR tracks this remaining
 source requirement. No private report, off-repository case or answer key is copied into the public repo.

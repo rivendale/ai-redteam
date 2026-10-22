@@ -17,6 +17,8 @@ including packaging work around v2.3.2 and later untagged changes. It does not d
 | Model attribution | Per-review producer/token records, safety-stop warnings and correct unpinned mixed-model detection ([#96](https://github.com/rivendale/ai-redteam/pull/96)). Mixed-model reviews are separate evidence, not pure pinned-model results. |
 | Documentation polish in this PR | Two-minute opening, sourced worked example, CLI paths, dated results, badges and review-flow diagram; docs/evaluation-request indexes with legacy URL stubs; dated stale-content audit. No skill, prompt, scorer, runner, fixture or manifest behavior changes. |
 
+<a id="plugin-232-prepared-tag-created-by-the-maintainer-after-review"></a>
+
 ## Plugin 2.3.2 (released October 16, 2026)
 
 The plugin bundles redteam, assess and pr-review. The plugin version follows the released redteam text;
