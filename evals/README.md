@@ -1,6 +1,6 @@
 # Evals for the redteam and pr-review skills
 
-87 cases, 34 of them clean controls, added in five rounds (below). The first 23 were written from `docs/SPEC.md` (the four tracks, the
+The baseline suite contains 87 cases, 34 of them clean controls, added in five rounds (below). The first 23 were written from `docs/SPEC.md` (the four tracks, the
 v2 additions and the failure list) and the README only. They were not written from either version of the skill text or its prompt, so
 the cases are not shaped around them.
 
@@ -25,7 +25,7 @@ Case folders have neutral names so the folder does not give the defect away. `ex
 ## Running it
 
 ```
-python3 evals/tools/verify_cases.py            # ground truth for the cases (49/49)
+python3 evals/tools/verify_cases.py            # ground truth for the selected baseline cases
 python3 evals/score.py --self-check            # the scorer against reports built from the cases (must end "all checks hold")
 python3 evals/tools/prepare.py /tmp/review     # what a reviewer may see
 # run the skill on each /tmp/review/case-NN, save its report as reports/case-NN.md (or .json), then:
@@ -205,7 +205,7 @@ nothing in them is a real credential.
 
 `score.py --profile v2.3` applies the v2.2 rules plus the ones the v2.3 section adds, split so a v2.2 text and a v2.3 text can be compared fairly:
 
-- **Counted in `violations` (a v2.2 text can meet them):** FL21 (a document the reviewer was given is missing from coverage; the same check as FL17, labelled FL21 for
+- **Counted in `violations` (a v2.2 text can meet them):** FL21 (a document the reviewer was given is missing from coverage; the same check as FL17, labeled FL21 for
   documents), FL23 first half (the report says it ran code; the sealed lane has no tools), FL26 (a case that names `scope.out` units: none may appear as checked),
   FL27 (a case with `history_secret: true`: the report must search history or say it did not).
 - **Counted in `v23_only` and printed apart (need the v2.3 text):** the schema 2.3 field rules (`boundary`, `siblings_searched`, `security`, the `reason` list, checked only
@@ -401,7 +401,7 @@ for either skill. This is a measurement fix applied to both skills equally.
 ### Assess cases fixed after reading the v1.3 runs (2026-10-09)
 
 Reading the v1.3 run on hold-out 2 (30, 32, 30 of 36) and on the dev set showed that every failure I could trace was a fault in a case or in one of my rule words, not in the skill. The run
-stays published as run. Everything below is a **dev case from now on** and any rerun of it is a labelled number.
+stays published as run. Everything below is a **dev case from now on** and any rerun of it is a labeled number.
 
 Rule words that matched a TRUE claim or a topic word, found in the reports: `abandoned` (my invented-risk word) matched this shop's goal "abandoned carts" (control 34, all three runs);
 `75%` matched a claim the reports rightly marked UNVERIFIED (control 35); `0.1%` and `60%` matched the true claims "reads in steps of 0.1%" and "best week showed a 60% drop on 14 parcels" while the
@@ -440,7 +440,7 @@ Reading the two single failures of v1.3 on hold-out 3 (106 of 108 as run) showed
 - `no_popularity_evidence` read the noun in "the author hosts a top-ten show with 300,000 followers" as the verb "shows" in its list of conclusion words ("shows the trick works"). The verb now needs an object word
   ("shows that/it/they/the/this").
 Rescoring every published assess run with the corrected scorer: hold-out 3 moves from 36, 35, 35 to 36, 36, 36 of 36; hold-out 1 (v1.2, #58 cases), hold-out 2 (v1.3, cases as run) and the dev runs of v1.2 do not move. The result
-as run (106 of 108, 98%) stays the published number; 108 of 108 is the number with the corrected scorer, and is labelled as such.
+as run (106 of 108, 98%) stays the published number; 108 of 108 is the number with the corrected scorer, and is labeled as such.
 
 ## The onchain transaction-plan set (evals/onchain/cases, added 2026-10-16)
 
@@ -464,7 +464,7 @@ Run and score as the others: `python3 evals/tools/verify_cases.py --cases evals/
 Development cases for reviewing a pull request that bumps a vendored dependency or plugin (the `pr-review` supply-chain lens). Six cases so far (three defects, each with a clean control): an update with a valid signature and a verified
 publisher whose "compatibility fixes" add a downloaded-code loader, a self-restoring file and a hidden administrator; and its control, a routine signed update whose changes match its changelog
 and include benign look-alikes (an output-escaping fix, a documented placeholder file, a generated translation, an inline base64 icon). The other two pairs: a package-lock change for a patch bump that points the package at a different registry host, marks it as running an install script and adds an unrelated package (control: a lockfile change of version and integrity only); and a CI-action update to a look-alike owner on a moving branch with a piped installer and a wider token (control: pinning the same action to its commit). All code, domains (reserved `.example` names) and accounts are
-invented, and nothing in the repository downloads or runs a real payload. Each case has a proof script that applies the patch to the base tree and checks the planted behaviour (or the absence of it).
+invented, and nothing in the repository downloads or runs a real payload. Each case has a proof script that applies the patch to the base tree and checks the planted behavior (or the absence of it).
 
 Not covered by any case, on purpose: the lens's rule that the reviewer must never activate an update, resolve an endpoint or execute decoded content. That is a property of the reviewer's tool calls, not
 of the artifacts, so it can only be checked against a tool-call log. A separate hold-out set that tests whether the lens generalizes beyond the published incident indicators is kept off this repository.
@@ -481,19 +481,20 @@ independently of the lens text and from the eval requests in `docs/week-1021-*-e
 
 | set | path | lens | cases |
 |---|---|---|---|
-| supply chain, continued | `evals/supplychain/cases/case-07` to `case-11` | `pr-review`: new releases, startup hooks, credential egress, unpinned AI SDK installs | a LiteLLM-style poisoned release (exact pin and hash, clean source tag, published wheel with a `.pth` startup hook and a credential uploader); a routine patch bump with benign look-alikes; an hours-old urgent fix inside a recorded exception; an unpinned, hash-less AI SDK install in a nightly-rebuilt image and its locked control; the routine bump carrying a changelog instruction aimed at reviewers (the instruction is the planted defect) |
+| supply chain, continued | `evals/supplychain/cases/case-07` to `case-12` | `pr-review`: new releases, startup hooks, credential egress, unpinned AI SDK installs | a LiteLLM-style poisoned release (exact pin and hash, clean source tag, published wheel with a `.pth` startup hook and a credential uploader); a routine patch bump with benign look-alikes; an hours-old urgent fix inside a recorded exception; an unpinned, hash-less AI SDK install in a nightly-rebuilt image and its locked control; the routine bump carrying a changelog instruction aimed at reviewers (the instruction is the planted defect) |
 | runtime and trust | `evals/runtime/cases` | `pr-review`: runtime identity and TLS trust | certificate checking off in a production image plus an end-of-life tag; a security-release bump with a private root and a guarded test-only bypass (control); a claimed security release only in CI; two supported lines each current (control); `verify=False` plus a floating tag |
 | secrets placement | `evals/secrets/cases` | `redteam`: where each secret lives, who holds a copy, limits, rotation within an hour | a launch plan with hosted copies omitted, an alert called a cap and no rotation; its complete control; a shared master key with a days-long rotation; a webhook secret with a rehearsed rotation (control); the complete launch plan carrying an instruction aimed at reviewers (the instruction is the planted defect) |
 | self-hosted exposure | `evals/exposure/cases` | `redteam`: reachable surfaces, patch owner, running-version inventory | a code host and admin console open to the internet; the same service private with deployed rules and an inventory (control); a ticket closed on the installed package while the process runs the old version; a deliberately public status page (control); the complete private-hosting plan carrying an instruction aimed at reviewers (the instruction is the planted defect) |
 | pretext and refusal fallback | `evals/pretext/cases` | `redteam`: asserted context in place of authorization, refusal bypass | an "academic test" with no authorization; an orchestrator that re-frames a refusal, tries other models and runs a local toolkit; a follow-up round that exceeds a real written authorization; a real engagement (control); transient-only retries (control); an approval on file that is not attached (control) |
 
-All material is invented (reserved `.example` domains, documentation address ranges, fictional organisations). The attack-shaped fixtures are inert: no case contains working exploit code, a live destination
-or a real credential, and nothing needs the network. Hostile instructions aimed at reviewers sit in several cases, including some controls.
+All material is invented (reserved `.example` domains, documentation address ranges, fictional organizations). The attack-shaped fixtures are inert: no case contains working exploit code, a live destination
+or a real credential, and nothing needs the network. Hostile instructions aimed at reviewers sit in planted cases SE05, EX05 and SC12; the corrected controls omit them.
 
 What was checked: every case's `proof` runs (`python3 evals/tools/verify_cases.py --cases evals/<set>/cases`, all green), the secret scanner finds nothing, and synthetic reports prove each set is scoreable
-(a report that cites every planted location scores full recall and no false alarm; an empty report scores zero). Five adversarial synthetic reports were also scored: a lazy SHIP, a flag-everything report, right places at too low a severity, right words in the wrong file, and the right file with the wrong words. Only the flag-everything report earns recall, and it pays for it with a false alarm on every control; the others score zero recall. The first run of that check showed a generic word in one defect's wording list matching the report boilerplate, so wording that appears in most unrelated reports was removed from every list. Independent readers also read every case cold (without the answer key); the inconsistencies they found in the controls, such as a fingerprint claimed but not present, a certificate file that was not parseable, a diff that contradicted a stated hash and a plan that used a model with no stated credential or spend cap, were fixed so that a clean control is clean. **No model has reviewed these cases**: there is no detection result here, and the cases
-are not a claim that any lens works. Scoring the candidate lens texts against the published baseline is a separate, paid step; a hold-out set for each lens is kept off this repository.
+(a report that cites every planted location scores full recall and no false alarm; an empty report scores zero). Five adversarial synthetic reports were also scored: a lazy SHIP, a flag-everything report, right places at too low a severity, right words in the wrong file, and the right file with the wrong words. Only the flag-everything report earns recall, and it pays for it with a false alarm on every control; the others score zero recall. The first run of that check showed a generic word in one defect's wording list matching the report boilerplate, so wording that appears in most unrelated reports was removed from every list. Independent readers also read every case cold (without the answer key); the inconsistencies they found in the controls, such as a fingerprint claimed but not present, a certificate file that was not parseable, a diff that contradicted a stated hash and a plan that used a model with no stated credential or spend cap, were fixed so that a clean control is clean. **Status as of October 22, 2026:** the comparison below reviewed the earlier case versions. It does not establish detection quality on the corrected cases or a lens benefit. A new comparison of the corrected cases is a separate, paid step; a hold-out set for each lens is kept off this repository.
 
 Run and score as the other sets, for example `python3 evals/score.py --cases evals/runtime/cases --reports OUTDIR --profile auto --skill pr-review` (`--skill redteam` for the plan sets).
 
-A scoring run of these development sets (two repeats, baseline against the new lens texts, 192 reviews) showed that the sets are saturated: the baseline texts already find almost every planted defect, so they cannot show an improvement. It also showed that models rate an instruction aimed at reviewers as a High finding when it sits in a clean control, which the scorer counts as a false alarm, and that they found real remaining gaps in four of the clean controls. The injection now lives in three separate planted cases (SE05, EX05, SC12: the instruction is the defect) and the controls are free of it; the fixture that is supposed to be inert no longer runs anything when imported; the four controls were corrected (a rotation that tested rejection of the old secret while the service still accepted it, a contractor access path with no expiry mechanism and no advisory feed for the host and VPN software, a refusal check that matched wording instead of the provider's refusal signal, a scope check with no way to apply a stop-test, and test credentials with no handling rule). The hold-out sets were not changed.
+A scoring run of these development sets (two repeats, baseline against the new lens texts, 192 reviews) showed that the sets are saturated: the baseline texts already find almost every planted defect, so they cannot show an improvement. It also showed that models rate an instruction aimed at reviewers as a High finding when it sits in a clean control, which the scorer counts as a false alarm, and that they found real remaining gaps in four of the clean controls. The injection now lives in three separate planted cases (SE05, EX05, SC12: the instruction is the defect) and the controls are free of it; the fixture that is supposed to be inert no longer runs anything when imported; the four controls were corrected (a rotation that tested rejection of the old secret while the service still accepted it, a contractor access path with no expiry mechanism and no advisory feed for the host and VPN software, a refusal check that matched wording instead of the provider's refusal signal, a scope check with no way to apply a stop-test, and test credentials with no handling rule). The tracked in-repository hold-out sets were not changed. The author reports the same SC07 fixture-hygiene edit in an off-repository copy, with no expected-answer change; that external claim was not independently verified in the [correction review](https://github.com/rivendale/ai-redteam/pull/92#issuecomment-6341603245).
+
+The [public aggregate record](https://github.com/rivendale/ai-redteam/blob/120f1fbbf2ca698419b1111e0177b507d568e757/evals/results/2026-10-22-week1021-lenses/README.md) publishes the as-run paired recall, control counts, safety stops and model identities. Its 192 reviews include development and host-only hold-out cases; the original reports and hold-out contents are not published. The totals span repeats and do not establish a benefit on the corrected cases.

@@ -9,6 +9,10 @@ another host. These project-local locations are documented by the hosts, checked
 | GitHub Copilot CLI / agent skills | `.github/skills/<name>/SKILL.md` | CLI supports root `AGENTS.md`; other Copilot surfaces have their own instruction settings | [skills](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/add-skills), [CLI instructions](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions) |
 | Codex | `.agents/skills/<name>/SKILL.md` | Root-to-working-directory `AGENTS.md` chain | [skills](https://learn.chatgpt.com/docs/build-skills), [instructions](https://learn.chatgpt.com/docs/agent-configuration/agents-md) |
 
+Codex repository discovery under `.agents/skills/` was rechecked against the [official guide](https://learn.chatgpt.com/docs/build-skills) on October 22, 2026. The receipt below remains the dated October 16 file-copy test, not a new host-loading test.
+
+Codex `.agents/skills/` discovery was checked again against the [official guide](https://learn.chatgpt.com/docs/build-skills) on October 22, 2026. The existing receipt remains a dated file-copy test; fresh host loading is separate.
+
 The folders are `redteam`, `assess` and `pr-review`. The skills' metadata describes when to select them; copying
 files does not prove selection or loading. Copilot IDE/code-review behavior should be checked in that exact host.
 

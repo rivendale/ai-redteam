@@ -48,7 +48,7 @@ production data`, or `/pr-review`. After a plugin install the skills are namespa
 It also triggers on plain requests that match the description ("red team this", "is this PR ready to merge?").
 The skill name is `pr-review`, not `review`, because Claude Code's built-in command owns `review`.
 
-**Codex CLI**: use the current `.agents/skills/` project-local layout in
+**Codex CLI**: as checked against [official documentation](https://learn.chatgpt.com/docs/build-skills) on October 22, 2026, use the `.agents/skills/` project-local layout in
 [portable skill installation](install-portable-skills.md). Codex reads repository instructions from the root down
 to the working directory. The earlier instruction-load test on version 0.161.0 is historical; native skill loading
 was not exercised in that test. Verify loading in a fresh session as described below.

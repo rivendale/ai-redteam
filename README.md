@@ -1,18 +1,65 @@
 # ai-redteam
 
-> **AI agents:** read [AGENTS.md](AGENTS.md) first. Install, invocation for each CLI, and pitfalls are in
-> [docs/using-with-ai-agents.md](docs/using-with-ai-agents.md); a plain index is in [llms.txt](llms.txt).
+[![Offline checks](https://github.com/rivendale/ai-redteam/actions/workflows/checks.yml/badge.svg)](https://github.com/rivendale/ai-redteam/actions/workflows/checks.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Latest release](https://img.shields.io/github/v/release/rivendale/ai-redteam)](https://github.com/rivendale/ai-redteam/releases/latest)
 
+**A second opinion for work produced with AI.** Review a plan, challenge a claim, check a pull request,
+or decide whether an incoming tool is useful. For developers, analysts and people who need evidence
+before relying on an answer. Findings name the location, what can fail and how to check it.
 
-Adversarial diagnostic review for AI-produced work. A second, independent pass that red-teams decisions, analysis, plans, and code before anyone relies on them, and a bounded reviewer that closes out a pull request.
+Choose **redteam** for work and decisions, **pr-review** for a frozen pull request,
+or **assess** for an incoming link or idea. A review is evidence to examine, not an approval.
+
+## Try it in two minutes
+
+No install needed: open the [paste-in review prompt](prompts/adversarial-review.md) in a fresh chat,
+then supply these three inputs:
+
+```text
+Original request: [paste the request verbatim]
+Work: [paste the plan, code, claim or draft]
+Context: [stakes, constraints and evidence the reviewer may use]
+```
+
+Use a session that did not write the work. Send sensitive material only to an endpoint approved for it.
+For native skills, jump to [installation by CLI](#install-by-cli). Agents start at [AGENTS.md](AGENTS.md);
+[llms.txt](llms.txt) is the plain index.
+
+## Worked example: a billing edge case
+
+The [published synthetic example](evals/results/2026-10-07-pr9/pr-review-reports/case-10.md)
+reviewed a calendar-month proration function. The request was to charge from the upgrade day to the
+end of that calendar month. The code used a fixed 30-day month.
+
+From the actual October 7, 2026 report:
+
+> Upgrade on Jan 31 gives `remaining_days = 30-31+1 = 0`, so the charge is **0**.
+
+Its finding at `billing/proration.py:8` proposed a regression test:
+`prorated_cents(3000, date(2026,1,31), region_with_rate_0) == 97`.
+The report also stated that head/base commits and a second High-tier round were missing.
+This is a hand-traced historical result, not a new test run or a promise to catch every billing bug.
+
+```mermaid
+flowchart LR
+    A[Request + work + context] --> B[Data and independence gate]
+    B --> C[Review at a frozen version]
+    C --> D[Location + failure + test]
+    D --> E[Author confirms or refutes]
+    E --> F[Verify fixes and record limits]
+    F --> G[Owner decides]
+```
+
+## Skills and paste-in prompts
 
 The repository has three skills. Paste-in prompts are also available:
 
 | File | Use |
 |---|---|
-| [`skills/redteam/SKILL.md`](skills/redteam/SKILL.md) | Claude skill; invoke with `/redteam` |
-| [`prompts/adversarial-review.md`](prompts/adversarial-review.md) | Paste-in prompt for any model (Tracks A, B and R; Tracks C and D, the inputs ledger and the confirm-or-refute round are in the skill only) |
-| [`skills/pr-review/SKILL.md`](skills/pr-review/SKILL.md) | Claude skill; invoke with `/pr-review` |
+| [`skills/redteam/SKILL.md`](skills/redteam/SKILL.md) | Adversarial review; use the host-specific invocation below |
+| [`prompts/adversarial-review.md`](prompts/adversarial-review.md) | Paste-in prompt for any model (Tracks A, B and R with the current reporting schema; Tracks C and D are in the skill) |
+| [`skills/pr-review/SKILL.md`](skills/pr-review/SKILL.md) | Bounded PR review; use the host-specific invocation below |
 | [`prompts/pr-review.md`](prompts/pr-review.md) | Paste-in PR review prompt for any model |
 | [`skills/assess/SKILL.md`](skills/assess/SKILL.md) | Assess whether a link, tool, paper or idea serves the current goals and choose the next action |
 | [`prompts/assess.md`](prompts/assess.md) | Paste-in assess prompt for any model |
@@ -27,19 +74,27 @@ The repository has three skills. Paste-in prompts are also available:
 
 Three rules guard against evidence that cannot fail: a zero needs a positive control, a green check is not a review, and a test that has never failed proves nothing.
 
-Output is a verdict (SHIP / SHIP WITH FIXES / REWORK / REJECT), a severity-ranked findings table with evidence levels (CONFIRMED / PROBABLE / UNVERIFIED), what held up, unverified claims, questions for the author, and a plain-language owner summary with no personal data that can be forwarded as is. Critical includes regulatory or legal exposure and harm to a customer.
+Output is a verdict (SHIP / SHIP WITH FIXES / REWORK / REJECT), a severity-ranked findings table with evidence levels and separate confirmed, needs-validation and refuted states, what held up, unverified claims, questions for the author, and a plain-language owner summary with no personal data that can be forwarded as is. Critical includes regulatory or legal exposure and harm to a customer.
 
-**What it caught:** first production use caught a disclosure missing a statement the applicable rule requires. The draft had already been approved by a person.
+The [published example above](#worked-example-a-billing-edge-case) shows why a prior review does not replace evidence or a concrete regression test.
 
 ## What pr-review does
 
-One pull request, one exact head commit, reviewed in a throwaway checkout against its merge base. The review is sized by risk (Low: one read; Standard: one round; High, for auth and permissions including their configuration, migrations, money, personal data or regulated text: two rounds, ideally on two vendors where an endpoint is approved for the data), run by an instance with no memory of writing the change, and bounded to the runs its tier requires unless the owner approves more. Every finding (P0 to P3, `file:line`, a failure scenario, a suggested test) is adjudicated in writing as accepted with a regression test or rejected with evidence, and merge is recommended only when the tier's rounds have run and every expected check is present and green. It is named `pr-review`, not `review`, because Claude Code's built-in code-review command already answers to `/review`.
+Review one exact PR head against its merge base in a throwaway checkout. Low-risk work gets one independent
+read; Standard gets one round; High-risk work gets two rounds on approved endpoints. High includes auth,
+permissions, migrations, money, personal data and regulated text. More rounds require owner approval.
+
+Each P0-P3 finding names a location, failure scenario and suggested test. The author confirms or refutes it
+with evidence; accepted fixes need a regression check and a read of the correction diff. A merge recommendation
+requires the tier's rounds and all expected checks to be complete. The command is `pr-review`, because
+Claude Code's built-in `/review` is a different command. See the [full contract](skills/pr-review/SKILL.md).
 
 The opt-in Action runs a [bounded OSV lookup](docs/pr-review-action.md#known-bad-version-lookup) before its model
 round when dependency files change. It publishes exact-version matches independently, with OSV ID, supplied
 severity and advisory link. Unsupported resolution or unavailable OSV is explicit incomplete coverage.
-Recorded fixtures exercise a malicious package and a clean bump without live CI requests. This candidate skill
-change still needs independent evaluation before release; no improved model detection is claimed.
+Recorded fixtures exercise a malicious package and a clean bump without live CI requests. As of October 22, 2026, the deterministic lookup has offline coverage,
+while the incident-lens comparison reports no measurable detection gain. See the dated
+[results and remaining gates](#results); offline lookup tests do not establish model performance.
 
 ## What assess does
 
@@ -47,6 +102,8 @@ change still needs independent evaluation before release; no improved model dete
 claims from verified facts, checks overlap, cost and data requirements, and chooses a bounded next action. It can
 recommend a trial or borrowing path, ask for an owner decision, watch, or skip. It does not buy, install, publish
 or treat a sender's summary as evidence.
+
+<a id="redteam-vs-pr-review-when-to-use-which"></a>
 
 ## Which skill to use
 
@@ -74,51 +131,68 @@ Companion repos: [hsi-operator](https://github.com/rivendale/hsi-operator) (keep
 [opensource](https://github.com/rivendale/opensource) (including `tools/web`, safe page readers), and
 [local-ai](https://github.com/rivendale/local-ai) (private, on-device models).
 
-## Install the skills
+<a id="install-the-skills"></a>
 
-Claude Code, personal (all projects):
+## Install by CLI
 
-```bash
-git clone https://github.com/rivendale/ai-redteam
-mkdir -p ~/.claude/skills
-cp -r ai-redteam/skills/redteam ai-redteam/skills/pr-review ai-redteam/skills/assess ~/.claude/skills/
+Start from a **reviewed full commit**, not a moving branch. These instructions copy files;
+they do not prove the host loaded the skill. Keep support docs, schemas and tools available.
+
+```sh
+git clone https://github.com/rivendale/ai-redteam.git
+cd ai-redteam
+git checkout <reviewed-full-commit-sha>
 ```
 
-Claude Code, single project: copy all three `skills/` folders into that repo's `.claude/skills/`.
-Keep a pinned source checkout available for the referenced docs, schemas and validation tools.
-For non-Claude hosts, follow [the agent guide](docs/using-with-ai-agents.md) and verify the instructions actually load.
+| Host | Install and invoke |
+|---|---|
+| Claude Code | From the pinned clone: `claude plugin marketplace add ./`, then `claude plugin install ai-redteam@ai-redteam --scope user`. Invoke `/ai-redteam:redteam`, `/ai-redteam:pr-review` or `/ai-redteam:assess`. The [agent guide](docs/using-with-ai-agents.md#install-and-invoke) also covers personal and project skill copies. |
+| Codex | Follow the tested [project-local copy recipe](docs/install-portable-skills.md#project-local-copy), with `AI_REDTEAM_HOST=codex`; it installs `.agents/skills/` and matching shared support. Invoke `$redteam`, `$pr-review` or `$assess`. Check the [official skill docs](https://learn.chatgpt.com/docs/build-skills), verified October 22, 2026. |
+| Any chat or model | Paste [redteam](prompts/adversarial-review.md), [pr-review](prompts/pr-review.md) or [assess](prompts/assess.md), plus the three inputs above. No skill installer is needed. |
+| Claude apps | Zip one skill folder and upload it as a custom skill. The [guide](docs/using-with-ai-agents.md) explains support paths and limits. |
 
-Claude apps: zip a skill's folder and upload it as a custom skill in settings.
+For Cursor and Copilot, use the same [portable installation guide](docs/install-portable-skills.md).
+After installing, start a fresh session and ask it to list the skills and quote the project instruction sentinel.
+File-copy tests are separate from host loading and review quality.
 
-## Use
+<a id="use"></a>
 
+```text
+/ai-redteam:redteam the migration plan above; stakes: production data
+/ai-redteam:pr-review 42
+/ai-redteam:assess <link or item> for the goals in my context file
 ```
-/assess <link or item>         # usefulness here and the next action
-/redteam                      # review the last substantive output in the session
-/redteam src/billing/         # review specific files or a diff
-/redteam the migration plan above; stakes: production data, no rollback window
-/pr-review 42                 # review pull request 42 at its current head
-```
 
-## Published results and pending work
+<a id="published-results-and-pending-work"></a>
 
-- [redteam release gate](evals/results/2026-10-09-gate-v232/README.md): development and hold-out results,
-  the predeclared comparison rule, scorer limitations and the recall floor.
-- [assess hold-out record](evals/results/2026-10-09-assess-holdout3/README.md): the original result and clearly
-  separated corrected-scorer interpretation.
-- [pr-review held-text comparison](evals/results/2026-10-08-prreview-held/README.md): limited control evidence,
-  without claiming that the new rule has demonstrated a detection benefit.
+## Results
 
-**Pending: rule-ablation runs.** They need separately authorized paid model runs. No ablation result is claimed,
-and this README does not imply the experiment is scheduled or funded. Published repeated runs measure variation;
-they do not isolate the causal contribution of an individual rule. Skill changes require independent evaluation.
+These are dated observations on fixed cases, not a general detection guarantee. Development tuning,
+hold-out checks and repeated runs answer different questions.
+
+| Record | What it supports | Limit |
+|---|---|---|
+| [Three-run variance, October 16, 2026](docs/variance-2026-10-16.md) | Redteam development recall 80/84 in each repeat; hold-out hits 18/20, 18/20 and 17/20. Detection agreement 75/85 development cases and 18/22 hold-out cases. | Descriptive rescoring of published reports; no new model runs or rule-ablation claim. |
+| [Release gate, October 9, 2026](evals/results/2026-10-09-gate-v232/README.md) | As-run redteam development 240/252 versus 235/252 baseline; hold-out 53/60 versus 56/60. | The hold-out candidate sits exactly at the predeclared recall floor. Later scorer interpretations do not replace these totals. |
+| [Assess hold-out and correction, October 9, 2026](evals/results/2026-10-09-assess-holdout3/README.md) | As-run case passes 106/108; corrected scorer 108/108 on the same reports. | Case passes are not defect recall; this is not a new hold-out run. |
+| [PR-review held-text comparison, October 8, 2026](evals/results/2026-10-08-prreview-held/README.md) | No control false alarms or violations in its limited repeated comparison. | Both held cases are controls; no detection-benefit claim follows. |
+| [Week-1021 lens comparison, October 22, 2026](https://github.com/rivendale/ai-redteam/blob/120f1fbbf2ca698419b1111e0177b507d568e757/evals/results/2026-10-22-week1021-lenses/README.md) | 192 reviews requested Opus 5.5. In the paired Opus 5.5 subset, baseline recall was 42/42 development and 27/29 hold-out defect observations; no measurable lens gain. | Counts span repeats. Controls were corrected after the run; 12 reviews stopped; 17/24 pretext reviews finished with Opus 4.8, so that lens is unassessable. [Fallback accounting](evals/README.md#reviews-finished-by-a-different-model-added-2026-10-22) records this boundary. |
+
+No model run was performed for this documentation pass.
+
+**Remaining gates, dated October 22, 2026:** the incident lenses and evidence-check additions are on main,
+but merging text is not a release-quality detection result. Corrected development cases need a new comparison;
+independent hold-out provenance and model identity must be retained. The earlier supply-chain comparison
+[documents safety-stop limits](evals/results/2026-10-20-supplychain-lens/README.md).
+Rule-ablation runs still require separate authorization; repeats do not isolate an individual rule's contribution.
+See [catalog provenance](docs/catalog-provenance.md) and the [eval requests](docs/eval-requests/README.md).
 
 ## Getting a real second opinion
 
-- **Independence matters.** A reviewer sharing the author's context inherits its blind spots. The skill delegates to a fresh subagent when one is available; otherwise run it in a new session, ideally on a different model.
-- **Give it the original request verbatim.** Without it the reviewer grades the work against its own framing.
-- **The review is adversarial input, not ground truth.** Reviewers over-flag. Send Critical and High findings back to the author with "confirm or refute each with evidence", act on what survives both sides, and record each outcome in writing.
-- **Protect the data.** A second opinion is not a reason to send client, customer or personal data to a model or endpoint not approved for it.
+- **Independence matters.** A reviewer sharing the author's context inherits its blind spots. Use a fresh session.
+- **Give the original request verbatim.** Otherwise the reviewer grades against its own framing.
+- **Findings are candidates.** Ask the author to confirm or refute Critical and High findings with evidence; record the outcome.
+- **Protect the data.** A second opinion does not authorize sending sensitive material to a new endpoint.
 
 ## Credits
 

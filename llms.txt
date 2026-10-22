@@ -20,6 +20,9 @@ Agents: start at AGENTS.md. People: start at README.md.
 
 ## Docs
 
+- [docs/README.md](docs/README.md): documentation index
+- [docs/eval-requests/README.md](docs/eval-requests/README.md): independent evaluation requests
+
 - [AGENTS.md](AGENTS.md): rules and commands for AI agents working in this repo
 - [docs/capabilities.md](docs/capabilities.md): everything the repo does, grouped, each with the file that owns it
 - [docs/using-with-ai-agents.md](docs/using-with-ai-agents.md): how each CLI reads a repo, install and invoke, proving the load, pitfalls
@@ -32,5 +35,8 @@ Agents: start at AGENTS.md. People: start at README.md.
 
 ## Evals
 
-- [evals/README.md](evals/README.md): 87 cases (34 clean controls), scorer, runner, how a case is scored
+- [evals/README.md](evals/README.md): baseline suite of 87 cases plus dedicated suites; scorer, runner and scoring limits
 - [evals/results/](evals/results/): published runs with reports, prompts and SHA256SUMS
+
+- [docs/variance-2026-10-16.md](docs/variance-2026-10-16.md): dated descriptive variance, not new model runs
+- [docs/pr-review-action.md](docs/pr-review-action.md): opt-in Action, deterministic OSV lookup and bounded model round
