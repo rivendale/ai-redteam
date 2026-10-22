@@ -6,6 +6,8 @@
 - Unknown, missing or hostile stop_reason values become arbitrary log text.
 - The next incomplete response still omits its fixed stop reason.
 - Raising tokens silently removes the 32000-character publication limit.
+- A complete non-streaming review exceeds the old 90-second socket timeout despite the larger token budget.
+- Giving the provider more time also increases GitHub request timeouts or removes the job deadline.
 - Checkout still targets Node 20 or a mutable action reference.
 - A workflow pin edit bypasses the exact-step security allowlist or fork/opt-out gates.
 
