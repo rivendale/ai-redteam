@@ -77,7 +77,9 @@ Matches use Step 5's P1/P2 finding fields: location, scenario and suggested test
 (or `not supplied by OSV`) and a fixed OSV advisory link. MAL or High/Critical metadata maps to P1; other matches
 map to P2. Raw CVSS vectors are preserved without estimating a numeric score. This reports a database match,
 not a claim that the running product is exploitable. Human Step 7 adjudication remains required.
-The lookup is written to the Actions summary before the provider request. A later model error leaves it there;
+The lookup is written to the Actions summary before fetching/checking the model diff and before the provider request.
+A regenerated lockfile over the model diff limit still receives the independent lookup. A PR over the
+200-file enumeration cap gets an explicit partial lookup report before the model review refuses. A later model error leaves it there;
 a successful model round appears below it and cannot overwrite its findings or coverage status.
 
 Supported exact-reference readers: npm package.json and package-lock/npm-shrinkwrap versions 1-3;
@@ -107,3 +109,6 @@ Run `python3 tests/test_osv.py` and `python3 tests/test_osv_integration.py`. Rec
 `tests/osv/`; CI makes no live OSV/model request. Tests include MAL, a clean bump, every ecosystem, unchanged
 and removed versions, incomplete results, fixed destinations, budgets, credential separation, model contradiction
 and a real summary file surviving a mocked provider failure. No model eval cases or scores are authored here.
+
+Independent follow-up controls cover truncated/malformed HTTP responses from both OSV and GitHub,
+a malicious bump in a diff over 150,000 bytes, and an explicit gap report before the 200-file refusal.

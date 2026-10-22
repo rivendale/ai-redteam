@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Bounded OSV lookup over inert base/head manifest text. Standard library only."""
-import base64,html,json,re,time,tomllib,urllib.request
+import base64,html,http.client,json,re,time,tomllib,urllib.request
 from pathlib import PurePosixPath
 from urllib.parse import quote
 MAX_QUERIES=100
@@ -215,12 +215,12 @@ def scan_changes(changes,transport=None):
        try:
         detail=json_response(transport('https://api.osv.dev/v1/vulns/'+osv_id))
         if not isinstance(detail,dict) or detail.get('id')!=osv_id:raise Incomplete('detail identity')
-       except (ValueError,OSError,TypeError,RecursionError):report['gaps'].append('OSV detail unavailable');detail={}
+       except (ValueError,OSError,TypeError,RecursionError,http.client.HTTPException):report['gaps'].append('OSV detail unavailable');detail={}
       else:report['gaps'].append('OSV detail limit')
       details[osv_id]=detail
      detail=details[osv_id];sev=severity(detail)
      report['findings'].append({'id':osv_id,'severity':'P1' if osv_id.startswith('MAL-') or 'HIGH' in sev.upper() or 'CRITICAL' in sev.upper() else 'P2','osv_severity':sev,'location':package['location'],'scenario':package['ecosystem']+' '+package['name']+'@'+package['version']+' is newly selected and matches OSV '+osv_id+'. Installing or running it may expose the behavior described by that advisory; runtime reachability is not established.','suggested_test':'Replace the selected version with an independently verified unaffected version and rerun the frozen lookup.','advisory':'https://osv.dev/vulnerability/'+osv_id})
-  except (ValueError,OSError,TypeError,RecursionError):report['gaps'].append('OSV request unavailable or invalid')
+  except (ValueError,OSError,TypeError,RecursionError,http.client.HTTPException):report['gaps'].append('OSV request unavailable or invalid')
  if report['gaps']:report['status']='partial'
  elif not report['files']:report['status']='not_applicable'
  return report
@@ -260,6 +260,8 @@ def github_changes(repo,number,head,merge,changed_files,transport,headers):
   after=content(path,head) if status!='removed' else ''
   changes.append({'path':path if relevant(path) else f['previous_filename'],'before':before,'after':after})
  return changes
+def gap_report(reason):
+ return {'status':'partial','findings':[],'gaps':[reason],'queries':[],'files':[]}
 def check_pr(repo,number,head,merge,changed_files,transport,headers,osv_transport=None):
  try:return scan_changes(github_changes(repo,number,head,merge,changed_files,transport,headers),osv_transport)
- except (ValueError,OSError,TypeError,KeyError,RecursionError):return {'status':'partial','findings':[],'gaps':['dependency enumeration unavailable or over limit'],'queries':[],'files':[]}
+ except (ValueError,OSError,TypeError,KeyError,RecursionError,http.client.HTTPException):return gap_report('dependency enumeration unavailable or over limit')
