@@ -46,5 +46,5 @@ PY2
 export -f review
 ls -d "$prep"/case-* | xargs -P "$par" -I{} bash -c 'review "$@"' _ {}
 echo "reports: $(ls "$out"/case-*.md 2>/dev/null | wc -l) of $(ls -d "$prep"/case-* | wc -l)"
-python3 "$here/evals/tools/scan_secrets.py" "$out" || echo "SECRET SCAN FAILED: do not publish $out"
 rm -rf "$prep"
+python3 "$here/evals/tools/scan_secrets.py" "$out" || { echo "SECRET SCAN FAILED: do not publish $out"; exit 1; }

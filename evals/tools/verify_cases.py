@@ -8,6 +8,8 @@ its tests (exit 0 means they pass). A case with no proof is listed. Also checks 
 """
 import argparse, json, os, pathlib, subprocess, sys
 
+from prepare import symlinks_in
+
 ROOT = pathlib.Path(__file__).resolve().parent.parent / "cases"
 REQUIRED = ["request.md", "context.md", "expected.json"]
 
@@ -20,6 +22,8 @@ def check_case(d):
             probs.append(f"missing {f}")
     if not (d / "work").exists() or not any((d / "work").rglob("*")):
         probs.append("work/ is missing or empty")
+    for link in symlinks_in(d):
+        probs.append(f"symlink in the case ({os.path.relpath(link, d)}): prepare.py would copy its target into the reviewer prompt")
     exp.setdefault("planted", [])
     if exp["control"] and exp["planted"]:
         probs.append("a control must not list planted defects")
