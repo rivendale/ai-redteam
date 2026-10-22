@@ -24,6 +24,9 @@ PATTERNS = {
     # key-shaped hex, matched by position so ordinary digests and commit hashes are not hits; a body made of one short unit repeated
     # (dead dead dead ..., 0000 ...) is an obvious placeholder and is skipped below
     "wallet private key": r"(?i)\b(?:Wallet|PrivateKey|privateKeyToAccount|from_?key|from_?(?:private|secret)_?key)\s*\(\s*[\"']?(?:0x)?[0-9a-f]{64}\b|(?:private[_ -]?key|secret[_ -]?key)\w*[\"']?\s*[:=]\s*[\"']?(?:0x)?[0-9a-f]{64}\b",
+    # sign-in tokens: a JWT (three base64url parts, the first two start with eyJ) and the OAuth token fields a Codex or CLI login stores
+    "jwt": r"\beyJ[A-Za-z0-9_-]{8,}\.eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}",
+    "oauth token field": r"(?i)[\"'](?:access|refresh|id)_token[\"']\s*:\s*[\"'][A-Za-z0-9._~+/=-]{20,}[\"']",
     "rpc url key": r"(?i)/v[0-9]/[0-9a-f]{32}\b",
     "home path": r"/home/[a-z_][a-z0-9_-]*/|C:\\{1,2}Users\\{1,2}[^\\\s]+",
 }
@@ -36,7 +39,7 @@ for f in sorted(p for p in pathlib.Path(sys.argv[1]).rglob("*") if p.is_file() a
             found = {v for v in found if not re.fullmatch(r"(.{1,4}?)\1+", re.search(r"[0-9a-fA-F]{32,64}\b", v).group(0).lower())}
         if not found:
             continue
-        if name not in ("home path", "private key", "wallet private key", "rpc url key") and all(v in FIXTURE_TEXT for v in found):
+        if name not in ("home path", "private key", "wallet private key", "rpc url key", "jwt", "oauth token field") and all(v in FIXTURE_TEXT for v in found):
             print(f"{f}: {name} (fixture value, public)"); fixtures += 1
         else:
             print(f"{f}: {name}"); hits += 1
