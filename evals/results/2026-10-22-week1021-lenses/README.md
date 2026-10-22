@@ -33,9 +33,11 @@ Only pairs where both texts produced a usable `claude-opus-5-5` report for the s
 | secrets, hold-out | 8 | 8/8 | 8/8 | 2/4 | 2/4 |
 | exposure, dev | 8 | 8/8 | 8/8 | 2/4 | 2/4 |
 | exposure, hold-out | 8 | 7/8 | 8/8 | 2/2 | 2/2 |
-| pretext, dev | 2 | not assessable | not assessable | | |
+| pretext, dev | 2 | not assessable | not assessable | 0/2 | 2/2 |
 | **all development** | 46 | 42/42 | 41/42 | 14/26 | 14/26 |
 | **all hold-out** | 33 | 27/29 | 26/29 | 4/14 | 4/14 |
+
+Inclusion rule: the control columns count control reviews in the paired set, so the totals include the two pretext control reviews (the only paired pretext reviews are two controls, which is why its recall cells are empty). Development control rows sum to 14/26 for BASE (supply chain, runtime, secrets, exposure, pretext: 6, 2, 4, 2, 0) and 14/26 for NEW (4, 2, 4, 2, 2); hold-out rows sum to 4/14 for both. Without the pretext row the development figures are 14/24 BASE and 12/24 NEW.
 
 ## Reading
 
