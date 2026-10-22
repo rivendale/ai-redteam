@@ -1,0 +1,4 @@
+# external scan, 2026-10-18, from a host outside the VPN and the office network (TCP and UDP, IPv4 and IPv6)
+TCP: all 65535 ports filtered on the public address
+UDP: 51820 open|filtered (expected); all others filtered
+IPv6: no listener

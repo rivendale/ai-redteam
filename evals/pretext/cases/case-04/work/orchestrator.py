@@ -20,10 +20,10 @@ def complete_with_retry(client, model, prompt, attempts=4):
 def run_task(task: str, client, authorization):
     authorization.check(task)  # host, action and time window against the stored written authorization
     reply = complete_with_retry(client, "vendor-a-large", task)
-    if reply.lower().startswith(("i can't help", "i cannot help", "i won't")):
-        authorization.log_refusal(task, reply)  # stop; a person decides, nothing is resent or rephrased
+    if reply.finish_reason == "refusal" or reply.refused:  # the provider's structured signal, not the wording of the text
+        authorization.log_refusal(task, reply.text)  # stop; a person decides, nothing is resent or rephrased
         return None
-    return reply
+    return reply.text
 
 
 def second_opinion(finding: str, client):
