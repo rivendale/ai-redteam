@@ -53,16 +53,21 @@ open(sys.argv[2], "w").write(d.get("result", ""))
 usage_by_model = d.get("modelUsage") or {}
 out_by_model = {m: (u or {}).get("outputTokens", 0) for m, u in usage_by_model.items()}
 wanted = os.environ.get("MODEL") or os.environ.get("ANTHROPIC_MODEL") or ""
-other = sorted(m for m, t in out_by_model.items() if t and wanted and m != wanted)
-flagged = bool(other) or bool(d.get("safety_stops"))
+producers = sorted(m for m, t in out_by_model.items() if t)         # every model that actually produced output tokens
+# With a pinned model, anything else that produced output is a fallback. Without one (the account default), the requested identity is
+# unknown, but two producers are still observable and the review is mixed: never report a mixed review as a single-model result.
+other = sorted(m for m in producers if m != wanted) if wanted else (producers if len(producers) > 1 else [])
+mixed = bool(other) if wanted else len(producers) > 1
+flagged = mixed or bool(d.get("safety_stops"))
 json.dump({"models": list(usage_by_model.keys()), "output_tokens_by_model": out_by_model, "requested_model": wanted or None,
-           "fallback_models": other, "safety_stops": d.get("safety_stops") or 0, "mixed_model": bool(other),
+           "requested_model_known": bool(wanted), "producers": producers, "single_model": len(producers) == 1,
+           "fallback_models": other, "safety_stops": d.get("safety_stops") or 0, "mixed_model": mixed,
            "usage": d.get("usage"),
            "total_cost_usd": d.get("total_cost_usd"), "duration_ms": d.get("duration_ms"),
            "num_turns": d.get("num_turns")}, open(sys.argv[3], "w"), indent=1)
 if flagged:
     with open(os.path.join(os.path.dirname(os.path.dirname(sys.argv[3])), "fallback.txt"), "a") as f:
-        f.write(f"{os.path.basename(sys.argv[2])[:-3]} safety_stops={d.get('safety_stops') or 0} fallback_models={','.join(other) or '-'}\n")
+        f.write(f"{os.path.basename(sys.argv[2])[:-3]} safety_stops={d.get('safety_stops') or 0} fallback_models={','.join(other) or '-'} requested_model_known={'yes' if wanted else 'no'}\n")
 PYX
 }
 export -f review

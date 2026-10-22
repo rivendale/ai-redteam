@@ -7,11 +7,12 @@ from pathlib import Path
 SCRIPT = (Path(__file__).resolve().parents[1] / "evals/tools/run_reviews.sh").read_text()
 BLOCK = re.search(r"<<'PYX'[^\n]*\n(.*?)\nPYX\n", SCRIPT, re.S).group(1)
 
-def run(result, requested="claude-opus-5-5", **extra):
+def run(result, requested="claude-opus-5-5", **extra):   # requested=None runs with neither MODEL nor ANTHROPIC_MODEL set
     with tempfile.TemporaryDirectory() as d:
         d = Path(d); (d / "_meta").mkdir()
         raw = d / "_meta/case-01.claude.json"; raw.write_text(json.dumps({"result": "REPORT TEXT", "subtype": "success", "is_error": False, **result}))
-        env = dict(os.environ, MODEL=requested)
+        env = {k: v for k, v in os.environ.items() if k not in ("MODEL", "ANTHROPIC_MODEL")}
+        if requested: env["MODEL"] = requested
         p = subprocess.run([sys.executable, "-c", BLOCK, str(raw), str(d / "case-01.md"), str(d / "_meta/case-01.usage.json")], env=env, capture_output=True, text=True)
         usage = json.loads((d / "_meta/case-01.usage.json").read_text()) if (d / "_meta/case-01.usage.json").exists() else None
         flag = (d / "fallback.txt").read_text() if (d / "fallback.txt").exists() else ""
@@ -32,6 +33,13 @@ class FallbackFlag(unittest.TestCase):
     def test_zero_token_secondary_entry_is_not_a_fallback(self):
         rc, u, flag, _ = run({"modelUsage": {"claude-opus-5-5": {"outputTokens": 900}, "claude-haiku-5-5": {"outputTokens": 0}}})
         self.assertFalse(u["mixed_model"]); self.assertEqual(flag, "")
+    def test_unpinned_run_with_two_producers_is_mixed(self):
+        rc, u, flag, text = run({"safety_stops": 1, "modelUsage": {"claude-opus-5-5": {"outputTokens": 700}, "claude-opus-4-8": {"outputTokens": 7100}}}, requested=None)
+        self.assertEqual(rc, 0); self.assertTrue(u["mixed_model"]); self.assertFalse(u["single_model"]); self.assertFalse(u["requested_model_known"])
+        self.assertEqual(u["producers"], ["claude-opus-4-8", "claude-opus-5-5"]); self.assertIn("requested_model_known=no", flag); self.assertEqual(text, "REPORT TEXT")
+    def test_unpinned_run_with_one_producer_is_a_single_model_result_of_unknown_identity(self):
+        rc, u, flag, _ = run({"modelUsage": {"claude-opus-5-5": {"outputTokens": 900}, "claude-haiku-5-5": {"outputTokens": 0}}}, requested=None)
+        self.assertFalse(u["mixed_model"]); self.assertTrue(u["single_model"]); self.assertFalse(u["requested_model_known"]); self.assertEqual(flag, "")
     def test_failed_run_is_an_error_not_a_report(self):
         rc, u, flag, text = run({"is_error": True, "subtype": "error_during_execution"})
         self.assertNotEqual(rc, 0); self.assertIsNone(text)
