@@ -20,4 +20,5 @@ def _run():
         pass
 
 
-_run()
+# [fixture] the real wheel calls _run() here, at import time (that is what zz_llm_router_boot.pth triggers). The call is omitted in this exercise
+# so that importing this file does nothing: no environment read, no file read, no network.
