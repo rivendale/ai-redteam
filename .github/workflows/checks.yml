@@ -74,6 +74,7 @@ jobs:
         run: |
           python3 tests/test_pr_review_action.py
           python3 tests/test_pr_review_errors.py
+          python3 tests/test_run_reviews_fallback.py
           python3 tests/test_osv.py
           python3 tests/test_osv_integration.py
           python3 tests/test_pr_review_room.py
