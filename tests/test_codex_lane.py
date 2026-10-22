@@ -10,6 +10,9 @@ It must therefore not be handed the whole Codex home. The failure list:
   C5 a launcher that cannot be found fails the lane at the start with a clear message, not once per case
   C6 JWT-shaped and OAuth token JSON values in the output fail the secret scan, and the lane exits 1 (value never printed)
   C7 a clean run exits 0
+  C8 no CODEX_MODEL: the lane stops at the start (config.toml is not copied, so a silent default must not decide the model)
+  C9 the model is passed to the CLI with -m and recorded per review (requested and actual); a different actual model is
+     flagged in fallback.txt and the lane warns, so a silent switch cannot go unseen
 """
 import json, os, pathlib, signal, subprocess, sys, tempfile, textwrap, time, unittest
 
@@ -25,7 +28,9 @@ STUB = textwrap.dedent("""\
     log="$STUB_LOG"
     if [ -n "${STUB_NEEDS_REAL_HOME:-}" ] && [ "$HOME" != "$STUB_NEEDS_REAL_HOME" ]; then echo "stub: HOME is not the installer's" >&2; exit 97; fi
     if [ "${1:-}" = "--version" ]; then echo "codex-cli 0.0.0-stub"; exit 0; fi
+    ORIG_ARGS="$*"
     out=""; while [ $# -gt 0 ]; do [ "$1" = "-o" ] && out="$2"; shift; done
+    echo "ARGS=$ORIG_ARGS" >> "$log"
     echo "CODEX_HOME=$CODEX_HOME" >> "$log"
     echo "HOME_FILES=$(ls -A "$CODEX_HOME" | tr '\\n' ' ')" >> "$log"
     echo "MODE=$(stat -c %a "$CODEX_HOME")" >> "$log"
@@ -33,7 +38,7 @@ STUB = textwrap.dedent("""\
     [ -n "${STUB_FAIL:-}" ] && exit 3
     [ -n "${STUB_SLEEP:-}" ] && sleep "$STUB_SLEEP"
     printf '%s\\n' "${STUB_REPORT:-report text}" > "$out"
-    echo "model: stub-model" ; echo "tokens used"; echo "10"
+    echo "model: ${STUB_MODEL:-stub-model}" ; echo "tokens used"; echo "10"
 """)
 
 
@@ -52,7 +57,7 @@ class T(unittest.TestCase):
         self.conf = self.bin / "stub.conf"
         self.stub.write_text(STUB.replace("@CONF@", str(self.conf))); self.stub.chmod(0o755)
         self.env = dict(os.environ, PATH=f"{self.bin}:{os.environ['PATH']}", CODEX_HOME=str(self.real), STUB_LOG=str(self.log),
-                        TMPDIR=str(self.tmpdir), ONLY="case-01", HOME=str(t / "realhome"))
+                        TMPDIR=str(self.tmpdir), ONLY="case-01", CODEX_MODEL="stub-model", HOME=str(t / "realhome"))
         (t / "realhome").mkdir()
 
     def tearDown(self):
@@ -119,6 +124,28 @@ class T(unittest.TestCase):
             self.assertEqual(r.returncode, 1, report[:20] + " " + r.stdout + r.stderr)
             self.assertNotIn(JWT, r.stdout + r.stderr); self.assertNotIn("A" * 40, r.stdout + r.stderr)
             subprocess.run(["rm", "-rf", str(self.out)])
+
+    def test_c8_model_required(self):
+        self.settings()
+        skill = self.t / "SKILL.md"; skill.write_text("skill\n")
+        env = {k: v for k, v in self.env.items() if k != "CODEX_MODEL"}
+        r = subprocess.run(["bash", str(LANE), str(skill), str(self.out), "1"], capture_output=True, text=True, env=env, timeout=60)
+        self.assertEqual(r.returncode, 2, r.stdout + r.stderr); self.assertIn("CODEX_MODEL", r.stdout + r.stderr)
+        self.assertFalse(self.log.exists(), "the CLI must not have been called"); self.assertEqual(self.leftovers(), [])
+
+    def test_c9_model_recorded_and_mismatch_flagged(self):
+        r = self.lane()
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertIn("-m stub-model", self.log.read_text())
+        u = json.loads((self.out / "_meta" / "case-01.usage.json").read_text())
+        self.assertEqual((u["requested_model"], u["model"], u["model_mismatch"]), ("stub-model", "stub-model", False))
+        self.assertFalse((self.out / "fallback.txt").exists())
+        subprocess.run(["rm", "-rf", str(self.out)])
+        r = self.lane(STUB_MODEL="other-model")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        u = json.loads((self.out / "_meta" / "case-01.usage.json").read_text())
+        self.assertTrue(u["model_mismatch"]); self.assertEqual(u["model"], "other-model")
+        self.assertIn("case-01", (self.out / "fallback.txt").read_text()); self.assertIn("different model", r.stdout + r.stderr)
 
     def test_c6_scan_flags_jwt_directly(self):
         d = self.t / "x"; d.mkdir(); (d / "r.md").write_text(f"token {JWT}\n")
