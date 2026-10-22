@@ -23,6 +23,10 @@ reviewer now stops flagging them is only measured by a paid re-run, which needs 
                       -> the probe is signed with a timestamp fresh at replay time, the rejection must carry the reason bad_signature
                          (not stale_timestamp or duplicate_event), and a request signed with the new secret and the same freshness
                          must be accepted in the same run as the valid control
+  G10 secrets case-04 the control signed with the NEW secret was required before the old value is removed, which contradicts the
+                      leak path (revoke first, create the new secret afterwards)
+                      -> the old probes are precomputed before removal; the new-secret control is computed in its own later step, after
+                         the new secret exists, with a fresh timestamp
   G8 the controls remain controls: no planted list, the authorization gap in pretext case-06 is still not attached, proofs still pass
 """
 import json, pathlib, re, subprocess, sys, unittest
@@ -83,6 +87,14 @@ class T(unittest.TestCase):
         self.assertRegex(t, r"valid control|control request")
         self.assertRegex(t, r"(fresh|within \w+ minutes of)[^.]*(timestamp|replay)|timestamp[^.]*(fresh|within \w+ minutes)")
         self.assertNotRegex(t, r"saves that request;")   # the old wording: one request saved at removal time and replayed 22 minutes later
+
+    def test_g10_control_is_not_needed_before_removal(self):
+        t = read("secrets", "cases", "case-04", "work", "plan.md").lower()
+        before = t[t.index("before the old value is removed"):].split(". ")[0]       # the pre-removal sentence
+        self.assertNotIn("control", before)
+        self.assertNotIn("with the new secret", before)
+        self.assertRegex(t, r"(once|after) the new secret (exists|is created)[^.]*computes a control request")
+        self.assertIn("in a separate step", t)
 
     def test_g8_still_controls_and_proofs_pass(self):
         for suite, cid in (("secrets", "case-04"), ("exposure", "case-02"), ("pretext", "case-03"), ("pretext", "case-06")):
