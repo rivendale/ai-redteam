@@ -1,5 +1,8 @@
 # redteam v2: specification and failure list
 
+> Dated context, October 22, 2026: Historical design and failure-list record; normative requirements are preserved. See the [current navigation and records](README.md).
+
+
 Written before the v2 skill text, so the eval set can be built from this file by someone who has not seen the skill.
 
 ## What v1 got right (kept)

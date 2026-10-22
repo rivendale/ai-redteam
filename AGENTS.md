@@ -16,7 +16,7 @@ silently switches `AGENTS.md` off in Claude Code from 2.1.277, when native `AGEN
 | `docs/attack-catalog.md`, `docs/why-reviews-fail.md`, `docs/privacy-checklist.md` | Reference the skills point reviewers at | during Track B, C or a privacy question |
 | `docs/SPEC.md` | The v2 and v2.2 design and failure list (items 1-20) | before changing a skill |
 | `docs/workflow.md` | Where these skills sit in a build-and-review loop | planning who reviews what |
-| `evals/` | 87 cases (34 clean controls), a scorer, the runner and published results | before and after changing a skill |
+| `evals/` | baseline 87-case suite plus dedicated suites, scorer, runner and published results | before and after changing a skill |
 | `docs/capabilities.md` | Everything the repo does, grouped, each with the file that owns it | you need the whole map |
 | `llms.txt` | A plain index of the above | a crawler or assistant wants the map |
 

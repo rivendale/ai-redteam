@@ -1,5 +1,8 @@
 # assess: specification and failure list
 
+> Dated context, October 22, 2026: Historical assess design record; normative requirements are preserved. See the [current navigation and records](README.md).
+
+
 Approved by the repo owner 2026-10-08: a skill that evaluates a link an operator or another agent sends (a repo, a
 paper, a post, a product page, an idea) and answers one question: **is this useful here, and what should we do about
 it?** Name, context source and placement were chosen by the owner the same day: `assess`, a local context file, and

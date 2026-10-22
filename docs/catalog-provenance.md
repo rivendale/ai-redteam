@@ -1,5 +1,8 @@
 # Catalog result provenance
 
+> Dated context, October 22, 2026: Provenance record; missing pre-run metadata remains an explicit limitation, not a new result. See the [current navigation and records](README.md).
+
+
 The plugin manifests were behind the current published redteam release. They now match. Published hold-out
 observations are available for redteam and assess, but a `toolbox-result-1` claim also requires provenance that the
 retained public run records do not establish.

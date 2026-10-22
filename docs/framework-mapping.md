@@ -2,7 +2,8 @@
 
 How the [attack catalog](attack-catalog.md) and the [redteam skill](../skills/redteam/SKILL.md) line up with two OWASP lists
 and with MITRE ATLAS. The mapping is a reviewer's aid, not a compliance claim. Both lists were read from their official pages on
-2026-10-08.
+2026-10-08. This is a dated mapping snapshot, not a fresh certification. October 22 lens additions
+are described in the [docs index](README.md); the historical gap labels below are not a complete inventory of current main.
 
 **Key.** *Covered*: a catalog entry or skill section asks the reviewer about this risk directly. *Partial*: some of the risk is
 asked about, and a named part is not. *Not yet*: nothing in this repo asks about it.

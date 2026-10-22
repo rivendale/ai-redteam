@@ -1,10 +1,27 @@
 # Release notes
 
-## Plugin 2.3.2 (prepared; tag created by the maintainer after review)
+## Unreleased, documentation updated October 22, 2026
+
+This inventory reconciles every first-parent PR merged since the prior release-notes entry,
+including packaging work around v2.3.2 and later untagged changes. It does not declare a new skill release.
+
+| Area | Changes and source PRs |
+|---|---|
+| Entry points and packaging guidance | Current three-skill README ([#74](https://github.com/rivendale/ai-redteam/pull/74)); portable Cursor/Copilot/Codex copies and receipts ([#70](https://github.com/rivendale/ai-redteam/pull/70)); dated README results correction ([#82](https://github.com/rivendale/ai-redteam/pull/82)); capability/install/result navigation updates ([#86](https://github.com/rivendale/ai-redteam/pull/86)). |
+| Repeated-run evidence | Offline descriptive variance and regression controls ([#72](https://github.com/rivendale/ai-redteam/pull/72)); on-chain W1 development cases ([#76](https://github.com/rivendale/ai-redteam/pull/76)). Repeats are not new cases or rule-ablation evidence. |
+| Evidence-check candidate | Independent development cases ([#77](https://github.com/rivendale/ai-redteam/pull/77)), evidence-limit/weak-evaluator cases ([#78](https://github.com/rivendale/ai-redteam/pull/78)), case-16 floor correction ([#79](https://github.com/rivendale/ai-redteam/pull/79)) and candidate skill text ([#71](https://github.com/rivendale/ai-redteam/pull/71)). Existing release results do not certify changed text. |
+| Supply-chain review | Initial development cases ([#81](https://github.com/rivendale/ai-redteam/pull/81)), behavioral lens ([#80](https://github.com/rivendale/ai-redteam/pull/80)), limited safety-stop comparison ([#83](https://github.com/rivendale/ai-redteam/pull/83)), explicit model selection in the runner ([#84](https://github.com/rivendale/ai-redteam/pull/84)), more independent development cases ([#85](https://github.com/rivendale/ai-redteam/pull/85)). |
+| October 21 incident lenses | Supply chain ([#87](https://github.com/rivendale/ai-redteam/pull/87)), secrets placement ([#88](https://github.com/rivendale/ai-redteam/pull/88)), runtime/TLS trust ([#89](https://github.com/rivendale/ai-redteam/pull/89)), self-hosted exposure ([#90](https://github.com/rivendale/ai-redteam/pull/90)) and authorization pretexts/refusal fallback ([#91](https://github.com/rivendale/ai-redteam/pull/91)). The [incident map](docs/incidents/2026-10-21-week.md) separates sources from review inferences. |
+| Independent evaluation | Development sets, corrected controls and separated injection cases ([#92](https://github.com/rivendale/ai-redteam/pull/92)); [reported 192-review comparison](evals/README.md#the-week-1021-lens-development-sets-added-2026-10-22) established no measurable lens gain and exposed model-fallback accounting limits. |
+| Bounded PR Action | Opt-in, trusted-base workflow ([#73](https://github.com/rivendale/ai-redteam/pull/73)); safe fixed diagnostics ([#93](https://github.com/rivendale/ai-redteam/pull/93)); deterministic OSV lookup independent of the model ([#94](https://github.com/rivendale/ai-redteam/pull/94)); larger output budget, bounded timeout and stop reasons ([#95](https://github.com/rivendale/ai-redteam/pull/95)). |
+| Model attribution | Per-review producer/token records, safety-stop warnings and correct unpinned mixed-model detection ([#96](https://github.com/rivendale/ai-redteam/pull/96)). Mixed-model reviews are separate evidence, not pure pinned-model results. |
+| Documentation polish in this PR | Two-minute opening, sourced worked example, CLI paths, dated results, badges and review-flow diagram; docs/evaluation-request indexes with legacy URL stubs; dated stale-content audit. No skill, prompt, scorer, runner, fixture or manifest behavior changes. |
+
+## Plugin 2.3.2 (released October 16, 2026)
 
 The plugin bundles redteam, assess and pr-review. The plugin version follows the released redteam text;
 individual skill names and evaluation versions are distinct. This change updates manifests and documentation,
-not any skill body. It does not create a release tag.
+not any skill body. The maintainer subsequently published [v2.3.2](https://github.com/rivendale/ai-redteam/releases/tag/v2.3.2) on October 16, 2026. The original gate totals below are preserved.
 
 ### redteam
 
