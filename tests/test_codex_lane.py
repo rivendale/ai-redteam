@@ -5,8 +5,12 @@ The lane runs the model with a read-only sandbox, which restricts writes, not re
 It must therefore not be handed the whole Codex home. The failure list:
   C1 the model's CODEX_HOME is not the real one and holds only auth.json (a canary file in the real home must not be visible)
   C2 that temporary home is removed after a normal run, after a Codex failure, and after SIGTERM
-  C3 the real auth.json is not modified or removed by the run (an unchanged copy stays byte-identical)
-  C4 a launcher that needs the real HOME (as an installer under $HOME does) still works although the model's HOME is empty
+  C3 the real auth.json is not modified or removed by the run, even if the CLI refreshes the token in the temporary home (no write-back:
+     a copy-back cannot be made atomic against other Codex sessions, and a stale snapshot must never replace a newer file)
+  C3b a real auth.json updated by another session DURING the run keeps its newer content (no rollback to the snapshot), and the lane
+     tells the user when the CLI refreshed its token so they know to sign in again if Codex asks
+  C4 a launcher that only starts with the real HOME is REFUSED (exit 2, nothing runs); the real HOME is never given to the model process
+  C4b the model process runs with an empty temporary HOME that is not the real one (asserted from inside the stub)
   C5 a launcher that cannot be found fails the lane at the start with a clear message, not once per case
   C6 JWT-shaped and OAuth token JSON values in the output fail the secret scan, and the lane exits 1 (value never printed)
   C7 a clean run exits 0
@@ -32,6 +36,9 @@ STUB = textwrap.dedent("""\
     out=""; while [ $# -gt 0 ]; do [ "$1" = "-o" ] && out="$2"; shift; done
     echo "ARGS=$ORIG_ARGS" >> "$log"
     echo "CODEX_HOME=$CODEX_HOME" >> "$log"
+    echo "EXEC_HOME=$HOME" >> "$log"; echo "EXEC_HOME_FILES=$(ls -A "$HOME" | wc -l)" >> "$log"
+    [ -n "${STUB_REFRESH:-}" ] && echo '{"note": "refreshed"}' > "$CODEX_HOME/auth.json"
+    [ -n "${STUB_TOUCH_REAL:-}" ] && echo '{"note": "newer from another session"}' > "$STUB_TOUCH_REAL"
     echo "HOME_FILES=$(ls -A "$CODEX_HOME" | tr '\\n' ' ')" >> "$log"
     echo "MODE=$(stat -c %a "$CODEX_HOME")" >> "$log"
     cat > /dev/null
@@ -101,14 +108,27 @@ class T(unittest.TestCase):
 
     def test_c3_real_auth_untouched(self):
         before = (self.real / "auth.json").read_bytes()
-        self.lane()
-        self.assertEqual((self.real / "auth.json").read_bytes(), before)
+        r = self.lane(STUB_REFRESH="1")
+        self.assertEqual((self.real / "auth.json").read_bytes(), before, "a refreshed temporary token must not be copied back")
         self.assertTrue((self.real / "history.jsonl").exists())
+        self.assertIn("refreshed", (r.stdout + r.stderr).lower())
 
-    def test_c4_launcher_needing_real_home(self):
+    def test_c3b_newer_real_auth_is_not_rolled_back(self):
+        self.lane(STUB_REFRESH="1", STUB_TOUCH_REAL=str(self.real / "auth.json"))
+        self.assertIn("newer from another session", (self.real / "auth.json").read_text())
+
+    def test_c4_launcher_needing_real_home_is_refused(self):
         r = self.lane(STUB_NEEDS_REAL_HOME=self.env["HOME"])
-        self.assertEqual(r.returncode, 0, "C4: " + r.stdout + r.stderr)
-        self.assertTrue((self.out / "case-01.md").exists())
+        self.assertEqual(r.returncode, 2, r.stdout + r.stderr)
+        self.assertFalse(self.log.exists() and "EXEC_HOME" in self.log.read_text(), "the CLI must not have run with the real HOME")
+        self.assertEqual(self.leftovers(), [])
+
+    def test_c4b_exec_home_is_empty_and_not_the_real_one(self):
+        r = self.lane()
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        log = self.log.read_text()
+        exec_home = [l for l in log.splitlines() if l.startswith("EXEC_HOME=")][0].split("=", 1)[1]
+        self.assertNotEqual(exec_home, self.env["HOME"]); self.assertIn("EXEC_HOME_FILES=0", log)
 
     def test_c5_missing_launcher(self):
         self.stub.unlink(); self.settings()

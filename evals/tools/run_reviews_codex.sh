@@ -10,23 +10,24 @@
 # env") leaked nothing on codex-cli 0.161.0, 2026-10-07; that is model judgment, not a sandbox guarantee.
 # HOME points at an empty temporary directory, so ~ holds nothing. CODEX_HOME is a per-run temporary directory (mode 700)
 # holding only a copy of the real auth.json, removed on exit, on failure and on a signal, so history, config and cache
-# under the real Codex home are not in the model's reach; a refreshed token is written back to the real home if the real
-# file did not change meanwhile. The read-only sandbox restricts writes, not reads: the model can still read any absolute
-# path the user can, so run injection cases only where nothing sensitive is readable.
-# Launcher: CODEX_CMD (a command line, e.g. "node /path/to/codex.js") overrides discovery. Otherwise the first of `codex`,
-# the per-user npm install under $HOME and the global npm install that starts with the empty HOME is used; a launcher that
-# only starts with the real HOME is used with it (noted on stderr); none usable stops the lane at once.
+# under the real Codex home are not in the model's reach. Nothing is ever copied back: a refreshed token stays in the temporary home
+# and is discarded (the lane says so), because a copy-back cannot be made atomic against other Codex sessions and a stale snapshot must
+# never replace a newer file; if Codex asks you to sign in again afterwards, run `codex login`. The read-only sandbox restricts
+# writes, not reads: the model can still read any absolute path the user can, so run injection cases only where nothing sensitive
+# is readable.
+# Launcher: CODEX_CMD (a command line, e.g. "node /path/to/codex.js") overrides discovery. Otherwise the first of `codex`, the
+# per-user npm install under $HOME and the global npm install that starts with an EMPTY HOME is used. A launcher that only starts
+# with the real HOME is refused (the model process never gets the real HOME); none usable stops the lane at once.
 # Each run also writes _meta/<case>.usage.json (CLI version, model, tokens) with no paths; the raw log stays local.
 set -u
 skill=$(realpath "$1"); out=$(realpath -m "$2"); par=${3:-2}
 here=$(cd "$(dirname "$0")/../.." && pwd)
 [ -n "${CODEX_MODEL:-}" ] || { echo "set CODEX_MODEL (the model to pin); the lane no longer lets the CLI default choose" >&2; exit 2; }
 real_home="${CODEX_HOME:-$HOME/.codex}"
-prep=; chome=; probe_home=; orig_sum=
+prep=; chome=; probe_home=; snap_sum=
 cleanup() {
-  if [ -n "$chome" ] && [ -f "$chome/auth.json" ] && [ -f "$real_home/auth.json" ] && [ -n "$orig_sum" ] \
-     && ! cmp -s "$chome/auth.json" "$real_home/auth.json" && [ "$(sha256sum < "$real_home/auth.json")" = "$orig_sum" ]; then
-    cp "$chome/auth.json" "$real_home/auth.json.new" && chmod 600 "$real_home/auth.json.new" && mv "$real_home/auth.json.new" "$real_home/auth.json"
+  if [ -n "$chome" ] && [ -f "$chome/auth.json" ] && [ -n "$snap_sum" ] && [ "$(sha256sum < "$chome/auth.json")" != "$snap_sum" ]; then
+    echo "note: the Codex CLI refreshed its sign-in token in the temporary home; the real auth.json was not changed. If Codex asks you to sign in again, run: codex login" >&2
   fi
   rm -rf "$chome" "$prep" "$probe_home"
 }
@@ -34,23 +35,18 @@ trap cleanup EXIT; trap 'exit 143' TERM; trap 'exit 130' INT
 [ -f "$real_home/auth.json" ] || { echo "no auth.json under $real_home: sign in to Codex first" >&2; exit 2; }
 probe_home=$(mktemp -d)
 probe() { env -i HOME="$1" PATH="$PATH" bash -c "$2 --version" >/dev/null 2>&1; }
-launch=; launch_home=
+launch=
 for cand in ${CODEX_CMD:+"$CODEX_CMD"} codex "node $HOME/.local/share/codex-npm/node_modules/@openai/codex/bin/codex.js" \
             "node $(npm root -g 2>/dev/null)/@openai/codex/bin/codex.js"; do
   if probe "$probe_home" "$cand"; then launch=$cand; break; fi
 done
-if [ -z "$launch" ]; then
-  for cand in ${CODEX_CMD:+"$CODEX_CMD"} codex; do
-    if probe "$HOME" "$cand"; then launch=$cand; launch_home=$HOME; echo "note: the codex launcher needs the real HOME; using it for the launcher only" >&2; break; fi
-  done
-fi
-[ -n "$launch" ] || { echo "no usable codex launcher found (tried CODEX_CMD, codex, the npm installs); set CODEX_CMD" >&2; exit 2; }
+[ -n "$launch" ] || { echo "no codex launcher starts with an empty HOME (tried CODEX_CMD, codex, the npm installs); set CODEX_CMD to a command that does not need HOME, for example: node /path/to/codex.js" >&2; exit 2; }
 chome=$(mktemp -d "${TMPDIR:-/tmp}/codex-lane-XXXXXX"); chmod 700 "$chome"
 ( umask 077; cp "$real_home/auth.json" "$chome/auth.json" )
-orig_sum=$(sha256sum < "$real_home/auth.json")
+snap_sum=$(sha256sum < "$chome/auth.json")   # of the bytes actually copied
 prep=$(mktemp -d); mkdir -p "$out/_meta"
 python3 "$here/evals/tools/prepare.py" "$prep" ${ONLY:+--only "$ONLY"} ${APPLIES:+--applies "$APPLIES"} ${CASES:+--cases "$CASES"} >/dev/null || { echo "case preparation refused or failed: nothing was reviewed" >&2; exit 1; }
-export SKILL="$skill" OUT="$out" LAUNCH="$launch" LAUNCH_HOME="$launch_home" RUN_CODEX_HOME="$chome"
+export SKILL="$skill" OUT="$out" LAUNCH="$launch" RUN_CODEX_HOME="$chome"
 review() {
   d=$1; c=$(basename "$d"); [ -s "$OUT/$c.md" ] && return 0
   {
@@ -66,7 +62,7 @@ review() {
     echo "json block with \"verdict\" and \"findings\" (each: severity, evidence_level, location, scenario, fix)."
   } > "$OUT/$c.prompt"
   w=$(mktemp -d); h=$(mktemp -d)
-  env -i HOME="${LAUNCH_HOME:-$h}" PATH="$PATH" CODEX_HOME="$RUN_CODEX_HOME" \
+  env -i HOME="$h" PATH="$PATH" CODEX_HOME="$RUN_CODEX_HOME" \
     timeout 900 $LAUNCH exec -s read-only --ephemeral --skip-git-repo-check -C "$w" -m "$CODEX_MODEL" \
     -o "$OUT/$c.md" < "$OUT/$c.prompt" > "$OUT/_meta/$c.codex.log" 2>&1 || { echo "$c failed rc=$?" >> "$OUT/failures.txt"; rm -f "$OUT/$c.md"; }
   python3 - "$OUT/_meta/$c.codex.log" "$OUT/_meta/$c.usage.json" "$CODEX_MODEL" "$c" "$OUT" <<'PY2'
