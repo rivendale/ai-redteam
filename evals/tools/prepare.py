@@ -29,7 +29,7 @@ def main():
     out = pathlib.Path(a.out)
     n = 0
     root = pathlib.Path(a.cases) if a.cases else ROOT
-    for d in sorted(p for p in root.iterdir() if p.is_dir()):
+    for d in sorted(p for p in root.iterdir() if p.is_symlink() or p.is_dir()):   # a link is listed even when it dangles, so it cannot drop out of the batch silently
         if ids and not any(d.name.startswith(i) for i in ids):
             continue
         if a.applies and a.applies not in json.loads((d / "expected.json").read_text()).get("applies_to", ["redteam"]):

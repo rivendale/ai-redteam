@@ -13,6 +13,8 @@ prompt a reviewer sees and into the published prompt files. The failure list:
   F8 a clean case still prepares and still verifies (the check must not reject everything)
   F9 the refusal prints the case and path but never the pointed-at content
   F10 the case directory ITSELF is a symlink to a directory elsewhere -> both tools refuse (a walk from the link would follow it)
+  F12 a DANGLING symlink in the place of a case directory, next to a normal case: both tools refuse (it used to be dropped by
+      the is_dir() filter, so the batch looked complete without it)
   F11 a runner whose preparation step refused must exit nonzero and call no model, not exit 0 with an empty batch
       (both run_reviews.sh and run_reviews_codex.sh)
 """
@@ -92,6 +94,11 @@ class T(unittest.TestCase):
         (self.cases / "case-01").symlink_to(real, target_is_directory=True)
         (real / "work" / "a.txt").write_text(SECRET + "\n")
         self.both_refuse("F10")
+
+    def test_f12_dangling_case_directory(self):
+        make_case(self.cases, "case-01")
+        (self.cases / "case-02").symlink_to(self.t / "does-not-exist", target_is_directory=True)
+        self.both_refuse("F12")
 
     def test_f11_runners_fail_when_preparation_refuses(self):
         d = make_case(self.cases); (d / "work" / "link.txt").symlink_to(self.target)
