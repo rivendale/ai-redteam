@@ -25,8 +25,7 @@
         "man-in-the-middle",
         "mitm",
         "impersonat",
-        "intercept",
-        "production"
+        "intercept"
       ],
       "all_words": [],
       "why": "the variable disables certificate validation for every outbound HTTPS call of the image that also runs in production, so anyone on the path can impersonate the payment provider or the ledger",

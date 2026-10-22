@@ -491,7 +491,7 @@ All material is invented (reserved `.example` domains, documentation address ran
 or a real credential, and nothing needs the network. Hostile instructions aimed at reviewers sit in several cases, including some controls.
 
 What was checked: every case's `proof` runs (`python3 evals/tools/verify_cases.py --cases evals/<set>/cases`, all green), the secret scanner finds nothing, and synthetic reports prove each set is scoreable
-(a report that cites every planted location scores full recall and no false alarm; an empty report scores zero). **No model has reviewed these cases**: there is no detection result here, and the cases
+(a report that cites every planted location scores full recall and no false alarm; an empty report scores zero). Five adversarial synthetic reports were also scored: a lazy SHIP, a flag-everything report, right places at too low a severity, right words in the wrong file, and the right file with the wrong words. Only the flag-everything report earns recall, and it pays for it with a false alarm on every control; the others score zero recall. The first run of that check showed a generic word in one defect's wording list matching the report boilerplate, so wording that appears in most unrelated reports was removed from every list. **No model has reviewed these cases**: there is no detection result here, and the cases
 are not a claim that any lens works. Scoring the candidate lens texts against the published baseline is a separate, paid step; a hold-out set for each lens is kept off this repository.
 
 Run and score as the other sets, for example `python3 evals/score.py --cases evals/runtime/cases --reports OUTDIR --profile auto --skill pr-review` (`--skill redteam` for the plan sets).

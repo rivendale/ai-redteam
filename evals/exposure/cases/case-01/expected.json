@@ -45,15 +45,12 @@
       "min_severity": "High",
       "any_words": [
         "patch",
-        "owner",
         "cadence",
         "update",
         "inventory",
-        "version",
         "latest",
         "advisory",
-        "urgent",
-        "who"
+        "urgent"
       ],
       "all_words": [],
       "why": "no named owner, no routine, no urgent-advisory path and no inventory of the running version or image digest, on a service whose critical flaws are published and exploited within hours"
