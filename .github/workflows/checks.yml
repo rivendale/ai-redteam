@@ -76,5 +76,6 @@ jobs:
           python3 tests/test_pr_review_errors.py
           python3 tests/test_osv.py
           python3 tests/test_osv_integration.py
+          python3 tests/test_pr_review_room.py
       - name: Portable multi-host installation tests
         run: python3 tests/test_portable_install.py --source .
