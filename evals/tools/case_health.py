@@ -151,7 +151,9 @@ def diagnose(cases, observations, complete=False, grid=None):
         stopped_or_fallback = sum(bool(r["status"] in ("safety_stop", "fallback") or r.get("safety_stop") or r.get("fallback")) for r in rows)
         verdict = "KEEP"
         reasons = []
-        if not usable:
+        if not rows:
+            verdict = "NO-DATA"; reasons.append("no recorded reviews; case quality has not been tested")
+        elif not usable:
             verdict = "UNTESTABLE"; reasons.append("no usable recorded reviews")
         elif case["control"] and flagged == len(usable):
             verdict = "FIX-CONTROL"; reasons.append("every usable review flags the control; inspect the control before blaming the model")
@@ -479,7 +481,7 @@ def markdown(data):
              "Counts-only publications cannot populate per-case observations and are not expanded into invented runs.",
              "", "Verdicts: " + json.dumps(data["verdict_counts"], sort_keys=True), "",
              "Coverage: " + json.dumps(data.get('coverage_counts', {}), sort_keys=True), "",
-             "NO-DATA means zero recorded reviews, not a tested defect in the case. Its authorized verdict remains UNTESTABLE.",
+             "NO-DATA means zero recorded reviews, not a tested defect in the case. UNTESTABLE requires recorded but unusable reviews.",
              "Overlap lists contain at most three examples per case, with exact total/omitted counts in JSON; proven full-grid pairs are never truncated.",
              "",
              "Input diagnostics: " + json.dumps(data["issues"], sort_keys=True), "", "## Hold-out aggregate only", "",
@@ -494,8 +496,6 @@ def markdown(data):
             denominator = sum(g["denominator"] for g in c["difficulty"])
             evidence = f"{c['metric']}: {numerator}/{denominator}; " + evidence
             label = c["verdict"] + (" (regression guard)" if guard and c["verdict"] == "KEEP" else "")
-            if c.get('coverage_label') == 'NO-DATA':
-                label += ' (NO-DATA)'
             lines.append(f"| `{c['id']}` | {label} | {c['usable']} / {c['observations']} | {evidence} |")
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"

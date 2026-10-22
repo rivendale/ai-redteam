@@ -1,6 +1,6 @@
 {
   "as_of": "2026-10-22",
-  "assessor_sha256": "fd6c4a129065f86685e4a459e859f08d836b6d627c3dfdf2c4ebdad59eeabf20",
+  "assessor_sha256": "8c95b4d941aa327dc750afcc75f39b597629fded4fb611f48af0df38a8a30c2e",
   "cases": [
     {
       "control": false,
@@ -7126,7 +7126,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -7140,7 +7140,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -7165,7 +7165,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -7179,7 +7179,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -8733,7 +8733,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -8747,7 +8747,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -8772,7 +8772,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -8786,7 +8786,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -8811,7 +8811,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -8825,7 +8825,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -8850,7 +8850,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -8864,7 +8864,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -8889,7 +8889,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -8903,7 +8903,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -8928,7 +8928,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -8942,7 +8942,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -8967,7 +8967,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -8981,7 +8981,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -9006,7 +9006,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9020,7 +9020,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -9045,7 +9045,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9059,7 +9059,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -9084,7 +9084,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9098,7 +9098,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -9123,7 +9123,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9137,7 +9137,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -9162,7 +9162,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9176,7 +9176,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -9201,7 +9201,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9215,7 +9215,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -9240,7 +9240,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9254,7 +9254,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -9279,7 +9279,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9293,7 +9293,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -9318,7 +9318,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9332,7 +9332,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -9357,7 +9357,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9371,7 +9371,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -9396,7 +9396,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9410,7 +9410,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -9435,7 +9435,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9449,7 +9449,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -9474,7 +9474,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9488,7 +9488,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -9513,7 +9513,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9527,7 +9527,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -9552,7 +9552,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9566,7 +9566,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -9591,7 +9591,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9605,7 +9605,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -9630,7 +9630,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9644,7 +9644,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -9669,7 +9669,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9683,7 +9683,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -9708,7 +9708,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9722,7 +9722,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -9747,7 +9747,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9761,7 +9761,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -9786,7 +9786,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9800,7 +9800,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -9825,7 +9825,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9839,7 +9839,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -9864,7 +9864,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9878,7 +9878,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -9903,7 +9903,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9917,7 +9917,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -9942,7 +9942,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9956,7 +9956,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -9981,7 +9981,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -9995,7 +9995,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -10020,7 +10020,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -10034,7 +10034,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -10059,7 +10059,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -10073,7 +10073,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -10098,7 +10098,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -10112,7 +10112,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -10137,7 +10137,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -10151,7 +10151,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -10176,7 +10176,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -10190,7 +10190,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -10215,7 +10215,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -10229,7 +10229,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -10254,7 +10254,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": true,
@@ -10268,7 +10268,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -10293,7 +10293,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -10307,7 +10307,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -10332,7 +10332,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -10346,7 +10346,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -10371,7 +10371,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -10385,7 +10385,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -10410,7 +10410,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -10424,7 +10424,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -10449,7 +10449,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -10463,7 +10463,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -10488,7 +10488,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -10502,7 +10502,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -10527,7 +10527,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -10541,7 +10541,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -10566,7 +10566,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -10580,7 +10580,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -10605,7 +10605,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -10619,7 +10619,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -10644,7 +10644,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -10658,7 +10658,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -10683,7 +10683,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -10697,7 +10697,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -10722,7 +10722,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -10736,7 +10736,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -10761,7 +10761,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -10775,7 +10775,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -10800,7 +10800,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -10814,7 +10814,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -10839,7 +10839,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -10853,7 +10853,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -10981,7 +10981,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -10995,7 +10995,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -11020,7 +11020,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -11034,7 +11034,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -11059,7 +11059,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -11073,7 +11073,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -11098,7 +11098,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -11112,7 +11112,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -11137,7 +11137,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -11151,7 +11151,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -11176,7 +11176,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -11190,7 +11190,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -11215,7 +11215,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -11229,7 +11229,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -11254,7 +11254,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -11268,7 +11268,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": true,
@@ -11293,7 +11293,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -11307,7 +11307,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     },
     {
       "control": false,
@@ -11332,7 +11332,7 @@
       "overlap_count": 0,
       "overlap_examples_omitted": 0,
       "reasons": [
-        "no usable recorded reviews"
+        "no recorded reviews; case quality has not been tested"
       ],
       "redundancy": [],
       "regression_guard": false,
@@ -11346,7 +11346,7 @@
       "untestable_share": null,
       "unusable_share": null,
       "usable": 0,
-      "verdict": "UNTESTABLE"
+      "verdict": "NO-DATA"
     }
   ],
   "coverage_counts": {
@@ -11378,7 +11378,8 @@
   "scoring": "current-key rescoring; not a replacement for published as-run totals",
   "verdict_counts": {
     "KEEP": 59,
+    "NO-DATA": 67,
     "SHARPEN": 60,
-    "UNTESTABLE": 71
+    "UNTESTABLE": 4
   }
 }

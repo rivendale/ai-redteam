@@ -512,10 +512,11 @@ identity uses the exact decodable skill-text prefix before the input marker, so
 binary case-input bytes after that marker do not erase valid text provenance.
 
 Recommendations are KEEP, SHARPEN, FIX-CONTROL, REVIEW-MATCHER, FLAKY,
-UNTESTABLE or RETIRE-CANDIDATE. No usable results means UNTESTABLE. Separate
+NO-DATA, UNTESTABLE or RETIRE-CANDIDATE. Zero recorded reviews means NO-DATA;
+recorded but mostly unusable reviews means UNTESTABLE. Separate
 coverage labels distinguish NO-DATA (zero recorded reviews), NO-USABLE-REVIEWS
-(recorded but unusable reviews), and RECORDED. A NO-DATA label does not judge the
-case or replace its authorized verdict. Coverage counts are shown before the
+(recorded but unusable reviews), and RECORDED. NO-DATA does not judge the
+case's quality. Coverage counts are shown before the
 case tables. Saturation
 alone means SHARPEN for ordinary defect cases, with a never-failed warning.
 Disclosure, regulatory/legal statement, consent/privacy and safety-warning cases

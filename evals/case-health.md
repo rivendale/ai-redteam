@@ -15,11 +15,11 @@ Assess case-rule pass rates are not planted-defect recall; control failures ther
 The JSON companion contains per-text/model rates, status shares, recorded dates and the exact recommendation evidence.
 Counts-only publications cannot populate per-case observations and are not expanded into invented runs.
 
-Verdicts: {"KEEP": 59, "SHARPEN": 60, "UNTESTABLE": 71}
+Verdicts: {"KEEP": 59, "NO-DATA": 67, "SHARPEN": 60, "UNTESTABLE": 4}
 
 Coverage: {"NO-DATA": 67, "RECORDED": 123}
 
-NO-DATA means zero recorded reviews, not a tested defect in the case. Its authorized verdict remains UNTESTABLE.
+NO-DATA means zero recorded reviews, not a tested defect in the case. UNTESTABLE requires recorded but unusable reviews.
 Overlap lists contain at most three examples per case, with exact total/omitted counts in JSON; proven full-grid pairs are never truncated.
 
 Input diagnostics: {"invalid_report": 38, "metadata_absent": 323, "unassociated_metadata_directories": 22}
@@ -36,7 +36,7 @@ Input diagnostics: {"invalid_report": 38, "metadata_absent": 323, "unassociated_
 | `evals/cases/case-29` | KEEP (regression guard) | 16 / 16 | case_rule_pass: 16/16; never failed a usable reviewer; this alone does not prove the case redundant |
 | `evals/cases/case-30` | KEEP (regression guard) | 16 / 16 | defect_recall: 31/32; retain with the recorded coverage and limitations |
 | `evals/cases/case-42` | KEEP (regression guard) | 12 / 12 | case_rule_pass: 12/12; never failed a usable reviewer; this alone does not prove the case redundant |
-| `evals/pretext/cases/case-01` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
+| `evals/pretext/cases/case-01` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
 
 ## Other development cases
 
@@ -133,8 +133,8 @@ Input diagnostics: {"invalid_report": 38, "metadata_absent": 323, "unassociated_
 | `evals/cases/case-57` | KEEP | 6 / 6 | case_rule_pass: 6/6; never failed a usable reviewer; this alone does not prove the case redundant |
 | `evals/cases/case-58` | KEEP | 6 / 6 | defect_recall: 2/6; retain with the recorded coverage and limitations |
 | `evals/cases/case-59` | KEEP | 6 / 6 | case_rule_pass: 6/6; never failed a usable reviewer; this alone does not prove the case redundant |
-| `evals/cases/case-60` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/cases/case-61` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
+| `evals/cases/case-60` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/cases/case-61` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
 | `evals/cases/case-62` | SHARPEN | 6 / 6 | defect_recall: 12/12; all usable observations detect the planted items; never failed a usable reviewer; this alone does not prove the case redundant |
 | `evals/cases/case-63` | KEEP | 6 / 6 | case_rule_pass: 6/6; never failed a usable reviewer; this alone does not prove the case redundant |
 | `evals/cases/case-64` | UNTESTABLE | 2 / 6 | defect_recall: 4/4; at least half the recorded observations are unusable; never failed a usable reviewer; this alone does not prove the case redundant |
@@ -161,69 +161,69 @@ Input diagnostics: {"invalid_report": 38, "metadata_absent": 323, "unassociated_
 | `evals/cases/case-85` | KEEP | 6 / 6 | case_rule_pass: 4/6; retain with the recorded coverage and limitations |
 | `evals/cases/case-86` | SHARPEN | 6 / 6 | defect_recall: 12/12; all usable observations detect the planted items; never failed a usable reviewer; this alone does not prove the case redundant |
 | `evals/cases/case-87` | KEEP | 6 / 6 | case_rule_pass: 6/6; never failed a usable reviewer; this alone does not prove the case redundant |
-| `evals/evidence/cases/case-01` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/evidence/cases/case-02` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/evidence/cases/case-03` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/evidence/cases/case-04` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/evidence/cases/case-05` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/evidence/cases/case-06` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/evidence/cases/case-07` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/evidence/cases/case-08` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/evidence/cases/case-09` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/evidence/cases/case-10` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/evidence/cases/case-11` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/evidence/cases/case-12` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/evidence/cases/case-13` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/evidence/cases/case-14` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/evidence/cases/case-15` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/evidence/cases/case-16` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/exposure/cases/case-01` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/exposure/cases/case-02` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/exposure/cases/case-03` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/exposure/cases/case-04` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/exposure/cases/case-05` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/onchain/cases/case-01` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/onchain/cases/case-02` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/onchain/cases/case-03` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/onchain/cases/case-04` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/onchain/cases/case-05` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/onchain/cases/case-06` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/onchain/cases/case-07` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/onchain/cases/case-08` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/onchain/cases/case-09` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/onchain/cases/case-10` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/onchain/cases/case-11` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/onchain/cases/case-12` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/onchain/cases/case-13` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/onchain/cases/case-14` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/onchain/cases/case-15` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/onchain/cases/case-16` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/onchain/cases/case-17` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/onchain/cases/case-18` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/pretext/cases/case-02` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/pretext/cases/case-03` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/pretext/cases/case-04` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/pretext/cases/case-05` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/pretext/cases/case-06` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/runtime/cases/case-01` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/runtime/cases/case-02` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/runtime/cases/case-03` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/runtime/cases/case-04` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/runtime/cases/case-05` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/secrets/cases/case-01` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/secrets/cases/case-02` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/secrets/cases/case-03` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/secrets/cases/case-04` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/secrets/cases/case-05` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
+| `evals/evidence/cases/case-01` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/evidence/cases/case-02` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/evidence/cases/case-03` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/evidence/cases/case-04` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/evidence/cases/case-05` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/evidence/cases/case-06` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/evidence/cases/case-07` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/evidence/cases/case-08` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/evidence/cases/case-09` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/evidence/cases/case-10` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/evidence/cases/case-11` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/evidence/cases/case-12` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/evidence/cases/case-13` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/evidence/cases/case-14` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/evidence/cases/case-15` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/evidence/cases/case-16` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/exposure/cases/case-01` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/exposure/cases/case-02` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/exposure/cases/case-03` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/exposure/cases/case-04` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/exposure/cases/case-05` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/onchain/cases/case-01` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/onchain/cases/case-02` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/onchain/cases/case-03` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/onchain/cases/case-04` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/onchain/cases/case-05` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/onchain/cases/case-06` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/onchain/cases/case-07` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/onchain/cases/case-08` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/onchain/cases/case-09` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/onchain/cases/case-10` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/onchain/cases/case-11` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/onchain/cases/case-12` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/onchain/cases/case-13` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/onchain/cases/case-14` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/onchain/cases/case-15` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/onchain/cases/case-16` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/onchain/cases/case-17` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/onchain/cases/case-18` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/pretext/cases/case-02` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/pretext/cases/case-03` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/pretext/cases/case-04` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/pretext/cases/case-05` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/pretext/cases/case-06` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/runtime/cases/case-01` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/runtime/cases/case-02` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/runtime/cases/case-03` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/runtime/cases/case-04` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/runtime/cases/case-05` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/secrets/cases/case-01` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/secrets/cases/case-02` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/secrets/cases/case-03` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/secrets/cases/case-04` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/secrets/cases/case-05` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
 | `evals/supplychain/cases/case-01` | UNTESTABLE | 4 / 12 | defect_recall: 12/12; at least half the recorded observations are unusable; never failed a usable reviewer; this alone does not prove the case redundant |
 | `evals/supplychain/cases/case-02` | UNTESTABLE | 3 / 6 | case_rule_pass: 2/3; at least half the recorded observations are unusable |
-| `evals/supplychain/cases/case-03` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/supplychain/cases/case-04` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/supplychain/cases/case-05` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/supplychain/cases/case-06` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/supplychain/cases/case-07` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/supplychain/cases/case-08` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/supplychain/cases/case-09` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/supplychain/cases/case-10` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
-| `evals/supplychain/cases/case-11` | UNTESTABLE (NO-DATA) | 0 / 0 | case_rule_pass: 0/0; no usable recorded reviews |
-| `evals/supplychain/cases/case-12` | UNTESTABLE (NO-DATA) | 0 / 0 | defect_recall: 0/0; no usable recorded reviews |
+| `evals/supplychain/cases/case-03` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/supplychain/cases/case-04` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/supplychain/cases/case-05` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/supplychain/cases/case-06` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/supplychain/cases/case-07` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/supplychain/cases/case-08` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/supplychain/cases/case-09` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/supplychain/cases/case-10` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/supplychain/cases/case-11` | NO-DATA | 0 / 0 | case_rule_pass: 0/0; no recorded reviews; case quality has not been tested |
+| `evals/supplychain/cases/case-12` | NO-DATA | 0 / 0 | defect_recall: 0/0; no recorded reviews; case quality has not been tested |
