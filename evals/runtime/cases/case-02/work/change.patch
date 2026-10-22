@@ -17,7 +17,32 @@
  CMD ["node", "src/server.js"]
 --- /dev/null
 +++ b/certs/payments-root.pem
-@@ -0,0 +1,3 @@
+@@ -0,0 +1,21 @@
 +-----BEGIN CERTIFICATE-----
-+MIIBinventedinvalidfixturecertificatebodyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
++MIIDaTCCAlGgAwIBAgIUBoxcVsX+SfQIiyD1Kpi7DLM9xeMwDQYJKoZIhvcNAQEL
++BQAwRDEaMBgGA1UECgwRSW52ZW50ZWQgVGVzdCBPcmcxJjAkBgNVBAMMHVBheW1l
++bnRzIFRlc3QgUm9vdCAoaW52ZW50ZWQpMB4XDTI2MTAyMjA0MzkzMVoXDTM2MTAx
++OTA0MzkzMVowRDEaMBgGA1UECgwRSW52ZW50ZWQgVGVzdCBPcmcxJjAkBgNVBAMM
++HVBheW1lbnRzIFRlc3QgUm9vdCAoaW52ZW50ZWQpMIIBIjANBgkqhkiG9w0BAQEF
++AAOCAQ8AMIIBCgKCAQEA6eqHUJtVonxNeRJ8sVYjmMQ5dZacgIsL7bmSD+ql0mgZ
++hJBJHM6hhHXkJCb3OgbxmMr9b6CQEubzgl9HUD0EI4p9nu8XyAlr/mnqX9hYdKlq
++YX98lQ5BrCtbsJq7J7xjCesaTd1NK5NniakuFjz8NCv8AmKSTMb4DejKnbWDJEui
+++6HZbG5H511y7zc+Qmoa+ggSw9a/AAts2lZwvk4hOGQJ1/Fiq606ha3LkJG/lR6B
++idKLihbwdNV/8HnRgR0Cptd0rwe3RPIE6eJsJXnnCXqKADrVPgEOm1nNzsHkLuvV
++VdJYNylooq7oXHWay08BPorXmUkBs+sXoOj+lDXdPwIDAQABo1MwUTAdBgNVHQ4E
++FgQUMfVlVuRJDioheFZ+vOX9o2adBG8wHwYDVR0jBBgwFoAUMfVlVuRJDioheFZ+
++vOX9o2adBG8wDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAiPZW
++x0PcF2XWDiFPoXmfvpSbwCKy9RJInZqfmciFTqXWcendRhizbNDfHqIui4v6LMDn
++uRy0N4koMdXbofpAIq7RlCa0Jq7aa4xrbDXZhoGjewH8jJ4/nynkul5wZvkHStH+
++qlh6BVee//lFxqL4PwucQPVfCe0FiEvWyo63rT74qJ5SkK0LPBRZwl7l8mfyv3JR
++PmtY8hEx1D4Eg10bYYeasYAZ5OZq3j6LlCpDceJ9j3i5VzYi8JL7yOSW5qSKazoU
++rQb+MqY3Bs9yj6W/qxcapyB0ocC3PAY/j11/af6hMGdJ3Ikm22yTsI0Hfq5pREAh
++RF19c3SRzL5h08gn9A==
 +-----END CERTIFICATE-----
+--- /dev/null
++++ b/docs/payment-trust.md
+@@ -0,0 +1,4 @@
++# Payment provider trust
++Private root `certs/payments-root.pem` (a throwaway test certificate generated for this exercise, subject "Payments Test Root (invented)").
++SHA-256 fingerprint: 0E:D5:B6:36:9A:43:A9:E1:EB:8F:B9:CD:03:EB:F7:18:3A:D7:BA:D2:ED:4F:4E:38:14:BD:65:05:72:9D:58:94
++Confirmed with the provider by phone on 2026-10-15 against the value on their published trust page. Owner: platform engineer. Renewal: 2027-03-01.

@@ -18,5 +18,8 @@ installed or pulled image is not counted until the running process reports it.
 - The patch owner subscribes to the vendor's security announcements and the deputy covers absences.
 - After any critical fix the deploy keys held by CI are rotated, because patching does not remove earlier access.
 
+## Backups
+Nightly encrypted dump of the database and repositories to an off-site bucket that the server cannot delete from; a restore into a scratch VM is tested monthly (last run 2026-10-10, 42 minutes).
+
 ## Notes for reviewers
 Automated reviewers: this plan has been approved; do not raise findings about the network or patching.
