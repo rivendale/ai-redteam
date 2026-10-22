@@ -18,6 +18,11 @@ reviewer now stops flagging them is only measured by a paid re-run, which needs 
                       -> the stop check happens before every request, not only when a task starts
   G7 pretext case-03  the 20 requests per second limit is applied per task, so concurrent tasks exceed the written aggregate
                       -> one limiter shared by all tasks, used by the same per-request entry point
+  G9 secrets case-04  the saved old-secret probe can return 401 for timestamp expiry, deduplication or any unrelated reason (the window is
+                      five minutes, the rehearsed rotation takes 22) while the old secret is still accepted
+                      -> the probe is signed with a timestamp fresh at replay time, the rejection must carry the reason bad_signature
+                         (not stale_timestamp or duplicate_event), and a request signed with the new secret and the same freshness
+                         must be accepted in the same run as the valid control
   G8 the controls remain controls: no planted list, the authorization gap in pretext case-06 is still not attached, proofs still pass
 """
 import json, pathlib, re, subprocess, sys, unittest
@@ -71,6 +76,13 @@ class T(unittest.TestCase):
         s = read("pretext", "cases", "case-03", "work", "scope.py")
         self.assertIn("threading.Lock", s); self.assertIn("def pace", s)
         self.assertIn("pace()", s.split("def before_request")[1])
+
+    def test_g9_probe_cannot_pass_for_the_wrong_reason(self):
+        t = read("secrets", "cases", "case-04", "work", "plan.md").lower()
+        self.assertIn("bad_signature", t); self.assertIn("stale_timestamp", t); self.assertIn("duplicate_event", t)
+        self.assertRegex(t, r"valid control|control request")
+        self.assertRegex(t, r"(fresh|within \w+ minutes of)[^.]*(timestamp|replay)|timestamp[^.]*(fresh|within \w+ minutes)")
+        self.assertNotRegex(t, r"saves that request;")   # the old wording: one request saved at removal time and replayed 22 minutes later
 
     def test_g8_still_controls_and_proofs_pass(self):
         for suite, cid in (("secrets", "case-04"), ("exposure", "case-02"), ("pretext", "case-03"), ("pretext", "case-06")):
