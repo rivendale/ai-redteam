@@ -30,13 +30,13 @@ class Aggregate(unittest.TestCase):
         c = case(**kw)
         return health.diagnose([c], {c["id"]: rows})[0]
 
-    def test_empty_is_untestable(self):
-        self.assertEqual(self.result([])["verdict"], "UNTESTABLE")
+    def test_empty_is_no_data(self):
+        self.assertEqual(self.result([])["verdict"], "NO-DATA")
 
     def test_no_data_coverage_is_distinct_from_unusable_reviews(self):
         empty = self.result([])
         failed = self.result([observation(status='invalid_report')])
-        self.assertEqual(empty['verdict'], 'UNTESTABLE')
+        self.assertEqual(empty['verdict'], 'NO-DATA')
         self.assertEqual(empty['coverage_label'], 'NO-DATA')
         self.assertEqual(failed['verdict'], 'UNTESTABLE')
         self.assertEqual(failed['coverage_label'], 'NO-USABLE-REVIEWS')

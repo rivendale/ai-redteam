@@ -4,7 +4,7 @@ Write the diagnostic contract before implementation. The assessor is offline, re
 
 | Failure | Denying check |
 |---|---|
-| A case with no recorded review becomes KEEP | Empty coverage is UNTESTABLE; missing observations are counted, not zeros. |
+| A case with no recorded review becomes KEEP | Empty coverage is NO-DATA; missing observations are counted, not zeros. |
 | A saturated ordinary case becomes KEEP without a warning | All observed detections produce SHARPEN and an explicit never-failed warning. |
 | A disclosure, regulatory/legal statement, consent/privacy text or safety-warning guard becomes SHARPEN or RETIRE-CANDIDATE solely because it is saturated | Each protected category stays KEEP (regression guard) and appears in its own section. |
 | A likely protected case lacks a machine-readable category and is retired by accident | Conservative source/key classification plus an explicit protection override preserves it; uncertainty is visible. |
@@ -42,7 +42,10 @@ Write the regression checks before the implementation correction:
   decodable skill-text prefix. Recover that prefix without replacement decoding;
   corruption inside the skill-text prefix must still be reported as invalid.
 - A case with zero recorded observations must carry an explicit NO-DATA coverage
-  label, distinct from a case with recorded but unusable reviews. The authorized
-  no-results verdict remains UNTESTABLE; a coverage label is not a new verdict.
+  label, distinct from a case with recorded but unusable reviews. The amended
+  no-results verdict is NO-DATA. UNTESTABLE requires recorded but unusable reviews.
 - Many partial overlaps must have exact counts and bounded examples. Summarizing
   display noise must not change full-vector comparison or the redundancy gate.
+
+Amendment on October 22, 2026: NO-DATA replaces the original no-results
+UNTESTABLE expectation. This is a verdict change, not just a coverage label.
