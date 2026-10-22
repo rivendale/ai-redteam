@@ -47,3 +47,17 @@ trusted-base checkout, and verifies an eligible run with a mock provider. Tests 
 A real GitHub-hosted smoke run and provider billing behavior remain maintainer acceptance after review. Do not
 supply a key to a fork to test the denial. Observe the job being skipped from the fork run and compare that with
 the local tripwire result. The action pin is a full commit from the official actions/checkout repository.
+
+## Failure diagnostics
+
+Failures exit nonzero without publishing a review. Logs distinguish `provider HTTP 404 not_found_error`,
+other provider HTTP statuses, `provider timeout`, `provider network`, and GitHub HTTP/network failures.
+Local refusals use the fixed category `configuration/input/response`. No exception message, response body,
+URL, request header, or provider error message is logged. Only a recognized provider `error.type` is accepted;
+unknown, malformed, or oversized error responses use `unknown_error`. The recognized types follow the
+[official API error reference](https://platform.claude.com/docs/en/api/errors), checked October 22, 2026.
+A category narrows diagnosis; a 400 alone does not prove a billing or configuration cause.
+
+Run `python3 tests/test_pr_review_errors.py` for synthetic 401/404/400, timeout, GitHub/service distinction,
+malformed and oversized bodies, and credential-reflection controls. These tests make no live calls.
+The one-request/no-retry policy and the secret eligibility gates remain in force.

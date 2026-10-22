@@ -5,13 +5,46 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 LIMIT=2*1024*1024
 class Refuse(ValueError):pass
+# Fixed vocabulary from the provider API error reference. Never print remote strings.
+ERROR_TYPES=frozenset(('invalid_request_error','authentication_error','billing_error',
+ 'permission_error','not_found_error','conflict_error','request_too_large',
+ 'rate_limit_error','api_error','timeout_error','overloaded_error'))
+class RemoteFailure(Refuse):
+ def __init__(self,service,kind,status=None,error_type='unknown_error'):
+  self.service=service;self.kind=kind;self.status=status;self.error_type=error_type
+  super().__init__('remote request failed')
+ def diagnostic(self):
+  service=self.service if self.service in ('provider','github') else 'remote'
+  if self.kind=='HTTP':
+   status=str(self.status) if type(self.status) is int and 100<=self.status<=599 else 'unknown'
+   kind=self.error_type if self.error_type in ERROR_TYPES else 'unknown_error'
+   return service+' HTTP '+status+(' '+kind if service=='provider' else '')
+  return service+(' timeout' if self.kind=='timeout' else ' network')
+def provider_error_type(error):
+ try:
+  raw=error.read(LIMIT+1)
+  if len(raw)>LIMIT:return 'unknown_error'
+  value=json.loads(raw)
+  detail=value.get('error') if isinstance(value,dict) else None
+  kind=detail.get('type') if isinstance(detail,dict) else None
+  return kind if isinstance(kind,str) and kind in ERROR_TYPES else 'unknown_error'
+ except (ValueError,TypeError,OSError):return 'unknown_error'
+ finally:error.close()
 class NoRedirect(urllib.request.HTTPRedirectHandler):
  def redirect_request(self,*args,**kwargs):raise Refuse('redirect refused')
 def exchange(url,headers,data=None):
+ service='provider' if url=='https://api.anthropic.com/v1/messages' else 'github'
  try:
   request=urllib.request.Request(url,headers=headers,data=data,method='POST' if data is not None else 'GET')
   with urllib.request.build_opener(NoRedirect).open(request,timeout=90) as response:raw=response.read(LIMIT+1)
- except (urllib.error.URLError,OSError):raise Refuse('remote request failed; diagnostics suppressed to protect headers') from None
+ except urllib.error.HTTPError as error:
+  kind=provider_error_type(error) if service=='provider' else 'unknown_error'
+  error.close()
+  raise RemoteFailure(service,'HTTP',error.code,kind) from None
+ except TimeoutError:raise RemoteFailure(service,'timeout') from None
+ except urllib.error.URLError as error:
+  raise RemoteFailure(service,'timeout' if isinstance(error.reason,TimeoutError) else 'network') from None
+ except OSError:raise RemoteFailure(service,'network') from None
  if len(raw)>LIMIT:raise Refuse('response exceeds limit')
  return raw
 def trusted_pr(pr,repo):
@@ -73,5 +106,6 @@ def main():
   if result is None:print('Review skipped: ineligible repository, actor or configuration.');return 0
   summary=render(result);path=Path(os.environ['GITHUB_STEP_SUMMARY']);path.write_text(summary)
   print('One review round recorded for head '+result['head']+'.');return 0
- except (ValueError,TypeError,KeyError,OSError):print('PR review refused or failed; no review published. Check configuration, input limits and service availability.',file=sys.stderr);return 1
+ except RemoteFailure as error:print('PR review failed: '+error.diagnostic()+'; no review published.',file=sys.stderr);return 1
+ except (ValueError,TypeError,KeyError,OSError):print('PR review refused: configuration/input/response; no review published.',file=sys.stderr);return 1
 if __name__=='__main__':sys.exit(main())
