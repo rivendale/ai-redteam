@@ -1,0 +1,18 @@
+{
+  "queries": [
+    {
+      "package": {
+        "ecosystem": "npm",
+        "name": "@solana/web3.js"
+      },
+      "version": "1.95.6"
+    },
+    {
+      "package": {
+        "ecosystem": "npm",
+        "name": "@solana/web3.js"
+      },
+      "version": "1.95.8"
+    }
+  ]
+}
