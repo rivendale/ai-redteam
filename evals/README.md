@@ -506,11 +506,17 @@ reads current development keys and existing recorded reviews, then writes
 It never edits a case, executes a proof or calls a model. Use `--force` to replace
 existing diagnostic artifacts. Exit 0 means inputs parsed, 1 means artifacts were
 written with counted input errors, and 2 means input/output validation failed.
-The first dated report includes legacy reports/prompts that cannot be decoded or
-parsed; those are explicit diagnostics, not guessed encodings or scored misses.
+The first dated report includes legacy reports that cannot be decoded or parsed;
+those are explicit diagnostics, not guessed encodings or scored misses. Prompt
+identity uses the exact decodable skill-text prefix before the input marker, so
+binary case-input bytes after that marker do not erase valid text provenance.
 
 Recommendations are KEEP, SHARPEN, FIX-CONTROL, REVIEW-MATCHER, FLAKY,
-UNTESTABLE or RETIRE-CANDIDATE. No usable results means UNTESTABLE. Saturation
+UNTESTABLE or RETIRE-CANDIDATE. No usable results means UNTESTABLE. Separate
+coverage labels distinguish NO-DATA (zero recorded reviews), NO-USABLE-REVIEWS
+(recorded but unusable reviews), and RECORDED. A NO-DATA label does not judge the
+case or replace its authorized verdict. Coverage counts are shown before the
+case tables. Saturation
 alone means SHARPEN for ordinary defect cases, with a never-failed warning.
 Disclosure, regulatory/legal statement, consent/privacy and safety-warning cases
 stay KEEP (regression guard) when saturated and have their own report section.
@@ -557,3 +563,6 @@ across every recorded text/model/repeat, with at least three distinct texts OR
 three distinct models, can yield RETIRE-CANDIDATE. Other coincidences say
 "overlap, needs enumeration". Protected guards are retained even with identical
 vectors. Semantic coverage and any retirement remain an owner's decision.
+Partial overlap lists retain at most three examples per case, with exact total
+and omitted counts. This display limit never samples the full-vector comparison
+or truncates proven full-grid redundancy pairs.

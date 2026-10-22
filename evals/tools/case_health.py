@@ -60,6 +60,18 @@ def read_text(root, path):
     return raw.decode("utf-16" if raw.startswith((b"\xff\xfe", b"\xfe\xff")) else "utf-8-sig")
 
 
+def prompt_text(root, path):
+    """Only the skill prefix identifies the text; case inputs can contain binary files."""
+    raw = safe(root, path).read_bytes()
+    encoding = 'utf-16-le' if raw.startswith(b'\xff\xfe') else 'utf-16-be' if raw.startswith(b'\xfe\xff') else 'utf-8'
+    marker = '=== INPUTS ==='.encode(encoding)
+    start = raw.find('=== SKILL ==='.encode(encoding))
+    end = raw.find(marker, start) if start >= 0 else -1
+    prefix = raw[:end] if end >= 0 else raw
+    decoded = prefix.decode('utf-16' if encoding.startswith('utf-16') else 'utf-8-sig')
+    return decoded if end >= 0 else ''
+
+
 def report(root, path):
     """The canonical last-fenced-JSON extraction, with BOM-aware input decoding."""
     raw = read_text(root, path)
@@ -178,6 +190,7 @@ def diagnose(cases, observations, complete=False, grid=None):
                        "regression_guard": case["regression_guard"], "saturated": saturated, "floor": floor,
                        "repeat_disagreement": flaky, "discriminates_known_groups": len(values) > 1 if len(known) > 1 else None,
                        "observations": len(rows), "usable": len(usable), "status_counts": dict(sorted(statuses.items())),
+                       "coverage_label": "NO-DATA" if not rows else "NO-USABLE-REVIEWS" if not usable else "RECORDED",
                        "unusable_share": unusable / len(rows) if rows else None,
                        "missing_usage_metadata": sum(not r.get("usage_metadata", False) for r in rows),
                        "safety_stop_share": stopped / len(rows) if rows else None,
@@ -206,6 +219,11 @@ def diagnose(cases, observations, complete=False, grid=None):
                     left["reasons"].append("full recorded grid has identical outcome vectors; owner must inspect semantic coverage before any retirement")
     for row in output:
         del row["_vector"], row["_proof"]
+        overlaps = [r for r in row['redundancy'] if r['status'] == 'overlap, needs enumeration']
+        proven = [r for r in row['redundancy'] if r['status'] != 'overlap, needs enumeration']
+        row['overlap_count'] = len(overlaps)
+        row['overlap_examples_omitted'] = max(0, len(overlaps) - 3)
+        row['redundancy'] = proven + overlaps[:3]
     return output
 
 
@@ -382,9 +400,9 @@ def load(root, manifest=None):
                 prompt = d / (cid + ".prompt")
                 if prompt.exists():
                     try:
-                        raw = read_text(root, prompt)
-                        if "=== SKILL ===" in raw and "=== INPUTS ===" in raw:
-                            text = raw.split("=== SKILL ===", 1)[1].split("=== INPUTS ===", 1)[0]
+                        raw = prompt_text(root, prompt)
+                        if "=== SKILL ===" in raw:
+                            text = raw.split("=== SKILL ===", 1)[1]
                             row["text"] = "sha256:" + hashlib.sha256(text.encode()).hexdigest()
                     except (OSError, UnicodeError):
                         row["text"] = None; issue("invalid_prompt", cell_private)
@@ -443,6 +461,7 @@ def load(root, manifest=None):
             "assessor_sha256": hashlib.sha256(HERE.read_bytes()).hexdigest(),
             "scorer_sha256": {name: hashlib.sha256((repo / "evals" / name).read_bytes()).hexdigest() for name in ("score.py", "score_assess.py")},
             "enumeration_complete": complete, "recorded_run_directories": inventory,
+            "coverage_counts": dict(sorted(collections.Counter(c['coverage_label'] for c in output).items())),
             "issues": dict(sorted(issues.items())), "holdout_aggregate": dict(sorted(holdout.items())),
             "cases": output, "verdict_counts": dict(sorted(collections.Counter(c["verdict"] for c in output).items()))}
 
@@ -459,6 +478,10 @@ def markdown(data):
              "The JSON companion contains per-text/model rates, status shares, recorded dates and the exact recommendation evidence.",
              "Counts-only publications cannot populate per-case observations and are not expanded into invented runs.",
              "", "Verdicts: " + json.dumps(data["verdict_counts"], sort_keys=True), "",
+             "Coverage: " + json.dumps(data.get('coverage_counts', {}), sort_keys=True), "",
+             "NO-DATA means zero recorded reviews, not a tested defect in the case. Its authorized verdict remains UNTESTABLE.",
+             "Overlap lists contain at most three examples per case, with exact total/omitted counts in JSON; proven full-grid pairs are never truncated.",
+             "",
              "Input diagnostics: " + json.dumps(data["issues"], sort_keys=True), "", "## Hold-out aggregate only", "",
              json.dumps(data["holdout_aggregate"], sort_keys=True), ""]
     for guard, title in ((True, "Disclosure and safety regression guards"), (False, "Other development cases")):
@@ -471,6 +494,8 @@ def markdown(data):
             denominator = sum(g["denominator"] for g in c["difficulty"])
             evidence = f"{c['metric']}: {numerator}/{denominator}; " + evidence
             label = c["verdict"] + (" (regression guard)" if guard and c["verdict"] == "KEEP" else "")
+            if c.get('coverage_label') == 'NO-DATA':
+                label += ' (NO-DATA)'
             lines.append(f"| `{c['id']}` | {label} | {c['usable']} / {c['observations']} | {evidence} |")
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
