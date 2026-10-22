@@ -10,7 +10,7 @@ A dated observation remains an observation; merging candidate text does not esta
 | Worked example | An attributed excerpt from the [October 7 billing report](../evals/results/2026-10-07-pr9/pr-review-reports/case-10.md), including its missing-commit and missing-round caveats. No new model output. |
 | Results and pending evaluation | Linked [October 16 variance](variance-2026-10-16.md), original release gates and [the October 22 comparison account](../evals/README.md#the-week-1021-lens-development-sets-added-2026-10-22). Development saturation, corrected controls, separate hold-outs and [mixed-model accounting](../evals/README.md#reviews-finished-by-a-different-model-added-2026-10-22) prevent a blanket improvement claim. Rule-ablation remains unrun, not scheduled. |
 | Version and badges | [v2.3.2](https://github.com/rivendale/ai-redteam/releases/tag/v2.3.2) was published October 16, 2026. Plugin and marketplace versions still match 2.3.2. The badges point to that repository's existing checks workflow, LICENSE and latest release. No release or setting was changed. |
-| CHANGELOG | Added an Unreleased inventory for every merged PR after the previous release-notes entry, through #96/#92. Kept as-run totals and later rescoring distinct. |
+| CHANGELOG | Added an Unreleased inventory for every merged PR after the previous release-notes entry, through #105, including #96/#92. Kept as-run totals and later rescoring distinct. |
 | Capabilities, AGENTS and llms.txt | Corrected the two-skill/version/schema descriptions; labeled 87 cases as the baseline suite, not all suites; repaired the stale README anchor. Linked each maintained fact to its owning guide or source. |
 | Eval guide | Labelled baseline counts, removed the old 49-case command comment and reconciled the week-1021 pre-run status with its later comparison/corrections. Distinguished unchanged tracked hold-outs from the author-reported, unverified off-repository fixture-hygiene edit. No answer key or case was changed. |
 | Eval-request pages | Moved seven requests under `eval-requests/`. Original URLs and headings remain forwarding stubs. Request status and frozen hashes are explicitly historical; they are not a current release gate. Skill references remain valid without editing skill bytes. |
@@ -38,7 +38,8 @@ The separate baseline capabilities-to-README anchor was also repaired. The origi
 
 ## Result-source boundary
 
-The public comparison account supports 192 reviews and the no-gain conclusion. The exact requested
-development and hold-out aggregates are not in that public record as checked October 22.
-They are omitted from the README until a public source can be cited; the draft PR tracks this remaining
-source requirement. No private report, off-repository case or answer key is copied into the public repo.
+The [public aggregate record](https://github.com/rivendale/ai-redteam/blob/120f1fbbf2ca698419b1111e0177b507d568e757/evals/results/2026-10-22-week1021-lenses/README.md) supplies the requested development and hold-out totals.
+They describe paired Opus 5.5 defect observations across repeats, not unique defects or a general
+detection guarantee. Safety stops, fallback completion and corrected controls remain explicit.
+The private usage and pre-run registration records were not independently checked in this pass.
+No private report, off-repository case or answer key is copied into the public repo.
