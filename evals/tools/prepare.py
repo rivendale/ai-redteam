@@ -3,9 +3,19 @@
 
     python3 evals/tools/prepare.py OUT [--only ID,...] [--applies redteam|pr-review|plain] [--cases DIR]
 """
-import argparse, json, pathlib, shutil, sys
+import argparse, json, os, pathlib, shutil, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent / "cases"
+
+
+def symlinks_in(case):
+    """Paths of every symlink a reviewer could be handed from this case (request.md, context.md, anything under work/), or of the
+    case's own directory tree when called by verify_cases.py. copy2 and copytree follow links, so a link would put the bytes of its
+    target, a local file or a secret, into the prompt and into the published prompt files. A dangling link counts too."""
+    found = [str(case)] if pathlib.Path(case).is_symlink() else []   # the case directory itself: a walk from a link would follow it
+    for root, dirs, files in os.walk(case, followlinks=False):
+        found += [str(pathlib.Path(root) / n) for n in dirs + files if (pathlib.Path(root) / n).is_symlink()]
+    return sorted(found)
 
 
 def main():
@@ -19,11 +29,15 @@ def main():
     out = pathlib.Path(a.out)
     n = 0
     root = pathlib.Path(a.cases) if a.cases else ROOT
-    for d in sorted(p for p in root.iterdir() if p.is_dir()):
+    for d in sorted(p for p in root.iterdir() if p.is_symlink() or p.is_dir()):   # a link is listed even when it dangles, so it cannot drop out of the batch silently
         if ids and not any(d.name.startswith(i) for i in ids):
             continue
         if a.applies and a.applies not in json.loads((d / "expected.json").read_text()).get("applies_to", ["redteam"]):
             continue
+        links = symlinks_in(d)
+        if links:
+            print(f"refusing {d.name}: symlink in the case (a link would copy its target into the prompt): {links[0]}", file=sys.stderr)
+            return 1
         dst = out / d.name
         if dst.exists():
             shutil.rmtree(dst)

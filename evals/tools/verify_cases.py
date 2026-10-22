@@ -8,18 +8,25 @@ its tests (exit 0 means they pass). A case with no proof is listed. Also checks 
 """
 import argparse, json, os, pathlib, subprocess, sys
 
+from prepare import symlinks_in
+
 ROOT = pathlib.Path(__file__).resolve().parent.parent / "cases"
 REQUIRED = ["request.md", "context.md", "expected.json"]
 
 
 def check_case(d):
     probs = []
+    links = symlinks_in(d)
+    if d.is_symlink():   # the case directory itself (possibly dangling): nothing inside it is read
+        return {"control": None}, [f"symlink in the case ({d.name} is a link): prepare.py would copy its target into the reviewer prompt"]
     exp = json.loads((d / "expected.json").read_text())
     for f in REQUIRED:
         if not (d / f).exists():
             probs.append(f"missing {f}")
     if not (d / "work").exists() or not any((d / "work").rglob("*")):
         probs.append("work/ is missing or empty")
+    for link in links:
+        probs.append(f"symlink in the case ({os.path.relpath(link, d)}): prepare.py would copy its target into the reviewer prompt")
     exp.setdefault("planted", [])
     if exp["control"] and exp["planted"]:
         probs.append("a control must not list planted defects")
@@ -80,7 +87,7 @@ def main():
     global ROOT
     if a.cases:
         ROOT = pathlib.Path(a.cases).resolve()
-    dirs = sorted(p for p in ROOT.iterdir() if p.is_dir() and (not ids or p.name in ids or any(p.name.startswith(i) for i in ids)))
+    dirs = sorted(p for p in ROOT.iterdir() if (p.is_symlink() or p.is_dir()) and (not ids or p.name in ids or any(p.name.startswith(i) for i in ids)))
     bad = 0
     for d in dirs:
         try:

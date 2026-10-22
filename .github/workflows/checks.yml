@@ -67,6 +67,18 @@ jobs:
         run: python3 evals/tools/verify_cases.py --cases evals/supplychain/cases
       - name: Scanner key-shape patterns
         run: python3 tests/test_scan_secrets_keys.py
+      - name: Runtime and trust development case proofs
+        run: python3 evals/tools/verify_cases.py --cases evals/runtime/cases
+      - name: Secrets placement development case proofs
+        run: python3 evals/tools/verify_cases.py --cases evals/secrets/cases
+      - name: Self-hosted exposure development case proofs
+        run: python3 evals/tools/verify_cases.py --cases evals/exposure/cases
+      - name: Pretext development case proofs
+        run: python3 evals/tools/verify_cases.py --cases evals/pretext/cases
+      - name: Onchain development case proofs
+        run: python3 evals/tools/verify_cases.py --cases evals/onchain/cases
+      - name: Eval case symlink refusal
+        run: python3 tests/test_prepare_symlinks.py
       - name: Byte-compile every Python file
         run: python3 -m compileall -q -x '/evals/cases/' .
       - name: Parse every JSON file

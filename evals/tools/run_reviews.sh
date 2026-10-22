@@ -11,7 +11,7 @@ set -u
 skill=$(realpath "$1"); out=$(realpath -m "$2"); par=${3:-3}
 here=$(cd "$(dirname "$0")/../.." && pwd)
 prep=$(mktemp -d); mkdir -p "$out/_meta"
-python3 "$here/evals/tools/prepare.py" "$prep" ${ONLY:+--only "$ONLY"} ${APPLIES:+--applies "$APPLIES"} ${CASES:+--cases "$CASES"} >/dev/null
+python3 "$here/evals/tools/prepare.py" "$prep" ${ONLY:+--only "$ONLY"} ${APPLIES:+--applies "$APPLIES"} ${CASES:+--cases "$CASES"} >/dev/null || { echo "case preparation refused or failed: nothing was reviewed" >&2; exit 1; }
 export INVOCATION_ID= SKILL="$skill" OUT="$out" NOTE="${NOTE:-}"
 review() {
   d=$1; c=$(basename "$d")
