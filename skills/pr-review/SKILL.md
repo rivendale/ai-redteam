@@ -98,6 +98,31 @@ not replace this inspection.
    of known incident strings does not prove an update safe. Keep Step 7's adjudication and
    Step 8's merge gates unchanged.
 
+#### Release age, install hooks and credential egress
+
+Extend the comparison above for AI gateway/SDK packages and other executable dependencies:
+
+- Record the selected release's publication date, age at the proposed adoption, artifact origin
+  and the project's cooldown policy. A release only hours or days old with no cooldown needs
+  an explicit decision and supporting artifact review. Do not invent a universal waiting period:
+  an urgent verified security fix can justify an exception. Age alone proves neither harm nor safety.
+- Inspect new or changed `postinstall`, `setup.py` and Python `.pth` files, plus code they load.
+  [`.pth` import lines](https://docs.python.org/3.14/library/site.html) can execute at interpreter startup. Review the published wheel/container
+  bytes, not just a clean source tag. Keep the safe static-inspection rules above.
+- Trace new reads of environment variables, `~/.aws`, `~/.config`, token files and other credential
+  stores through to added outbound calls. Name the source, sink, destination, trigger and authority.
+  A legitimate credential read or requested API call alone is not exfiltration. Confirm a finding
+  only with the changed location and a concrete unauthorized flow; missing bytes limit coverage.
+- Check exact package/runtime pins and artifact hashes or image digests, including transitive
+  resolution. An unpinned or hash-less install lacks a reproducible artifact boundary; describe
+  the concrete substitution path. A pin to poisoned bytes still fails the behavioral review.
+  Do not equate a missing hash alone with a confirmed compromise.
+
+The dated [incident map](../../docs/incidents/2026-10-21-week.md) separates vendor statements
+from review inferences. The [failure list](../../docs/failures/week-1021-supply-chain.md) and
+[independent eval request](../../docs/week-1021-supply-chain-eval-request.md) define this unscored
+candidate. Existing finding fields, tier, adjudication and merge gates remain unchanged.
+
 Public motivating example: the vendor's [Rank Math PRO incident advisory](https://rankmath.com/kb/pro-3-0-123-security-incident/)
 describes compromised update packages and a backdoor that could return after removal. This is a
 behavioral review lens, not a signature list or a claim to detect every supply-chain attack.
