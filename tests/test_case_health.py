@@ -33,6 +33,23 @@ class Aggregate(unittest.TestCase):
     def test_empty_is_untestable(self):
         self.assertEqual(self.result([])["verdict"], "UNTESTABLE")
 
+    def test_no_data_coverage_is_distinct_from_unusable_reviews(self):
+        empty = self.result([])
+        failed = self.result([observation(status='invalid_report')])
+        self.assertEqual(empty['verdict'], 'UNTESTABLE')
+        self.assertEqual(empty['coverage_label'], 'NO-DATA')
+        self.assertEqual(failed['verdict'], 'UNTESTABLE')
+        self.assertEqual(failed['coverage_label'], 'NO-USABLE-REVIEWS')
+
+    def test_many_partial_overlaps_are_counted_but_examples_are_bounded(self):
+        cs = [case(f'dev/case-{n:02d}') for n in range(12)]
+        rows = [observation()]
+        result = health.diagnose(cs, {c['id']: rows for c in cs})
+        self.assertTrue(all(r['overlap_count'] == 11 for r in result))
+        self.assertTrue(all(len(r['redundancy']) <= 3 for r in result))
+        self.assertTrue(all(r['overlap_examples_omitted'] == 8 for r in result))
+        self.assertTrue(all(r['verdict'] == 'SHARPEN' for r in result))
+
     def test_saturation_and_never_failed(self):
         r = self.result([observation()])
         self.assertEqual(r["verdict"], "SHARPEN")
@@ -229,6 +246,18 @@ class Inputs(unittest.TestCase):
         data = self.load()
         self.assertEqual(data["issues"]["invalid_prompt"], 1)
         self.assertEqual(data["cases"][0]["usable"], 1)
+
+    def test_binary_inputs_preserve_exact_skill_text_identity(self):
+        self.add_case();d = self.add_run()
+        prefix = '=== SKILL ===\nexact text\n'
+        p = d / 'case-01.prompt'
+        p.write_bytes((prefix + '=== INPUTS ===\n').encode() + b'\xff\x00compiled input')
+        data = self.load()
+        self.assertNotIn('invalid_prompt', data['issues'])
+        actual = data['cases'][0]['difficulty'][0]['text']
+        self.assertEqual(actual, 'sha256:' + hashlib.sha256(b'\nexact text\n').hexdigest())
+        p.write_bytes(b'=== SKILL ===\n\xff\n=== INPUTS ===\n')
+        self.assertEqual(self.load()['issues']['invalid_prompt'], 1)
 
     def test_missing_usage_is_visible_per_case_and_for_holdouts(self):
         self.add_case();d = self.add_run()

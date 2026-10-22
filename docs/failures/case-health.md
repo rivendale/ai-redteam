@@ -33,3 +33,16 @@ Write the diagnostic contract before implementation. The assessor is offline, re
 | Diagnostic output overwrites an input or a previous artifact unexpectedly | Refuse output inside case/result roots and existing artifacts unless an explicit overwrite option is selected. |
 
 The first public report must state its observation coverage, current-key rescoring limits, unknown identities/dates and unusable inputs. Recommendations are not deletion instructions, release gates or new model evidence.
+
+## Follow-up failures, October 22, 2026
+
+Write the regression checks before the implementation correction:
+
+- Binary case-input bytes after `=== INPUTS ===` must not erase the exact,
+  decodable skill-text prefix. Recover that prefix without replacement decoding;
+  corruption inside the skill-text prefix must still be reported as invalid.
+- A case with zero recorded observations must carry an explicit NO-DATA coverage
+  label, distinct from a case with recorded but unusable reviews. The authorized
+  no-results verdict remains UNTESTABLE; a coverage label is not a new verdict.
+- Many partial overlaps must have exact counts and bounded examples. Summarizing
+  display noise must not change full-vector comparison or the redundancy gate.
