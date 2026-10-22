@@ -1,17 +1,66 @@
 #!/usr/bin/env python3
 """One opt-in, tool-free PR review round. PR code is never checked out or executed."""
-import html,json,os,re,sys,urllib.error,urllib.request
+import html,http.client,json,os,re,sys,urllib.error,urllib.request
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 LIMIT=2*1024*1024
-class Refuse(ValueError):pass
+LOCAL_CODES={
+ 'redirect refused':'redirect','response exceeds limit':'response_limit',
+ 'invalid repository':'repository_invalid','invalid PR identity':'identity_invalid',
+ 'set an explicit model ID before enabling':'model_config_missing',
+ 'read-only GitHub token missing':'github_token_missing',
+ 'PR identity moved or became ineligible; no current-head report':'identity_moved',
+ 'changed-file limit exceeded or unavailable':'file_limit','merge base unavailable':'merge_base_missing',
+ 'diff absent or too large; no silent truncation':'diff_limit','model secret missing':'model_secret_missing',
+ 'model did not finish a text review; no automatic retry':'model_incomplete',
+ 'unexpected model output':'model_output_invalid','empty or oversized review':'model_output_limit',
+ 'credential reflection refused; output discarded':'credential_reflection',
+ 'event too large':'event_limit','invalid event':'event_invalid',
+ 'provider response invalid':'provider_response_invalid'}
+class Refuse(ValueError):
+ def __init__(self,message):
+  self.code=LOCAL_CODES.get(message,'local_refusal')
+  super().__init__('local refusal')
+# Fixed vocabulary from the provider API error reference. Never print remote strings.
+ERROR_TYPES=frozenset(('invalid_request_error','authentication_error','billing_error',
+ 'permission_error','not_found_error','conflict_error','request_too_large',
+ 'rate_limit_error','api_error','timeout_error','overloaded_error'))
+class RemoteFailure(Refuse):
+ def __init__(self,service,kind,status=None,error_type='unknown_error'):
+  self.service=service;self.kind=kind;self.status=status;self.error_type=error_type
+  super().__init__('remote request failed')
+ def diagnostic(self):
+  service=self.service if self.service in ('provider','github') else 'remote'
+  if self.kind=='HTTP':
+   status=str(self.status) if type(self.status) is int and 100<=self.status<=599 else 'unknown'
+   kind=self.error_type if self.error_type in ERROR_TYPES else 'unknown_error'
+   return service+' HTTP '+status+(' '+kind if service=='provider' else '')
+  return service+(' timeout' if self.kind=='timeout' else ' network')
+def provider_error_type(error):
+ try:
+  raw=error.read(LIMIT+1)
+  if len(raw)>LIMIT:return 'unknown_error'
+  value=json.loads(raw)
+  detail=value.get('error') if isinstance(value,dict) else None
+  kind=detail.get('type') if isinstance(detail,dict) else None
+  return kind if isinstance(kind,str) and kind in ERROR_TYPES else 'unknown_error'
+ except (ValueError,TypeError,OSError):return 'unknown_error'
+ finally:error.close()
 class NoRedirect(urllib.request.HTTPRedirectHandler):
  def redirect_request(self,*args,**kwargs):raise Refuse('redirect refused')
 def exchange(url,headers,data=None):
+ service='provider' if url=='https://api.anthropic.com/v1/messages' else 'github'
  try:
   request=urllib.request.Request(url,headers=headers,data=data,method='POST' if data is not None else 'GET')
   with urllib.request.build_opener(NoRedirect).open(request,timeout=90) as response:raw=response.read(LIMIT+1)
- except (urllib.error.URLError,OSError):raise Refuse('remote request failed; diagnostics suppressed to protect headers') from None
+ except urllib.error.HTTPError as error:
+  kind=provider_error_type(error) if service=='provider' else 'unknown_error'
+  error.close()
+  raise RemoteFailure(service,'HTTP',error.code,kind) from None
+ except TimeoutError:raise RemoteFailure(service,'timeout') from None
+ except urllib.error.URLError as error:
+  raise RemoteFailure(service,'timeout' if isinstance(error.reason,TimeoutError) else 'network') from None
+ except (OSError,http.client.HTTPException):raise RemoteFailure(service,'network') from None
  if len(raw)>LIMIT:raise Refuse('response exceeds limit')
  return raw
 def trusted_pr(pr,repo):
@@ -50,7 +99,8 @@ def review(event,env,transport=exchange):
  packet={'model':model,'max_tokens':4096,'system':system,'messages':[{'role':'user','content':json.dumps(context)}]}
  # Exactly one provider request, fixed destination, no tools, retries or subprocesses.
  raw=transport('https://api.anthropic.com/v1/messages',{'x-api-key':key,'anthropic-version':'2023-06-01','content-type':'application/json'},json.dumps(packet).encode())
- result=json.loads(raw)
+ try:result=json.loads(raw)
+ except (ValueError,TypeError,RecursionError):raise Refuse('provider response invalid') from None
  if not isinstance(result,dict) or result.get('stop_reason')!='end_turn':raise Refuse('model did not finish a text review; no automatic retry')
  blocks=result.get('content')
  if not isinstance(blocks,list) or not blocks or any(not isinstance(b,dict) or b.get('type')!='text' or not isinstance(b.get('text'),str) for b in blocks):raise Refuse('unexpected model output')
@@ -73,5 +123,8 @@ def main():
   if result is None:print('Review skipped: ineligible repository, actor or configuration.');return 0
   summary=render(result);path=Path(os.environ['GITHUB_STEP_SUMMARY']);path.write_text(summary)
   print('One review round recorded for head '+result['head']+'.');return 0
- except (ValueError,TypeError,KeyError,OSError):print('PR review refused or failed; no review published. Check configuration, input limits and service availability.',file=sys.stderr);return 1
+ except RemoteFailure as error:print('PR review failed: '+error.diagnostic()+'; no review published.',file=sys.stderr);return 1
+ except Refuse as error:print('PR review refused: local '+(error.code if error.code in LOCAL_CODES.values() else 'local_refusal')+'; no review published.',file=sys.stderr);return 1
+ except (ValueError,TypeError,KeyError,OSError):print('PR review refused: configuration/input/response; no review published.',file=sys.stderr);return 1
+ except Exception:print('PR review failed: unexpected_error; no review published.',file=sys.stderr);return 1
 if __name__=='__main__':sys.exit(main())
