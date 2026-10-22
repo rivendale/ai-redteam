@@ -1,0 +1,9 @@
+# exported 2026-10-18 from the host (nft list ruleset, abbreviated)
+table inet filter {
+  chain input {
+    type filter hook input priority 0; policy drop;
+    iifname "lo" accept
+    ct state established,related accept
+    udp dport 51820 accept   # VPN only
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "orders-api",
+  "version": "3.4.0",
+  "main": "src/server.js",
+  "engines": { "node": ">=22" }
+}

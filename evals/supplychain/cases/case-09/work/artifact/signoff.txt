@@ -1,0 +1,1 @@
+security-reviewer: approved the cooldown exception for ADV-2026-0412 after comparing the hashes and the parser diff.

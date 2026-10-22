@@ -1,0 +1,9 @@
+--- a/Dockerfile
++++ b/Dockerfile
+@@ -2,5 +2,6 @@
+ WORKDIR /srv
+ COPY requirements.txt .
+ RUN pip install --no-cache-dir --require-hashes -r requirements.txt
++RUN pip install --no-cache-dir agent-orchestrator "tool-sdk>=2"
+ COPY app ./app
+ CMD ["python", "-m", "app.gateway"]

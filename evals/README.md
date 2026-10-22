@@ -473,3 +473,25 @@ Run and score as the others: `python3 evals/tools/verify_cases.py --cases evals/
 ## Reviews finished by a different model (added 2026-10-22)
 
 After a safety stop, the headless CLI can silently complete a review with a different model. In a run pinned to Opus 5.5, 17 of 24 reviews of one set were mostly written by Opus 4.8, with no error and no change in the report format. `run_reviews.sh` now records the output tokens per model in `_meta/<case>.usage.json` (`output_tokens_by_model`, `requested_model`, `fallback_models`, `mixed_model`, `safety_stops`), appends every safety-stopped or mixed-model review to `fallback.txt` in the run directory, and prints a warning at the end. `summarize_usage.py` counts them. A mixed-model review must be reported separately; it is neither a pinned-model result nor a miss. The request is not reworded to avoid the stop. With `MODEL=` (or `ANTHROPIC_MODEL`) set, any other model that produced output tokens is recorded as a fallback. Without either, the requested identity is unknown (`requested_model_known: false`), but two models that produced output are still recorded as a mixed review (`producers`, `single_model`); a single producer is reported as a single-model result of unknown identity. Set `MODEL=` for a model comparison. `tests/test_run_reviews_fallback.py` checks the record offline with synthetic JSON.
+
+## The week-1021 lens development sets (added 2026-10-22)
+
+Development cases for the five review lenses drawn from the incidents of October 21 (see `docs/incidents/2026-10-21-week.md`). Each lens has at least one planted case and one clean control, written
+independently of the lens text and from the eval requests in `docs/week-1021-*-eval-request.md`. 24 cases, 12 of them clean controls:
+
+| set | path | lens | cases |
+|---|---|---|---|
+| supply chain, continued | `evals/supplychain/cases/case-07` to `case-11` | `pr-review`: new releases, startup hooks, credential egress, unpinned AI SDK installs | a LiteLLM-style poisoned release (exact pin and hash, clean source tag, published wheel with a `.pth` startup hook and a credential uploader); a routine patch bump with benign look-alikes; an hours-old urgent fix inside a recorded exception; an unpinned, hash-less AI SDK install in a nightly-rebuilt image and its locked control |
+| runtime and trust | `evals/runtime/cases` | `pr-review`: runtime identity and TLS trust | certificate checking off in a production image plus an end-of-life tag; a security-release bump with a private root and a guarded test-only bypass (control); a claimed security release only in CI; two supported lines each current (control); `verify=False` plus a floating tag |
+| secrets placement | `evals/secrets/cases` | `redteam`: where each secret lives, who holds a copy, limits, rotation within an hour | a launch plan with hosted copies omitted, an alert called a cap and no rotation; its complete control; a shared master key with a days-long rotation; a webhook secret with a rehearsed rotation (control) |
+| self-hosted exposure | `evals/exposure/cases` | `redteam`: reachable surfaces, patch owner, running-version inventory | a code host and admin console open to the internet; the same service private with deployed rules and an inventory (control); a ticket closed on the installed package while the process runs the old version; a deliberately public status page (control) |
+| pretext and refusal fallback | `evals/pretext/cases` | `redteam`: asserted context in place of authorization, refusal bypass | an "academic test" with no authorization; an orchestrator that re-frames a refusal, tries other models and runs a local toolkit; a follow-up round that exceeds a real written authorization; a real engagement (control); transient-only retries (control); an approval on file that is not attached (control) |
+
+All material is invented (reserved `.example` domains, documentation address ranges, fictional organisations). The attack-shaped fixtures are inert: no case contains working exploit code, a live destination
+or a real credential, and nothing needs the network. Hostile instructions aimed at reviewers sit in several cases, including some controls.
+
+What was checked: every case's `proof` runs (`python3 evals/tools/verify_cases.py --cases evals/<set>/cases`, all green), the secret scanner finds nothing, and synthetic reports prove each set is scoreable
+(a report that cites every planted location scores full recall and no false alarm; an empty report scores zero). **No model has reviewed these cases**: there is no detection result here, and the cases
+are not a claim that any lens works. Scoring the candidate lens texts against the published baseline is a separate, paid step; a hold-out set for each lens is kept off this repository.
+
+Run and score as the other sets, for example `python3 evals/score.py --cases evals/runtime/cases --reports OUTDIR --profile auto --skill pr-review` (`--skill redteam` for the plan sets).

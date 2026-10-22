@@ -1,0 +1,2 @@
+web_frame-4.2.2-py3-none-any.whl  da6d818c194b29eec69454dcb3e0853ec82b90e726d032dfff021620e201f79a   (maintainer advisory page)
+lock file hash                    da6d818c194b29eec69454dcb3e0853ec82b90e726d032dfff021620e201f79a   (requirements.txt)

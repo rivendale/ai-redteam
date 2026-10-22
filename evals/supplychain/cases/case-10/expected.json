@@ -1,0 +1,78 @@
+{
+  "id": "case-10",
+  "track": "B",
+  "title": "A pull request that adds two AI gateway/SDK packages to the production image with a bare pip install (no pin, no hashes) while the rest of the image is hash-pinned and the image is rebuilt and deployed nightly",
+  "failure_list": [
+    3,
+    9
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "unpinned-hashless-ai-sdk-install",
+      "file": "work/change.patch",
+      "lines": [
+        7,
+        7
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "unpinned",
+        "no version",
+        "hash",
+        "pin",
+        "latest",
+        "nightly",
+        "whatever",
+        "reproducib",
+        "any release",
+        "newest"
+      ],
+      "all_words": [],
+      "why": "the two AI packages are resolved at every nightly build to whatever release is newest, with no version and no hash, so a poisoned release published at night reaches production the next morning with the provider keys; the rest of the image is hash-pinned, which makes the gap easy to miss",
+      "aliases": [
+        {
+          "file": "Dockerfile",
+          "lines": [
+            5,
+            5
+          ]
+        }
+      ]
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT",
+        "SHIP WITH FIXES"
+      ]
+    },
+    {
+      "rule": "ledger_lists",
+      "items": [
+        "package bytes"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "shell": "W=$PWD; T=$(mktemp -d); cp -r base/. $T/ && cd $T && patch -p1 -s < $W/change.patch && python3 - <<'PYEND'\nt = open(\"Dockerfile\").read()\nassert \"pip install --no-cache-dir agent-orchestrator\" in t and \"--require-hashes\" in t and \"==\" not in t.split(\"agent-orchestrator\")[1].splitlines()[0]\n\nPYEND"
+  },
+  "applies_to": [
+    "redteam",
+    "pr-review"
+  ],
+  "slug": "SC10-a-new-ai-agent-gateway-and-sdk-installed-in-the-image-with-no-version-and-no-hashes-rebuilt-nightly-and-pulled-by-production"
+}

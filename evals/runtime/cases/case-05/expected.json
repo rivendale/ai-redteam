@@ -1,0 +1,103 @@
+{
+  "id": "case-05",
+  "track": "B",
+  "title": "A webhook client in the production path whose TLS verification is turned off to work around a partner's chain, plus a Dockerfile moved from a digest-pinned minor to a floating major tag",
+  "failure_list": [
+    3,
+    9
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "verify-false-in-production-call",
+      "file": "work/change.patch",
+      "lines": [
+        17,
+        17
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "verify=false",
+        "verify",
+        "certificate",
+        "tls",
+        "man-in-the-middle",
+        "mitm",
+        "impersonat",
+        "partner",
+        "ssl"
+      ],
+      "all_words": [],
+      "why": "the production call to a third party no longer validates the server certificate, so an on-path attacker can receive order data and answer 'notified'; the TODO has no owner or date",
+      "aliases": [
+        {
+          "file": "app/notify.py",
+          "lines": [
+            8,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P2",
+      "kind": "floating-runtime-tag",
+      "file": "work/change.patch",
+      "lines": [
+        5,
+        5
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "python:3",
+        "mutable",
+        "floating",
+        "tag",
+        "digest",
+        "reproducib",
+        "unpinned",
+        "major",
+        "pin"
+      ],
+      "all_words": [],
+      "why": "`python:3` is a floating tag: it does not identify reviewed bytes, can jump minor versions on any rebuild and replaces a digest-pinned image",
+      "aliases": [
+        {
+          "file": "Dockerfile",
+          "lines": [
+            1,
+            1
+          ]
+        }
+      ]
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "shell": "W=$PWD; T=$(mktemp -d); cp -r base/. $T/ && cd $T && patch -p1 -s < $W/change.patch && python3 - <<'PYEND'\nassert \"verify=False\" in open(\"app/notify.py\").read() and open(\"Dockerfile\").read().startswith(\"FROM python:3\\n\")\n\nPYEND"
+  },
+  "applies_to": [
+    "redteam",
+    "pr-review"
+  ],
+  "slug": "RT05-a-production-webhook-call-with-verification-turned-off-and-the-interpreter-image-moved-to-a-floating-major-tag"
+}
