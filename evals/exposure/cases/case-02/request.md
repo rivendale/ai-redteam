@@ -1,1 +1,1 @@
-Review this plan before we set it up.
+Review this plan before go-live.

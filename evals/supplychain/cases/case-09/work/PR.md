@@ -6,5 +6,5 @@ internet-facing, so this is an exception to the three-day cooldown under DEPENDE
 
 - advisory: https://advisories.web-frame.example/ADV-2026-0412 (invented address); the fixed version is 4.2.2;
 - artifacts: the wheel hash in the lock matches the SHA-256 checksums the maintainers publish on the advisory page (compared line by line, see artifact/checksums.txt);
-- the published wheel file list equals the source-tag file list (artifact/); the tag diff is the 7-line parser change described in the advisory (artifact/tag-diff.txt);
+- the published wheel file list equals the source-tag file list (artifact/); the tag diff is the 6-line parser change described in the advisory (artifact/tag-diff.txt);
 - second reviewer: @security-reviewer approved this exception in the PR thread (artifact/signoff.txt).

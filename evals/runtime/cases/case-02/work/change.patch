@@ -45,4 +45,4 @@
 +# Payment provider trust
 +Private root `certs/payments-root.pem` (a throwaway test certificate generated for this exercise, subject "Payments Test Root (invented)").
 +SHA-256 fingerprint: 0E:D5:B6:36:9A:43:A9:E1:EB:8F:B9:CD:03:EB:F7:18:3A:D7:BA:D2:ED:4F:4E:38:14:BD:65:05:72:9D:58:94
-+Confirmed with the provider by phone on 2026-10-15 against the value on their published trust page. Owner: platform engineer. Renewal: 2027-03-01.
++Confirmed with the provider by phone on 2026-10-22 against the value on their published trust page. Owner: platform engineer. Review date: 2027-03-01 (the certificate itself is valid to 2036; the owner re-confirms the fingerprint with the provider every year).

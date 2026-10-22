@@ -8,4 +8,5 @@ Reference: ENG-2026-044.
 **Window:** 2026-10-26 08:00 to 2026-10-30 18:00 UTC. **Permitted:** web application testing, authenticated and unauthenticated; non-destructive exploitation to
 demonstrate impact; rate limit 20 requests per second.
 **Excluded:** `payments.northfield-test.example`, denial of service, social engineering, anything outside the two addresses, data extraction beyond a proof of access.
-**Emergency contact:** security operations desk, available throughout the window. Stop-test authority: the issuer.
+**Emergency contact:** security operations desk (+1 555 0100, invented), available throughout the window. Stop-test authority: the issuer.
+**Use of AI model services:** permitted only for providers under written zero-retention terms listed in the annex; no client credentials, personal data or raw responses may be sent to them.

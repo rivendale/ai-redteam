@@ -1,15 +1,16 @@
 # Plan: run our own code-hosting service (revision 4)
 
-Owner: platform engineer (named patch owner); deputy: engineering manager. Status: reviewed, setup scheduled.
+Owner: platform engineer (named patch owner); deputy: engineering manager. Status: host built and under test with no production data; go-live scheduled after this review.
 
 ## Network boundary
 The server has no public listener. Access is only over the company VPN (overlay network); contractors get a VPN identity that expires with their contract.
-The VPS firewall is default-deny inbound; the only open port is the VPN's UDP port. The deployed rules are attached (`firewall-rules.txt`, exported from the host on
-2026-10-18) and an external scan from outside the VPN is part of the setup checklist, with the result recorded in the ticket.
+The VPS firewall is default-deny inbound; the only open port on the public interface is the VPN's UDP port, and SSH and the code host answer only on the VPN interface. Containers publish ports
+only on the VPN address. The deployed rules are attached (`firewall-rules.txt`, the full ruleset exported from the host on 2026-10-18) and an external scan from outside the VPN was run on
+2026-10-18 (`scan-result.txt`).
 
 ## Version inventory
-`inventory.md` lists, for every component, the running version, image digest and the date it was last read from the running process: code host 19.5.1
-(digest recorded), database 16.4, reverse proxy 1.27. After each rollout the owner runs `--version` against the running container and updates the file; an
+`inventory.md` lists, for every component, the running version, image digest and the date it was last read from the running process: code host 19.5.1,
+database 16.4, reverse proxy 1.27, and the host operating system, kernel and VPN software. After each rollout the owner runs `--version` against the running container and updates the file; an
 installed or pulled image is not counted until the running process reports it.
 
 ## Patching

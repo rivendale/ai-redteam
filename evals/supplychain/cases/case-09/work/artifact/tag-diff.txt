@@ -1,16 +1,17 @@
-diff --git a/web_frame/parser.py b/web_frame/parser.py
 --- a/web_frame/parser.py
 +++ b/web_frame/parser.py
-@@ -88,6 +88,12 @@ def read_headers(stream):
+@@ -1,8 +1,14 @@
+ def read_headers(stream):
+     headers = []
++    seen = set()
      while True:
          line = stream.readline()
-         if line in (b"\r\n", b"\n"):
+         if line in (b'\r\n', b'\n'):
              break
-+        # reject a request that carries both Content-Length and Transfer-Encoding
-+        if line.lower().startswith(b"transfer-encoding:") and "content-length" in seen:
-+            raise BadRequest("ambiguous message length")
-+        if line.lower().startswith(b"content-length:"):
-+            seen.add("content-length")
-+        if line.lower().startswith(b"transfer-encoding:"):
-+            seen.add("transfer-encoding")
++        name = line.split(b':', 1)[0].lower()
++        if name in (b'content-length', b'transfer-encoding'):
++            seen.add(name)
          headers.append(line)
++    if len(seen) == 2:
++        raise BadRequest('ambiguous message length')  # either order
+     return headers
