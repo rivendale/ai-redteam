@@ -12,6 +12,9 @@ prompt a reviewer sees and into the published prompt files. The failure list:
   F7 verify_cases.py must reject the same cases, so CI fails a pull request that adds one
   F8 a clean case still prepares and still verifies (the check must not reject everything)
   F9 the refusal prints the case and path but never the pointed-at content
+  F10 the case directory ITSELF is a symlink to a directory elsewhere -> both tools refuse (a walk from the link would follow it)
+  F11 a runner whose preparation step refused must exit nonzero and call no model, not exit 0 with an empty batch
+      (both run_reviews.sh and run_reviews_codex.sh)
 """
 import json, os, pathlib, subprocess, sys, tempfile, unittest
 
@@ -83,6 +86,21 @@ class T(unittest.TestCase):
     def test_f6_dangling_symlink(self):
         d = make_case(self.cases); (d / "work" / "dangling").symlink_to(self.t / "does-not-exist")
         self.both_refuse("F6")
+
+    def test_f10_case_directory_is_a_symlink(self):
+        real = make_case(self.t / "elsewhere", "case-01")
+        (self.cases / "case-01").symlink_to(real, target_is_directory=True)
+        (real / "work" / "a.txt").write_text(SECRET + "\n")
+        self.both_refuse("F10")
+
+    def test_f11_runners_fail_when_preparation_refuses(self):
+        d = make_case(self.cases); (d / "work" / "link.txt").symlink_to(self.target)
+        skill = self.t / "SKILL.md"; skill.write_text("skill\n")
+        empty_bin = self.t / "bin"; empty_bin.mkdir()
+        for runner in ("run_reviews.sh", "run_reviews_codex.sh"):
+            env = dict(os.environ, PATH=f"{empty_bin}:/usr/bin:/bin", CASES=str(self.cases))
+            r = subprocess.run(["bash", str(TOOLS / runner), str(skill), str(self.t / ("o-" + runner))], capture_output=True, text=True, env=env, timeout=60)
+            self.assertNotEqual(r.returncode, 0, f"{runner} exited 0 after a refused preparation\n{r.stdout}{r.stderr}")
 
     def test_f8_clean_case_still_passes(self):
         make_case(self.cases)

@@ -12,7 +12,7 @@ def symlinks_in(case):
     """Paths of every symlink a reviewer could be handed from this case (request.md, context.md, anything under work/), or of the
     case's own directory tree when called by verify_cases.py. copy2 and copytree follow links, so a link would put the bytes of its
     target, a local file or a secret, into the prompt and into the published prompt files. A dangling link counts too."""
-    found = []
+    found = [str(case)] if pathlib.Path(case).is_symlink() else []   # the case directory itself: a walk from a link would follow it
     for root, dirs, files in os.walk(case, followlinks=False):
         found += [str(pathlib.Path(root) / n) for n in dirs + files if (pathlib.Path(root) / n).is_symlink()]
     return sorted(found)
