@@ -142,7 +142,7 @@ that a runtime is current. Read the deployed entry point, CI and container stage
    behavior is unmeasured, state the exact gap; do not claim a flag proves certificate distrust.
 3. Identify the running runtime and base-image version, digest, support line and patch owner.
    Check end-of-life status against a dated upstream schedule; for example `node:20` is upstream
-   EOL in October 2026 under the [upstream schedule](https://github.com/nodejs/Release/blob/main/schedule.json).
+   past upstream EOL since April 30, 2026, under the [upstream schedule](https://github.com/nodejs/Release/blob/main/schedule.json).
    Explicit maintained backports need vendor evidence, not an assumed exception. Mutable tags
    such as `node:22` or `latest` do not identify reviewed bytes; a fixed digest alone does not
    prove that its runtime is supported or patched.
