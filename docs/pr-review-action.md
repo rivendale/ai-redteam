@@ -52,12 +52,16 @@ the local tripwire result. The action pin is a full commit from the official act
 
 Failures exit nonzero without publishing a review. Logs distinguish `provider HTTP 404 not_found_error`,
 other provider HTTP statuses, `provider timeout`, `provider network`, and GitHub HTTP/network failures.
-Local refusals use the fixed category `configuration/input/response`. No exception message, response body,
+Known local refusals use whitelisted codes such as `local diff_limit`, `local file_limit`, `local identity_moved`,
+`local redirect`, `local model_incomplete`, `local credential_reflection`, and `local model_secret_missing`.
+Malformed successful provider JSON uses `local provider_response_invalid`. Other input failures use
+`configuration/input/response`; unexpected exceptions use `unexpected_error` without a traceback. No exception message, response body,
 URL, request header, or provider error message is logged. Only a recognized provider `error.type` is accepted;
 unknown, malformed, or oversized error responses use `unknown_error`. The recognized types follow the
 [official API error reference](https://platform.claude.com/docs/en/api/errors), checked October 22, 2026.
 A category narrows diagnosis; a 400 alone does not prove a billing or configuration cause.
 
-Run `python3 tests/test_pr_review_errors.py` for synthetic 401/404/400, timeout, GitHub/service distinction,
+Run `python3 tests/test_pr_review_errors.py` for synthetic 401/404/400, timeout, HTTP parser failures,
+recursion/internal exceptions, local refusal codes, GitHub/service distinction,
 malformed and oversized bodies, and credential-reflection controls. These tests make no live calls.
 The one-request/no-retry policy and the secret eligibility gates remain in force.
