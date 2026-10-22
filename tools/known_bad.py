@@ -29,10 +29,13 @@ class OSV:
     parts.append(chunk);size+=len(chunk)
     if size>LIMIT:raise Incomplete('size')
   return b''.join(parts)
+def requirements(path):
+ p=PurePosixPath(path)
+ return bool(re.fullmatch(r'(?:requirements|constraints)[^/]*\.(?:txt|in)',p.name)) or (bool(set(p.parts[:-1])&{'requirements','constraints'}) and p.suffix in ('.txt','.in'))
 def relevant(path):
  name=PurePosixPath(path).name
  return (name in ('package.json','package-lock.json','npm-shrinkwrap.json','yarn.lock','pnpm-lock.yaml','bun.lock','bun.lockb','pyproject.toml','poetry.lock','uv.lock','Pipfile','Pipfile.lock','setup.py','setup.cfg','go.mod','go.sum','Cargo.toml','Cargo.lock')
-         or bool(re.fullmatch(r'(?:requirements|constraints)[^/]*\.(?:txt|in)',name))
+         or requirements(path)
          or (path.startswith('.github/workflows/') and name.endswith(('.yml','.yaml'))))
 def parse(path,text):
  """Return exact resolved references plus explicit gaps; no resolver, imports or package execution."""
@@ -104,7 +107,7 @@ def parse(path,text):
     if pkg=='python':continue
     if isinstance(v,dict) and any(k in v for k in ('git','path','url','source')):gap();continue
     add('PyPI',pkg,v if isinstance(v,str) else v.get('version'))
-  elif re.fullmatch(r'(?:requirements|constraints)[^/]*\.(?:txt|in)',name):
+  elif requirements(path):
    for line in text.splitlines():
     line=line.split(' #',1)[0].strip()
     if not line or line.startswith('#'):continue
@@ -120,7 +123,7 @@ def parse(path,text):
     if line.startswith('replace'):gap()
     match=re.fullmatch(r'(?:require\s+)?([^\s]+)\s+(v\S+)',line)
     if match and (block or line.startswith('require ')):add('Go',match[1],match[2])
-    elif block and line:gap()
+    elif (block and line) or line.startswith('require'):gap()
   elif name=='go.sum':
    for line in text.splitlines():
     if not line.strip():continue

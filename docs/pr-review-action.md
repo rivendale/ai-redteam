@@ -83,7 +83,7 @@ A regenerated lockfile over the model diff limit still receives the independent 
 a successful model round appears below it and cannot overwrite its findings or coverage status.
 
 Supported exact-reference readers: npm package.json and package-lock/npm-shrinkwrap versions 1-3;
-PyPI pinned requirements/constraints, project/build/optional dependencies in pyproject.toml, basic Poetry
+PyPI pinned requirements/constraints (including .txt/.in files under requirements/constraints directories), project/build/optional dependencies in pyproject.toml, basic Poetry
 and uv package locks, and Pipfile.lock; Go require entries in go.mod and versions in go.sum; crates.io
 Cargo.lock packages and exact `=x.y.z` Cargo.toml dependencies; canonical one-line workflow uses with a full
 version tag or full commit SHA. Action subdirectories identify their owner/repository; SHA pins use OSV's
