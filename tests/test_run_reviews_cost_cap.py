@@ -11,6 +11,10 @@ counting the money already recorded, the reviews in flight (each at the estimate
   X6 money already recorded in the output folder counts (a resumed run does not get a fresh budget)
   X7 a review that fails without a usage record is still charged at the estimate
   X8 not-started reviews are listed, the exit code is nonzero and the summary says the cap stopped the batch
+  X10 a non-finite, zero or negative cap or estimate is refused at the start (NaN must not make every comparison false)
+  X11 a recorded cost that is NaN, infinite, negative or not a number is charged at the estimate, never as zero
+  X12 a failed review is charged BEFORE its reservation is released, and both happen under the admission lock, so no admission can see
+      neither (checked by the order of the two marker operations, with parallel workers repeated as a stress run)
   X9 an actual cost above the estimate is reported (the estimate was too low), and later reviews are judged on actual money
 """
 import json, os, pathlib, subprocess, tempfile, textwrap, unittest
@@ -54,7 +58,7 @@ class T(unittest.TestCase):
         import shlex
         stub = {"STUB_CALLS": str(self.calls), **(stub or {})}
         self.conf.write_text("".join(f"export {k}={shlex.quote(v)}\n" for k, v in stub.items()))
-        e = {**os.environ, "PATH": f"{self.bin}:{os.environ['PATH']}", "CASES": str(self.cases), **env}
+        e = {**os.environ, "PATH": f"{self.bin}:{os.environ['PATH']}", "CASES": str(self.cases), **env}   # a PATH in env wins
         e.pop("MAX_COST_USD", None) if "MAX_COST_USD" not in env else None
         return subprocess.run(["bash", str(LANE), str(self.t / "skill.md"), str(self.out), par], capture_output=True, text=True, env=e, cwd=self.t, timeout=300)
 
@@ -103,6 +107,40 @@ class T(unittest.TestCase):
         r = self.run_lane(stub={"STUB_COST": "0.90"}, MAX_COST_USD="2.00", EST_REVIEW_USD="0.30")
         self.assertIn("above the estimate", r.stdout + r.stderr)
         self.assertEqual(self.n_calls(), 2, "0.90 + 0.90 recorded, a third needs 0.30 more: 2.10 > 2.00")
+
+
+    def test_x10_nonfinite_config_refused(self):
+        for cap, est in (("NaN", "0.50"), ("1.00", "NaN"), ("inf", "0.50"), ("1.00", "inf"), ("-1", "0.5"), ("1.00", "0"), ("0", "0.5"), ("abc", "0.5"), ("1.00", "-0.5")):
+            self.calls.unlink(missing_ok=True)
+            r = self.run_lane(MAX_COST_USD=cap, EST_REVIEW_USD=est)
+            self.assertNotEqual(r.returncode, 0, f"{cap}/{est}: " + r.stdout + r.stderr)
+            self.assertEqual(self.n_calls(), 0, f"{cap}/{est} started a review")
+
+    def test_x11_bad_recorded_costs_are_charged_at_the_estimate(self):
+        meta = self.out / "_meta"; meta.mkdir(parents=True)
+        for i, bad in enumerate(("NaN", "Infinity", "-5", '"free"', "null", "true")):
+            (meta / f"case-9{i}.usage.json").write_text('{"total_cost_usd": %s}' % bad)
+        # six unreadable costs at 0.50 each = 3.00 recorded; a cap of 3.20 leaves no room for another 0.50
+        r = self.run_lane(MAX_COST_USD="3.20", EST_REVIEW_USD="0.50")
+        self.assertEqual(self.n_calls(), 0, r.stdout + r.stderr)
+
+    def test_x12_charge_precedes_release_and_parallel_stress(self):
+        shim = self.t / "shim"; shim.mkdir(); log = self.t / "ops.log"
+        real_rm = subprocess.run(["bash", "-c", "command -v rm"], capture_output=True, text=True).stdout.strip()
+        real_touch = subprocess.run(["bash", "-c", "command -v touch"], capture_output=True, text=True).stdout.strip()
+        for name, real in (("rm", real_rm), ("touch", real_touch)):
+            f = shim / name
+            f.write_text(f'#!/usr/bin/env bash\ncase "$*" in *.charged/*|*.inflight/*) echo "{name} $*" >> "{log}";; esac\nexec {real} "$@"\n'); f.chmod(0o755)
+        self.run_lane(stub={"STUB_FAIL": "1"}, MAX_COST_USD="1.00", EST_REVIEW_USD="0.50", PATH=f"{shim}:{self.bin}:{os.environ['PATH']}")
+        ops = [l.split() for l in log.read_text().splitlines()]
+        for case in ("case-01", "case-02"):
+            charged = [i for i, o in enumerate(ops) if o[0] == "touch" and f".charged/{case}" in o[-1]]
+            released = [i for i, o in enumerate(ops) if o[0] == "rm" and f".inflight/{case}" in o[-1]]
+            self.assertTrue(charged and released and charged[0] < released[0], f"{case}: charge must come before release: {ops}")
+        for _ in range(8):                       # stress: five parallel workers, one slot, failing stub: exactly one call
+            subprocess.run(["rm", "-rf", str(self.out)]); self.calls.unlink(missing_ok=True)
+            self.run_lane(par="5", stub={"STUB_FAIL": "1"}, MAX_COST_USD="0.50", EST_REVIEW_USD="0.50")
+            self.assertEqual(self.n_calls(), 1)
 
 
 if __name__ == "__main__":

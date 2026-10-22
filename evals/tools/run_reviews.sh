@@ -17,6 +17,14 @@ set -u
 skill=$(realpath "$1"); out=$(realpath -m "$2"); par=${3:-3}
 here=$(cd "$(dirname "$0")/../.." && pwd)
 if [ -n "${MAX_COST_USD:-}" ] && [ -z "${EST_REVIEW_USD:-}" ]; then echo "MAX_COST_USD needs EST_REVIEW_USD (a pessimistic cost of one review): an unknown cost cannot be bounded" >&2; exit 2; fi
+if [ -n "${MAX_COST_USD:-}${EST_REVIEW_USD:-}" ]; then
+  python3 -c 'import math,os,sys
+try:
+    cap, est = float(os.environ["MAX_COST_USD"]), float(os.environ["EST_REVIEW_USD"])
+except (KeyError, ValueError):
+    sys.exit(1)
+sys.exit(0 if math.isfinite(cap) and math.isfinite(est) and cap > 0 and est > 0 else 1)' || { echo "MAX_COST_USD and EST_REVIEW_USD must be finite numbers above zero" >&2; exit 2; }
+fi
 prep=$(mktemp -d); mkdir -p "$out/_meta/.inflight" "$out/_meta/.charged"; rm -f "$out/cost_cap_skipped.txt"
 python3 "$here/evals/tools/prepare.py" "$prep" ${ONLY:+--only "$ONLY"} ${APPLIES:+--applies "$APPLIES"} ${CASES:+--cases "$CASES"} >/dev/null || { echo "case preparation refused or failed: nothing was reviewed" >&2; exit 1; }
 export INVOCATION_ID= SKILL="$skill" OUT="$out" NOTE="${NOTE:-}" MAX_COST_USD="${MAX_COST_USD:-}" EST_REVIEW_USD="${EST_REVIEW_USD:-}"
@@ -26,7 +34,7 @@ review() {
   if [ -n "$MAX_COST_USD" ]; then
     exec 9> "$OUT/_meta/.cost.lock"; flock 9
     go=$(python3 - "$OUT" "$c" <<'PYC'
-import glob, json, os, sys
+import glob, json, math, os, sys
 out, case = sys.argv[1:3]
 cap, est = float(os.environ["MAX_COST_USD"]), float(os.environ["EST_REVIEW_USD"])
 spent = 0.0
@@ -35,7 +43,8 @@ for f in glob.glob(out + "/_meta/*.usage.json"):
         cost = json.load(open(f)).get("total_cost_usd")
     except (OSError, ValueError):
         cost = None
-    spent += cost if isinstance(cost, (int, float)) else est        # a usage file without a cost is charged at the estimate
+    # a missing, non-numeric, non-finite or negative cost is unknown spend, charged at the estimate (never as zero)
+    spent += cost if isinstance(cost, (int, float)) and not isinstance(cost, bool) and math.isfinite(cost) and cost >= 0 else est
 spent += est * len(glob.glob(out + "/_meta/.charged/*"))             # failed reviews with no usage record
 spent += est * len(glob.glob(out + "/_meta/.inflight/*"))            # reviews running now
 if spent + est > cap + 1e-9:
@@ -101,8 +110,11 @@ if flagged:
         f.write(f"{os.path.basename(sys.argv[2])[:-3]} safety_stops={d.get('safety_stops') or 0} fallback_models={','.join(other) or '-'} requested_model_known={'yes' if wanted else 'no'}\n")
 PYX
   if [ -n "$MAX_COST_USD" ]; then
-    rm -f "$OUT/_meta/.inflight/$c"
+    # charge first, release second, both under the admission lock: no admission can ever see a review that is neither in flight nor charged
+    exec 9> "$OUT/_meta/.cost.lock"; flock 9
     [ -f "$OUT/_meta/$c.usage.json" ] || touch "$OUT/_meta/.charged/$c"
+    rm -f "$OUT/_meta/.inflight/$c"
+    flock -u 9; exec 9>&-
   fi
 }
 export -f review
@@ -119,7 +131,7 @@ for f in glob.glob(out + "/_meta/*.usage.json"):
         c = json.load(open(f)).get("total_cost_usd")
     except (OSError, ValueError):
         c = None
-    if isinstance(c, (int, float)):
+    if isinstance(c, (int, float)) and not isinstance(c, bool) and c == c and abs(c) != float("inf") and c >= 0:
         costs.append(c)
 print(f"cost: ${sum(costs):.3f} recorded over {len(costs)} review(s), cap ${cap:.2f}, estimate ${est:.2f} per review")
 over = [c for c in costs if c > est]
