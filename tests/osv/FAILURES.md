@@ -15,3 +15,8 @@
 - A clean recorded bump creates a finding, or a zero result claims general safety.
 
 Tests use recorded public OSV responses and synthetic repository files. No live CI requests or model eval cases.
+
+Independent review follow-up, October 22, 2026:
+- HTTP parser exceptions escape the OSV and GitHub-content paths without publishing a coverage gap.
+- A large diff is refused before the independent dependency lookup, hiding a bad lockfile bump.
+- More than 200 files prevents enumeration without an explicit known-bad coverage report.
