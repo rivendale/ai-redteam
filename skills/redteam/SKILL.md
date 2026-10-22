@@ -104,6 +104,36 @@ that never meets a check.
 - Costs and reversibility: second-order effects, who bears the downside, what cannot be undone, the exit.
 - Missing information: what a careful expert would demand before signing.
 
+### Secrets placement and rotation in plans and architectures (Tracks A and D)
+
+For every named or implied secret, build a value-free inventory from the plan: secret purpose
+and owner; storage location; readers; every third party holding a usable copy; permissions,
+data access and spending power; enforced spend/scope limits; and the written rotation path.
+Include PaaS environment variables, hosted consoles, CI, backups and dependent services.
+Use labels and locations only. Never request, read, print or copy the secret to fill the table.
+Encryption at rest does not by itself remove a service from the list of plaintext-capable holders.
+
+Trace a suspected leak through revocation at the issuer, replacement from a clean authorized
+context, updates to every consumer/copy, verification that the old credential fails and the new
+one works, and review of usage during the exposure window. Name the responsible operator and
+fallback when a console is unavailable. Distinguish an enforced spending cap from an alert.
+Ask whether the written path can rotate within one hour, including issuer access and all consumers.
+
+A plan that cannot explain rotation within one hour receives a **High plan finding**: locate
+the missing or infeasible path, state how a compromised credential retains access or spending
+power, and request a written, timed path with revocation/consumer verification. This requirement
+sets the High level for that plan deficiency; it is not proof of an actual leak or automatically
+Critical. Confirm or refute it using the existing process. If a deployed access fact cannot be
+established, keep that separate question in needs_validation, without severity.
+
+A complete, bounded plan does not earn a finding merely for using a hosted service or environment
+variable. Use schema 2.3 and the existing location, scenario, fix, evidence and coverage fields;
+record the security boundary and sibling search when required. The inventory fits in the
+human-readable coverage/evidence map; no new JSON fields or schema change are required.
+The public [Railway disclosure](https://blog.railway.com/p/security-disclosure-wednesday-october-21st)
+motivates checking hosted copies. See the [failure list](../../docs/failures/week-1021-secrets.md)
+and [independent eval request](../../docs/week-1021-secrets-eval-request.md). This candidate is unscored.
+
 ### Track B: code and technical work
 - Correctness: trace the main path and at least three hostile inputs (empty, null, huge, malformed, duplicate,
   concurrent, out of order).
