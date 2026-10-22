@@ -127,6 +127,39 @@ Public motivating example: the vendor's [Rank Math PRO incident advisory](https:
 describes compromised update packages and a backdoor that could return after removal. This is a
 behavioral review lens, not a signature list or a claim to detect every supply-chain attack.
 
+### Runtime and TLS trust changes
+
+Apply when a PR changes a runtime, base image, TLS client or trust configuration, or claims
+that a runtime is current. Read the deployed entry point, CI and container stages together.
+
+1. Trace `NODE_TLS_REJECT_UNAUTHORIZED=0`, `rejectUnauthorized:false`, `verify=False` and equivalent
+   bypasses to the client that can actually run. Distinguish enforced test-only isolation from
+   a production bypass or a test default that leaks into deployment. For a finding, give the
+   changed location and the peer-impersonation scenario, not just the matching string.
+2. Inspect custom CA bundles, injected roots and hostname-check overrides. Name who controls the
+   trust input, what it replaces or adds, how it updates and whether hostname checks still apply.
+   An organizational CA with a justified boundary is not automatically a vulnerability. If trust
+   behavior is unmeasured, state the exact gap; do not claim a flag proves certificate distrust.
+3. Identify the running runtime and base-image version, digest, support line and patch owner.
+   Check end-of-life status against a dated upstream schedule; for example `node:20` is upstream
+   EOL in October 2026 under the [upstream schedule](https://github.com/nodejs/Release/blob/main/schedule.json).
+   Explicit maintained backports need vendor evidence, not an assumed exception. Mutable tags
+   such as `node:22` or `latest` do not identify reviewed bytes; a fixed digest alone does not
+   prove that its runtime is supported or patched.
+4. When the PR states a latest security release, compare the actual runtime in the same maintained
+   line against the dated vendor advisory. Use semantic versions and platform/backport context.
+   Record source date, affected paths and the deployed artifact evidence. Do not compare major
+   lines as if their patch numbers were interchangeable, or freeze today's version as forever current.
+5. Any proposed TLS reproduction must use the existing isolated execution boundary. A local
+   synthetic certificate check needs a valid-certificate control and a specific certificate
+   validation rejection. DNS failure, timeout or no network is not proof of distrust. Do not
+   contact a suspected hostile endpoint or bring real credentials into the check.
+
+Use Step 5's existing P0/P1/P2/P3 fields and concrete failure scenario. Unsupported coverage
+is not a confirmed exploit. See the [failure list](../../docs/failures/week-1021-runtime-trust.md)
+and [independent eval request](../../docs/week-1021-runtime-trust-eval-request.md). Candidate
+behavior remains unscored; no detection improvement or release readiness is claimed.
+
 ## Step 6: Bound the spend
 
 - The tier sets the budget: one run per round the tier requires (one for Standard, two for High).
