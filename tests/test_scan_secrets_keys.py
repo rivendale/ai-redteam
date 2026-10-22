@@ -10,6 +10,9 @@ with nothing recording that it was a placeholder. The failure list:
   K5 an ordinary SHA-256 digest or commit hash in a report         -> must NOT be a hit (the pattern is contextual)
   K6 the scanner never prints the matched value
   K7 the committed onchain case holds no key-shaped value that the scanner flags
+  K8 whitespace or a newline between the constructor name and "(" or the quote must not hide the value (compact, spaced and
+     multi-line forms of the same value all hit)
+  K9 other wallet constructors and key loaders (privateKeyToAccount, from_key, from_private_key, PrivateKey) hit the same way
 """
 import pathlib, random, subprocess, sys, tempfile, unittest
 
@@ -40,6 +43,18 @@ class T(unittest.TestCase):
     def test_k3_rpc_url_key(self):
         rc, out = scan(f"https://eth-mainnet.g.alchemy.com/v2/{H32}\n")
         self.assertEqual(rc, 1, out)
+
+    def test_k8_whitespace_forms(self):
+        for form in ('new ethers.Wallet("0x{v}")', 'new ethers.Wallet ("0x{v}")', 'new ethers.Wallet\n  (\n  "0x{v}"\n)', 'new ethers.Wallet\t( \'0x{v}\' )',
+                     'new ethers.Wallet(\n"0x{v}")', 'private_key \n = "0x{v}"'):
+            rc, out = scan(form.format(v=H64) + "\n")
+            self.assertEqual(rc, 1, repr(form[:34]) + " " + out)
+
+    def test_k9_other_loaders(self):
+        for form in ('web3.eth.account.from_key("0x{v}")', 'Account.from_private_key( "{v}" )', 'privateKeyToAccount(\n"0x{v}")', 'Keypair.PrivateKey ("{v}")',
+                     'signer = wallet.fromPrivateKey("0x{v}")'):
+            rc, out = scan(form.format(v=H64) + "\n")
+            self.assertEqual(rc, 1, repr(form[:34]) + " " + out)
 
     def test_k4_placeholders_are_not_hits(self):
         text = 'new ethers.Wallet("0x' + "dead" * 16 + '")\nhttps://eth-mainnet.g.alchemy.com/v2/' + "beef" * 8 + "\nPRIVATE_KEY=0x" + "00" * 32 + "\n"

@@ -23,7 +23,7 @@ PATTERNS = {
     "bearer token": r"(?i)\bbearer\s+[A-Za-z0-9._-]{30,}",
     # key-shaped hex, matched by position so ordinary digests and commit hashes are not hits; a body made of one short unit repeated
     # (dead dead dead ..., 0000 ...) is an obvious placeholder and is skipped below
-    "wallet private key": r"(?i)\bWallet\(\s*[\"']0x[0-9a-f]{64}\b|(?:private[_ -]?key|secret[_ -]?key)\w*[\"']?\s*[:=]\s*[\"']?(?:0x)?[0-9a-f]{64}\b",
+    "wallet private key": r"(?i)\b(?:Wallet|PrivateKey|privateKeyToAccount|from_?key|from_?(?:private|secret)_?key)\s*\(\s*[\"']?(?:0x)?[0-9a-f]{64}\b|(?:private[_ -]?key|secret[_ -]?key)\w*[\"']?\s*[:=]\s*[\"']?(?:0x)?[0-9a-f]{64}\b",
     "rpc url key": r"(?i)/v[0-9]/[0-9a-f]{32}\b",
     "home path": r"/home/[a-z_][a-z0-9_-]*/|C:\\{1,2}Users\\{1,2}[^\\\s]+",
 }
