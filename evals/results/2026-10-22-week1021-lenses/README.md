@@ -4,7 +4,7 @@ One question: do the candidate lens texts (`pr-review` at main `77c4b98` minus i
 
 ## Method
 
-- 192 reviews: 48 cases, two texts (BASE, NEW), two repeats, model `claude-opus-5-5` through the sealed, tool-less lane (`evals/tools/run_reviews.sh`, `claude -p`, empty working directory). The 48 cases are the 26 development cases in this repository's `week-1021-dev-cases` sets (PR #92) plus 18 host-only hold-out cases and the 4 earlier host-only cases of the same sets.
+- 192 reviews: 48 cases, two texts (BASE, NEW), two repeats, model `claude-opus-5-5` through the sealed, tool-less lane (`evals/tools/run_reviews.sh`, `claude -p`, empty working directory). The 48 cases are 30 development cases (the week-1021 sets of PR #92 as frozen for the run, with the earlier supply-chain cases) and 18 host-only hold-out cases. The controls of the development sets were corrected after the run (PR #92); the run used the frozen versions.
 - Cost: $41.62 in total (about $0.12 to $0.15 per `pr-review` review, $0.30 to $0.33 per `redteam` review). No prompt was reworded or retried.
 - Scoring: `evals/score.py --profile auto`, unchanged. Recall counts planted defects found at any severity; a control is "flagged" when the report has any open Critical or High finding.
 
