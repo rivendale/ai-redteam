@@ -498,3 +498,72 @@ Run and score as the other sets, for example `python3 evals/score.py --cases eva
 A scoring run of these development sets (two repeats, baseline against the new lens texts, 192 reviews) showed that the sets are saturated: the baseline texts already find almost every planted defect, so they cannot show an improvement. It also showed that models rate an instruction aimed at reviewers as a High finding when it sits in a clean control, which the scorer counts as a false alarm, and that they found real remaining gaps in four of the clean controls. The injection now lives in three separate planted cases (SE05, EX05, SC12: the instruction is the defect) and the controls are free of it; the fixture that is supposed to be inert no longer runs anything when imported; the four controls were corrected (a rotation that tested rejection of the old secret while the service still accepted it, a contractor access path with no expiry mechanism and no advisory feed for the host and VPN software, a refusal check that matched wording instead of the provider's refusal signal, a scope check with no way to apply a stop-test, and test credentials with no handling rule). The tracked in-repository hold-out sets were not changed. The author reports the same SC07 fixture-hygiene edit in an off-repository copy, with no expected-answer change; that external claim was not independently verified in the [correction review](https://github.com/rivendale/ai-redteam/pull/92#issuecomment-6341603245).
 
 The [public aggregate record](https://github.com/rivendale/ai-redteam/blob/120f1fbbf2ca698419b1111e0177b507d568e757/evals/results/2026-10-22-week1021-lenses/README.md) publishes the as-run paired recall, control counts, safety stops and model identities. Its 192 reviews include development and host-only hold-out cases; the original reports and hold-out contents are not published. The totals span repeats and do not establish a benefit on the corrected cases.
+## Offline case-health recommendations
+
+`python3 evals/tools/case_health.py --repo . --output-dir evals --as-of 2026-10-22`
+reads current development keys and existing recorded reviews, then writes
+[`case-health.md`](case-health.md) and [`case-health.json`](case-health.json).
+It never edits a case, executes a proof or calls a model. Use `--force` to replace
+existing diagnostic artifacts. Exit 0 means inputs parsed, 1 means artifacts were
+written with counted input errors, and 2 means input/output validation failed.
+The first dated report includes legacy reports that cannot be decoded or parsed;
+those are explicit diagnostics, not guessed encodings or scored misses. Prompt
+identity uses the exact decodable skill-text prefix before the input marker, so
+binary case-input bytes after that marker do not erase valid text provenance.
+
+Recommendations are KEEP, SHARPEN, FIX-CONTROL, REVIEW-MATCHER, FLAKY,
+NO-DATA, UNTESTABLE or RETIRE-CANDIDATE. Zero recorded reviews means NO-DATA;
+recorded but mostly unusable reviews means UNTESTABLE. Separate
+coverage labels distinguish NO-DATA (zero recorded reviews), NO-USABLE-REVIEWS
+(recorded but unusable reviews), and RECORDED. NO-DATA does not judge the
+case's quality. Coverage counts are shown before the
+case tables. Saturation
+alone means SHARPEN for ordinary defect cases, with a never-failed warning.
+Disclosure, regulatory/legal statement, consent/privacy and safety-warning cases
+stay KEEP (regression guard) when saturated and have their own report section.
+Track R, conservative source/key matching and `case_health.regression_guard: true`
+identify guards. Control flags, possible matcher weaknesses, repeat disagreement,
+per-text/model rates, stop/fallback shares and recorded dates are in the JSON.
+Matcher hints require inspection; they do not change canonical scoring.
+Stop/fallback shares count explicit flags only; missing usage metadata is counted
+separately and cannot establish that a stop or fallback never occurred.
+
+Discovery uses report filenames and normalized usage metadata. It does not infer
+text, model or repeat identity from directory names. Counts-only publications
+cannot become per-case observations. Missing provenance stays unknown; dated
+publication folders are labeled record dates, not run dates. All scores use the
+current keys and scorers, so they cannot replace historical as-run totals or prove
+results on corrected cases. Hold-outs contribute aggregate status counts only.
+
+For an explicitly enumerated archive, `--manifest runs.json` accepts this shape
+(all paths are relative to `--repo`):
+
+```json
+{
+  "schema": "case-health-runs-1",
+  "enumeration_complete": true,
+  "runs": [{
+    "reports": "evals/results/run-a",
+    "cases": "evals/cases",
+    "expected_cases": ["case-01"],
+    "text": "recorded-text-id",
+    "model": "recorded-model-id",
+    "repeat": 1,
+    "date": "2026-10-22",
+    "holdout": false
+  }]
+}
+```
+
+The archive owner must enumerate every recorded run and expected case; a manifest
+is declared provenance, not authentication or independent proof of completeness.
+A stored prompt's skill-text hash takes precedence over its declared text label.
+Unlisted directories, missing reports, unknown identities, duplicated cells or
+input diagnostics prevent a redundancy claim. Only identical usable vectors
+across every recorded text/model/repeat, with at least three distinct texts OR
+three distinct models, can yield RETIRE-CANDIDATE. Other coincidences say
+"overlap, needs enumeration". Protected guards are retained even with identical
+vectors. Semantic coverage and any retirement remain an owner's decision.
+Partial overlap lists retain at most three examples per case, with exact total
+and omitted counts. This display limit never samples the full-vector comparison
+or truncates proven full-grid redundancy pairs.
