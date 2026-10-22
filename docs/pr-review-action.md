@@ -65,3 +65,45 @@ Run `python3 tests/test_pr_review_errors.py` for synthetic 401/404/400, timeout,
 recursion/internal exceptions, local refusal codes, GitHub/service distinction,
 malformed and oversized bodies, and credential-reflection controls. These tests make no live calls.
 The one-request/no-retry policy and the secret eligibility gates remain in force.
+## Known-bad version lookup
+
+`tools/known_bad.py` reads inert base/head manifest text through the GitHub API before the model key is read.
+It compares exact references, queries the public [OSV batch API](https://google.github.io/osv.dev/post-v1-querybatch/),
+then fetches [advisory details](https://google.github.io/osv.dev/get-v1-vulns/) for supplied severity metadata.
+Only package ecosystem/name/version or an Action commit goes to OSV, with no GitHub token, provider key,
+PR body, title or code. All requests use fixed hosts; redirects refuse. No package, installer or PR code executes.
+
+Matches use Step 5's P1/P2 finding fields: location, scenario and suggested test, plus OSV ID, supplied severity
+(or `not supplied by OSV`) and a fixed OSV advisory link. MAL or High/Critical metadata maps to P1; other matches
+map to P2. Raw CVSS vectors are preserved without estimating a numeric score. This reports a database match,
+not a claim that the running product is exploitable. Human Step 7 adjudication remains required.
+The lookup is written to the Actions summary before the provider request. A later model error leaves it there;
+a successful model round appears below it and cannot overwrite its findings or coverage status.
+
+Supported exact-reference readers: npm package.json and package-lock/npm-shrinkwrap versions 1-3;
+PyPI pinned requirements/constraints, project/build/optional dependencies in pyproject.toml, basic Poetry
+and uv package locks, and Pipfile.lock; Go require entries in go.mod and versions in go.sum; crates.io
+Cargo.lock packages and exact `=x.y.z` Cargo.toml dependencies; canonical one-line workflow uses with a full
+version tag or full commit SHA. Action subdirectories identify their owner/repository; SHA pins use OSV's
+commit query. Ecosystem names follow the [OSV schema](https://ossf.github.io/osv-schema/#affectedpackage-field).
+
+There is no package-manager resolver. Ranges, local/git sources, overrides, unsupported YAML syntax and lock
+formats (including yarn, pnpm and bun), dynamic Python manifests and unsupported resolution features produce
+coverage gaps. Empty/removed files and unchanged references do not need a new lookup. Line locations anchor
+the first package/reference occurrence in the inert head file. A renamed manifest is compared using the supplied
+old/new file bytes; unsupported cross-format renames produce gaps. Dependency metadata may itself be private;
+enable the Action only when sending those identifiers to the public OSV service is approved.
+
+Bounds: at most 200 changed-file metadata entries in two GitHub pages, 20 dependency files, two content reads
+per file, 2 MiB per response/file, 100 distinct added/changed references, one batch request, 20 detail requests
+and 200 retained matches. OSV uses a 10-second socket timeout and a 60-second budget checked between reads;
+a blocked read can add up to its remaining socket timeout. GitHub reads retain the existing 90-second timeout
+and the workflow job limit. No retries. Batch pagination is not followed: returned matches are preserved and
+coverage is incomplete. Detail failures preserve matching IDs with missing severity and incomplete coverage.
+Any limit, malformed response, unsupported resolution or network failure says **known-bad check did not run
+to completion**, never clean. A completed zero is only no OSV match for the enumerated versions at that time.
+
+Run `python3 tests/test_osv.py` and `python3 tests/test_osv_integration.py`. Recorded public responses are in
+`tests/osv/`; CI makes no live OSV/model request. Tests include MAL, a clean bump, every ecosystem, unchanged
+and removed versions, incomplete results, fixed destinations, budgets, credential separation, model contradiction
+and a real summary file surviving a mocked provider failure. No model eval cases or scores are authored here.

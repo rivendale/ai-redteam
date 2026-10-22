@@ -35,6 +35,12 @@ Output is a verdict (SHIP / SHIP WITH FIXES / REWORK / REJECT), a severity-ranke
 
 One pull request, one exact head commit, reviewed in a throwaway checkout against its merge base. The review is sized by risk (Low: one read; Standard: one round; High, for auth and permissions including their configuration, migrations, money, personal data or regulated text: two rounds, ideally on two vendors where an endpoint is approved for the data), run by an instance with no memory of writing the change, and bounded to the runs its tier requires unless the owner approves more. Every finding (P0 to P3, `file:line`, a failure scenario, a suggested test) is adjudicated in writing as accepted with a regression test or rejected with evidence, and merge is recommended only when the tier's rounds have run and every expected check is present and green. It is named `pr-review`, not `review`, because Claude Code's built-in code-review command already answers to `/review`.
 
+The opt-in Action runs a [bounded OSV lookup](docs/pr-review-action.md#known-bad-version-lookup) before its model
+round when dependency files change. It publishes exact-version matches independently, with OSV ID, supplied
+severity and advisory link. Unsupported resolution or unavailable OSV is explicit incomplete coverage.
+Recorded fixtures exercise a malicious package and a clean bump without live CI requests. This candidate skill
+change still needs independent evaluation before release; no improved model detection is claimed.
+
 ## What assess does
 
 `assess` checks an incoming link or item against the user's actual goals and existing context. It separates source

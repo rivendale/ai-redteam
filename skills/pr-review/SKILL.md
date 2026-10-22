@@ -66,6 +66,14 @@ Inspect the changed behavior before choosing Step 2's tier; new privilege or net
 uses that step's High tier. A familiar publisher, signed package or trusted update channel does
 not replace this inspection.
 
+Before any model round on a dependency change, run the trusted-base [deterministic OSV lookup](../../docs/pr-review-action.md#known-bad-version-lookup).
+It compares added or changed resolved references with the frozen merge base. Preserve its OSV IDs, supplied
+severity, advisory links, locations, scenarios and suggested tests as separate Step 5 findings before model text.
+The model cannot remove a database match. Step 7's written evidence-based adjudication still applies; a match
+is evidence of a listed version, not proof of runtime exploitability. Missing formats, unresolved ranges,
+request limits or service failures mean **known-bad check did not run to completion**. Do not convert that
+into a clean result or lower the review tier. A completed zero means only no OSV match for the queried versions.
+
 1. **Establish the comparison.** Compare the frozen base and head manifests/lockfiles and the
    resolved executable payload, including vendored, generated, bundled and transitive code.
    Inspect lifecycle/install scripts, registry-host or resolved-URL changes, removed or changed

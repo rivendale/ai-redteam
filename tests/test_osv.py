@@ -56,4 +56,32 @@ class LookupTests(unittest.TestCase):
   data=json.dumps({'dependencies':{f'fixture{i}':'1.2.3' for i in range(m.MAX_QUERIES+1)}});t=Recorded();r=m.scan_changes([change('package.json','{}',data)],t);self.assertEqual(r['status'],'partial');self.assertEqual(t.calls,[])
  def test_renamed_manifest_treats_head_as_added(self):
   r=m.scan_changes([change('nested/package.json','',package('1.95.6'))],Recorded());self.assertEqual(len(r['findings']),2)
+class BudgetTests(unittest.TestCase):
+ def test_fixed_host_and_request_budget(self):
+  from unittest.mock import patch
+  class Response:
+   def __enter__(self):return self
+   def __exit__(self,*args):pass
+   def read(self,size):return b''
+  class Opener:
+   def __init__(self):self.calls=[]
+   def open(self,req,timeout):self.calls.append(req);return Response()
+  opener=Opener();client=m.OSV()
+  with patch.object(m.urllib.request,'build_opener',return_value=opener):
+   with self.assertRaises(m.Incomplete):client('https://untrusted.example/v1/querybatch')
+   for _ in range(1+m.MAX_DETAILS):client('https://api.osv.dev/v1/querybatch',b'{}')
+   with self.assertRaises(m.Incomplete):client('https://api.osv.dev/v1/querybatch',b'{}')
+  self.assertEqual(len(opener.calls),1+m.MAX_DETAILS)
+  self.assertTrue(all(set(k.lower() for k in r.headers)<=set(('content-type','accept')) for r in opener.calls))
+ def test_deadline_refuses_before_network(self):
+  from unittest.mock import patch
+  client=m.OSV();client.deadline=0
+  with patch.object(m.urllib.request,'build_opener',side_effect=AssertionError('network')):
+   with self.assertRaises(m.Incomplete):client('https://api.osv.dev/v1/querybatch')
+ def test_short_npm_versions_are_not_resolved(self):
+  r=m.scan_changes([change('package.json','{}','{"dependencies":{"a":"1.2"}}')],Recorded());self.assertEqual(r['status'],'partial');self.assertEqual(r['queries'],[])
+ def test_malformed_detail_is_retained_as_match(self):
+  t=Recorded()
+  def broken(url,data=None):return b'[]' if '/vulns/' in url else t(url,data)
+  r=m.scan_changes([change('package.json','{}',package('1.95.6'))],broken);self.assertEqual(r['status'],'partial');self.assertEqual(len(r['findings']),2)
 if __name__=='__main__':unittest.main()
