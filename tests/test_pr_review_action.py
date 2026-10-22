@@ -19,7 +19,7 @@ class Transport:
  def __call__(self,url,headers,data=None):
   self.calls.append((url,headers,data))
   if url.endswith('/messages'):
-   packet=json.loads(data);assert packet['max_tokens']<=4096 and 'tools' not in packet
+   packet=json.loads(data);assert packet['max_tokens']==16384 and 'tools' not in packet
    assert 'synthetic-model-value' not in json.dumps(packet)
    return json.dumps({'stop_reason':'end_turn','content':[{'type':'text','text':'<img src="https://invalid.example/">\nREVIEWED: fixture; incomplete context.'}]}).encode()
   if '/compare/' in url:return json.dumps({'merge_base_commit':{'sha':MERGE}}).encode()
@@ -47,9 +47,9 @@ class ActionTests(unittest.TestCase):
   s=(ROOT/'.github/workflows/pr-review.yml').read_text()
   self.assertEqual(re.findall(r'^jobs:',s,re.M),['jobs:'])
   self.assertEqual(re.findall(r'^  ([^ :]+):',s.split('jobs:\n',1)[1],re.M),['review'])
-  self.assertEqual(hashlib.sha256(s.encode()).hexdigest(),'31120e04be5f5a80cb63c6817e1d2a8a8f8b3776721d4ff385f89fba00058dab','any workflow change needs a fresh review of this allowlist')
+  self.assertEqual(hashlib.sha256(s.encode()).hexdigest(),'6212bcd1a5ba39f2647878798aa317cfc45babbcfcbd7b1233fb6511c70f034f','any workflow change needs a fresh review of this allowlist')
   expected="""      - name: Check out trusted base only
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           ref: ${{ github.event.pull_request.base.sha }}
           persist-credentials: false

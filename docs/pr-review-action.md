@@ -112,3 +112,23 @@ and a real summary file surviving a mocked provider failure. No model eval cases
 
 Independent follow-up controls cover truncated/malformed HTTP responses from both OSV and GitHub,
 a malicious bump in a diff over 150,000 bytes, and an explicit gap report before the 200-file refusal.
+
+## Output budget and stop reasons
+
+The fixed output budget is 16,384 tokens. This is within Sonnet 5.5's documented 128K maximum output
+([official model overview](https://platform.claude.com/docs/en/models/overview), checked October 22, 2026).
+A different selected model must support this request budget before enabling. The prompt asks for a complete
+review under 28,000 characters; the independent 32,000-character publication ceiling remains enforced.
+A larger token budget gives generation room, including any provider-accounted reasoning, without permitting
+larger published reports or adding a retry. It does not guarantee completion or set a dollar spending limit.
+
+Only `end_turn` can publish a completed round. Other recognized reasons print a fixed local code such as
+`model_incomplete:max_tokens`, `model_incomplete:refusal`, or `model_incomplete:tool_use`.
+Missing, malformed or unknown values become `model_incomplete:unknown`; remote strings are never logged.
+The vocabulary follows the [official stop-reason reference](https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons).
+Every incomplete response refuses publication with no continuation, retry or vendor fallback.
+
+The trusted-base checkout action now uses the same full v5.1.0 commit as the offline checks workflow.
+The exact-workflow security allowlist was updated for that single pin change; all eligibility guards remain.
+Run `python3 tests/test_pr_review_room.py` for the request budget, all incomplete stop-reason categories,
+a hostile value, completed text and the retained character ceiling. Tests make no provider call.
