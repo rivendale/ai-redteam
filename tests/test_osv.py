@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Offline dependency lookup controls. Recorded API responses, never package execution."""
-import importlib.util,json,sys,unittest
+import http.client,importlib.util,json,sys,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT/'tools'))
 import known_bad as m
@@ -84,4 +84,15 @@ class BudgetTests(unittest.TestCase):
   t=Recorded()
   def broken(url,data=None):return b'[]' if '/vulns/' in url else t(url,data)
   r=m.scan_changes([change('package.json','{}',package('1.95.6'))],broken);self.assertEqual(r['status'],'partial');self.assertEqual(len(r['findings']),2)
+class ParserFailureTests(unittest.TestCase):
+ def test_osv_http_parser_failures_publish_gap(self):
+  for kind in (http.client.BadStatusLine,http.client.IncompleteRead):
+   def broken(*args):raise kind(b'fixture')
+   r=m.scan_changes([change('package.json','{}',package('1.95.6'))],broken)
+   self.assertEqual(r['status'],'partial');self.assertIn('known-bad check did not run',m.render(r))
+ def test_github_http_parser_failures_publish_gap(self):
+  for kind in (http.client.BadStatusLine,http.client.IncompleteRead):
+   def broken(*args):raise kind(b'fixture')
+   r=m.check_pr('example/review',7,'a'*40,'c'*40,1,broken,{})
+   self.assertEqual(r['status'],'partial');self.assertIn('known-bad check did not run',m.render(r))
 if __name__=='__main__':unittest.main()

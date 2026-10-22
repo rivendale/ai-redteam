@@ -58,4 +58,17 @@ class SummaryPersistence(unittest.TestCase):
    with patch.object(m.os,'environ',environment),patch.object(m,'review',side_effect=run),contextlib.redirect_stderr(io.StringIO()):self.assertEqual(m.main(),1)
    self.assertIn('MAL-2024-11183',summary.read_text())
    self.assertNotIn('synthetic-model-value',summary.read_text());self.assertNotIn('synthetic-read-value',summary.read_text())
+class LargePR(unittest.TestCase):
+ def test_large_diff_retains_known_match(self):
+  t=Github();reports=[]
+  def large(url,headers,data=None):
+   if headers.get('Accept')=='application/vnd.github.diff':return b'x'*150001
+   if url.endswith('/messages'):raise AssertionError('model reached')
+   return t(url,headers,data)
+  with self.assertRaises(m.Refuse):m.review(event(),env(),large,lambda h,r:reports.append(r),Recorded())
+  self.assertIn('MAL-2024-11183',m.known_bad.render(reports[0]))
+ def test_over_file_limit_still_publishes_gap(self):
+  t=Github();t.pr['changed_files']=201;reports=[]
+  with self.assertRaises(m.Refuse):m.review(event(),env(),t,lambda h,r:reports.append(r),Recorded())
+  self.assertEqual(reports[0]['status'],'partial');self.assertIn('known-bad check did not run',m.known_bad.render(reports[0]))
 if __name__=='__main__':unittest.main()
