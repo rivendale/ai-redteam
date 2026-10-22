@@ -259,6 +259,13 @@ class Inputs(unittest.TestCase):
         p.write_bytes(b'=== SKILL ===\n\xff\n=== INPUTS ===\n')
         self.assertEqual(self.load()['issues']['invalid_prompt'], 1)
 
+    def test_incomplete_prompt_cannot_establish_text_identity(self):
+        self.add_case();d = self.add_run()
+        (d / 'case-01.prompt').write_text('=== SKILL ===\ntruncated text')
+        self.manifest['runs'][0].pop('text')
+        data = self.load()
+        self.assertIsNone(data['cases'][0]['difficulty'][0]['text'])
+
     def test_missing_usage_is_visible_per_case_and_for_holdouts(self):
         self.add_case();d = self.add_run()
         (d / '_meta/case-01.usage.json').unlink()
