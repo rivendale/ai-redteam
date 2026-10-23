@@ -16,8 +16,8 @@ installed or pulled image is not counted until the running process reports it.
 ## Patching
 - Routine: second Tuesday of each month, plus the vendor's scheduled releases within seven days.
 - Urgent: a vendor critical advisory is read the same day; the fix is applied within 24 hours, or the service is stopped until it is.
-- The patch owner subscribes to the vendor's security announcements, the distribution's security list for the host operating system and the VPN project's announcements, and the deputy covers absences; the 24-hour rule applies to all three.
-- After any critical fix the deploy keys held by CI are rotated, because patching does not remove earlier access.
+- The patch owner subscribes to the code host vendor's security announcements, the distribution's security list for the host operating system, the VPN project's announcements, the reverse proxy project's security advisories and the database project's security announcements (every row of `inventory.md` has a named source), and the deputy covers absences; the 24-hour rule applies to all five.
+- After any critical fix to the code host (or any component that was reachable before the fix) these credentials are rotated within 4 hours of the fix, because patching does not remove earlier access: the deploy keys held by CI, every user and admin access token on the code host, runner registration tokens, CI variables, and the backup bucket credential; the patch owner does it from `deploy-keys.md` and a credential list kept beside it, and the deputy if the owner has not acknowledged within 30 minutes.
 - Deploy keys: `deploy-keys.md` lists every key (which repository it opens, which CI job or person consumes it, its owner and the date it was created). On a suspected leak the owner revokes the key within 30 minutes of the report, from that table, and re-issues it to the listed consumers; the deputy does it if the owner does not acknowledge within 10 minutes. Keys expire after 90 days regardless.
 
 ## Backups
