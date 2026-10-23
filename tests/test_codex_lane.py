@@ -9,6 +9,8 @@ It must therefore not be handed the whole Codex home. The failure list:
       temporary home and leaves no running review process behind (a foreground xargs would defer the trap until it finished)
   C2c the same with a review that IGNORES SIGTERM (trap "" TERM, inherited by its children, one of which runs in a process group of
       its own): the lane still ends every descendant (escalates to SIGKILL, including the separate group) and leaves nothing running
+  C2d a TERM handler that starts a NEW detached child in its own session during the grace period (in no earlier snapshot): the
+      lane freezes what it knows, re-collects until nothing new appears, and kills the lot, so the escapee does not survive
   C3 the real auth.json is not modified or removed by the run, even if the CLI refreshes the token in the temporary home (no write-back:
      a copy-back cannot be made atomic against other Codex sessions, and a stale snapshot must never replace a newer file)
   C3b a real auth.json updated by another session DURING the run keeps its newer content (no rollback to the snapshot), and the lane
@@ -49,6 +51,10 @@ STUB = textwrap.dedent("""\
     cat > /dev/null
     [ -n "${STUB_FAIL:-}" ] && exit 3
     [ -n "${STUB_IGNORE_TERM:-}" ] && trap "" TERM
+    # a TERM handler that starts a detached child in a new session (an escapee the lane could not have recorded beforehand)
+    if [ -n "${STUB_ESCAPE:-}" ]; then
+      trap 'trap "" TERM; setsid bash -c "trap \"\" TERM; echo \$\$ >> \"$STUB_PIDS\"; sleep 60" >/dev/null 2>&1 </dev/null &' TERM
+    fi
     [ -n "${STUB_SLEEP:-}" ] && sleep "$STUB_SLEEP"
     printf '%s\\n' "${STUB_REPORT:-report text}" > "$out"
     echo "model: ${STUB_MODEL:-stub-model}" ; echo "tokens used"; echo "10"
@@ -118,7 +124,10 @@ class T(unittest.TestCase):
     def test_c2c_term_resistant_review_is_still_ended(self):
         self.sigterm_lane_only({"STUB_IGNORE_TERM": "1"})
 
-    def sigterm_lane_only(self, extra):
+    def test_c2d_term_handler_spawns_an_escapee(self):
+        self.sigterm_lane_only({"STUB_ESCAPE": "1"}, settle=1.5)
+
+    def sigterm_lane_only(self, extra, settle=0.5):
         skill = self.t / "SKILL.md"; skill.write_text("skill\n")
         pids = self.t / "stub.pids"; self.settings(STUB_SLEEP="60", STUB_PIDS=str(pids), **extra)
         p = subprocess.Popen(["bash", str(LANE), str(skill), str(self.out), "1"], env=self.env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -131,7 +140,7 @@ class T(unittest.TestCase):
             p.wait(timeout=15)
         except subprocess.TimeoutExpired:
             p.kill(); self.fail("the lane did not exit after SIGTERM")
-        time.sleep(0.5)
+        time.sleep(settle)
         self.assertEqual(self.leftovers(), [], "temporary home left behind")
         survivors = []
         for pid in pids.read_text().split():

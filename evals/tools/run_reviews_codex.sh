@@ -34,20 +34,27 @@ cleanup() {
 # A foreground child defers a Bash trap until it exits, so the reviews run in their own process group in the background and the lane
 # waits on them with `wait`, which a trapped signal interrupts at once; the handler then ends the whole group before cleanup runs.
 xpid=
-# `timeout` moves its command into a process group of its own, and a review may ignore SIGTERM, so the lane first records every
-# descendant and every process group it owns (killing a parent would re-parent its children out of reach), asks them to stop, and
-# after a short grace period kills whatever is left, including the separate groups. The lane's own group is never signalled.
+# Ending the reviews must not give them a chance to run code: a TERM handler can start a detached child (new session, new group) that
+# no earlier snapshot contains. So the lane FREEZES first: it repeatedly lists every descendant of the review tree, stops each one
+# (SIGSTOP cannot be caught or ignored, and a stopped process cannot fork), and repeats until a pass finds nothing new (a new child
+# can only appear from a process not yet stopped). Then it kills everything it froze and every process group it owns with SIGKILL.
+# `timeout` moves its command into a group of its own and a review may ignore SIGTERM, which is why no signal other than STOP/KILL
+# is relied on. The lane's own process group is never signalled.
 descendants() { local c; for c in $(pgrep -P "$1" 2>/dev/null); do echo "$c"; descendants "$c"; done; }
 stop_reviews() {
   [ -n "$xpid" ] || return 0
-  local pids groups own p g
+  local known="$xpid" pass new p g own groups
   own=$(ps -o pgid= -p $$ 2>/dev/null | tr -d ' ')
-  pids="$xpid $(descendants "$xpid")"
-  groups=$(for p in $pids; do ps -o pgid= -p "$p" 2>/dev/null | tr -d ' '; done | sort -u)
-  for p in $pids; do kill -TERM "$p" 2>/dev/null; done
-  for g in $groups; do [ "$g" != "$own" ] && kill -TERM -- "-$g" 2>/dev/null; done
-  sleep 0.5
-  for p in $pids; do kill -KILL "$p" 2>/dev/null; done
+  kill -STOP "$xpid" 2>/dev/null
+  for pass in 1 2 3 4 5 6 7 8 9 10; do
+    new=
+    for p in $(descendants "$xpid" | sort -un); do
+      case " $known " in *" $p "*) ;; *) known="$known $p"; new=1; kill -STOP "$p" 2>/dev/null;; esac
+    done
+    [ -n "$new" ] || break
+  done
+  groups=$(for p in $known; do ps -o pgid= -p "$p" 2>/dev/null | tr -d ' '; done | sort -u)
+  for p in $known; do kill -KILL "$p" 2>/dev/null; done
   for g in $groups; do [ "$g" != "$own" ] && kill -KILL -- "-$g" 2>/dev/null; done
   wait "$xpid" 2>/dev/null
   return 0
