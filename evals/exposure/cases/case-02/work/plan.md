@@ -18,6 +18,7 @@ installed or pulled image is not counted until the running process reports it.
 - Urgent: a vendor critical advisory is read the same day; the fix is applied within 24 hours, or the service is stopped until it is.
 - The patch owner subscribes to the vendor's security announcements, the distribution's security list for the host operating system and the VPN project's announcements, and the deputy covers absences; the 24-hour rule applies to all three.
 - After any critical fix the deploy keys held by CI are rotated, because patching does not remove earlier access.
+- Deploy keys: `deploy-keys.md` lists every key (which repository it opens, which CI job or person consumes it, its owner and the date it was created). On a suspected leak the owner revokes the key within 30 minutes of the report, from that table, and re-issues it to the listed consumers; the deputy does it if the owner does not acknowledge within 10 minutes. Keys expire after 90 days regardless.
 
 ## Backups
 Nightly encrypted dump of the database and repositories to an off-site bucket that the server cannot delete from; a restore into a scratch VM is tested monthly (last run 2026-10-10, 42 minutes).
