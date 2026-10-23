@@ -27,6 +27,12 @@ reviewer now stops flagging them is only measured by a paid re-run, which needs 
                       leak path (revoke first, create the new secret afterwards)
                       -> the old probes are precomputed before removal; the new-secret control is computed in its own later step, after
                          the new secret exists, with a fresh timestamp
+  G11 exposure case-02  a critical advisory for the reverse proxy or the database never reaches the patch owner (only the code host,
+                      the distribution and the VPN project are subscribed to), so the 24-hour rule never fires for them
+                      -> every component in inventory.md has a named advisory source the patch owner is subscribed to
+  G12 exposure case-02  after a critical code-host fix only the deploy keys are rotated, so a pre-patch compromise keeps user and admin
+                      tokens, runner tokens, CI variables and the backup bucket credential
+                      -> the post-fix rotation names each of those credential classes with an owner and a deadline
   G8 the controls remain controls: no planted list, the authorization gap in pretext case-06 is still not attached, proofs still pass
 """
 import json, pathlib, re, subprocess, sys, unittest
@@ -95,6 +101,26 @@ class T(unittest.TestCase):
         self.assertNotIn("with the new secret", before)
         self.assertRegex(t, r"(once|after) the new secret (exists|is created)[^.]*computes a control request")
         self.assertIn("in a separate step", t)
+
+    def test_g11_every_component_has_an_advisory_source(self):
+        t = read("exposure", "cases", "case-02", "work", "plan.md").lower()
+        self.assertRegex(t, r"reverse[- ]proxy[^.]*(announcements|advisor|security list|mailing)|(announcements|advisor|security list|mailing)[^.]*reverse[- ]proxy")
+        self.assertRegex(t, r"database[^.]*(announcements|advisor|security list|mailing)|(announcements|advisor|security list|mailing)[^.]*database")
+
+    def test_g12_post_fix_rotation_names_each_credential_class(self):
+        t = read("exposure", "cases", "case-02", "work", "plan.md").lower()
+        after = t[t.index("after any critical fix"):].split("\n- ")[0]
+        for word in ("user", "admin", "runner", "ci variable", "backup"):
+            self.assertIn(word, after, word)
+        self.assertRegex(after, r"within \d+ (hours|minutes)")
+        self.assertIn("credentials.md", t)
+        c = read("exposure", "cases", "case-02", "work", "credentials.md").lower()
+        for word in ("deploy keys", "user and admin", "runner", "ci variables", "backup bucket"):
+            self.assertIn(word, c, word)
+        inv = read("exposure", "cases", "case-02", "work", "inventory.md").lower().splitlines()
+        self.assertIn("advisory source", inv[1])
+        for row in inv[3:]:
+            self.assertTrue(row.rstrip("| ").split("|")[-1].strip(), row[:30])
 
     def test_g8_still_controls_and_proofs_pass(self):
         for suite, cid in (("secrets", "case-04"), ("exposure", "case-02"), ("pretext", "case-03"), ("pretext", "case-06")):
