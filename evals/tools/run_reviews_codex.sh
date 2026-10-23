@@ -34,9 +34,24 @@ cleanup() {
 # A foreground child defers a Bash trap until it exits, so the reviews run in their own process group in the background and the lane
 # waits on them with `wait`, which a trapped signal interrupts at once; the handler then ends the whole group before cleanup runs.
 xpid=
-# `timeout` moves its command into a process group of its own, so a group kill alone misses it: walk the process tree as well.
-kill_tree() { local c; for c in $(pgrep -P "$1" 2>/dev/null); do kill_tree "$c"; done; kill -TERM "$1" 2>/dev/null; }
-stop_reviews() { if [ -n "$xpid" ]; then kill_tree "$xpid"; kill -TERM -- "-$xpid" 2>/dev/null; sleep 0.3; kill -KILL -- "-$xpid" 2>/dev/null; wait "$xpid" 2>/dev/null; fi; }
+# `timeout` moves its command into a process group of its own, and a review may ignore SIGTERM, so the lane first records every
+# descendant and every process group it owns (killing a parent would re-parent its children out of reach), asks them to stop, and
+# after a short grace period kills whatever is left, including the separate groups. The lane's own group is never signalled.
+descendants() { local c; for c in $(pgrep -P "$1" 2>/dev/null); do echo "$c"; descendants "$c"; done; }
+stop_reviews() {
+  [ -n "$xpid" ] || return 0
+  local pids groups own p g
+  own=$(ps -o pgid= -p $$ 2>/dev/null | tr -d ' ')
+  pids="$xpid $(descendants "$xpid")"
+  groups=$(for p in $pids; do ps -o pgid= -p "$p" 2>/dev/null | tr -d ' '; done | sort -u)
+  for p in $pids; do kill -TERM "$p" 2>/dev/null; done
+  for g in $groups; do [ "$g" != "$own" ] && kill -TERM -- "-$g" 2>/dev/null; done
+  sleep 0.5
+  for p in $pids; do kill -KILL "$p" 2>/dev/null; done
+  for g in $groups; do [ "$g" != "$own" ] && kill -KILL -- "-$g" 2>/dev/null; done
+  wait "$xpid" 2>/dev/null
+  return 0
+}
 trap 'stop_reviews; exit 143' TERM; trap 'stop_reviews; exit 130' INT; trap 'stop_reviews; cleanup' EXIT
 [ -f "$real_home/auth.json" ] || { echo "no auth.json under $real_home: sign in to Codex first" >&2; exit 2; }
 probe_home=$(mktemp -d)

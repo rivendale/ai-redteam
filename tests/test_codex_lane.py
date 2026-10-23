@@ -7,6 +7,8 @@ It must therefore not be handed the whole Codex home. The failure list:
   C2 that temporary home is removed after a normal run, after a Codex failure, and after SIGTERM
   C2b SIGTERM sent to the lane's own PID ALONE (not its process group) while a review runs: the lane exits promptly, removes the
       temporary home and leaves no running review process behind (a foreground xargs would defer the trap until it finished)
+  C2c the same with a review that IGNORES SIGTERM (trap "" TERM, inherited by its children, one of which runs in a process group of
+      its own): the lane still ends every descendant (escalates to SIGKILL, including the separate group) and leaves nothing running
   C3 the real auth.json is not modified or removed by the run, even if the CLI refreshes the token in the temporary home (no write-back:
      a copy-back cannot be made atomic against other Codex sessions, and a stale snapshot must never replace a newer file)
   C3b a real auth.json updated by another session DURING the run keeps its newer content (no rollback to the snapshot), and the lane
@@ -46,6 +48,7 @@ STUB = textwrap.dedent("""\
     echo "MODE=$(stat -c %a "$CODEX_HOME")" >> "$log"
     cat > /dev/null
     [ -n "${STUB_FAIL:-}" ] && exit 3
+    [ -n "${STUB_IGNORE_TERM:-}" ] && trap "" TERM
     [ -n "${STUB_SLEEP:-}" ] && sleep "$STUB_SLEEP"
     printf '%s\\n' "${STUB_REPORT:-report text}" > "$out"
     echo "model: ${STUB_MODEL:-stub-model}" ; echo "tokens used"; echo "10"
@@ -110,8 +113,14 @@ class T(unittest.TestCase):
         self.assertEqual(self.leftovers(), [], "after SIGTERM")
 
     def test_c2b_sigterm_to_the_lane_pid_alone(self):
+        self.sigterm_lane_only({})
+
+    def test_c2c_term_resistant_review_is_still_ended(self):
+        self.sigterm_lane_only({"STUB_IGNORE_TERM": "1"})
+
+    def sigterm_lane_only(self, extra):
         skill = self.t / "SKILL.md"; skill.write_text("skill\n")
-        pids = self.t / "stub.pids"; self.settings(STUB_SLEEP="60", STUB_PIDS=str(pids))
+        pids = self.t / "stub.pids"; self.settings(STUB_SLEEP="60", STUB_PIDS=str(pids), **extra)
         p = subprocess.Popen(["bash", str(LANE), str(skill), str(self.out), "1"], env=self.env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         for _ in range(100):
             if self.leftovers() and pids.exists() and pids.read_text().strip(): break
@@ -124,12 +133,20 @@ class T(unittest.TestCase):
             p.kill(); self.fail("the lane did not exit after SIGTERM")
         time.sleep(0.5)
         self.assertEqual(self.leftovers(), [], "temporary home left behind")
+        survivors = []
         for pid in pids.read_text().split():
-            try:
-                os.kill(int(pid), 0); alive = True
-            except ProcessLookupError:
-                alive = False
-            self.assertFalse(alive, f"review process {pid} still running")
+            kids = subprocess.run(["pgrep", "-P", pid], capture_output=True, text=True).stdout.split()
+            for q in [pid] + kids:
+                try:
+                    state = open(f"/proc/{q}/stat").read().rsplit(")", 1)[1].split()[0]
+                except FileNotFoundError:
+                    continue
+                if state != "Z":
+                    survivors.append(q)
+        for q in survivors:
+            try: os.kill(int(q), 9)
+            except ProcessLookupError: pass
+        self.assertEqual(survivors, [], f"review processes still running: {survivors}")
 
     def test_c3_real_auth_untouched(self):
         before = (self.real / "auth.json").read_bytes()
