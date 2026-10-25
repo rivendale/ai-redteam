@@ -203,7 +203,7 @@ Recommend merge only when all of these hold:
 - no unresolved blocker remains;
 - no owner or architecture decision is pending.
 
-State the recommendation directly and quote the rule text it rests on. Do not defer to an unnamed authority or add a
+State the recommendation directly, cite the rule by its identifier, and quote its text. Do not defer to an unnamed authority or add a
 gate the documented rules do not have; a technical dependency is not an approval gate.
 
 ## Signals

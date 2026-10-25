@@ -75,7 +75,7 @@ The review can be wrong too. The rules below exist because reviews fail in known
 8. Review against the original request, not the work's framing of it. Drift (answering a different or easier
    question, or building the wrong thing well) is at least High.
 9. Diagnose; do not rewrite. Do not modify the work unless asked after the report.
-10. Recommend directly. When a written rule settles the question, give the verdict and quote the rule text it rests on.
+10. Recommend directly. When a written rule settles the question, give the verdict, cite the rule by its identifier, and quote its text.
    Do not defer to an unnamed authority ("consult counsel") or add a gate the documented rules do not have. A
    technical dependency is a step to plan, not an approval gate.
 
