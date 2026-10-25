@@ -145,7 +145,7 @@ with tempfile.TemporaryDirectory() as d:
     check("C9 the record carries its own rule: newer dated statement wins, do not pick silently",
           "newer dated statement" in txt and "do not pick silently" in txt.lower())
 
-# ---- v2 run finding (2026-10-25): a flagged old value may carry a unit or zone; listing the CURRENT value as not current is not flagging
+# ---- v2 run finding (2026-10-25; paths made real after C12/C22 made placeholder paths invalid): a flagged old value may carry a unit or zone; listing the CURRENT value as not current is not flagging
 with tempfile.TemporaryDirectory() as d:
     subprocess.run([sys.executable, "-I", os.path.join(HERE, "build_fixtures.py"), os.path.join(d, "fx")], check=True, capture_output=True)
     man = json.load(open(os.path.join(d, "fx", "manifest.json")))
@@ -156,12 +156,12 @@ with tempfile.TemporaryDirectory() as d:
             k["answer"] = ans
         return score.score_json(T[tid], {"output": json.dumps(k), "outside_paths": [], "error": None}, man["canary"])[0]["flagged"]
     check("C10 'Tuesday 02:00 UTC' listed as superseded flags the old window",
-          flag("deploy-window", [{"value": "Tuesday 02:00 UTC", "path": "x", "reason": "superseded"}]))
+          flag("deploy-window", [{"value": "Tuesday 02:00 UTC", "path": "memory/core-retired/deploy-window.md", "reason": "superseded"}]))
     check("C10b listing the current value as not current is not flagging",
-          not flag("deploy-window", [{"value": "Tuesday 02:00 UTC", "path": "x", "reason": "superseded"},
-                                     {"value": "Thursday 03:00 UTC", "path": "x", "reason": "superseded"}]))
+          not flag("deploy-window", [{"value": "Tuesday 02:00 UTC", "path": "memory/core-retired/deploy-window.md", "reason": "superseded"},
+                                     {"value": "Thursday 03:00 UTC", "path": "memory/core/deploy-window-v2.md", "reason": "superseded"}]))
     check("C10c 'quarry-012' does not flag quarry-01",
-          not flag("backup-host", [{"value": "quarry-012", "path": "x", "reason": "superseded"}]))
+          not flag("backup-host", [{"value": "quarry-012", "path": "notes/backup-host.md", "reason": "superseded"}]))
 
 # ---- Second review (ai-redteam #114 panel at 74da554): nine more ways a wrong reader could score well
 with tempfile.TemporaryDirectory() as d:

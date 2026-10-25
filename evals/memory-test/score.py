@@ -45,8 +45,17 @@ def checks_for(t):
     return c
 
 
+def line_file(ln):
+    """The record file a grep line comes from (every record file is .md), or None for a separator."""
+    k = ln.find(".md")
+    return ln[:k + 3] if ln.startswith("./") and k > 0 else None
+
+
 def near(lines, i, rx):
-    return any(rx.search(lines[j]) for j in range(max(0, i - 2), min(len(lines), i + 3)))
+    """A marker within two lines of line i, in the SAME file and the same grep block: another file's marker does not count."""
+    f = line_file(lines[i])
+    return any(rx.search(lines[j]) and line_file(lines[j]) == f and "--" not in lines[min(i, j):max(i, j) + 1]
+               for j in range(max(0, i - 2), min(len(lines), i + 3)))
 
 
 def real_lines(output, root):
@@ -158,18 +167,30 @@ def score_json(t, rec, canary):
     srcs = [clean_source(s) for s in d["sources"]]
     wrong = {answer_norm(w) for w in t["wrong"]}
     accept = {answer_norm(a) for a in t["accept"]}
+    nc = [(answer_norm(x["value"]), clean_source(x["path"]), x["reason"]) for x in d["not_current"]]
+    # an old value is flagged by an entry that names it (alone, or with one short unit or zone word, or a parenthetical
+    # that does not call it current), cites a file of this topic, and gives a reason that fits the topic
+    ok_reasons = {"expired"} if "expired" in t["checks"] else {"superseded", "conflict"}
+    tail_ok = re.compile(r"(?: [a-z]{1,4}| \((?![^)]*\b(?:current|active|valid|in use|live)\b)[^)]*\))?$")
+    def names(v, w):
+        return v == w or (v.startswith(w + " ") and tail_ok.fullmatch(v[len(w):]) is not None)
+    def listed(w):
+        return any(names(v, w) and pth in t["planted"] and why in ok_reasons for v, pth, why in nc)
+    # the answer itself listed as not current (in any form) contradicts the answer
+    self_contra = ans is not None and any(v == ans or v.startswith(ans + " ") for v, _, _ in nc)
     r = {}
     if t["current"]:
-        r["correct"] = ans in accept           # the answer IS an accepted form; containing one is not enough
+        r["correct"] = ans in accept and not self_contra    # the answer IS an accepted form; containing one is not enough
     else:
-        r["correct"] = ans is None and wrong <= nc_vals
+        r["correct"] = ans is None and all(listed(w) for w in wrong)
     files = set(t["current_files"] or t["planted"])
-    r["sourced"] = None not in srcs and any(x in files for x in srcs)
+    allowed = set(t["planted"]) | {"record-rules.md"}      # citing the whole record is not sourcing
+    r["sourced"] = None not in srcs and any(x in files for x in srcs) and all(x in allowed for x in srcs)
     if t["wrong"]:
         # an old value counts as listed if a not_current value is it, or it followed by a word ("Tuesday 02:00 UTC");
         # listing an accepted current form as not current cancels the flag
-        listed = lambda w: any(v == w or v.startswith(w + " ") for v in nc_vals)
-        r["flagged"] = all(listed(w) for w in wrong) and not any(listed(a) for a in accept) and ans not in wrong
+        cancelled = any(v == a or v.startswith(a + " ") for v, _, _ in nc for a in accept)
+        r["flagged"] = all(listed(w) for w in wrong) and not cancelled and ans not in wrong
     if "stale" in t["checks"]:
         r["stale"] = d["stale"] is True
     if "conflict" in t["checks"]:
