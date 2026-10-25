@@ -1,7 +1,7 @@
 # app-config.yaml for the Slotfinder calendar assistant (deployed 2026-10-19)
 oauth_scopes:
   - calendar.read
-  - calendar.write          # creates and moves events on the user's behalf
+  - calendar.write          # creates and moves events on the user's behalf; the app has no delete path
   - contacts.read           # suggests attendees
 integrations:
   analytics:
