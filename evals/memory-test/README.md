@@ -70,4 +70,5 @@ python3 -I score.py $OUT                                # writes $OUT/scores.jso
 
 ## Results
 - Current: `results/2026-10-25-v2.md` (fixture v2, both prompts, the corrected scorer).
+- Round 3, the reply format's conflict definition: `results/2026-10-25-v2-r3.md`.
 - Superseded, kept as history: `results/2026-10-24.md` and `results/2026-10-24-r2.md`.
