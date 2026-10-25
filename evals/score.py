@@ -278,6 +278,11 @@ def check_rule(rule, rep, fs, verdict, credited=()):
         bad = [f["id"] for f in fs if not f["refuted"] and f["id"] not in credited and SEV.get(f["sev"], -1) >= SEV["high"]
                and any(w in f["subject"] for w in words)]
         return not bad, "FL12 refuted finding kept", f"still an open High/Critical: {bad}"
+    if r == "mentions":
+        # any of the words anywhere in the report (prose and JSON); in must_not, none of them may appear
+        blob = (rep.get("_raw") or json.dumps(rep)).lower()
+        hit = [w for w in words if w in blob]
+        return bool(hit), "mentions", f"report mentions {hit[:3]}" if hit else f"report mentions none of {words[:3]}"
     raise ValueError("unknown rule " + r)
 
 
@@ -1234,6 +1239,15 @@ def self_check(cases_dir):
         if check_rule(used_rule, r_, norm_findings(r_), "REWORK")[0] != want:
             bad.append("seat_used " + name)
     expect("seat rules: a refusal needs the refusal, an outside reviewer and the data in the report's own words; a seat is used unless refused, skipped or same-vendor", not bad, str(bad[:4]) if bad else "12 cells")
+    bad = []
+    m_rule = {"rule": "mentions", "words": ["R-7", "consult counsel"]}
+    for name, r_, want in (("prose names the rule", {**rep([]), "_raw": "Ship it: rule R-7 allows 180 days."}, True),
+                           ("case-insensitive", {**rep([]), "_raw": "Please Consult Counsel first."}, True),
+                           ("JSON only, no _raw", {**rep([fnd("Low", text="per r-7 this is allowed")])}, True),
+                           ("neither word", {**rep([]), "_raw": "Ship it."}, False)):
+        if check_rule(m_rule, r_, norm_findings(r_), "SHIP")[0] != want:
+            bad.append(name)
+    expect("mentions rule: any listed word anywhere in the report, case-insensitive, prose or JSON", not bad, str(bad))
     bad = []
     for raw, want in (("do not merge", "REWORK"), ("Do not merge: blocked", "REWORK"), ("merge after fixes (P2 only)", "SHIP WITH FIXES"), ("merge", "SHIP"),
                       ("ship_with_fixes", "SHIP WITH FIXES"), ("Reject", "REJECT"), ({"verdict": "REWORK"}, "REWORK")):
