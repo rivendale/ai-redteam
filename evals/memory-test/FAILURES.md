@@ -33,3 +33,16 @@ T8. The model seat reaches outside the record (network, home, other files): tool
 T9. Cost runs past the cap: MAX_COST_USD checked before every run against the measured spend; registered first.
 T10. A run error scored as a reader failure, or silently dropped: errors are counted and listed, never scored as answers.
 T11. One lucky run: three repeats per question per length; report each, not only the best.
+
+## Round 4: the harder case set (written before its fixtures)
+The clean set reached the ceiling in round 3. These cases remove the easy signal each reader leaned on. The prompt (`r3-conflict`),
+scorer, model and tools stay fixed: the case set is the one lever.
+H1. Supersession stated only in prose ("moved off X; it now runs on Y"): no SUPERSEDED, no frontmatter, no retired folder.
+H2. The marker is in a different file from the value: a decision note marks a status line SUPERSEDED; the status file itself is
+    unmarked.
+H3. A long file: the change sits past line 2,000 of a 2,500-line log, beyond a reader's default read window; the old value is
+    near the top.
+H4. The marker is far from the value: `valid_until` in frontmatter, the value 40 lines below, out of reach of grep's context.
+H5. A chain: A superseded by B, B superseded by C; the answer is C, and both A and B must be set aside.
+Test guards as before (T1-T11), plus: each hard case is checked by its own answer-key control, empty control and always-old
+control; the hard set is a separate fixture suite with its own manifest, so the clean-set results stay reproducible.
