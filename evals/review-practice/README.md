@@ -32,8 +32,8 @@ All material is invented: organizations, rules, vendors, products, people and ad
 | case-09 | 5 | control | a change the written rule plainly allows, with a disk-quota dependency; the right answer is a direct ship recommendation citing the rule |
 | case-10 | 5 | planted | a change the written rule plainly forbids; the right answer is a direct rework citing the rule, with no deferral |
 
-FL5 is scored with the `mentions` rule (any of the listed words in the whole report): the rule ID must appear, and
-deferral phrases must not.
+FL5 is scored with the `mentions` rule (any of the listed words in the whole report): the reviewer must cite the rule by
+its identifier (R-7), not only paraphrase or quote its text, and deferral phrases must not appear.
 
 ## Not scored here
 - #115's reviewer-side practice (every fix the reviewer itself suggests carries its check or the label UNVERIFIED) needs a
