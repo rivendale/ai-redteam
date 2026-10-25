@@ -77,11 +77,12 @@ def verify_tree(fx, man):
     return None
 
 
-def fixtures(out):
+def fixtures(out, suite="clean"):
     fx = os.path.join(out, "fixtures")
     tmp = os.path.join(out, "fixtures.rebuild")
     subprocess.run(["rm", "-rf", tmp], check=True)
-    subprocess.run([sys.executable, "-I", os.path.join(HERE, "build_fixtures.py"), tmp], check=True, capture_output=True)
+    subprocess.run([sys.executable, "-I", os.path.join(HERE, "build_fixtures.py"), tmp] + (["--suite", suite] if suite != "clean" else []),
+                   check=True, capture_output=True)
     new = json.load(open(os.path.join(tmp, "manifest.json")))
     if os.path.lexists(os.path.join(fx, "manifest.json")):
         old = json.load(open(os.path.join(fx, "manifest.json")))
@@ -243,13 +244,14 @@ def main():
     ap.add_argument("--est", type=float, default=0.15)
     ap.add_argument("--model", default="claude-haiku-5-5")
     ap.add_argument("--only")
+    ap.add_argument("--suite", choices=("clean", "hard"), default="clean")
     ap.add_argument("--prompt", choices=sorted(PROMPTS), default="r1")
     a = ap.parse_args()
     out = os.path.realpath(a.out)
     os.makedirs(out, exist_ok=True)
     if in_git_repo(out):
         sys.exit("OUT is inside a git repository; the model seat would load that repo's instructions")
-    fx, man = fixtures(out)
+    fx, man = fixtures(out, a.suite)
     if a.reader == "grep":
         run_grep(out, fx, man)
     elif a.reader == "findall":

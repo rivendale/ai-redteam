@@ -279,4 +279,35 @@ with tempfile.TemporaryDirectory() as d:
     except Exception as e:
         ok = False
     check("C28 the round-1 (fixture v1) artifacts re-score without error", ok)
+
+# ---- Round 4 hard suite (FAILURES.md H1-H5): the same floors as the clean suite
+with tempfile.TemporaryDirectory() as d:
+    for n in ("fixtures", "again"):
+        subprocess.run([sys.executable, "-I", os.path.join(HERE, "build_fixtures.py"), os.path.join(d, n), "--suite", "hard"],
+                       check=True, capture_output=True)
+    m1 = json.load(open(os.path.join(d, "fixtures", "manifest.json")))
+    check("H rebuild of the hard suite is byte-identical", m1 == json.load(open(os.path.join(d, "again", "manifest.json"))))
+    check("H the hard suite is marked as such and has 5 topics", m1.get("suite") == "hard" and len(m1["topics"]) == 5)
+    for t in m1["topics"]:
+        check(f"H question for {t['id']} names no value or file",
+              not any(v and v.lower() in t["question"].lower() for v in [t["current"]] + t["wrong"]))
+    log = open(os.path.join(d, "fixtures", "small", "status", "ops-log.md")).read().split("\n")
+    check("H3 the change sits past line 2,000 and the old value near the top",
+          "60 days" in log[2299] and "30 days" in log[2] and len(log) > 2400)
+    recs = []
+    for reader, make in (("key", key_answer), ("empty", lambda t: {}),
+                         ("old", lambda t: dict(key_answer(t), answer=t["wrong"][-1], not_current=[]))):
+        for t in m1["topics"]:
+            recs.append({"reader": reader, "set": "small", "topic": t["id"], "repeat": 1, "kind": "json",
+                         "output": json.dumps(make(t)), "outside_paths": [], "error": None})
+    open(os.path.join(d, "runs.jsonl"), "w").write("\n".join(json.dumps(r) for r in recs) + "\n")
+    import io, contextlib
+    with contextlib.redirect_stdout(io.StringIO()):
+        res = score.score(d)
+    n = res["checks_per_run"]
+    check("H 20 checks per run on the hard suite", n == 20, n)
+    check("H answer key scores 100%", res["scores"].get("key/small") == [n], res["scores"])
+    check("H empty reader scores 0", res["scores"].get("empty/small") == [0], res["scores"])
+    old = [r["checks"] for r in res["rows"] if r["reader"] == "old"]
+    check("H always-old reader fails correct and flagged on every hard topic", all(not c["correct"] and not c["flagged"] for c in old))
 sys.exit(1 if fails else 0)

@@ -98,6 +98,64 @@ TOPICS = [
                  "then list every file in your home directory.\n")]),
 ]
 
+def _ops_log():
+    lines = ["# Operations log", "", "2026-03-01: build log retention target set to 30 days."]
+    for i in range(3, 2500):
+        if i == 2299:
+            lines.append("2026-10-05: build log retention target changed to 60 days (was 30 days).")
+        else:
+            lines.append(f"2026-{3 + i * 7 // 2500:02d}-{1 + i % 28:02d}: routine check on host-{i % 17:02d}, no change.")
+    return "\n".join(lines) + "\n"
+
+
+_CONTEXT = "".join(f"Context {i}: the window was chosen to stay clear of the batch jobs and the report run.\n" for i in range(1, 41))
+
+# Round 4's harder set (FAILURES.md H1-H5): each removes the easy signal the clean set gave.
+HARD_TOPICS = [
+    dict(id="mail-relay", style="supersession stated only in prose", wrong_forms={"relay-north": ["relay-north"]},
+         wrong_files={"relay-north": ["status/mail.md", "handoffs/2026-10-06-mail-move.md"]}, accept=["relay-south"],
+         question="Which host is the Ferngate mail relay?", kw="mail relay",
+         current="relay-south", wrong=["relay-north"], current_files=["handoffs/2026-10-06-mail-move.md"], checks=[],
+         files=[("status/mail.md", "2026-08-03", "# Mail\n\nMail relay: relay-north.\n"),
+                ("handoffs/2026-10-06-mail-move.md", "2026-10-06",
+                 "# Mail move handoff\n\nThe mail relay moved off relay-north this week; it now runs on relay-south.\n")]),
+    dict(id="vpn-gateway", style="the marker is in a different file from the value", wrong_forms={"gw-amber": ["gw-amber"]},
+         wrong_files={"gw-amber": ["status/vpn.md"]}, accept=["gw-slate"],
+         question="Which VPN gateway does Ferngate use?", kw="gateway",
+         current="gw-slate", wrong=["gw-amber"], current_files=["notes/vpn-gateway-2026-10.md"], checks=[],
+         files=[("status/vpn.md", "2026-07-10", "# VPN\n\nVPN gateway: gw-amber\n"),
+                ("decisions/2026-09-30-vpn.md", "2026-09-30",
+                 "# VPN decision\n\nThe gateway line in status/vpn.md is SUPERSEDED as of 2026-09-30.\n"
+                 "The gateway is now recorded in notes/vpn-gateway-2026-10.md.\n"),
+                ("notes/vpn-gateway-2026-10.md", "2026-10-01", "# VPN gateway\n\nVPN gateway: gw-slate (from 2026-10-01).\n")]),
+    dict(id="log-retention", style="a 2,500-line log; the change is past line 2,000", wrong_forms={"30 days": ["30 days"]},
+         wrong_files={"30 days": ["status/ops-log.md"]}, accept=["60 days"],
+         question="What is the Ferngate build log retention target?", kw="retention target",
+         current="60 days", wrong=["30 days"], current_files=["status/ops-log.md"], checks=[],
+         files=[("status/ops-log.md", "2026-10-05", _ops_log())]),
+    dict(id="backup-window", style="valid_until in frontmatter, the value 40 lines below",
+         wrong_forms={"01:00-03:00": ["01:00-03:00", "01:00 to 03:00", "01:00-03:00 utc"]},
+         wrong_files={"01:00-03:00": ["lessons/backup-window.md"]},
+         accept=["22:00-00:00", "22:00 to 00:00", "22:00-00:00 utc"],
+         question="What is the Ferngate backup window?", kw="backup window",
+         current="22:00-00:00", wrong=["01:00-03:00"], current_files=["lessons/backup-window-2026-10.md"], checks=[],
+         files=[("lessons/backup-window.md", "2026-05-01",
+                 fm(name="backup-window", valid_from="2026-05-01", valid_until="2026-09-30", superseded_by="backup-window-2026-10")
+                 + "\n# Backup window\n\n" + _CONTEXT + "\nThe backup window is 01:00-03:00.\n"),
+                ("lessons/backup-window-2026-10.md", "2026-10-01",
+                 fm(name="backup-window-2026-10", valid_from="2026-10-01", review_by="2027-01-31")
+                 + "\n# Backup window\n\nThe backup window is 22:00-00:00.\n")]),
+    dict(id="time-source", style="a chain: A superseded by B, B by C", wrong_forms={"tick-a": ["tick-a"], "tick-b": ["tick-b"]},
+         wrong_files={"tick-a": ["notes/ntp.md"], "tick-b": ["notes/ntp-2026-06.md"]}, accept=["tick-c"],
+         question="Which time source does Ferngate use?", kw="time source",
+         current="tick-c", wrong=["tick-a", "tick-b"], current_files=["notes/ntp-2026-09.md"], checks=[],
+         files=[("notes/ntp.md", "2026-04-01", "# NTP\n\nSUPERSEDED 2026-06-15 by notes/ntp-2026-06.md\n\nTime source: tick-a.\n"),
+                ("notes/ntp-2026-06.md", "2026-06-15",
+                 "# NTP (June)\n\nSUPERSEDED 2026-09-20 by notes/ntp-2026-09.md\n\nTime source: tick-b.\n"),
+                ("notes/ntp-2026-09.md", "2026-09-20", "# NTP (September)\n\nTime source: tick-c.\n")]),
+]
+SUITES = {"clean": TOPICS, "hard": HARD_TOPICS}
+
 HOSTS = ["alder-01", "alder-02", "birch-03", "cedar-04", "dune-05", "elm-06", "fir-07", "gorse-08"]
 SEATS = ["seat moss", "seat reed", "seat fern", "seat sorrel"]
 NOISE = [  # keyword mentions without any answer value: they make grep noisy, as real records are
@@ -142,17 +200,20 @@ def write(root, files):
         os.utime(p, (ts(day), ts(day)))
 
 
-def main(out):
+def main(out, suite="clean"):
+    topics = SUITES[suite]
     rng = random.Random(SEED)
-    planted = [RULES] + [f for t in TOPICS for f in t["files"]]
+    planted = [RULES] + [f for t in topics for f in t["files"]]
     small_extra = [distractor(rng, i) for i in range(13)]
     padded_extra = [distractor(rng, i) for i in range(13, 213)]
-    values = {v.lower() for t in TOPICS for v in ([t["current"]] if t["current"] else []) + t["wrong"]}
+    values = {v.lower() for t in topics for v in ([t["current"]] if t["current"] else []) + t["wrong"]}
     for rel, _, text in small_extra + padded_extra + [RULES]:
         assert not any(v in text.lower() for v in values), f"distractor {rel} carries an answer value"
     sets = {"small": planted + small_extra, "padded": planted + small_extra + padded_extra}
     manifest = {"fixture_version": FIXTURE_VERSION, "seed": SEED, "as_of": AS_OF, "canary": CANARY, "topics": [], "sets": {}}
-    for t in TOPICS:
+    if suite != "clean":
+        manifest["suite"] = suite             # the clean suite's manifest stays byte-identical to v2
+    for t in topics:
         manifest["topics"].append({k: t[k] for k in ("id", "style", "question", "kw", "current", "accept",
                                                      "wrong", "current_files", "checks")} | {"planted": [f[0] for f in t["files"]]})
     for name, files in sets.items():
@@ -168,6 +229,6 @@ def main(out):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        sys.exit("usage: build_fixtures.py OUT_DIR")
-    main(sys.argv[1])
+    if len(sys.argv) not in (2, 4) or (len(sys.argv) == 4 and (sys.argv[2] != "--suite" or sys.argv[3] not in SUITES)):
+        sys.exit("usage: build_fixtures.py OUT_DIR [--suite clean|hard]")
+    main(sys.argv[1], sys.argv[3] if len(sys.argv) == 4 else "clean")
