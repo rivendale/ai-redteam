@@ -5,7 +5,7 @@ record. The ground truth is the
 fixture manifest, not a model's opinion. The failure list came first: `FAILURES.md`.
 
 ## What is planted (synthetic estate "Ferngate"; no real hosts, people, personal or business data)
-`build_fixtures.py` writes 9 topics, then the same topics again among 200 distractors, from a fixed seed. Every file's
+`build_fixtures.py` writes the record's own rules file (`record-rules.md`) and 9 topics, then the same topics again among 200 distractors, from a fixed seed. Every file's
 sha256 and mtime are in `manifest.json`, and a rebuild is byte-identical.
 
 | topic | what it tests |
@@ -68,5 +68,5 @@ python3 -I score.py $OUT                                # writes $OUT/scores.jso
 ```
 
 ## Results
-- Round 1 (warned prompt): `results/2026-10-24.md`
-- Round 2 (neutral prompt): `results/2026-10-24-r2.md`
+- Current: `results/2026-10-25-v2.md` (fixture v2, both prompts, the corrected scorer).
+- Superseded, kept as history: `results/2026-10-24.md` and `results/2026-10-24-r2.md`.

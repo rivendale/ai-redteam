@@ -122,7 +122,10 @@ def score_json(t, rec, canary):
     files = set(t["current_files"] or t["planted"])
     r["sourced"] = None not in srcs and any(x in files for x in srcs)
     if t["wrong"]:
-        r["flagged"] = wrong <= nc_vals and ans not in wrong
+        # an old value counts as listed if a not_current value is it, or it followed by a word ("Tuesday 02:00 UTC");
+        # listing an accepted current form as not current cancels the flag
+        listed = lambda w: any(v == w or v.startswith(w + " ") for v in nc_vals)
+        r["flagged"] = all(listed(w) for w in wrong) and not (accept & nc_vals) and ans not in wrong
     if "stale" in t["checks"]:
         r["stale"] = d["stale"] is True
     if "conflict" in t["checks"]:
