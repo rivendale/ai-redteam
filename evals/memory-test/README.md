@@ -64,11 +64,12 @@ python3 -I controls.py                                  # no model; exit 0 = sco
 OUT=<a folder outside any git repo>
 python3 -I readers.py $OUT grep
 python3 -I readers.py $OUT findall --findall <path to findall>
-python3 -I readers.py $OUT model --prompt r1 --repeats 3 --max-cost 4 --est 0.15
+python3 -I readers.py $OUT model --prompt r1 --repeats 3      # add --suite hard for the harder set --max-cost 4 --est 0.15
 python3 -I score.py $OUT                                # writes $OUT/scores.json
 ```
 
 ## Results
 - Current: `results/2026-10-25-v2.md` (fixture v2, both prompts, the corrected scorer).
 - Round 3, the reply format's conflict definition: `results/2026-10-25-v2-r3.md`.
+- Round 4, the harder case set (`--suite hard`): `results/2026-10-25-hard-r4.md`.
 - Superseded, kept as history: `results/2026-10-24.md` and `results/2026-10-24-r2.md`.

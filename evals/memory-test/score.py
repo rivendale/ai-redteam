@@ -132,7 +132,7 @@ def score_paths(t, rec, root=None):
 def topic_meta(t):
     """The manifest topic plus the current scoring forms from build_fixtures.TOPICS (accepted answers, exact old-value
     spellings, and the file that holds each old value)."""
-    code = {x["id"]: x for x in build_fixtures.TOPICS}[t["id"]]
+    code = {x["id"]: x for x in build_fixtures.TOPICS + build_fixtures.HARD_TOPICS}[t["id"]]
     return dict(t, accept=code["accept"], wrong_forms=code["wrong_forms"], wrong_files=code["wrong_files"])
 
 
