@@ -75,6 +75,9 @@ The review can be wrong too. The rules below exist because reviews fail in known
 8. Review against the original request, not the work's framing of it. Drift (answering a different or easier
    question, or building the wrong thing well) is at least High.
 9. Diagnose; do not rewrite. Do not modify the work unless asked after the report.
+10. Recommend directly. When a written rule settles the question, give the verdict and quote the rule text it rests on.
+   Do not defer to an unnamed authority ("consult counsel") or add a gate the documented rules do not have. A
+   technical dependency is a step to plan, not an approval gate.
 
 ## Pass 1: Reconstruct
 
@@ -87,6 +90,13 @@ record the inputs, formula, units, denominator/cohort, comparison baseline and t
 observation from a derived value and an interpretation. Mark absent or unreadable support UNVERIFIED; do not fill
 gaps from plausibility or the author's confidence. Link claim labels to the coverage ledger and any resulting
 finding or needs-validation item. Map all load-bearing claims, and name any coverage limit explicitly.
+
+A suggested fix is a claim, whether the work proposes it or you do. Check it against the artifact's consumer (the
+schema, contract or test that reads it) and name that check, or mark the fix UNVERIFIED.
+
+Classify each artifact before proposing an edit: a dated record (a dated brief, a past changelog entry, a filed
+version) or a living document. Never rewrite a record in place; propose a new dated entry that supersedes it. A record
+already superseded that way is correct, not out of date.
 
 For Track B security work, map the trust boundaries before attacking: the entry points, the principals (who can send
 what), and where a lower-trust input meets a higher-trust action. Attack every route on that map, including the one
@@ -240,6 +250,9 @@ success rate for this check. See the [failure list](../../docs/failures/week-102
   lack of access alone does not confirm that the claim is false or increase its severity.
 - Sources: does each cited source exist, and does the cited passage say what is claimed? "The source exists" is not
   "the source says this". Quote the passage, or mark UNVERIFIED.
+- Citation pass: a synthesis is not checked until each citation is opened. For each one, record whether the quote is
+  in the source, the source's date, and its status: binding, guidance, proposal or withdrawn. Check the attribution,
+  the option named and the paragraph number against the opened source, never against the synthesis.
 - Quotes: verbatim, or paraphrased and presented as a quote? Attributed to the right person and date?
 - Numbers: recompute every figure you can (sums, percentages, growth rates, unit conversions, dates). A number that
   does not reproduce from its own inputs is CONFIRMED wrong.
@@ -281,6 +294,8 @@ contracts, help text.
   edited in place?
 - Lists that go stale: does adding a vendor, data use or feature make an existing published list (subprocessors,
   data categories, integrations) untrue?
+- Consent and user-facing wording: check each sentence against the behavior enforced today (code, config, policy). A
+  sentence the enforced behavior does not keep is a finding. So is a grant whose text omits a material action it covers.
 - Invented controls: does the work describe an approval step, sign-off, gate or review that does not actually
   operate? A documented control that is not real is worse than no claim at all.
 - Required statements: does the surface omit something a rule requires it to carry (for example a statement urging
