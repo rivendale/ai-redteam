@@ -248,4 +248,35 @@ with tempfile.TemporaryDirectory() as d:
     import score as S
     r = S.score_text(T["backup-host"], {"output": out}, root)
     check("C24 a marker in another file's line does not flag a value", not r["flagged"], r)
+
+# ---- Second Claude review, round 2 (at cb174a0)
+with tempfile.TemporaryDirectory() as d:
+    subprocess.run([sys.executable, "-I", os.path.join(HERE, "build_fixtures.py"), os.path.join(d, "fixtures")], check=True, capture_output=True)
+    man = json.load(open(os.path.join(d, "fixtures", "manifest.json")))
+    T = {t["id"]: t for t in man["topics"]}
+    cn = man["canary"]
+    def js(tid, **over):
+        k = key_answer(T[tid]); k.update(over)
+        return score.score_json(score.topic_meta(T[tid]), {"output": json.dumps(k), "outside_paths": [], "error": None}, cn)[0]
+    for v in ("trunk live", "trunk now", "trunk is", "trunk (still the default)", "trunk (in effect)"):
+        nc = [{"value": v, "path": "handoffs/docs-site-notes.md", "reason": "superseded"}]
+        check(f"C25 '{v}' does not flag trunk (exact old-value spellings only)", not js("docs-branch", not_current=nc)["flagged"])
+    nc = [{"value": "seat ember", "path": "status/print-oncall.md", "reason": "superseded"}]
+    check("C26 answering 'ember' while listing 'seat ember' as not current fails correct", not js("print-oncall", answer="ember", not_current=nc)["correct"])
+    nc = [{"value": "quarry-01", "path": "notes/backup-host-2026-09.md", "reason": "superseded"}]
+    check("C27 quarry-01 cited to the file that holds the CURRENT value does not flag it", not js("backup-host", not_current=nc)["flagged"])
+    check("C27b quarry-01 cited to the file that holds it still flags it", js("backup-host")["flagged"])
+    # the published round-1 artifacts (fixture v1, no accepted forms in the manifest) still re-score without error
+    v1 = os.path.join(HERE, "results", "2026-10-24")
+    sc = os.path.join(d, "v1"); os.makedirs(os.path.join(sc, "fixtures"))
+    subprocess.run(["cp", os.path.join(v1, "manifest.json"), os.path.join(sc, "fixtures")], check=True)
+    subprocess.run(["cp", os.path.join(v1, "runs.jsonl"), sc], check=True)
+    import io, contextlib
+    try:
+        with contextlib.redirect_stdout(io.StringIO()):
+            res = score.score(sc)
+        ok = "model/small" in res["scores"]
+    except Exception as e:
+        ok = False
+    check("C28 the round-1 (fixture v1) artifacts re-score without error", ok)
 sys.exit(1 if fails else 0)
