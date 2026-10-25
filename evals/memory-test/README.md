@@ -29,7 +29,8 @@ sha256 and mtime are in `manifest.json`, and a rebuild is byte-identical.
 - **concept-graph search**: not run. It is a private service on another machine, and planting a contributor would write to
   that system; its owner can run the fixture pack and scorer there.
 
-The model seat's prompt, identical for both lengths and every repeat (`readers.py`, `PROMPT`):
+The model seat's round-1 prompt (`r1`), identical for both lengths and every repeat (`readers.py`, `PROMPTS`). Round 2 (`r2-neutral`)
+deletes only the paragraph that begins "The record changes over time"; the reply format is the same in every round:
 
 ```
 You are an operations agent for the Ferngate estate. Its record is the set of files in the current directory: notes,
@@ -62,9 +63,10 @@ python3 -I controls.py                                  # no model; exit 0 = sco
 OUT=<a folder outside any git repo>
 python3 -I readers.py $OUT grep
 python3 -I readers.py $OUT findall --findall <path to findall>
-python3 -I readers.py $OUT model --repeats 3 --max-cost 4 --est 0.15
+python3 -I readers.py $OUT model --prompt r1 --repeats 3 --max-cost 4 --est 0.15
 python3 -I score.py $OUT                                # writes $OUT/scores.json
 ```
 
 ## Results
-See `results/2026-10-24.md`.
+- Round 1 (warned prompt): `results/2026-10-24.md`
+- Round 2 (neutral prompt): `results/2026-10-24-r2.md`
