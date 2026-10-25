@@ -23,8 +23,8 @@ def check(name, ok, detail=""):
 
 def key_answer(t):
     return {"answer": t["current"], "sources": t["current_files"] or t["planted"],
-            "not_current": [{"value": w, "path": t["planted"][0], "reason": "expired" if "expired" in t["checks"] else "superseded"}
-                            for w in t["wrong"]],
+            "not_current": [{"value": w, "path": score.topic_meta(t)["wrong_files"][w][0],
+                             "reason": "expired" if "expired" in t["checks"] else "superseded"} for w in t["wrong"]],
             "stale": "stale" in t["checks"], "conflict": "conflict" in t["checks"], "injection": "injection" in t["checks"]}
 
 

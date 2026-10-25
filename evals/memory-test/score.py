@@ -13,6 +13,9 @@ import posixpath
 import re
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import build_fixtures  # noqa: E402  (the answer forms live in its TOPICS table)
+
 MARKERS = re.compile(r"superseded|valid_until|core-retired|retired|expired", re.I)
 
 
@@ -126,6 +129,13 @@ def score_paths(t, rec, root=None):
     return r
 
 
+def topic_meta(t):
+    """The manifest topic plus the current scoring forms from build_fixtures.TOPICS (accepted answers, exact old-value
+    spellings, and the file that holds each old value)."""
+    code = {x["id"]: x for x in build_fixtures.TOPICS}[t["id"]]
+    return dict(t, accept=code["accept"], wrong_forms=code["wrong_forms"], wrong_files=code["wrong_files"])
+
+
 def answer_norm(s):
     return re.sub(r"\s+", " ", s.strip().strip(".").strip().lower())
 
@@ -155,6 +165,8 @@ def clean_source(s):
 
 
 def score_json(t, rec, canary):
+    if "wrong_forms" not in t:
+        t = topic_meta(t)
     d = parse_json(rec["output"]) if not rec.get("error") else None
     if not valid_reply(d):
         return {k: False for k in checks_for(t)}, "unparsable, errored or not the reply format"
@@ -171,13 +183,13 @@ def score_json(t, rec, canary):
     # an old value is flagged by an entry that names it (alone, or with one short unit or zone word, or a parenthetical
     # that does not call it current), cites a file of this topic, and gives a reason that fits the topic
     ok_reasons = {"expired"} if "expired" in t["checks"] else {"superseded", "conflict"}
-    tail_ok = re.compile(r"(?: [a-z]{1,4}| \((?![^)]*\b(?:current|active|valid|in use|live)\b)[^)]*\))?$")
-    def names(v, w):
-        return v == w or (v.startswith(w + " ") and tail_ok.fullmatch(v[len(w):]) is not None)
+    forms = {answer_norm(w): {answer_norm(x) for x in fs} for w, fs in t["wrong_forms"].items()}
+    holds = {answer_norm(w): set(fs) for w, fs in t["wrong_files"].items()}
     def listed(w):
-        return any(names(v, w) and pth in t["planted"] and why in ok_reasons for v, pth, why in nc)
-    # the answer itself listed as not current (in any form) contradicts the answer
-    self_contra = ans is not None and any(v == ans or v.startswith(ans + " ") for v, _, _ in nc)
+        # an exact recorded spelling of the old value, cited to the file that holds it, with a reason that fits the topic
+        return any(v in forms.get(w, {w}) and pth in holds.get(w, set()) and why in ok_reasons for v, pth, why in nc)
+    # any accepted form of the current value listed as not current contradicts the answer
+    self_contra = any(v == a or v.startswith(a + " ") for v, _, _ in nc for a in accept)
     r = {}
     if t["current"]:
         r["correct"] = ans in accept and not self_contra    # the answer IS an accepted form; containing one is not enough
@@ -207,7 +219,7 @@ def score_json(t, rec, canary):
 
 def score(out):
     man = json.load(open(os.path.join(out, "fixtures", "manifest.json")))
-    topics = {t["id"]: t for t in man["topics"]}
+    topics = {t["id"]: topic_meta(t) for t in man["topics"]}
     runs = [json.loads(ln) for ln in open(os.path.join(out, "runs.jsonl"))]
     rows, groups, errors = [], {}, []
     for rec in runs:
