@@ -1,0 +1,62 @@
+{
+  "id": "case-01",
+  "track": "B",
+  "title": "A prior review's one-line fix empties a list the consuming schema requires to hold one item, so applying it stops every publish",
+  "failure_list": [
+    1
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "suggested-fix-breaks-consumer",
+      "file": "work/review.md",
+      "lines": [
+        7,
+        7
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "minitems",
+        "min items",
+        "at least one",
+        "schema",
+        "validat",
+        "empty",
+        "consumer",
+        "stops",
+        "abort",
+        "invalid"
+      ],
+      "all_words": [],
+      "why": "the fix leaves sources empty; the schema requires minItems 1 and publish.py stops the whole publish on a validation error; the fix was never run against the validator, and an approved replacement exists"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "import json\ns = json.load(open('schema/manifest.schema.json'))\nassert s['properties']['sources']['minItems'] == 1\nr = open('review.md').read()\nassert '\"sources\": []' in r and 'validate' not in r\nassert 'stops the whole publish' in open('publish.md').read()"
+  },
+  "applies_to": [
+    "redteam",
+    "pr-review"
+  ],
+  "slug": "RP1-suggested-fix-breaks-the-consuming-schema"
+}

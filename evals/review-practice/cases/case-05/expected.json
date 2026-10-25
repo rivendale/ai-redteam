@@ -1,0 +1,115 @@
+{
+  "id": "case-05",
+  "track": "C",
+  "title": "A research synthesis with a wrong rule attribution, an absent quote, a wrong paragraph number and a vendor option that does not exist",
+  "failure_list": [
+    3
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "wrong-rule-attribution",
+      "file": "work/synthesis.md",
+      "lines": [
+        3,
+        3
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "rule 14",
+        "reserved",
+        "rule 12",
+        "attribut",
+        "wrong rule"
+      ],
+      "all_words": [],
+      "why": "the 72-hour notice is Rule 14; Rule 12 is reserved"
+    },
+    {
+      "id": "P2",
+      "kind": "quote-not-in-source",
+      "file": "work/synthesis.md",
+      "lines": [
+        5,
+        5
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "quote",
+        "not in the source",
+        "45 days",
+        "does not say",
+        "verbatim",
+        "30 days"
+      ],
+      "all_words": [],
+      "why": "the quoted sentence is not in GN-3, which says 45 days, not 30"
+    },
+    {
+      "id": "P3",
+      "kind": "wrong-paragraph-number",
+      "file": "work/synthesis.md",
+      "lines": [
+        7,
+        7
+      ],
+      "min_severity": "Low",
+      "any_words": [
+        "3.4",
+        "paragraph",
+        "3.2"
+      ],
+      "all_words": [],
+      "why": "the deletion requirement is 3.4; 3.2 is about backups"
+    },
+    {
+      "id": "P4",
+      "kind": "nonexistent-vendor-option",
+      "file": "work/synthesis.md",
+      "lines": [
+        8,
+        8
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "strict",
+        "does not exist",
+        "not a valid",
+        "off, standard",
+        "extended",
+        "rejected",
+        "no such"
+      ],
+      "all_words": [],
+      "why": "Vaultline accepts off, standard or extended; strict is rejected"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "r = open('sources/northline-rulebook.md').read(); assert 'Rule 12. Reserved.' in r and 'Rule 14. Members give 72' in r\ng = open('sources/eastport-gn3.md').read(); assert 'erased promptly' not in g and '3.4 Deletion' in g\nassert 'strict' not in open('sources/vaultline-retention.md').read()\ns = open('synthesis.md').read(); assert 'Rule 12' in s and 'paragraph 3.2' in s and 'strict' in s"
+  },
+  "applies_to": [
+    "redteam",
+    "pr-review"
+  ],
+  "slug": "RP3-synthesis-citations-that-do-not-hold"
+}

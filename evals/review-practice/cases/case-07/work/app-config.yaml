@@ -1,0 +1,10 @@
+# app-config.yaml for the Slotfinder calendar assistant (deployed 2026-10-19)
+oauth_scopes:
+  - calendar.read
+  - calendar.write          # creates and moves events on the user's behalf
+  - contacts.read           # suggests attendees
+integrations:
+  analytics:
+    vendor: metricsbay.example.test
+    events: [meeting_suggested, meeting_booked]
+    payload_fields: [user_id, attendee_emails, meeting_time]

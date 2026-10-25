@@ -1,0 +1,32 @@
+{
+  "id": "case-06",
+  "track": "C",
+  "title": "The same synthesis with every rule, quote, paragraph and option matching its source (clean control)",
+  "failure_list": [
+    3
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "s = open('synthesis.md').read(); g = open('sources/eastport-gn3.md').read()\nassert 'Account data is deleted within 45 days of account closure' in g and 'Account data is deleted within 45 days of account closure' in s\nassert 'Rule 14' in s and '3.4' in s and 'extended' in s"
+  },
+  "applies_to": [
+    "redteam",
+    "pr-review"
+  ],
+  "slug": "RP3c-control-synthesis-citations-hold"
+}

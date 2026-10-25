@@ -1,0 +1,83 @@
+{
+  "id": "case-07",
+  "track": "R",
+  "title": "Consent text that promises no sharing and names only calendar reading, while the config writes events, reads contacts and exports attendee emails",
+  "failure_list": [
+    4
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "consent-promise-contradicted-by-config",
+      "file": "work/consent.md",
+      "lines": [
+        4,
+        4
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "metricsbay",
+        "analytics",
+        "attendee",
+        "share",
+        "export",
+        "third part",
+        "false",
+        "contradict"
+      ],
+      "all_words": [],
+      "why": "the config sends user IDs, attendee emails and meeting times to an analytics vendor, so 'never share' is false"
+    },
+    {
+      "id": "P2",
+      "kind": "consent-omits-material-scope",
+      "file": "work/consent.md",
+      "lines": [
+        3,
+        3
+      ],
+      "min_severity": "Medium",
+      "any_words": [
+        "calendar.write",
+        "write",
+        "creates",
+        "moves",
+        "contacts",
+        "scope",
+        "omit",
+        "not disclosed",
+        "not mentioned"
+      ],
+      "all_words": [],
+      "why": "the grant also covers writing events and reading contacts, which the text never names"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "c = open('app-config.yaml').read(); t = open('consent.md').read()\nassert 'attendee_emails' in c and 'calendar.write' in c and 'contacts.read' in c\nassert 'never share' in t and 'contact' not in t and 'write' not in t"
+  },
+  "applies_to": [
+    "redteam",
+    "pr-review"
+  ],
+  "slug": "RP4-consent-text-contradicted-by-the-enforced-config"
+}

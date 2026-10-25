@@ -1,0 +1,8 @@
+{
+  "sources": [
+    {
+      "id": "feed-a",
+      "url": "https://feeds.example.test/a.xml"
+    }
+  ]
+}
