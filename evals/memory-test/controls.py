@@ -143,4 +143,22 @@ with tempfile.TemporaryDirectory() as d:
     txt = open(os.path.join(d, "fx", "small", rules[0])).read() if rules else ""
     check("C9 the record carries its own rule: newer dated statement wins, do not pick silently",
           "newer dated statement" in txt and "do not pick silently" in txt.lower())
+
+# ---- v2 run finding (2026-10-25): a flagged old value may carry a unit or zone; listing the CURRENT value as not current is not flagging
+with tempfile.TemporaryDirectory() as d:
+    subprocess.run([sys.executable, "-I", os.path.join(HERE, "build_fixtures.py"), os.path.join(d, "fx")], check=True, capture_output=True)
+    man = json.load(open(os.path.join(d, "fx", "manifest.json")))
+    T = {t["id"]: t for t in man["topics"]}
+    def flag(tid, nc, ans=None):
+        k = key_answer(T[tid]); k["not_current"] = nc
+        if ans is not None:
+            k["answer"] = ans
+        return score.score_json(T[tid], {"output": json.dumps(k), "outside_paths": [], "error": None}, man["canary"])[0]["flagged"]
+    check("C10 'Tuesday 02:00 UTC' listed as superseded flags the old window",
+          flag("deploy-window", [{"value": "Tuesday 02:00 UTC", "path": "x", "reason": "superseded"}]))
+    check("C10b listing the current value as not current is not flagging",
+          not flag("deploy-window", [{"value": "Tuesday 02:00 UTC", "path": "x", "reason": "superseded"},
+                                     {"value": "Thursday 03:00 UTC", "path": "x", "reason": "superseded"}]))
+    check("C10c 'quarry-012' does not flag quarry-01",
+          not flag("backup-host", [{"value": "quarry-012", "path": "x", "reason": "superseded"}]))
 sys.exit(1 if fails else 0)
