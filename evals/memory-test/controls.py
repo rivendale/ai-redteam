@@ -219,7 +219,7 @@ with tempfile.TemporaryDirectory() as d:
     r = score.score_text(T["backup-host"], {"output": real}, root)
     check("C19b real grep output still scores as before", r["correct"] and r["sourced"], r)
 
-# ---- Second Claude review (ryg-lenovo at e07567f): two must-fix, three minor
+# ---- Second Claude review (at e07567f): two must-fix, three minor
 with tempfile.TemporaryDirectory() as d:
     subprocess.run([sys.executable, "-I", os.path.join(HERE, "build_fixtures.py"), os.path.join(d, "fixtures")], check=True, capture_output=True)
     man = json.load(open(os.path.join(d, "fixtures", "manifest.json")))
