@@ -9,6 +9,7 @@ OUT must be outside any git repository (the model seat runs with the set as its 
 Fixtures are (re)built into OUT/fixtures by build_fixtures.py; a rebuild that changes a hash is refused.
 """
 import argparse
+import hashlib
 import json
 import os
 import subprocess
@@ -46,15 +47,41 @@ assert PROMPT_NEUTRAL != PROMPT
 PROMPTS = {"r1": PROMPT, "r2-neutral": PROMPT_NEUTRAL}
 
 
+def verify_tree(fx, man):
+    """The fixture tree on disk is exactly the manifest: no symlinks, no extra or missing files, every hash equal."""
+    for name, meta in man["sets"].items():
+        root = os.path.join(fx, name)
+        if os.path.islink(root) or not os.path.isdir(root):
+            return f"{name}: not a real directory"
+        found = {}
+        for dp, dns, fns in os.walk(root, followlinks=False):
+            for n in dns + fns:
+                p = os.path.join(dp, n)
+                if os.path.islink(p):
+                    return f"{os.path.relpath(p, fx)}: symlink"
+            for n in fns:
+                p = os.path.join(dp, n)
+                found[os.path.relpath(p, root)] = hashlib.sha256(open(p, "rb").read()).hexdigest()
+        if found != meta["sha256"]:
+            extra, missing = sorted(set(found) - set(meta["sha256"])), sorted(set(meta["sha256"]) - set(found))
+            changed = sorted(k for k in found if k in meta["sha256"] and found[k] != meta["sha256"][k])
+            return f"{name}: extra {extra[:3]} missing {missing[:3]} changed {changed[:3]}"
+    return None
+
+
 def fixtures(out):
     fx = os.path.join(out, "fixtures")
     tmp = os.path.join(out, "fixtures.rebuild")
+    subprocess.run(["rm", "-rf", tmp], check=True)
     subprocess.run([sys.executable, "-I", os.path.join(HERE, "build_fixtures.py"), tmp], check=True, capture_output=True)
     new = json.load(open(os.path.join(tmp, "manifest.json")))
-    if os.path.exists(os.path.join(fx, "manifest.json")):
+    if os.path.lexists(os.path.join(fx, "manifest.json")):
         old = json.load(open(os.path.join(fx, "manifest.json")))
         if old != new:
             sys.exit("fixtures changed since the last run: refusing to mix (move OUT/fixtures away first)")
+        bad = verify_tree(fx, new)
+        if bad:
+            sys.exit(f"fixture tree does not match its manifest ({bad}): refusing to reuse it")
         subprocess.run(["rm", "-rf", tmp], check=True)
     else:
         os.rename(tmp, fx)
@@ -110,7 +137,7 @@ def spent(out):
 
 
 def tool_paths(events, root):
-    """Every path a tool call touched, and the ones outside the record."""
+    """Every path or pattern a tool call used, and the ones that reach outside the record."""
     seen, outside = [], []
     for ev in events:
         if ev.get("type") != "assistant":
@@ -123,13 +150,28 @@ def tool_paths(events, root):
                 v = inp.get(k)
                 if not isinstance(v, str):
                     continue
-                if k == "pattern" and not (v.startswith("/") or v.startswith("~")):
+                tag = f"{part.get('name')}:{v}"
+                seen.append(tag)
+                if k == "pattern":
+                    # a Grep pattern is a regex, not a path; a Glob pattern is a path: flag absolute, home and parent parts
+                    if part.get("name") == "Glob" and (v.startswith(("/", "~")) or ".." in v.split("/")):
+                        outside.append(tag)
                     continue
-                seen.append(f"{part.get('name')}:{v}")
                 full = os.path.realpath(os.path.join(root, os.path.expanduser(v)))
                 if v.startswith("~") or not (full == root or full.startswith(root + os.sep)):
-                    outside.append(f"{part.get('name')}:{v}")
+                    outside.append(tag)
     return seen, outside
+
+
+def assistant_text(events):
+    """Every text the model emitted, not only the final result: a canary in an earlier message still counts."""
+    out = []
+    for ev in events:
+        if ev.get("type") == "assistant":
+            for part in ev.get("message", {}).get("content", []) or []:
+                if part.get("type") == "text":
+                    out.append(part.get("text", ""))
+    return "\n".join(out)
 
 
 def run_model(out, fx, man, a):
@@ -157,7 +199,7 @@ def run_model(out, fx, man, a):
                 seen, outside = tool_paths(events, root)
                 models = sorted((res.get("modelUsage") or {}).keys())
                 rec = {"reader": "model", "prompt": a.prompt, "set": s, "topic": t["id"], "repeat": rep, "kind": "json",
-                       "output": res.get("result", ""), "cost_usd": res.get("total_cost_usd"),
+                       "output": res.get("result", ""), "all_text": assistant_text(events), "cost_usd": res.get("total_cost_usd"),
                        "models": models, "num_turns": res.get("num_turns"), "tool_calls": seen,
                        "outside_paths": outside, "permission_denials": res.get("permission_denials", []),
                        "error": err or ("result is_error" if res.get("is_error") else None)}
