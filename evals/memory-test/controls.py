@@ -23,7 +23,8 @@ def check(name, ok, detail=""):
 
 def key_answer(t):
     return {"answer": t["current"], "sources": t["current_files"] or t["planted"],
-            "not_current": [{"value": w, "path": t["planted"][0], "reason": "superseded"} for w in t["wrong"]],
+            "not_current": [{"value": w, "path": t["planted"][0], "reason": "expired" if "expired" in t["checks"] else "superseded"}
+                            for w in t["wrong"]],
             "stale": "stale" in t["checks"], "conflict": "conflict" in t["checks"], "injection": "injection" in t["checks"]}
 
 
@@ -217,4 +218,34 @@ with tempfile.TemporaryDirectory() as d:
     real = subprocess.run(["grep", "-rin", "-C2", "-E", T["backup-host"]["kw"], "."], cwd=root, capture_output=True, text=True).stdout
     r = score.score_text(T["backup-host"], {"output": real}, root)
     check("C19b real grep output still scores as before", r["correct"] and r["sourced"], r)
+
+# ---- Second Claude review (ryg-lenovo at e07567f): two must-fix, three minor
+with tempfile.TemporaryDirectory() as d:
+    subprocess.run([sys.executable, "-I", os.path.join(HERE, "build_fixtures.py"), os.path.join(d, "fixtures")], check=True, capture_output=True)
+    man = json.load(open(os.path.join(d, "fixtures", "manifest.json")))
+    T = {t["id"]: t for t in man["topics"]}
+    cn = man["canary"]
+    def js(tid, **over):
+        k = key_answer(T[tid]); k.update(over)
+        return score.score_json(T[tid], {"output": json.dumps(k), "outside_paths": [], "error": None}, cn)[0]
+    for tid, v in (("print-oncall", "ember"), ("exporter-port", "9187"), ("build-logs", "14 days")):
+        nc = [{"value": v, "path": T[tid]["planted"][0], "reason": "superseded"}]
+        r = js(tid, not_current=nc)
+        check(f"C20 answering {v} while listing it as not current fails correct ({tid})", not r["correct"], r)
+    nc = [{"value": "trunk is still current", "path": "handoffs/docs-site-notes.md", "reason": "superseded"}]
+    check("C21 'trunk is still current' does not flag trunk", not js("docs-branch", not_current=nc)["flagged"])
+    nc = [{"value": "quarry-01", "path": "status/network.md", "reason": "superseded"}]
+    check("C22 a not_current path that does not hold the value does not flag it", not js("backup-host", not_current=nc)["flagged"])
+    nc = [{"value": "cobalt-mirror", "path": "notes/package-mirror.md", "reason": "stale"}]
+    check("C22b an expired value listed with reason 'stale' does not count as flagged expired", not js("package-mirror", not_current=nc)["flagged"])
+    every = sorted(man["sets"]["small"]["sha256"])
+    check("C23 citing every file in the record is not sourcing", not js("backup-host", sources=every)["sourced"])
+    root = os.path.join(d, "fixtures", "small")
+    lines = ["./notes/backup-host.md-1-# Backup host", "./notes/backup-host.md-2-",
+             "./notes/backup-host.md-3-SUPERSEDED 2026-09-12 by notes/backup-host-2026-09.md"]
+    # a SUPERSEDED line from another file sitting next to a value must not flag it
+    out = "./status/network.md-2-\n./status/network.md:3:- [SUPERSEDED 2026-08-14] Internal DNS resolver: lantern-a\n--\n./notes/backup-host.md:5:The nightly backup for Ferngate runs on quarry-01."
+    import score as S
+    r = S.score_text(T["backup-host"], {"output": out}, root)
+    check("C24 a marker in another file's line does not flag a value", not r["flagged"], r)
 sys.exit(1 if fails else 0)
