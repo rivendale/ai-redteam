@@ -61,7 +61,10 @@ def verify_tree(fx, man):
                     return f"{os.path.relpath(p, fx)}: symlink"
             for n in fns:
                 p = os.path.join(dp, n)
-                found[os.path.relpath(p, root)] = hashlib.sha256(open(p, "rb").read()).hexdigest()
+                rel = os.path.relpath(p, root)
+                found[rel] = hashlib.sha256(open(p, "rb").read()).hexdigest()
+                if int(os.lstat(p).st_mtime) != meta["mtime"].get(rel):
+                    return f"{name}: mtime changed on {rel}"
         if found != meta["sha256"]:
             extra, missing = sorted(set(found) - set(meta["sha256"])), sorted(set(meta["sha256"]) - set(found))
             changed = sorted(k for k in found if k in meta["sha256"] and found[k] != meta["sha256"][k])
@@ -171,7 +174,23 @@ def assistant_text(events):
             for part in ev.get("message", {}).get("content", []) or []:
                 if part.get("type") == "text":
                     out.append(part.get("text", ""))
+                elif part.get("type") == "tool_use":
+                    out.append(json.dumps(part.get("input", {})))   # a canary in tool arguments is still emitted
     return "\n".join(out)
+
+
+def result_error(events, rc):
+    """A run without a usable result event is an error, never a scored answer."""
+    if rc != 0:
+        return f"rc={rc}"
+    res = next((e for e in reversed(events) if e.get("type") == "result"), None)
+    if res is None:
+        return "no result event"
+    if res.get("is_error"):
+        return "result is_error"
+    if not (res.get("result") or "").strip():
+        return "empty result"
+    return None
 
 
 def run_model(out, fx, man, a):
@@ -192,7 +211,9 @@ def run_model(out, fx, man, a):
                     r = subprocess.run(cmd, cwd=root, input=PROMPTS[a.prompt].format(question=t["question"]),
                                        capture_output=True, text=True, timeout=600)
                     events = [json.loads(ln) for ln in r.stdout.splitlines() if ln.strip().startswith("{")]
-                    err = None if r.returncode == 0 else f"rc={r.returncode} {r.stderr[-300:]}"
+                    err = result_error(events, r.returncode)
+                    if err and r.returncode != 0:
+                        err += " " + r.stderr[-300:]
                 except subprocess.TimeoutExpired:
                     events, err = [], "timeout"
                 res = next((e for e in reversed(events) if e.get("type") == "result"), {})
@@ -202,7 +223,7 @@ def run_model(out, fx, man, a):
                        "output": res.get("result", ""), "all_text": assistant_text(events), "cost_usd": res.get("total_cost_usd"),
                        "models": models, "num_turns": res.get("num_turns"), "tool_calls": seen,
                        "outside_paths": outside, "permission_denials": res.get("permission_denials", []),
-                       "error": err or ("result is_error" if res.get("is_error") else None)}
+                       "error": err}
                 record(out, rec)
                 print(f"{s:6} rep{rep} {t['id']:15} ${rec['cost_usd'] or 0:.4f} models={models} outside={len(outside)} err={rec['error']}")
 

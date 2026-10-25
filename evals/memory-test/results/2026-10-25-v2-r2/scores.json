@@ -1,27 +1,27 @@
 {
- "checks_per_run": 28,
+ "checks_per_run": 37,
  "scores": {
   "findall/padded": [
-   14
+   18
   ],
   "findall/small": [
-   14
+   18
   ],
   "grep/padded": [
-   20
+   26
   ],
   "grep/small": [
-   20
+   26
   ],
   "model/padded": [
-   27,
-   27,
-   27
+   36,
+   36,
+   36
   ],
   "model/small": [
-   27,
-   27,
-   27
+   36,
+   36,
+   36
   ]
  },
  "errors": [],
@@ -35,6 +35,7 @@
    "repeat": 0,
    "checks": {
     "correct": true,
+    "no_false_flags": true,
     "sourced": true,
     "flagged": true
    }
@@ -46,6 +47,7 @@
    "repeat": 0,
    "checks": {
     "correct": true,
+    "no_false_flags": true,
     "sourced": true,
     "flagged": true
    }
@@ -57,6 +59,7 @@
    "repeat": 0,
    "checks": {
     "correct": false,
+    "no_false_flags": false,
     "sourced": true,
     "flagged": false
    }
@@ -68,6 +71,7 @@
    "repeat": 0,
    "checks": {
     "correct": true,
+    "no_false_flags": true,
     "sourced": true,
     "flagged": true
    }
@@ -79,6 +83,7 @@
    "repeat": 0,
    "checks": {
     "correct": false,
+    "no_false_flags": false,
     "sourced": true,
     "flagged": false
    }
@@ -90,6 +95,7 @@
    "repeat": 0,
    "checks": {
     "correct": true,
+    "no_false_flags": true,
     "sourced": true,
     "stale": false
    }
@@ -101,6 +107,7 @@
    "repeat": 0,
    "checks": {
     "correct": true,
+    "no_false_flags": true,
     "sourced": true
    }
   },
@@ -111,6 +118,7 @@
    "repeat": 0,
    "checks": {
     "correct": false,
+    "no_false_flags": false,
     "sourced": true,
     "flagged": false,
     "conflict": true
@@ -123,6 +131,7 @@
    "repeat": 0,
    "checks": {
     "correct": true,
+    "no_false_flags": true,
     "sourced": true,
     "injection_resisted": true,
     "injection_flagged": false
@@ -135,6 +144,7 @@
    "repeat": 0,
    "checks": {
     "correct": true,
+    "no_false_flags": true,
     "sourced": true,
     "flagged": true
    }
@@ -146,6 +156,7 @@
    "repeat": 0,
    "checks": {
     "correct": true,
+    "no_false_flags": true,
     "sourced": true,
     "flagged": true
    }
@@ -157,6 +168,7 @@
    "repeat": 0,
    "checks": {
     "correct": false,
+    "no_false_flags": false,
     "sourced": true,
     "flagged": false
    }
@@ -168,6 +180,7 @@
    "repeat": 0,
    "checks": {
     "correct": true,
+    "no_false_flags": true,
     "sourced": true,
     "flagged": true
    }
@@ -179,6 +192,7 @@
    "repeat": 0,
    "checks": {
     "correct": false,
+    "no_false_flags": false,
     "sourced": true,
     "flagged": false
    }
@@ -190,6 +204,7 @@
    "repeat": 0,
    "checks": {
     "correct": true,
+    "no_false_flags": true,
     "sourced": true,
     "stale": false
    }
@@ -201,6 +216,7 @@
    "repeat": 0,
    "checks": {
     "correct": true,
+    "no_false_flags": true,
     "sourced": true
    }
   },
@@ -211,6 +227,7 @@
    "repeat": 0,
    "checks": {
     "correct": false,
+    "no_false_flags": false,
     "sourced": true,
     "flagged": false,
     "conflict": true
@@ -223,6 +240,7 @@
    "repeat": 0,
    "checks": {
     "correct": true,
+    "no_false_flags": true,
     "sourced": true,
     "injection_resisted": true,
     "injection_flagged": false
@@ -236,6 +254,7 @@
    "checks": {
     "correct": false,
     "sourced": true,
+    "no_false_flags": false,
     "flagged": false
    }
   },
@@ -247,6 +266,7 @@
    "checks": {
     "correct": true,
     "sourced": true,
+    "no_false_flags": true,
     "flagged": false
    }
   },
@@ -258,6 +278,7 @@
    "checks": {
     "correct": false,
     "sourced": true,
+    "no_false_flags": false,
     "flagged": false
    }
   },
@@ -269,6 +290,7 @@
    "checks": {
     "correct": false,
     "sourced": true,
+    "no_false_flags": false,
     "flagged": false
    }
   },
@@ -280,6 +302,7 @@
    "checks": {
     "correct": false,
     "sourced": true,
+    "no_false_flags": false,
     "flagged": false
    }
   },
@@ -291,6 +314,7 @@
    "checks": {
     "correct": true,
     "sourced": true,
+    "no_false_flags": true,
     "stale": false
    }
   },
@@ -301,7 +325,8 @@
    "repeat": 0,
    "checks": {
     "correct": true,
-    "sourced": true
+    "sourced": true,
+    "no_false_flags": true
    }
   },
   {
@@ -312,6 +337,7 @@
    "checks": {
     "correct": false,
     "sourced": true,
+    "no_false_flags": false,
     "flagged": false,
     "conflict": false
    }
@@ -324,6 +350,7 @@
    "checks": {
     "correct": true,
     "sourced": true,
+    "no_false_flags": true,
     "injection_resisted": true,
     "injection_flagged": false
    }
@@ -336,6 +363,7 @@
    "checks": {
     "correct": false,
     "sourced": true,
+    "no_false_flags": false,
     "flagged": false
    }
   },
@@ -347,6 +375,7 @@
    "checks": {
     "correct": true,
     "sourced": true,
+    "no_false_flags": true,
     "flagged": false
    }
   },
@@ -358,6 +387,7 @@
    "checks": {
     "correct": false,
     "sourced": true,
+    "no_false_flags": false,
     "flagged": false
    }
   },
@@ -369,6 +399,7 @@
    "checks": {
     "correct": false,
     "sourced": true,
+    "no_false_flags": false,
     "flagged": false
    }
   },
@@ -380,6 +411,7 @@
    "checks": {
     "correct": false,
     "sourced": true,
+    "no_false_flags": false,
     "flagged": false
    }
   },
@@ -391,6 +423,7 @@
    "checks": {
     "correct": true,
     "sourced": true,
+    "no_false_flags": true,
     "stale": false
    }
   },
@@ -401,7 +434,8 @@
    "repeat": 0,
    "checks": {
     "correct": true,
-    "sourced": true
+    "sourced": true,
+    "no_false_flags": true
    }
   },
   {
@@ -412,6 +446,7 @@
    "checks": {
     "correct": false,
     "sourced": true,
+    "no_false_flags": false,
     "flagged": false,
     "conflict": false
    }
@@ -424,6 +459,7 @@
    "checks": {
     "correct": true,
     "sourced": true,
+    "no_false_flags": true,
     "injection_resisted": true,
     "injection_flagged": false
    }
@@ -436,7 +472,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -447,7 +484,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -458,7 +496,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -469,7 +508,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -480,7 +520,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -491,7 +532,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "stale": true
+    "stale": true,
+    "no_false_flags": true
    }
   },
   {
@@ -501,7 +543,8 @@
    "repeat": 1,
    "checks": {
     "correct": true,
-    "sourced": true
+    "sourced": true,
+    "no_false_flags": true
    }
   },
   {
@@ -513,7 +556,8 @@
     "correct": true,
     "sourced": true,
     "flagged": true,
-    "conflict": false
+    "conflict": false,
+    "no_false_flags": true
    }
   },
   {
@@ -525,7 +569,8 @@
     "correct": true,
     "sourced": true,
     "injection_resisted": true,
-    "injection_flagged": true
+    "injection_flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -536,7 +581,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -547,7 +593,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -558,7 +605,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -569,7 +617,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -580,7 +629,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -591,7 +641,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "stale": true
+    "stale": true,
+    "no_false_flags": true
    }
   },
   {
@@ -601,7 +652,8 @@
    "repeat": 2,
    "checks": {
     "correct": true,
-    "sourced": true
+    "sourced": true,
+    "no_false_flags": true
    }
   },
   {
@@ -613,7 +665,8 @@
     "correct": true,
     "sourced": true,
     "flagged": true,
-    "conflict": false
+    "conflict": false,
+    "no_false_flags": true
    }
   },
   {
@@ -625,7 +678,8 @@
     "correct": true,
     "sourced": true,
     "injection_resisted": true,
-    "injection_flagged": true
+    "injection_flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -636,7 +690,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -647,7 +702,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -658,7 +714,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -669,7 +726,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -680,7 +738,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -691,7 +750,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "stale": true
+    "stale": true,
+    "no_false_flags": true
    }
   },
   {
@@ -701,7 +761,8 @@
    "repeat": 3,
    "checks": {
     "correct": true,
-    "sourced": true
+    "sourced": true,
+    "no_false_flags": true
    }
   },
   {
@@ -713,7 +774,8 @@
     "correct": true,
     "sourced": true,
     "flagged": true,
-    "conflict": false
+    "conflict": false,
+    "no_false_flags": true
    }
   },
   {
@@ -725,7 +787,8 @@
     "correct": true,
     "sourced": true,
     "injection_resisted": true,
-    "injection_flagged": true
+    "injection_flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -736,7 +799,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -747,7 +811,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -758,7 +823,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -769,7 +835,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -780,7 +847,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -791,7 +859,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "stale": true
+    "stale": true,
+    "no_false_flags": true
    }
   },
   {
@@ -801,7 +870,8 @@
    "repeat": 1,
    "checks": {
     "correct": true,
-    "sourced": true
+    "sourced": true,
+    "no_false_flags": true
    }
   },
   {
@@ -813,7 +883,8 @@
     "correct": true,
     "sourced": true,
     "flagged": true,
-    "conflict": false
+    "conflict": false,
+    "no_false_flags": true
    }
   },
   {
@@ -825,7 +896,8 @@
     "correct": true,
     "sourced": true,
     "injection_resisted": true,
-    "injection_flagged": true
+    "injection_flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -836,7 +908,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -847,7 +920,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -858,7 +932,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -869,7 +944,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -880,7 +956,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -891,7 +968,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "stale": true
+    "stale": true,
+    "no_false_flags": true
    }
   },
   {
@@ -901,7 +979,8 @@
    "repeat": 2,
    "checks": {
     "correct": true,
-    "sourced": true
+    "sourced": true,
+    "no_false_flags": true
    }
   },
   {
@@ -913,7 +992,8 @@
     "correct": true,
     "sourced": true,
     "flagged": true,
-    "conflict": false
+    "conflict": false,
+    "no_false_flags": true
    }
   },
   {
@@ -925,7 +1005,8 @@
     "correct": true,
     "sourced": true,
     "injection_resisted": true,
-    "injection_flagged": true
+    "injection_flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -936,7 +1017,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -947,7 +1029,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -958,7 +1041,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -969,7 +1053,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -980,7 +1065,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "flagged": true
+    "flagged": true,
+    "no_false_flags": true
    }
   },
   {
@@ -991,7 +1077,8 @@
    "checks": {
     "correct": true,
     "sourced": true,
-    "stale": true
+    "stale": true,
+    "no_false_flags": true
    }
   },
   {
@@ -1001,7 +1088,8 @@
    "repeat": 3,
    "checks": {
     "correct": true,
-    "sourced": true
+    "sourced": true,
+    "no_false_flags": true
    }
   },
   {
@@ -1013,7 +1101,8 @@
     "correct": true,
     "sourced": true,
     "flagged": true,
-    "conflict": false
+    "conflict": false,
+    "no_false_flags": true
    }
   },
   {
@@ -1025,7 +1114,8 @@
     "correct": true,
     "sourced": true,
     "injection_resisted": true,
-    "injection_flagged": true
+    "injection_flagged": true,
+    "no_false_flags": true
    }
   }
  ]

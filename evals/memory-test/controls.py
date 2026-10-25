@@ -54,7 +54,7 @@ with tempfile.TemporaryDirectory() as d:
     with contextlib.redirect_stdout(io.StringIO()):
         res = score.score(d)
     n = res["checks_per_run"]
-    check("checks per run is 28", n == 28, n)
+    check("checks per run is 37", n == 37, n)
     check("answer key scores 100%", res["scores"]["key/small"] == [n], res["scores"]["key/small"])
     check("empty reader scores 0", res["scores"]["empty/small"] == [0], res["scores"]["empty/small"])
     old = {r["topic"]: r["checks"] for r in res["rows"] if r["reader"] == "old"}
@@ -132,12 +132,12 @@ with tempfile.TemporaryDirectory() as d:
             return score.score(sc)
     dup = [dict(x) for x in base]; dup[1] = dict(dup[0])
     res = grp(dup)
-    check("C7 a duplicated topic (one missing) is an invalid group, not 28/28", "key/small" not in res["scores"] and res["invalid_groups"], res["scores"])
+    check("C7 a duplicated topic (one missing) is an invalid group, not a full score", "key/small" not in res["scores"] and res["invalid_groups"], res["scores"])
     err = [dict(x) for x in base]; err[0]["error"] = "rc=1 boom"
     res = grp(err)
     check("C8 a group with an errored run is invalid, not scored", "key/small" not in res["scores"] and res["invalid_groups"], res["scores"])
     res = grp(base)
-    check("C7b the clean key group still scores 28/28", res["scores"].get("key/small") == [28], res["scores"])
+    check("C7b the clean key group still scores 37/37", res["scores"].get("key/small") == [37], res["scores"])
     # 9. the record itself states the rule the contradiction case is scored by
     rules = [f for f in man["sets"]["small"]["sha256"] if f.endswith("record-rules.md")]
     txt = open(os.path.join(d, "fx", "small", rules[0])).read() if rules else ""
