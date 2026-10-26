@@ -56,6 +56,17 @@ Against the SPEC ship rule's thresholds (recall at least BASE-1, false alarms at
   substance.
 - **case-09 (FL5 control)** draws a High on the quota dependency in about half the runs, under both texts.
 
+## Note added 2026-10-26: these scores predate the final #121 cases
+These reports were scored with #121 at e334f61. The merged #121 (085fed5) changes three cases after its reviews:
+- **case-03:** it credits a finding located at `changelog.md` and requires a superseding phrasing. On these same reports case-03
+  is found in 10 of the 10 report sets, not the 4 of 10 shown above. Reviewers were proposing the right fix, but the case did
+  not credit where they put it.
+- **case-09 and case-10:** they use word-bounded rule IDs and proximity-based deferral. On these reports their counts do not
+  change.
+- **case-06:** the control's unsupported line was fixed, so some false alarms counted above against both texts were fair findings.
+
+The BASE-versus-NEW comparison is unaffected, because both texts were scored the same way.
+
 ## Reproduce
 `bash drive.sh` (as run), `skills/` (both texts and SHA256SUMS), per-folder reports (`case-NN.md`), prompts (`case-NN.prompt`),
 usage (`_meta/*.usage.json`) and the scorer output (`scores/`). The file hashes are in `SHA256SUMS`.
