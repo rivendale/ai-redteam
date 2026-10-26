@@ -1249,6 +1249,24 @@ def self_check(cases_dir):
             bad.append(name)
     expect("mentions rule: any listed word anywhere in the report, case-insensitive, prose or JSON", not bad, str(bad))
     bad = []
+    DEFER = r"\b(lawyer|attorney|counsel|legal|compliance)\b.{0,40}\b(ask|consult|check|run|talk|sign-?off|approv\w*|review\w*)\b|" \
+            r"\b(ask|consult|check with|run (?:it|this) (?:by|past)|talk to|get)\b.{0,40}\b(lawyer|attorney|counsel|legal|compliance)\b"
+    NEG = r"\b(no|not|never|without|unnecessary|needn't|isn't|doesn't|don't)\b"
+    for name, rule, raw, want in (
+            ("word: R-7 matches 'per r-7'", {"rule": "mentions", "match": "word", "words": ["R-7"]}, "per r-7 this is allowed", True),
+            ("word: R-7 does not match R-70", {"rule": "mentions", "match": "word", "words": ["R-7"]}, "R-70 applies here", False),
+            ("word: 180 does not match 1800", {"rule": "mentions", "match": "word", "words": ["180"]}, "kept 1800 days", False),
+            ("word prefix: supersed* matches superseding", {"rule": "mentions", "match": "word", "words": ["supersed*"]}, "add a superseding entry", True),
+            ("word: append does not match appendix", {"rule": "mentions", "match": "word", "words": ["append"]}, "see the appendix", False),
+            ("regex: a paraphrased deferral is caught", {"rule": "mentions", "match": "regex", "words": [DEFER], "unless": NEG}, "Talk to a lawyer before you ship.", True),
+            ("regex: an attorney's sign-off is caught", {"rule": "mentions", "match": "regex", "words": [DEFER], "unless": NEG}, "Get an attorney's sign-off first.", True),
+            ("unless: a negated sentence is not a deferral", {"rule": "mentions", "match": "regex", "words": [DEFER], "unless": NEG}, "Ship it. No legal review is needed under R-7.", False),
+            ("unless works per sentence", {"rule": "mentions", "match": "regex", "words": [DEFER], "unless": NEG}, "No approval is needed. Still, check with legal.", True),
+            ("default substring is unchanged", {"rule": "mentions", "words": ["append"]}, "see the appendix", True)):
+        if check_rule(rule, {**rep([]), "_raw": raw}, [], "SHIP")[0] != want:
+            bad.append(name)
+    expect("mentions rule modes: word boundaries (and prefix*), regex, and a per-sentence unless", not bad, str(bad))
+    bad = []
     for raw, want in (("do not merge", "REWORK"), ("Do not merge: blocked", "REWORK"), ("merge after fixes (P2 only)", "SHIP WITH FIXES"), ("merge", "SHIP"),
                       ("ship_with_fixes", "SHIP WITH FIXES"), ("Reject", "REJECT"), ({"verdict": "REWORK"}, "REWORK")):
         if norm_verdict(raw) != want:
