@@ -1,0 +1,87 @@
+{
+  "id": "case-10",
+  "track": "A",
+  "title": "A staging change the written rule plainly forbids (400 days against a 180-day limit); the answer is a direct rework citing the rule",
+  "failure_list": [
+    5
+  ],
+  "control": false,
+  "planted": [
+    {
+      "id": "P1",
+      "kind": "change-violates-written-rule",
+      "file": "work/change.md",
+      "lines": [
+        3,
+        3
+      ],
+      "min_severity": "High",
+      "any_words": [
+        "r-7",
+        "180",
+        "exceeds",
+        "limit",
+        "maximum",
+        "up to 180"
+      ],
+      "all_words": [],
+      "why": "R-7 caps non-production retention at 180 days; 400 days breaks it"
+    }
+  ],
+  "must": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REWORK",
+        "REJECT"
+      ]
+    },
+    {
+      "rule": "mentions",
+      "match": "word",
+      "words": [
+        "r-7"
+      ]
+    },
+    {
+      "rule": "mentions",
+      "match": "word",
+      "words": [
+        "180"
+      ]
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "SHIP",
+        "SHIP WITH FIXES"
+      ]
+    },
+    {
+      "rule": "mentions",
+      "match": "regex",
+      "words": [
+        "\\b(lawyer|attorney|counsel|legal|compliance)\\b.{0,40}\\b(ask|consult|check|run|talk|sign-?off|approv\\w*|review\\w*)\\b|\\b(ask|consult|check with|run (?:it|this) (?:by|past)|talk to|get)\\b.{0,40}\\b(lawyer|attorney|counsel|legal|compliance)\\b"
+      ],
+      "unless": "\\b(no|not)\\b.{0,30}\\b(needed|required|necessary)\\b|\\b(needn't|no need|don't need|doesn't need|unnecessary|not required)\\b"
+    },
+    {
+      "rule": "mentions",
+      "match": "regex",
+      "words": [
+        "\\br-7\\b[^.;]{0,40}\\b(does not|doesn't|do not|don't|not)\\b[^.;]{0,15}\\b(matter|apply|applies|relevant)\\b"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "p = open('policy.md').read(); assert 'up to 180 days' in p\nassert '400 days' in open('change.md').read()"
+  },
+  "applies_to": [
+    "redteam",
+    "pr-review"
+  ],
+  "slug": "RP5-direct-rework-citing-the-rule-no-deferral"
+}

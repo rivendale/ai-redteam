@@ -1,0 +1,32 @@
+{
+  "id": "case-08",
+  "track": "R",
+  "title": "Consent text that names every scope and the analytics export the config performs (clean control)",
+  "failure_list": [
+    4
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "t = open('consent.md').read().lower()\nassert 'creates or moves events' in t and 'contacts' in t and 'metricsbay' in t and 'email' in t"
+  },
+  "applies_to": [
+    "redteam",
+    "pr-review"
+  ],
+  "slug": "RP4c-control-consent-text-matches-the-config"
+}

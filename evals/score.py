@@ -278,6 +278,30 @@ def check_rule(rule, rep, fs, verdict, credited=()):
         bad = [f["id"] for f in fs if not f["refuted"] and f["id"] not in credited and SEV.get(f["sev"], -1) >= SEV["high"]
                and any(w in f["subject"] for w in words)]
         return not bad, "FL12 refuted finding kept", f"still an open High/Critical: {bad}"
+    if r == "mentions":
+        # any of the words anywhere in the report (prose and JSON); in must_not, none of them may appear.
+        # match: "substring" (default), "word" (word boundaries; a trailing * is a prefix, e.g. "supersed*") or "regex".
+        # unless: a regex; matching is then per sentence, and a sentence that also matches `unless` (a negation) is skipped.
+        # scope: "report" (default) or "fixes" (only the fix / recommendation text of findings that were not refuted), for a
+        # rule about what the reviewer PROPOSES: a report also quotes the request and the candidates it rejected.
+        if rule.get("scope") == "fixes":
+            blob = "\n".join(f["fix"] for f in fs if not f["refuted"]).lower()
+        else:
+            blob = (rep.get("_raw") or json.dumps(rep)).lower()
+        mode = rule.get("match", "substring")
+        def pat(w):
+            if mode == "regex":
+                return re.compile(w, re.I)
+            if mode == "word":
+                stem = w.endswith("*")
+                core = re.escape(w.rstrip("*").lower())
+                return re.compile(r"(?<![a-z0-9])" + core + (r"[a-z]*" if stem else r"(?![a-z0-9])"))
+            return re.compile(re.escape(w.lower()))
+        pats = [(w, pat(w)) for w in rule.get("words", [])]
+        unless = re.compile(rule["unless"], re.I) if rule.get("unless") else None
+        parts = re.split(r"(?<=[.!?;])\s+|\n+|,\s*but\b", blob) if unless else [blob]   # clauses: ", but" splits too
+        hit = [w for w, p in pats if any(p.search(x) and not (unless and unless.search(x)) for x in parts)]
+        return bool(hit), "mentions", f"report mentions {hit[:3]}" if hit else f"report mentions none of {[w for w, _ in pats][:3]}"
     raise ValueError("unknown rule " + r)
 
 
@@ -1234,6 +1258,41 @@ def self_check(cases_dir):
         if check_rule(used_rule, r_, norm_findings(r_), "REWORK")[0] != want:
             bad.append("seat_used " + name)
     expect("seat rules: a refusal needs the refusal, an outside reviewer and the data in the report's own words; a seat is used unless refused, skipped or same-vendor", not bad, str(bad[:4]) if bad else "12 cells")
+    bad = []
+    m_rule = {"rule": "mentions", "words": ["R-7", "consult counsel"]}
+    for name, r_, want in (("prose names the rule", {**rep([]), "_raw": "Ship it: rule R-7 allows 180 days."}, True),
+                           ("case-insensitive", {**rep([]), "_raw": "Please Consult Counsel first."}, True),
+                           ("JSON only, no _raw", {**rep([fnd("Low", text="per r-7 this is allowed")])}, True),
+                           ("neither word", {**rep([]), "_raw": "Ship it."}, False)):
+        if check_rule(m_rule, r_, norm_findings(r_), "SHIP")[0] != want:
+            bad.append(name)
+    expect("mentions rule: any listed word anywhere in the report, case-insensitive, prose or JSON", not bad, str(bad))
+    bad = []
+    DEFER = r"\b(lawyer|attorney|counsel|legal|compliance)\b.{0,40}\b(ask|consult|check|run|talk|sign-?off|approv\w*|review\w*)\b|" \
+            r"\b(ask|consult|check with|run (?:it|this) (?:by|past)|talk to|get)\b.{0,40}\b(lawyer|attorney|counsel|legal|compliance)\b"
+    NEG = r"\b(no|not|never|without|unnecessary|needn't|isn't|doesn't|don't)\b"
+    for name, rule, raw, want in (
+            ("word: R-7 matches 'per r-7'", {"rule": "mentions", "match": "word", "words": ["R-7"]}, "per r-7 this is allowed", True),
+            ("word: R-7 does not match R-70", {"rule": "mentions", "match": "word", "words": ["R-7"]}, "R-70 applies here", False),
+            ("word: 180 does not match 1800", {"rule": "mentions", "match": "word", "words": ["180"]}, "kept 1800 days", False),
+            ("word prefix: supersed* matches superseding", {"rule": "mentions", "match": "word", "words": ["supersed*"]}, "add a superseding entry", True),
+            ("word: append does not match appendix", {"rule": "mentions", "match": "word", "words": ["append"]}, "see the appendix", False),
+            ("regex: a paraphrased deferral is caught", {"rule": "mentions", "match": "regex", "words": [DEFER], "unless": NEG}, "Talk to a lawyer before you ship.", True),
+            ("regex: an attorney's sign-off is caught", {"rule": "mentions", "match": "regex", "words": [DEFER], "unless": NEG}, "Get an attorney's sign-off first.", True),
+            ("unless: a negated sentence is not a deferral", {"rule": "mentions", "match": "regex", "words": [DEFER], "unless": NEG}, "Ship it. No legal review is needed under R-7.", False),
+            ("unless works per sentence", {"rule": "mentions", "match": "regex", "words": [DEFER], "unless": NEG}, "No approval is needed. Still, check with legal.", True),
+            ("unless works per clause: ', but' splits", {"rule": "mentions", "match": "regex", "words": [DEFER], "unless": NEG},
+             "No approval is needed, but check with legal first.", True),
+            ("default substring is unchanged", {"rule": "mentions", "words": ["append"]}, "see the appendix", True)):
+        if check_rule(rule, {**rep([]), "_raw": raw}, [], "SHIP")[0] != want:
+            bad.append(name)
+    edit = {"rule": "mentions", "match": "regex", "scope": "fixes", "words": [r"\bedit\w*\b.{0,30}\bbrief\b"]}
+    for name, r_, want in (("scope fixes: an edit proposed in a fix is seen", rep([fnd("Low", text="x", fix="edit the brief to say Birch")]), True),
+                           ("scope fixes: a refuted candidate's fix is not", rep([fnd("Low", text="x", fix="edit the brief", refuted=True)]), False),
+                           ("scope fixes: prose outside the fixes is not", {**rep([fnd("Low", text="x", fix="append a changelog entry")]), "_raw": "Candidate: edit the brief. Refuted."}, False)):
+        if check_rule(edit, r_, norm_findings(r_), "SHIP")[0] != want:
+            bad.append(name)
+    expect("mentions rule modes: word boundaries (and prefix*), regex, a per-sentence unless, and scope fixes", not bad, str(bad))
     bad = []
     for raw, want in (("do not merge", "REWORK"), ("Do not merge: blocked", "REWORK"), ("merge after fixes (P2 only)", "SHIP WITH FIXES"), ("merge", "SHIP"),
                       ("ship_with_fixes", "SHIP WITH FIXES"), ("Reject", "REJECT"), ({"verdict": "REWORK"}, "REWORK")):

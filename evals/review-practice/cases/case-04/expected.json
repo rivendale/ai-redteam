@@ -1,0 +1,32 @@
+{
+  "id": "case-04",
+  "track": "A",
+  "title": "The same dated brief, already superseded by a dated changelog entry naming the new owner (clean control)",
+  "failure_list": [
+    2
+  ],
+  "control": true,
+  "planted": [],
+  "must": [
+    {
+      "rule": "no_critical_or_high"
+    }
+  ],
+  "must_not": [
+    {
+      "rule": "verdict_in",
+      "values": [
+        "REJECT"
+      ]
+    }
+  ],
+  "proof": {
+    "cwd": "work",
+    "python": "c = open('changelog.md').read()\nassert 'supersedes the 2026-09-14' in c and 'Team Birch' in c"
+  },
+  "applies_to": [
+    "redteam",
+    "pr-review"
+  ],
+  "slug": "RP2c-control-dated-record-already-superseded"
+}
