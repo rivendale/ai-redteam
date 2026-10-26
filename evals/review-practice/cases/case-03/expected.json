@@ -30,7 +30,16 @@
         "don't edit"
       ],
       "all_words": [],
-      "why": "the owner changed on 2026-10-01, but the brief is a dated record that says it is not edited; the fix is a new dated changelog entry superseding the owner line, not a rewrite of the brief"
+      "why": "the owner changed on 2026-10-01, but the brief is a dated record that says it is not edited; the fix is a new dated changelog entry superseding the owner line, not a rewrite of the brief",
+      "aliases": [
+        {
+          "file": "work/changelog.md",
+          "lines": [
+            1,
+            3
+          ]
+        }
+      ]
     }
   ],
   "must": [
@@ -42,7 +51,17 @@
         "new entry",
         "changelog entry",
         "addendum",
-        "append"
+        "append",
+        "in the changelog",
+        "to the changelog",
+        "do not rewrite",
+        "don't rewrite",
+        "not rewrite",
+        "not be rewritten",
+        "leave the brief",
+        "leave the dated",
+        "dated record as is",
+        "brief as is"
       ]
     }
   ],
