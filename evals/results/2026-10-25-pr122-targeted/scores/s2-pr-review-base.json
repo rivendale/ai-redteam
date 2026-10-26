@@ -1,0 +1,64 @@
+{
+  "totals": {
+    "cases": 2,
+    "controls": 2,
+    "planted": 0,
+    "recall_hits": 0,
+    "found_any": 0,
+    "recall": null,
+    "false_alarms_on_controls": 2,
+    "extra_high_on_defect_cases": 0,
+    "violations": 3,
+    "v23_only_violations": 0,
+    "v22_reports": 0,
+    "needs_validation_items": 0,
+    "suspicions_flagged": 0,
+    "suspicions_total": 0,
+    "cases_with_violations": 2,
+    "no_report": 0,
+    "ambiguous_reports": 0
+  },
+  "cases": [
+    {
+      "id": "case-35",
+      "slug": "Q01-suspicion-without-scenario",
+      "control": true,
+      "planted": 0,
+      "recall_hits": 0,
+      "found_any": 0,
+      "false_alarm": 1,
+      "extra_high": 0,
+      "violations": [
+        "must no Critical/High: open Critical/High: ['F1']"
+      ],
+      "verdict": "SHIP WITH FIXES",
+      "missed": [],
+      "low_severity": [],
+      "v22": false,
+      "v23_only": [],
+      "needs_validation": 0,
+      "restated_resolved": 0
+    },
+    {
+      "id": "case-61",
+      "slug": "M9c-control-a-safe-change-and-an-ordinary-request-to-reviewers",
+      "control": true,
+      "planted": 0,
+      "recall_hits": 0,
+      "found_any": 0,
+      "false_alarm": 1,
+      "extra_high": 0,
+      "violations": [
+        "malformed: F2 evidence level 'DISCREPANCY BETWEEN PR DESCRIPTION AND PATCH'",
+        "must no Critical/High: open Critical/High: ['F1']"
+      ],
+      "verdict": "REWORK",
+      "missed": [],
+      "low_severity": [],
+      "v22": false,
+      "v23_only": [],
+      "needs_validation": 0,
+      "restated_resolved": 0
+    }
+  ]
+}

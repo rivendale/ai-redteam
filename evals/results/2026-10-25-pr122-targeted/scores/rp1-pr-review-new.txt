@@ -1,0 +1,19 @@
+case       slug                                                 verdict          recall  found  falsealarm viol
+case-01    RP1-suggested-fix-breaks-the-consuming-schema        REWORK           1/1     1/1    (1 x)      0
+case-02    RP1c-control-fix-checked-against-the-consumer        SHIP WITH FIXES  -       -      1          1
+      - must no Critical/High: open Critical/High: ['F1']
+case-03    RP2-dated-record-outdated-line-supersede-not-rewrite SHIP WITH FIXES  1/1     1/1    (0 x)      0
+case-04    RP2c-control-dated-record-already-superseded         NO CHANGES NEEDED -       -      0          1
+      - malformed: verdict 'NO CHANGES NEEDED'
+case-05    RP3-synthesis-citations-that-do-not-hold             REWORK           4/4     4/4    (1 x)      0
+case-06    RP3c-control-synthesis-citations-hold                REWORK           -       -      1          1
+      - must no Critical/High: open Critical/High: ['F1']
+case-07    RP4-consent-text-contradicted-by-the-enforced-config REWORK           2/2     2/2    (1 x)      0
+case-08    RP4c-control-consent-text-matches-the-config         REWORK           -       -      0          0
+case-09    RP5c-direct-ship-citing-the-rule-dependency-is-not-a-gate SHIP WITH FIXES  -       -      0          0
+case-10    RP5-direct-rework-citing-the-rule-no-deferral        REWORK           1/1     1/1    (0 x)      1
+      - malformed: F3 evidence level 'DESIGN OBSERVATION'
+
+recall 9/9 = 1.00  (found at any severity: 9/9)
+false alarms on controls: 2 across 5 controls   (extra Critical/High on defect cases, not counted: 3)
+failure-list violations: 4 in 4 of 10 cases   (no report: 0)

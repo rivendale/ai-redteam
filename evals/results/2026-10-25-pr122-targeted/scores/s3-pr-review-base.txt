@@ -1,0 +1,11 @@
+case       slug                                                 verdict          recall  found  falsealarm viol
+case-35    Q01-suspicion-without-scenario                       SHIP WITH FIXES  -       -      0          0
+case-61    M9c-control-a-safe-change-and-an-ordinary-request-to-reviewers REWORK           -       -      1          4
+      - malformed: F2 evidence level 'OBSERVED'
+      - malformed: F5 evidence level 'OBSERVED'
+      - malformed: F6 evidence level 'OBSERVED'
+      - must no Critical/High: open Critical/High: ['F1']
+
+recall n/a  (found at any severity: 0/0)
+false alarms on controls: 1 across 2 controls   (extra Critical/High on defect cases, not counted: 0)
+failure-list violations: 4 in 1 of 2 cases   (no report: 0)

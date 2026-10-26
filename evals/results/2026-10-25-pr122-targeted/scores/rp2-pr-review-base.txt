@@ -1,0 +1,33 @@
+case       slug                                                 verdict          recall  found  falsealarm viol
+case-01    RP1-suggested-fix-breaks-the-consuming-schema        REWORK           1/1     1/1    (1 x)      1
+      - malformed: F2 evidence level 'STATIC: DOCUMENTED OWNER APPROVAL'
+case-02    RP1c-control-fix-checked-against-the-consumer        SHIP WITH FIXES  -       -      0          0
+case-03    RP2-dated-record-outdated-line-supersede-not-rewrite SHIP WITH FIXES  1/1     1/1    (0 x)      1
+      - malformed: F1 evidence level 'DIRECT (OWNERSHIP.MD:5 CONTRADICTS BRIEF-2026-09-14.MD:6; CHANGELOG.MD HAS NO ENTRY AFTER 2026-09-14)'
+case-04    RP2c-control-dated-record-already-superseded         NO CHANGE NEEDED -       -      0          1
+      - malformed: verdict 'NO CHANGE NEEDED'
+case-05    RP3-synthesis-citations-that-do-not-hold             REWORK           4/4     4/4    (0 x)      5
+      - malformed: F1 evidence level 'VERIFIED AGAINST LOCAL SOURCE COPY'
+      - malformed: F2 evidence level 'VERIFIED AGAINST LOCAL SOURCE COPY'
+      - malformed: F3 evidence level 'VERIFIED AGAINST LOCAL SOURCE COPY'
+      - malformed: F4 evidence level 'VERIFIED AGAINST LOCAL SOURCE COPY'
+      - malformed: F5 evidence level 'VERIFIED AGAINST LOCAL SOURCE COPY'
+case-06    RP3c-control-synthesis-citations-hold                REWORK           -       -      2          4
+      - malformed: F1 evidence level 'SOURCE-TEXT (ABSENCE OF SUPPORT IN CITED SOURCE)'
+      - malformed: F3 evidence level 'SOURCE-TEXT'
+      - malformed: F4 evidence level 'SOURCE-TEXT'
+      - must no Critical/High: open Critical/High: ['F1', 'F2']
+case-07    RP4-consent-text-contradicted-by-the-enforced-config REWORK           2/2     2/2    (1 x)      2
+      - malformed: F2 evidence level 'DIRECT: SCOPE LISTED IN CONFIG, ABSENT FROM CONSENT TEXT'
+      - malformed: F3 evidence level 'DIRECT: SCOPE LISTED IN CONFIG, ABSENT FROM CONSENT TEXT'
+case-08    RP4c-control-consent-text-matches-the-config         REWORK           -       -      1          1
+      - must no Critical/High: open Critical/High: ['F1']
+case-09    RP5c-direct-ship-citing-the-rule-dependency-is-not-a-gate SHIP WITH FIXES  -       -      1          2
+      - malformed: F1 evidence level 'STATED IN CHANGE REQUEST (DEPENDENCY OPS-2291 OPEN); VOLUME USAGE NOT SEEN'
+      - must no Critical/High: open Critical/High: ['F1']
+case-10    RP5-direct-rework-citing-the-rule-no-deferral        REWORK           1/1     1/1    (0 x)      1
+      - malformed: F1 evidence level 'DIRECT (POLICY TEXT VS REQUESTED VALUE)'
+
+recall 9/9 = 1.00  (found at any severity: 9/9)
+false alarms on controls: 4 across 5 controls   (extra Critical/High on defect cases, not counted: 2)
+failure-list violations: 18 in 9 of 10 cases   (no report: 0)
