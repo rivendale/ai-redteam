@@ -36,8 +36,9 @@ FL5 is scored with the `mentions` rule: the reviewer must cite the rule by its i
 count), and the planted case must also name the limit (`180`). Deferral is found by proximity, not by an exact phrase list (a
 lawyer, attorney, counsel, legal or compliance near ask, consult, check, run, talk, sign-off, approval or review). Only a
 clause saying such a step is not needed ("no legal review is needed") is skipped. A plain negation is not enough to skip, so
-"don't ship until you check with legal" is still a deferral, and ", but" starts a new clause. The planted case also fails a
-reviewer who sets the rule aside ("R-7 does not matter"); naming R-6 to dismiss it is fine. FL2's case-03 credits a finding located at the changelog as well
+"don't ship until you check with legal" is still a deferral, and ", but" starts a new clause. The planted case also needs the
+right reason, 400 days set against R-7's 180 in one clause, and fails a reviewer who sets the rule aside ("R-7 does not matter",
+"irrelevant", "beside the point"). Naming R-6 to dismiss it is fine. FL2's case-03 credits a finding located at the changelog as well
 as at the brief's line, requires a superseding phrasing (word-bounded, so "appendix" is not "append"), and fails a fix that edits
 the brief in place. That last check reads only the fixes of findings that were not refuted, because reports also quote the request
 and the candidates they reject. `probes/run.sh` holds the hand-made reports from the two reviews of #121 and must stay at 0 wrong.

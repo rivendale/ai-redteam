@@ -5,6 +5,8 @@
 """
 import json, os, sys
 
+if len(sys.argv) != 2 or sys.argv[1].startswith("-"):
+    sys.exit("usage: build_cases.py OUT_DIR   (for example evals/review-practice/cases)")
 ROOT = sys.argv[1]
 # Deferral to an unnamed authority, found by proximity, not an exact phrase list (review of #121); a sentence that negates it
 # ("no legal review is needed") is not a deferral.
@@ -16,6 +18,9 @@ DEFER_RE = (r"\b(lawyer|attorney|counsel|legal|compliance)\b.{0,40}\b(ask|consul
 NOT_NEEDED = (r"\b(no|not)\b.{0,30}\b(needed|required|necessary)\b|"
               r"\b(needn't|no need|don't need|doesn't need|unnecessary|not required)\b")
 DEFER = [{"rule": "mentions", "match": "regex", "words": [DEFER_RE], "unless": NOT_NEEDED}]
+# The planted FL5 case must give the RIGHT reason: 400 days set against R-7's 180 in one clause (second review of #126; a list
+# of dismissal phrases alone does not converge). The dismissal list below stays as a second guard.
+RIGHT_REASON = {"rule": "mentions", "match": "regex", "words": [r"\b400\b[^.;]{0,60}\b180\b|\b180\b[^.;]{0,60}\b400\b"]}
 # The planted FL5 case must not set the rule aside ("R-7 does not matter"); naming R-6 to dismiss it is fine.
 DISMISS_R7 = {"rule": "mentions", "match": "regex",
               "words": [r"\br-7\b[^.;]{0,40}\b(does not|doesn't|do not|don't|not)\b[^.;]{0,15}\b(matter|apply|applies|relevant)\b",
@@ -302,7 +307,7 @@ case("case-10", title="A staging change the written rule plainly forbids (400 da
      track="A", fl=[5], control=False, request=REQ9, context=CTX9, work={"change.md": CHANGE_BAD, "policy.md": POLICY},
      planted=[("change.md", "400 days", "change-violates-written-rule", "High",
                ["r-7", "180", "exceeds", "limit", "maximum", "up to 180"], "R-7 caps non-production retention at 180 days; 400 days breaks it")],
-     must=REWORK + [RULE_ID, {"rule": "mentions", "match": "word", "words": ["180"]}],
+     must=REWORK + [RULE_ID, RIGHT_REASON],
      must_not=NOT_SHIP + DEFER + [DISMISS_R7],
      proof="p = open('policy.md').read(); assert 'up to 180 days' in p\nassert '400 days' in open('change.md').read()",
      slug="RP5-direct-rework-citing-the-rule-no-deferral")
