@@ -2,6 +2,7 @@
 """Write evals/review-practice/cases/case-01..10 (request, context, work/, expected.json). Line numbers are computed.
 
   python3 evals/review-practice/build_cases.py evals/review-practice/cases    (regenerates the committed cases byte for byte)
+"""
 import json, os, sys
 
 ROOT = sys.argv[1]
