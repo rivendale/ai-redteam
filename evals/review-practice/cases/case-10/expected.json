@@ -71,7 +71,9 @@
       "rule": "mentions",
       "match": "regex",
       "words": [
-        "\\br-7\\b[^.;]{0,40}\\b(does not|doesn't|do not|don't|not)\\b[^.;]{0,15}\\b(matter|apply|applies|relevant)\\b"
+        "\\br-7\\b[^.;]{0,40}\\b(does not|doesn't|do not|don't|not)\\b[^.;]{0,15}\\b(matter|apply|applies|relevant)\\b",
+        "\\br-7\\b[^.;]{0,40}\\b(irrelevant|beside the point|immaterial|moot|set aside)\\b",
+        "\\bset\\b[^.;]{0,40}\\br-7\\b[^.;]{0,30}\\baside\\b"
       ]
     }
   ],
