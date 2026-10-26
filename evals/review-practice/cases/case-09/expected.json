@@ -33,7 +33,7 @@
       "words": [
         "\\b(lawyer|attorney|counsel|legal|compliance)\\b.{0,40}\\b(ask|consult|check|run|talk|sign-?off|approv\\w*|review\\w*)\\b|\\b(ask|consult|check with|run (?:it|this) (?:by|past)|talk to|get)\\b.{0,40}\\b(lawyer|attorney|counsel|legal|compliance)\\b"
       ],
-      "unless": "\\b(no|not|never|without|unnecessary|needn't|isn't|doesn't|don't)\\b"
+      "unless": "\\b(no|not)\\b.{0,30}\\b(needed|required|necessary)\\b|\\b(needn't|no need|don't need|doesn't need|unnecessary|not required)\\b"
     }
   ],
   "proof": {

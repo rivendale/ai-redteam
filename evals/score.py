@@ -299,7 +299,7 @@ def check_rule(rule, rep, fs, verdict, credited=()):
             return re.compile(re.escape(w.lower()))
         pats = [(w, pat(w)) for w in rule.get("words", [])]
         unless = re.compile(rule["unless"], re.I) if rule.get("unless") else None
-        parts = re.split(r"(?<=[.!?;])\s+|\n+", blob) if unless else [blob]
+        parts = re.split(r"(?<=[.!?;])\s+|\n+|,\s*but\b", blob) if unless else [blob]   # clauses: ", but" splits too
         hit = [w for w, p in pats if any(p.search(x) and not (unless and unless.search(x)) for x in parts)]
         return bool(hit), "mentions", f"report mentions {hit[:3]}" if hit else f"report mentions none of {[w for w, _ in pats][:3]}"
     raise ValueError("unknown rule " + r)
@@ -1281,6 +1281,8 @@ def self_check(cases_dir):
             ("regex: an attorney's sign-off is caught", {"rule": "mentions", "match": "regex", "words": [DEFER], "unless": NEG}, "Get an attorney's sign-off first.", True),
             ("unless: a negated sentence is not a deferral", {"rule": "mentions", "match": "regex", "words": [DEFER], "unless": NEG}, "Ship it. No legal review is needed under R-7.", False),
             ("unless works per sentence", {"rule": "mentions", "match": "regex", "words": [DEFER], "unless": NEG}, "No approval is needed. Still, check with legal.", True),
+            ("unless works per clause: ', but' splits", {"rule": "mentions", "match": "regex", "words": [DEFER], "unless": NEG},
+             "No approval is needed, but check with legal first.", True),
             ("default substring is unchanged", {"rule": "mentions", "words": ["append"]}, "see the appendix", True)):
         if check_rule(rule, {**rep([]), "_raw": raw}, [], "SHIP")[0] != want:
             bad.append(name)
