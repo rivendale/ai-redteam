@@ -45,18 +45,18 @@
   "must": [
     {
       "rule": "mentions",
+      "match": "word",
       "words": [
-        "supersed",
+        "supersed*",
         "new dated entry",
         "new entry",
         "changelog entry",
         "addendum",
         "append",
-        "in the changelog",
-        "to the changelog",
+        "appended",
+        "appending",
         "do not rewrite",
         "don't rewrite",
-        "not rewrite",
         "not be rewritten",
         "leave the brief",
         "leave the dated",
@@ -70,6 +70,15 @@
       "rule": "verdict_in",
       "values": [
         "REJECT"
+      ]
+    },
+    {
+      "rule": "mentions",
+      "match": "regex",
+      "unless": "\\b(no|not|never|without|unnecessary|needn't|isn't|doesn't|don't)\\b",
+      "scope": "fixes",
+      "words": [
+        "\\b(edit|rewrite|change(?!log)|update|correct|fix|amend|modify)\\w*\\b[^.;]{0,50}\\b(brief|line \\d+|owner line|in place)\\b"
       ]
     }
   ],

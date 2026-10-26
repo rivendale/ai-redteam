@@ -20,6 +20,7 @@
     },
     {
       "rule": "mentions",
+      "match": "word",
       "words": [
         "r-7"
       ]
@@ -28,19 +29,11 @@
   "must_not": [
     {
       "rule": "mentions",
+      "match": "regex",
       "words": [
-        "consult counsel",
-        "consult a lawyer",
-        "consult legal",
-        "ask legal",
-        "ask counsel",
-        "seek legal advice",
-        "check with legal",
-        "check with compliance",
-        "consult compliance",
-        "legal sign-off",
-        "get legal approval"
-      ]
+        "\\b(lawyer|attorney|counsel|legal|compliance)\\b.{0,40}\\b(ask|consult|check|run|talk|sign-?off|approv\\w*|review\\w*)\\b|\\b(ask|consult|check with|run (?:it|this) (?:by|past)|talk to|get)\\b.{0,40}\\b(lawyer|attorney|counsel|legal|compliance)\\b"
+      ],
+      "unless": "\\b(no|not|never|without|unnecessary|needn't|isn't|doesn't|don't)\\b"
     }
   ],
   "proof": {

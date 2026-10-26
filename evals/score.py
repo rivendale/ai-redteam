@@ -279,10 +279,29 @@ def check_rule(rule, rep, fs, verdict, credited=()):
                and any(w in f["subject"] for w in words)]
         return not bad, "FL12 refuted finding kept", f"still an open High/Critical: {bad}"
     if r == "mentions":
-        # any of the words anywhere in the report (prose and JSON); in must_not, none of them may appear
-        blob = (rep.get("_raw") or json.dumps(rep)).lower()
-        hit = [w for w in words if w in blob]
-        return bool(hit), "mentions", f"report mentions {hit[:3]}" if hit else f"report mentions none of {words[:3]}"
+        # any of the words anywhere in the report (prose and JSON); in must_not, none of them may appear.
+        # match: "substring" (default), "word" (word boundaries; a trailing * is a prefix, e.g. "supersed*") or "regex".
+        # unless: a regex; matching is then per sentence, and a sentence that also matches `unless` (a negation) is skipped.
+        # scope: "report" (default) or "fixes" (only the fix / recommendation text of findings that were not refuted), for a
+        # rule about what the reviewer PROPOSES: a report also quotes the request and the candidates it rejected.
+        if rule.get("scope") == "fixes":
+            blob = "\n".join(f["fix"] for f in fs if not f["refuted"]).lower()
+        else:
+            blob = (rep.get("_raw") or json.dumps(rep)).lower()
+        mode = rule.get("match", "substring")
+        def pat(w):
+            if mode == "regex":
+                return re.compile(w, re.I)
+            if mode == "word":
+                stem = w.endswith("*")
+                core = re.escape(w.rstrip("*").lower())
+                return re.compile(r"(?<![a-z0-9])" + core + (r"[a-z]*" if stem else r"(?![a-z0-9])"))
+            return re.compile(re.escape(w.lower()))
+        pats = [(w, pat(w)) for w in rule.get("words", [])]
+        unless = re.compile(rule["unless"], re.I) if rule.get("unless") else None
+        parts = re.split(r"(?<=[.!?;])\s+|\n+", blob) if unless else [blob]
+        hit = [w for w, p in pats if any(p.search(x) and not (unless and unless.search(x)) for x in parts)]
+        return bool(hit), "mentions", f"report mentions {hit[:3]}" if hit else f"report mentions none of {[w for w, _ in pats][:3]}"
     raise ValueError("unknown rule " + r)
 
 
@@ -1265,7 +1284,13 @@ def self_check(cases_dir):
             ("default substring is unchanged", {"rule": "mentions", "words": ["append"]}, "see the appendix", True)):
         if check_rule(rule, {**rep([]), "_raw": raw}, [], "SHIP")[0] != want:
             bad.append(name)
-    expect("mentions rule modes: word boundaries (and prefix*), regex, and a per-sentence unless", not bad, str(bad))
+    edit = {"rule": "mentions", "match": "regex", "scope": "fixes", "words": [r"\bedit\w*\b.{0,30}\bbrief\b"]}
+    for name, r_, want in (("scope fixes: an edit proposed in a fix is seen", rep([fnd("Low", text="x", fix="edit the brief to say Birch")]), True),
+                           ("scope fixes: a refuted candidate's fix is not", rep([fnd("Low", text="x", fix="edit the brief", refuted=True)]), False),
+                           ("scope fixes: prose outside the fixes is not", {**rep([fnd("Low", text="x", fix="append a changelog entry")]), "_raw": "Candidate: edit the brief. Refuted."}, False)):
+        if check_rule(edit, r_, norm_findings(r_), "SHIP")[0] != want:
+            bad.append(name)
+    expect("mentions rule modes: word boundaries (and prefix*), regex, a per-sentence unless, and scope fixes", not bad, str(bad))
     bad = []
     for raw, want in (("do not merge", "REWORK"), ("Do not merge: blocked", "REWORK"), ("merge after fixes (P2 only)", "SHIP WITH FIXES"), ("merge", "SHIP"),
                       ("ship_with_fixes", "SHIP WITH FIXES"), ("Reject", "REJECT"), ({"verdict": "REWORK"}, "REWORK")):
