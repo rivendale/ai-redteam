@@ -59,3 +59,22 @@ Against the SPEC ship rule's thresholds (recall at least BASE-1, false alarms at
 ## Reproduce
 `bash drive.sh` (as run), `skills/` (both texts and SHA256SUMS), per-folder reports (`case-NN.md`), prompts (`case-NN.prompt`),
 usage (`_meta/*.usage.json`) and the scorer output (`scores/`). The file hashes are in `SHA256SUMS`.
+
+## Follow-up, 2026-10-26: cases 35 and 61 repeated on Sonnet
+The two pr-review cases behind the baseline gap were re-run: BASE and NEW, 3 runs each, `claude-sonnet-5-5`, 12 reviews, $1.02.
+That brings the targeted line to $26.72 of $30. The new estate rule defaults paid evals to Haiku or Sonnet, because the Opus run above
+used up the account's shared weekly limit. Sonnet is a different model from the Opus runs, so this shows whether the gap repeats on
+these cases, not a like-for-like re-run.
+
+| case | text | open Highs on the control, run 1 / 2 / 3 | verdicts |
+|---|---|---|---|
+| case-35 (suspicion without a scenario) | BASE | 0 / 1 / 0 | SHIP WITH FIXES x3 |
+| case-35 | NEW | 1 / 0 / 0 | SHIP WITH FIXES x3 |
+| case-61 (control: a safe change and an ordinary request to reviewers) | BASE | 1 / 1 / 1 | REWORK x3 |
+| case-61 | NEW | 1 / 2 / 2 | REWORK x3 |
+
+Read:
+- **case-35:** no difference between the texts (one stray High each); the Opus REWORK verdict did not repeat.
+- **case-61:** the control fails under BOTH texts in every run, so the defect is not new. NEW adds a second open High in 2 of 3
+  runs. That is the one place the new pr-review text is measurably worse here, and it is small.
+- Files: `s{1,2,3}-pr-review-{base,new}/`, `scores/s*`, `drive-sonnet.sh`.

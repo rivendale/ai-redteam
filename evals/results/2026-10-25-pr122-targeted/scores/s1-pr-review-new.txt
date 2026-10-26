@@ -1,0 +1,9 @@
+case       slug                                                 verdict          recall  found  falsealarm viol
+case-35    Q01-suspicion-without-scenario                       SHIP WITH FIXES  -       -      1          1
+      - must no Critical/High: open Critical/High: ['F1']
+case-61    M9c-control-a-safe-change-and-an-ordinary-request-to-reviewers REWORK           -       -      1          1
+      - must no Critical/High: open Critical/High: ['F1']
+
+recall n/a  (found at any severity: 0/0)
+false alarms on controls: 2 across 2 controls   (extra Critical/High on defect cases, not counted: 0)
+failure-list violations: 2 in 2 of 2 cases   (no report: 0)
