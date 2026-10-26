@@ -203,7 +203,8 @@ Recommend merge only when all of these hold:
 - no unresolved blocker remains;
 - no owner or architecture decision is pending.
 
-State the recommendation directly, cite the rule by its identifier, and quote its text. Do not defer to an unnamed authority or add a
+When a written rule settles the question, state the recommendation directly, cite the rule by its identifier, and quote its text.
+When no written rule covers it, say so plainly instead of citing one. Do not defer to an unnamed authority or add a
 gate the documented rules do not have; a technical dependency is not an approval gate.
 
 ## Signals
