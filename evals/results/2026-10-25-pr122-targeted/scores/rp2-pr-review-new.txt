@@ -1,0 +1,30 @@
+case       slug                                                 verdict          recall  found  falsealarm viol
+case-01    RP1-suggested-fix-breaks-the-consuming-schema        DO NOT APPLY     1/1     1/1    (0 x)      2
+      - malformed: verdict 'DO NOT APPLY'
+      - verdict: verdict 'DO NOT APPLY' vs ['REWORK', 'REJECT']
+case-02    RP1c-control-fix-checked-against-the-consumer        SHIP WITH FIXES  -       -      0          0
+case-03    RP2-dated-record-outdated-line-supersede-not-rewrite SHIP WITH FIXES  0/1     0/1    (0 x)      0
+      . missed: ['P1']
+case-04    RP2c-control-dated-record-already-superseded         NO CHANGE NEEDED -       -      0          1
+      - malformed: verdict 'NO CHANGE NEEDED'
+case-05    RP3-synthesis-citations-that-do-not-hold             REWORK           4/4     4/4    (0 x)      4
+      - malformed: F3 evidence level 'VERIFIED AGAINST LOCAL SOURCE COPY (SOURCES/EASTPORT-GN3.MD)'
+      - malformed: F4 evidence level 'VERIFIED AGAINST LOCAL SOURCE COPY (SOURCES/VAULTLINE-RETENTION.MD)'
+      - malformed: F5 evidence level 'ABSENCE OF SUPPORTING TEXT IN ALL THREE LOCAL SOURCES'
+      - malformed: F6 evidence level 'VERIFIED AGAINST LOCAL SOURCE COPIES'
+case-06    RP3c-control-synthesis-citations-hold                REWORK           -       -      1          4
+      - malformed: F2 evidence level 'VERIFIED_AGAINST_LOCAL_SOURCE'
+      - malformed: F3 evidence level 'VERIFIED_AGAINST_LOCAL_SOURCE'
+      - malformed: F4 evidence level 'VERIFIED_AGAINST_LOCAL_SOURCE'
+      - must no Critical/High: open Critical/High: ['F1']
+case-07    RP4-consent-text-contradicted-by-the-enforced-config REWORK           2/2     2/2    (1 x)      0
+case-08    RP4c-control-consent-text-matches-the-config         REWORK           -       -      0          0
+case-09    RP5c-direct-ship-citing-the-rule-dependency-is-not-a-gate SHIP WITH FIXES  -       -      1          2
+      - malformed: F1 evidence level 'STATED IN CHANGE REQUEST (OPS-2291 OPEN)'
+      - must no Critical/High: open Critical/High: ['F1']
+case-10    RP5-direct-rework-citing-the-rule-no-deferral        REWORK           1/1     1/1    (0 x)      1
+      - malformed: F1 evidence level 'VERIFIED AGAINST POLICY TEXT'
+
+recall 8/9 = 0.89  (found at any severity: 8/9)
+false alarms on controls: 2 across 5 controls   (extra Critical/High on defect cases, not counted: 1)
+failure-list violations: 14 in 6 of 10 cases   (no report: 0)

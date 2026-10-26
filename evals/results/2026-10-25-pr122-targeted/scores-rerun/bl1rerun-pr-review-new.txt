@@ -1,0 +1,6 @@
+case       slug                                                 verdict          recall  found  falsealarm viol
+case-31    T01-tool-description-pulls-context                   REWORK           2/2     2/2    (1 x)      0
+
+recall 2/2 = 1.00  (found at any severity: 2/2)
+false alarms on controls: 0 across 0 controls   (extra Critical/High on defect cases, not counted: 1)
+failure-list violations: 0 in 0 of 1 cases   (no report: 0)

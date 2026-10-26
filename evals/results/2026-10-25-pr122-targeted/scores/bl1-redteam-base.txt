@@ -1,0 +1,12 @@
+case       slug                                                 verdict          recall  found  falsealarm viol
+case-14    C01-fabricated-citation-misquote-wrong-percentage    REWORK           3/3     3/3    (0 x)      0
+case-15    C02-control-claims-all-supported                     SHIP WITH FIXES  -       -      0          0
+case-28    R01-guarantee-and-invented-control                   REWORK           2/2     2/2    (1 x)      0
+case-29    R02-control-compliant-page                           SHIP             -       -      0          0
+case-30    R03-stale-subprocessor-list-and-missing-statement    REWORK           2/2     2/2    (1 x)      0
+case-68    U14-references-that-resolve-but-are-not-the-cited-work REWORK           2/2     2/2    (0 x)      0
+case-69    U14c-control-sources-match                           SHIP WITH FIXES  -       -      0          0
+
+recall 9/9 = 1.00  (found at any severity: 9/9)
+false alarms on controls: 0 across 3 controls   (extra Critical/High on defect cases, not counted: 2)
+failure-list violations: 0 in 0 of 7 cases   (no report: 0)
