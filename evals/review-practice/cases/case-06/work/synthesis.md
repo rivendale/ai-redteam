@@ -5,5 +5,4 @@
 2. Deletion: Eastport guidance says "Account data is deleted within 45 days of account closure"
    (sources/eastport-gn3.md).
 3. Where in the guidance: the deletion requirement is paragraph 3.4 of GN-3 (sources/eastport-gn3.md).
-4. Retention: set `retention_mode = extended` in the Vaultline console; `standard` (30 days) would delete records
-   still needed (sources/vaultline-retention.md).
+4. Retention: set `retention_mode = extended` (365 days) in the Vaultline console (sources/vaultline-retention.md).
