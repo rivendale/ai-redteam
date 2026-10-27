@@ -312,42 +312,79 @@ with tempfile.TemporaryDirectory() as d:
     check("H always-old reader fails correct and flagged on every hard topic", all(not c["correct"] and not c["flagged"] for c in old))
 
 # F: the findall reader's parser, against bin/findall's final hit format (rivendale/overseer #55, merged a381a8e).
-# Written before the parser change; each F case failed on the old parser except F5 and F6.
+# F1-F4 were written before the first parser change and failed on the old parser. F7-F14 come from the second-vendor
+# review of b16c719 (codex, gemini) and were written before the fail-closed rewrite; each failed on b16c719.
+# Rule under test: a hit line either names exactly one real file inside the record, or the run fails closed (error set).
 import readers  # noqa: E402
-with tempfile.TemporaryDirectory() as d:
+T1 = {"planted": ["a.md"], "current_files": ["a.md"], "current": "v", "checks": [], "wrong": []}
+
+
+def findall_case(d, hit_lines, files=("a.md", "b.md")):
+    """Run readers.run_findall against a fake findall that prints hit_lines ({R} = the set's root). Returns
+    (record for the 'small' set, root)."""
     fx, out = os.path.join(d, "fx"), os.path.join(d, "out")
     os.makedirs(out)
     for s in readers.SETS:
-        for f in ("a.md", "b.md", "x:2:y.md"):
-            os.makedirs(os.path.join(fx, s), exist_ok=True)
+        for f in files:
+            os.makedirs(os.path.dirname(os.path.join(fx, s, f)), exist_ok=True)
             open(os.path.join(fx, s, f), "w").write("x\n")
+    body = "".join("printf '%s\\n' " + "'" + ln.replace("'", "'\\''").replace("{R}", "'\"$R\"'") + "'\n"
+                   for ln in hit_lines)
     fake = os.path.join(d, "findall")
-    open(fake, "w").write("""#!/bin/sh
-R="$FINDALL_ROOTS"
-echo "=== ROOTS ==="; echo "  $R"
-echo "=== HITS ==="
-echo "  $R/a.md:1:codex default is now gpt-6-sol"
-echo "  $R/a.md:5:codex default again"
-echo "  [SUPERSEDED; replacement not stated] $R/b.md:4:codex default is now astra"
-echo "  $R/x:2:y.md:3:a file name with a colon-digit-colon run"
-echo "  /etc/elsewhere.md:1:a hit outside the record"
-echo ""
-echo "=== PDF COVERAGE (this is the numerator and denominator, not a reassurance) ==="
-echo "  -- 0 PDF hit(s) across 0 extracted document(s)"
-echo "=== 1 superseded hit(s) hidden (--current) ==="
-echo "=== 5 hit(s) (0 from PDFs) across 1 enumerated local roots ==="
-""")
+    open(fake, "w").write('#!/bin/sh\nR="$FINDALL_ROOTS"\necho "=== ROOTS ==="; echo "  $R"\necho "=== HITS ==="\n'
+                          + body + 'echo ""\necho "=== PDF COVERAGE (this is the numerator and denominator) ==="\n'
+                          'echo "  -- 0 PDF hit(s) across 0 extracted document(s)"\n'
+                          'echo "=== 1 superseded hit(s) hidden (--current) ==="\necho "=== 1 hit(s) (0 from PDFs) ==="\n')
     os.chmod(fake, 0o755)
     readers.run_findall(out, fx, {"topics": [{"id": "t1", "kw": "codex"}]}, fake)
-    rec = [json.loads(ln) for ln in open(os.path.join(out, "runs.jsonl"))][0]
-    hits = rec.get("hits") or []
-    check("F1 a hit line 'ROOT/a.md:1:text' records the path a.md, once", hits.count("a.md") == 1, hits)
-    check("F2 a [SUPERSEDED ...] hit is kept, with its flag", "b.md" in hits
-          and (rec.get("flags") or {}).get("b.md") == ["SUPERSEDED; replacement not stated"], (hits, rec.get("flags")))
-    check("F3 a file name containing ':2:' resolves to the real file", "x:2:y.md" in hits, hits)
-    check("F4 a hit outside the record is kept absolute, so the scorer fails the run", "/etc/elsewhere.md" in hits, hits)
-    check("F5 PDF-coverage and footer lines are not hits", not any("PDF" in h or "hit(s)" in h for h in hits), hits)
-    t = {"planted": ["a.md"], "current_files": ["a.md"], "current": "v", "checks": []}
-    check("F6 the scorer fails a findall run that holds an outside path",
-          not score.score_paths(dict(t, wrong=[]), rec, os.path.join(fx, "small")).get("correct"), rec)
+    recs = [json.loads(ln) for ln in open(os.path.join(out, "runs.jsonl"))]
+    return [r for r in recs if r["set"] == "small"][0], os.path.join(fx, "small")
+
+
+def fcase(hit_lines, files=("a.md", "b.md")):
+    with tempfile.TemporaryDirectory() as d:
+        rec, root = findall_case(d, hit_lines, files)
+        return rec, score.score_paths(T1, rec, root)
+
+
+rec, sc = fcase(["  {R}/a.md:1:codex default is now gpt-6-sol", "  {R}/a.md:5:codex default again"])
+check("F1 a hit line 'ROOT/a.md:1:text' records the path a.md, once, and a clean run scores correct",
+      rec["hits"] == ["a.md"] and not rec["error"] and sc["correct"], (rec["hits"], rec["error"], sc))
+rec, sc = fcase(["  {R}/a.md:1:new", "  [SUPERSEDED; replacement not stated] {R}/b.md:4:old"])
+check("F2 a [SUPERSEDED ...] hit is kept, with its flag", "b.md" in rec["hits"]
+      and rec.get("flags", {}).get("b.md") == ["SUPERSEDED; replacement not stated"], (rec["hits"], rec.get("flags")))
+rec, sc = fcase(["  {R}/x:2:y.md:3:a colon-digit-colon run in a file name"], files=("x:2:y.md",))
+check("F3 a file name containing ':2:' resolves to the real file", rec["hits"] == ["x:2:y.md"] and not rec["error"], rec)
+rec, sc = fcase(["  {R}/a.md:1:ok", "  /etc/elsewhere.md:1:a hit outside the record"])
+check("F4 a hit outside the record fails the run (error set; scorer gives no credit)",
+      bool(rec["error"]) and not sc["correct"], (rec["error"], sc))
+rec, sc = fcase(["  {R}/a.md:1:ok"])
+check("F5 PDF-coverage and footer lines are not hits", rec["hits"] == ["a.md"], rec["hits"])
+base, bsc = fcase(["  {R}/a.md:1:ok"])
+rec, sc = fcase(["  {R}/a.md:1:ok", "  /etc/elsewhere.md:1:outside"])
+check("F6 with a correct baseline, adding only an outside hit removes the credit", bsc["correct"] and not sc["correct"],
+      (bsc, sc))
+rec, sc = fcase(["  {R}/a.md"])
+check("F7 a bare path with no :LINE: is not a hit: the run fails closed", bool(rec["error"]) and not sc["correct"], rec)
+rec, sc = fcase(["  {R}/a.md:0:line zero"])
+check("F8 line number 0 is not valid hit syntax: the run fails closed", bool(rec["error"]) and not sc["correct"], rec)
+rec, sc = fcase(["  {R}/a.md:2:old.md:3:text"], files=("a.md", "a.md:2:old.md"))
+check("F9 a line that names two real files (a.md and a.md:2:old.md) is ambiguous: the run fails closed",
+      bool(rec["error"]) and not sc["correct"], rec)
+rec, sc = fcase(["  {R}/tail:2:3:text"], files=("tail:2",))
+check("F10 a file named 'tail:2' with hit ':3:' resolves (delimiters may share a colon)",
+      rec["hits"] == ["tail:2"] and not rec["error"], rec)
+for i, ln in enumerate(("  C:\\notes\\a.md:1:x", "  C:/notes/a.md:1:x", "  \\\\server\\share\\a.md:1:x")):
+    rec, sc = fcase(["  {R}/a.md:1:ok", ln])
+    check(f"F11.{i} a Windows/UNC hit path fails the run instead of disappearing", bool(rec["error"]) and not sc["correct"],
+          (ln, rec))
+rec, sc = fcase(["  {R}/a.md:1:new", "  [SUPERSEDED; replacement: notes/x]y.md] {R}/b.md:4:old"])
+check("F12 a flag whose replacement path holds ']' still keeps the flagged hit",
+      "b.md" in rec["hits"] and rec.get("flags", {}).get("b.md") == ["SUPERSEDED; replacement: notes/x]y.md"], rec)
+rec, sc = fcase(["  {R}/../escape.md:1:x"])
+check("F13 a path that climbs out of the record (..) fails the run", bool(rec["error"]) and not sc["correct"], rec)
+rec, sc = fcase(["  some prose that is not a hit"])
+check("F14 an unparseable line inside HITS fails the run", bool(rec["error"]) and not sc["correct"], rec)
+rec, sc = fcase(["  (none)"])
+check("F15 findall's '(none)' is zero hits, not an error (guard)", rec["hits"] == [] and not rec["error"], rec)
 sys.exit(1 if fails else 0)

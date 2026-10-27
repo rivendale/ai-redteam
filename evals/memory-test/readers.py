@@ -117,47 +117,65 @@ def run_grep(out, fx, man):
                          "output": r.stdout, "error": None if r.returncode in (0, 1) else r.stderr[:300]})
 
 
-HIT_FLAG = re.compile(r"^\[([^\]]*)\]\s+")
-HIT_LINE = re.compile(r":\d+:")
+LINE_DELIM = re.compile(r"(?=:([1-9][0-9]*):)")   # every ":N:" with N >= 1, overlapping ("tail:2:3:" holds both)
+
+
+def _hit_path(body, root):
+    """One hit body ("PATH:LINE:excerpt", no flag) -> (path relative to root, None) or (None, problem). The path must be
+    the ONE real, non-link file inside root that some ":N:" delimiter ends; anything else is a problem, never a guess."""
+    if not body.startswith("/"):
+        return None, "not an absolute POSIX path"
+    cands = sorted({body[:m.start()] for m in LINE_DELIM.finditer(body)
+                    if os.path.isfile(body[:m.start()]) and not os.path.islink(body[:m.start()])})
+    if not cands:
+        return None, "no real file ends at a :LINE: delimiter"
+    if len(cands) > 1:
+        return None, "ambiguous: " + " | ".join(cands)
+    path, rroot = cands[0], os.path.realpath(root)
+    if ".." in path.split("/") or not os.path.realpath(path).startswith(rroot + "/"):
+        return None, "outside the record"
+    return os.path.relpath(os.path.realpath(path), rroot), None
 
 
 def parse_findall_hits(stdout, root):
     """bin/findall's hit lines (rivendale/overseer #55): "  PATH:LINE:excerpt", optionally led by a flag such as
-    "[SUPERSEDED; replacement not stated] ". Returns (paths, flags): paths relative to root in first-seen order, and
-    {path: [flag, ...]}. A path can itself hold ":N:", so the path is the shortest ":N:"-prefix that is a real file.
-    A hit outside root is kept ABSOLUTE, so the scorer fails the run rather than the reader silently dropping it."""
-    hits, flags, on = [], {}, False
+    "[SUPERSEDED; replacement: notes/x.md] ". Returns (paths, flags, problems): paths relative to root in first-seen
+    order, {path: [flag, ...]}, and every HITS line that does not name exactly one real file inside the record. Any
+    problem fails the run (fail closed): a hit the parser cannot place must not vanish while another hit earns credit."""
+    hits, flags, problems, on, lines = [], {}, [], False, []
     for ln in stdout.splitlines():
         if ln.startswith("=== "):
             on = ln.startswith("=== HITS")
             continue
-        body = ln.strip()
-        if not on or not body:
+        if on and ln.strip():
+            lines.append(ln.strip())
+    if lines == ["(none)"]:
+        return hits, flags, problems
+    for body in lines:
+        flag, path, problem = None, None, None
+        if body.startswith("["):
+            # A flag may itself hold "]" (a replacement path), so try every "] /" split; exactly one must parse.
+            found = set()
+            for m in re.finditer(r"\] (?=/)", body):
+                p, prob = _hit_path(body[m.end():], root)
+                if p is not None:
+                    found.add((body[1:m.start()], p))
+            if len({p for _, p in found}) == 1 and len(found) == 1:
+                flag, path = next(iter(found))
+            else:
+                problem = "flagged line did not parse to exactly one hit" if not found else "ambiguous flag split"
+        else:
+            path, problem = _hit_path(body, root)
+        if problem:
+            problems.append(f"{problem}: {body[:160]}")
             continue
-        flag = None
-        m = HIT_FLAG.match(body)
-        if m:
-            flag, body = m.group(1), body[m.end():]
-        if not body.startswith("/"):
-            continue
-        path = None
-        for mm in HIT_LINE.finditer(body):
-            cand = body[:mm.start()]
-            if os.path.isfile(cand):
-                path = cand
-                break
-        if path is None:
-            mm = HIT_LINE.search(body)
-            path = body[:mm.start()] if mm else body
-        under = path.startswith(root.rstrip("/") + "/")
-        key = os.path.relpath(path, root) if under else path
-        if key not in hits:
-            hits.append(key)
+        if path not in hits:
+            hits.append(path)
         if flag:
-            flags.setdefault(key, [])
-            if flag not in flags[key]:
-                flags[key].append(flag)
-    return hits, flags
+            flags.setdefault(path, [])
+            if flag not in flags[path]:
+                flags[path].append(flag)
+    return hits, flags, problems
 
 
 def run_findall(out, fx, man, findall):
@@ -166,10 +184,12 @@ def run_findall(out, fx, man, findall):
         for t in man["topics"]:
             env = dict(os.environ, FINDALL_ROOTS=root)
             r = subprocess.run([findall, "-c", t["kw"]], env=env, capture_output=True, text=True, timeout=300)
-            hits, flags = parse_findall_hits(r.stdout, root)
+            hits, flags, problems = parse_findall_hits(r.stdout, root)
+            err = f"rc={r.returncode} {r.stderr[:300]}" if r.returncode != 0 else None
+            if problems:   # fail closed: the scorer gives an errored run no credit
+                err = (err + "; " if err else "") + f"{len(problems)} unplaceable hit line(s): " + " || ".join(problems[:3])
             record(out, {"reader": "findall", "set": s, "topic": t["id"], "repeat": 0, "kind": "paths",
-                         "hits": hits, "flags": flags, "output": r.stdout[-4000:],
-                         "error": None if r.returncode == 0 else f"rc={r.returncode} {r.stderr[:300]}"})
+                         "hits": hits, "flags": flags, "output": r.stdout[-4000:], "error": err})
 
 
 def spent(out):
