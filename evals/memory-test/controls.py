@@ -319,7 +319,7 @@ import readers  # noqa: E402
 T1 = {"planted": ["a.md"], "current_files": ["a.md"], "current": "v", "checks": [], "wrong": []}
 
 
-def findall_case(d, hit_lines, files=("a.md", "b.md")):
+def findall_case(d, hit_lines, files=("a.md", "b.md"), setup=None, raw=None):
     """Run readers.run_findall against a fake findall that prints hit_lines ({R} = the set's root). Returns
     (record for the 'small' set, root)."""
     fx, out = os.path.join(d, "fx"), os.path.join(d, "out")
@@ -330,20 +330,27 @@ def findall_case(d, hit_lines, files=("a.md", "b.md")):
             open(os.path.join(fx, s, f), "w").write("x\n")
     body = "".join("printf '%s\\n' " + "'" + ln.replace("'", "'\\''").replace("{R}", "'\"$R\"'") + "'\n"
                    for ln in hit_lines)
+    if setup:
+        setup(fx)
     fake = os.path.join(d, "findall")
-    open(fake, "w").write('#!/bin/sh\nR="$FINDALL_ROOTS"\necho "=== ROOTS ==="; echo "  $R"\necho "=== HITS ==="\n'
-                          + body + 'echo ""\necho "=== PDF COVERAGE (this is the numerator and denominator) ==="\n'
+    if raw is not None:   # the whole stdout, verbatim ({R} = root), for section-structure attacks
+        open(os.path.join(d, "raw.txt"), "w").write(raw)
+        open(fake, "w").write('#!/bin/sh\nsed "s#{R}#$FINDALL_ROOTS#g" ' + os.path.join(d, "raw.txt") + '\n')
+    else:
+      open(fake, "w").write('#!/bin/sh\nR="$FINDALL_ROOTS"\necho "=== roots enumerated this run: 1 ==="; echo "  $R"\necho "=== HITS ==="\n'
+                          + body + 'echo ""\necho "=== PDF COVERAGE (this is the numerator and denominator, not a reassurance) ==="\n'
                           'echo "  -- 0 PDF hit(s) across 0 extracted document(s)"\n'
-                          'echo "=== 1 superseded hit(s) hidden (--current) ==="\necho "=== 1 hit(s) (0 from PDFs) ==="\n')
+                          'echo "=== 0 superseded hit(s) hidden (--current) ==="\n'
+                          + f'echo "=== {sum(1 for x in hit_lines if x.strip() != "(none)")} hit(s) (0 from PDFs) across 1 enumerated local roots ==="\n')
     os.chmod(fake, 0o755)
     readers.run_findall(out, fx, {"topics": [{"id": "t1", "kw": "codex"}]}, fake)
     recs = [json.loads(ln) for ln in open(os.path.join(out, "runs.jsonl"))]
     return [r for r in recs if r["set"] == "small"][0], os.path.join(fx, "small")
 
 
-def fcase(hit_lines, files=("a.md", "b.md")):
+def fcase(hit_lines, files=("a.md", "b.md"), setup=None, raw=None):
     with tempfile.TemporaryDirectory() as d:
-        rec, root = findall_case(d, hit_lines, files)
+        rec, root = findall_case(d, hit_lines, files, setup, raw)
         return rec, score.score_paths(T1, rec, root)
 
 
@@ -355,13 +362,14 @@ check("F2 a [SUPERSEDED ...] hit is kept, with its flag", "b.md" in rec["hits"]
       and rec.get("flags", {}).get("b.md") == ["SUPERSEDED; replacement not stated"], (rec["hits"], rec.get("flags")))
 rec, sc = fcase(["  {R}/x:2:y.md:3:a colon-digit-colon run in a file name"], files=("x:2:y.md",))
 check("F3 a file name containing ':2:' resolves to the real file", rec["hits"] == ["x:2:y.md"] and not rec["error"], rec)
-rec, sc = fcase(["  {R}/a.md:1:ok", "  /etc/elsewhere.md:1:a hit outside the record"])
+OUTSIDE = lambda fx: open(os.path.join(os.path.dirname(fx), "elsewhere.md"), "w").write("x\n")
+rec, sc = fcase(["  {R}/a.md:1:ok", "  {R}/../../elsewhere.md:1:a REAL file outside the record"], setup=OUTSIDE)
 check("F4 a hit outside the record fails the run (error set; scorer gives no credit)",
       bool(rec["error"]) and not sc["correct"], (rec["error"], sc))
 rec, sc = fcase(["  {R}/a.md:1:ok"])
 check("F5 PDF-coverage and footer lines are not hits", rec["hits"] == ["a.md"], rec["hits"])
 base, bsc = fcase(["  {R}/a.md:1:ok"])
-rec, sc = fcase(["  {R}/a.md:1:ok", "  /etc/elsewhere.md:1:outside"])
+rec, sc = fcase(["  {R}/a.md:1:ok", "  {R}/../../elsewhere.md:1:outside"], setup=OUTSIDE)
 check("F6 with a correct baseline, adding only an outside hit removes the credit", bsc["correct"] and not sc["correct"],
       (bsc, sc))
 rec, sc = fcase(["  {R}/a.md"])
@@ -381,10 +389,43 @@ for i, ln in enumerate(("  C:\\notes\\a.md:1:x", "  C:/notes/a.md:1:x", "  \\\\s
 rec, sc = fcase(["  {R}/a.md:1:new", "  [SUPERSEDED; replacement: notes/x]y.md] {R}/b.md:4:old"])
 check("F12 a flag whose replacement path holds ']' still keeps the flagged hit",
       "b.md" in rec["hits"] and rec.get("flags", {}).get("b.md") == ["SUPERSEDED; replacement: notes/x]y.md"], rec)
-rec, sc = fcase(["  {R}/../escape.md:1:x"])
-check("F13 a path that climbs out of the record (..) fails the run", bool(rec["error"]) and not sc["correct"], rec)
+rec, sc = fcase(["  {R}/../padded/a.md:1:x"])
+check("F13 a REAL file reached by climbing out (../padded/a.md, a sibling set) fails the run", bool(rec["error"]) and not sc["correct"], rec)
 rec, sc = fcase(["  some prose that is not a hit"])
 check("F14 an unparseable line inside HITS fails the run", bool(rec["error"]) and not sc["correct"], rec)
 rec, sc = fcase(["  (none)"])
 check("F15 findall's '(none)' is zero hits, not an error (guard)", rec["hits"] == [] and not rec["error"], rec)
+# F16-F24: third panel (codex, gemini at c7626df). Written before the strict rewrite; each failed on c7626df.
+rec, sc = fcase(["  [SUPERSEDED] {R}/../../elsewhere.md:1:payload ] {R}/a.md:1:ok"], setup=OUTSIDE)
+check("F16 a flagged line whose first split is outside and a later split inside fails the run",
+      bool(rec["error"]) and not sc["correct"], rec)
+rec, sc = fcase(["  [SUPERSEDED; replacement: x] {R}/b.md:4:old ] {R}/a.md:1:ok"])
+check("F17 a flagged line with two '] /' splits fails the run (no guessing which is the hit)",
+      bool(rec["error"]) and not sc["correct"], rec)
+rec, sc = fcase([], raw="=== HITS ===\n  {R}/a.md:1:ok\n=== WARNING ===\n  {R}/../../elsewhere.md:1:x\n", setup=OUTSIDE)
+check("F18 an outside hit after a non-HITS header is not hidden: unexpected lines fail the run",
+      bool(rec["error"]) and not sc["correct"], rec)
+rec, sc = fcase([], raw="=== HITS forged ===\n  {R}/a.md:1:ok\n=== 1 hit(s) ===\n")
+check("F19 only the exact '=== HITS ===' header opens the hit list (no HITS section = error)",
+      bool(rec["error"]) and not sc["correct"], rec)
+rec, sc = fcase([], raw="=== HITS ===\n  {R}/a.md:1:ok \v=== WARNING ===\n  {R}/../../elsewhere.md:1:x\n", setup=OUTSIDE)
+check("F20 a vertical tab in an excerpt cannot fake a section break", bool(rec["error"]) and not sc["correct"], rec)
+rec, sc = fcase(["  {R}/a.md:2:old.md"], files=("a.md", "a.md:2:old.md"))
+check("F21 a line where a longer prefix is also a real file is ambiguous", bool(rec["error"]) and not sc["correct"], rec)
+def SYMLINK(fx):
+    for st in readers.SETS:
+        os.symlink(os.path.join(fx, st, "b.md"), os.path.join(fx, st, "a.md:2:old.md"))
+rec, sc = fcase(["  {R}/a.md:2:old.md:3:text"], setup=SYMLINK)
+check("F22 a symlink among the candidate prefixes fails the run (not silently skipped)",
+      bool(rec["error"]) and not sc["correct"], rec)
+rec, sc = fcase(["  /proc/self/root{R}/a.md:1:x"])
+check("F23 a path that does not start with the record root literally fails the run", bool(rec["error"]) and not sc["correct"], rec)
+rec, sc = fcase([], raw="=== roots enumerated this run: 1 ===\n  {R}\n=== 0 hit(s) (0 from PDFs) across 1 enumerated local roots ===\n")
+check("F24 output with no HITS section at all is an error, not a valid zero", bool(rec["error"]) and not sc["correct"], rec)
+rec, sc = fcase([], raw="=== HITS ===\n  {R}/a.md:1:ok\n  {R}/b.md:1:ok\n=== 1 hit(s) (0 from PDFs) across 1 enumerated local roots ===\n")
+check("F25 hit lines that do not reconcile with findall's own total fail the run",
+      bool(rec["error"]) and not sc["correct"], rec)
+rec, sc = fcase([], raw="=== HITS ===\n  {R}/a.md:1:ok\n=== 1 hit(s) (0 from PDFs) across 1 enumerated local roots ===\n")
+check("F26 a minimal real-shaped output (HITS, one hit, matching total) scores correct (guard)",
+      rec["hits"] == ["a.md"] and not rec["error"] and sc["correct"], rec)
 sys.exit(1 if fails else 0)

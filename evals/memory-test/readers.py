@@ -117,53 +117,98 @@ def run_grep(out, fx, man):
                          "output": r.stdout, "error": None if r.returncode in (0, 1) else r.stderr[:300]})
 
 
-LINE_DELIM = re.compile(r"(?=:([1-9][0-9]*):)")   # every ":N:" with N >= 1, overlapping ("tail:2:3:" holds both)
+# bin/findall's section headers, as printed by rivendale/overseer bin/findall (a381a8e). Any other "=== " line at
+# column 0 is a problem: the parser does not guess at a format it has not seen.
+FINDALL_HEADERS = [re.compile(x) for x in (
+    r"=== HITS ===$",
+    r"=== EXCLUDED BY POLICY \(never searched, never read\) ===$",
+    r"=== FINDALL_ROOTS override in effect — this is a NARROWED search, not the estate ===$",
+    r"=== NOT REACHABLE FROM HERE \(a miss here is NOT a global absence\) ===$",
+    r"=== PDF COVERAGE \(this is the numerator and denominator, not a reassurance\) ===$",
+    r"=== WHAT THIS SEARCH NEVER OPENED ===$",
+    r"=== roots enumerated this run: [0-9]+ ===$",
+    r"=== [0-9]+ superseded hit\(s\) hidden \(--current\) ===$")]
+FINDALL_TOTAL = re.compile(r"=== ([0-9]+) hit\(s\) \([0-9]+ from PDFs\) across [0-9]+ enumerated local roots ===$")
+LINE_NO = re.compile(r":([1-9][0-9]*):")
 
 
 def _hit_path(body, root):
-    """One hit body ("PATH:LINE:excerpt", no flag) -> (path relative to root, None) or (None, problem). The path must be
-    the ONE real, non-link file inside root that some ":N:" delimiter ends; anything else is a problem, never a guess."""
-    if not body.startswith("/"):
-        return None, "not an absolute POSIX path"
-    cands = sorted({body[:m.start()] for m in LINE_DELIM.finditer(body)
-                    if os.path.isfile(body[:m.start()]) and not os.path.islink(body[:m.start()])})
-    if not cands:
-        return None, "no real file ends at a :LINE: delimiter"
-    if len(cands) > 1:
-        return None, "ambiguous: " + " | ".join(cands)
-    path, rroot = cands[0], os.path.realpath(root)
-    if ".." in path.split("/") or not os.path.realpath(path).startswith(rroot + "/"):
+    """One hit body ("ROOT/PATH:LINE:excerpt", no flag) -> (path relative to root, None) or (None, problem).
+    The body must start with the record root LITERALLY; exactly one prefix of it (cut at any ":", or the whole body)
+    may exist on disk; that prefix must be a regular file reached through no link, inside root by realpath; and a
+    ":N:" (N >= 1) must follow it. Anything else is a problem, never a guess."""
+    lead = root.rstrip("/") + "/"
+    if not body.startswith(lead):
+        return None, "does not start with the record root"
+    rest = body[len(lead):]
+    prefixes = {rest[:i] for i, ch in enumerate(rest) if ch == ":"} | {rest}
+    real = sorted(p for p in prefixes if p and os.path.lexists(os.path.join(lead, p)))
+    if len(real) != 1:
+        return None, ("no real path before a :LINE: delimiter" if not real else "ambiguous: " + " | ".join(real))
+    p = real[0]
+    if ".." in p.split("/"):
+        return None, "climbs out of the record (..)"
+    parts = p.split("/")
+    for k in range(1, len(parts) + 1):
+        if os.path.islink(os.path.join(lead, *parts[:k])):
+            return None, "reached through a symbolic link"
+    full = os.path.join(lead, p)
+    if not os.path.isfile(full):
+        return None, "not a regular file"
+    if not os.path.realpath(full).startswith(os.path.realpath(root) + "/"):
         return None, "outside the record"
-    return os.path.relpath(os.path.realpath(path), rroot), None
+    if not LINE_NO.match(rest[len(p):]):
+        return None, "no :LINE: (a positive line number) after the path"
+    return p, None
 
 
 def parse_findall_hits(stdout, root):
-    """bin/findall's hit lines (rivendale/overseer #55): "  PATH:LINE:excerpt", optionally led by a flag such as
-    "[SUPERSEDED; replacement: notes/x.md] ". Returns (paths, flags, problems): paths relative to root in first-seen
-    order, {path: [flag, ...]}, and every HITS line that does not name exactly one real file inside the record. Any
-    problem fails the run (fail closed): a hit the parser cannot place must not vanish while another hit earns credit."""
-    hits, flags, problems, on, lines = [], {}, [], False, []
-    for ln in stdout.splitlines():
+    """bin/findall's hit lines (rivendale/overseer #55): "  ROOT/PATH:LINE:excerpt", optionally led by a flag such as
+    "[SUPERSEDED; replacement: notes/x.md] ". Returns (paths, flags, problems). Excerpts and flag text are record
+    CONTENT, so the parser trusts structure only: lines split on "\n" alone, headers only at column 0 and only the
+    known ones, exactly one HITS section, and the hit lines must reconcile with findall's own total. Any problem fails
+    the run (fail closed). A machine format from findall would remove this parsing altogether."""
+    hits, flags, problems, section, lines, total, n_hits = [], {}, [], None, [], None, 0
+    for ln in stdout.split("\n"):
         if ln.startswith("=== "):
-            on = ln.startswith("=== HITS")
+            m = FINDALL_TOTAL.match(ln)
+            if m:
+                total, section = int(m.group(1)), "total"
+            elif any(h.match(ln) for h in FINDALL_HEADERS):
+                if ln == "=== HITS ===":
+                    if section == "hits" or n_hits or "hits" in [x for x, _ in lines]:
+                        problems.append("more than one HITS section")
+                    section = "hits"
+                    lines.append(("hits", None))
+                else:
+                    section = "other"
+            else:
+                problems.append(f"unknown section header: {ln[:120]}")
+                section = "other"
             continue
-        if on and ln.strip():
-            lines.append(ln.strip())
-    if lines == ["(none)"]:
-        return hits, flags, problems
-    for body in lines:
+        if section == "hits" and ln.strip():
+            if not ln.startswith("  "):
+                problems.append(f"unindented line inside HITS: {ln[:120]}")
+                continue
+            lines.append(("hit", ln[2:]))
+    if not any(k == "hits" for k, _ in lines):
+        problems.append("no HITS section")
+    bodies = [b for k, b in lines if k == "hit"]
+    if bodies == ["(none)"]:
+        bodies = []
+    if total is None:
+        problems.append("no hit total line")
+    elif total != len(bodies):
+        problems.append(f"{len(bodies)} hit line(s) but findall's total says {total}")
+    for body in bodies:
         flag, path, problem = None, None, None
         if body.startswith("["):
-            # A flag may itself hold "]" (a replacement path), so try every "] /" split; exactly one must parse.
-            found = set()
-            for m in re.finditer(r"\] (?=/)", body):
-                p, prob = _hit_path(body[m.end():], root)
-                if p is not None:
-                    found.add((body[1:m.start()], p))
-            if len({p for _, p in found}) == 1 and len(found) == 1:
-                flag, path = next(iter(found))
+            splits = [m for m in re.finditer(r"\] (?=/)", body)]
+            if len(splits) != 1:
+                problem = f"flagged line has {len(splits)} '] /' splits (exactly one is required)"
             else:
-                problem = "flagged line did not parse to exactly one hit" if not found else "ambiguous flag split"
+                flag = body[1:splits[0].start()]
+                path, problem = _hit_path(body[splits[0].end():], root)
         else:
             path, problem = _hit_path(body, root)
         if problem:
