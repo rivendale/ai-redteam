@@ -22,7 +22,7 @@ sha256 and mtime are in `manifest.json`, and a rebuild is byte-identical.
 
 ## Readers
 - **grep** (the bar): `grep -rin -C2 <keyword>` over the record. It "flags" a value only if a marker is visible within two lines.
-- **findall**: a private file-search helper (`findall -c <keyword>` with its roots narrowed to the record, so nothing real is walked). It returns paths only. Its published runs keep the hit paths and drop its banner, which lists private exclusion paths.
+- **findall**: a private file-search helper (`findall --porcelain -c <keyword>` with its roots narrowed to the record, so nothing real is walked). Porcelain prints NUL-separated records (kind, flag, path, line) and a count trailer, with no excerpt and no banner. The reader checks every field and fails the run on any record it cannot place (controls P0-P12). Superseded flags are recorded but not scored.
 - **model seat**: `claude -p --model claude-haiku-5-5`, tools Read/Grep/Glob, `--permission-mode dontAsk`, `--setting-sources ""`,
   no MCP, working directory = the record, outside any repository. Every tool call is logged; a read outside the record is denied
   (probed: Read of /etc/hostname returned a permission denial). One question per run, 3 repeats per question per length.

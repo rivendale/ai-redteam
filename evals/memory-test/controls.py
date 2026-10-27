@@ -311,121 +311,90 @@ with tempfile.TemporaryDirectory() as d:
     old = [r["checks"] for r in res["rows"] if r["reader"] == "old"]
     check("H always-old reader fails correct and flagged on every hard topic", all(not c["correct"] and not c["flagged"] for c in old))
 
-# F: the findall reader's parser, against bin/findall's final hit format (rivendale/overseer #55, merged a381a8e).
-# F1-F4 were written before the first parser change and failed on the old parser. F7-F14 come from the second-vendor
-# review of b16c719 (codex, gemini) and were written before the fail-closed rewrite; each failed on b16c719.
-# Rule under test: a hit line either names exactly one real file inside the record, or the run fails closed (error set).
+# P: the findall reader against bin/findall --porcelain (rivendale/overseer T83, #64): NUL-terminated records
+# KIND\0FLAG\0PATH\0LINE\0\n and a final trailer T\0shown\0hidden\0pdf\0. P10-P13 of the T83 failure list
+# (threads/2026-10-27-findall-porcelain.md), written before the reader switch; P10-P12 failed on the prose parser.
 import readers  # noqa: E402
 T1 = {"planted": ["a.md"], "current_files": ["a.md"], "current": "v", "checks": [], "wrong": []}
 
 
-def findall_case(d, hit_lines, files=("a.md", "b.md"), setup=None, raw=None):
-    """Run readers.run_findall against a fake findall that prints hit_lines ({R} = the set's root). Returns
-    (record for the 'small' set, root)."""
-    fx, out = os.path.join(d, "fx"), os.path.join(d, "out")
-    os.makedirs(out)
-    for s in readers.SETS:
-        for f in files:
-            os.makedirs(os.path.dirname(os.path.join(fx, s, f)), exist_ok=True)
-            open(os.path.join(fx, s, f), "w").write("x\n")
-    body = "".join("printf '%s\\n' " + "'" + ln.replace("'", "'\\''").replace("{R}", "'\"$R\"'") + "'\n"
-                   for ln in hit_lines)
-    if setup:
-        setup(fx)
-    fake = os.path.join(d, "findall")
-    if raw is not None:   # the whole stdout, verbatim ({R} = root), for section-structure attacks
-        open(os.path.join(d, "raw.txt"), "w").write(raw)
-        open(fake, "w").write('#!/bin/sh\nsed "s#{R}#$FINDALL_ROOTS#g" ' + os.path.join(d, "raw.txt") + '\n')
-    else:
-      open(fake, "w").write('#!/bin/sh\nR="$FINDALL_ROOTS"\necho "=== roots enumerated this run: 1 ==="; echo "  $R"\necho "=== HITS ==="\n'
-                          + body + 'echo ""\necho "=== PDF COVERAGE (this is the numerator and denominator, not a reassurance) ==="\n'
-                          'echo "  -- 0 PDF hit(s) across 0 extracted document(s)"\n'
-                          'echo "=== 0 superseded hit(s) hidden (--current) ==="\n'
-                          + f'echo "=== {sum(1 for x in hit_lines if x.strip() != "(none)")} hit(s) (0 from PDFs) across 1 enumerated local roots ==="\n')
-    os.chmod(fake, 0o755)
-    readers.run_findall(out, fx, {"topics": [{"id": "t1", "kw": "codex"}]}, fake)
-    recs = [json.loads(ln) for ln in open(os.path.join(out, "runs.jsonl"))]
-    return [r for r in recs if r["set"] == "small"][0], os.path.join(fx, "small")
-
-
-def fcase(hit_lines, files=("a.md", "b.md"), setup=None, raw=None):
+def pcase(records, rc=0, files=("a.md", "b.md"), setup=None):
+    """records: list of bytes records ({R} = the set's realpath root), joined as findall --porcelain would print
+    them. Returns (record for the 'small' set, score)."""
     with tempfile.TemporaryDirectory() as d:
-        rec, root = findall_case(d, hit_lines, files, setup, raw)
-        return rec, score.score_paths(T1, rec, root)
+        fx, out = os.path.join(d, "fx"), os.path.join(d, "out")
+        os.makedirs(out)
+        for st in readers.SETS:
+            for f in files:
+                os.makedirs(os.path.dirname(os.path.join(fx, st, f)), exist_ok=True)
+                open(os.path.join(fx, st, f), "w").write("x\n")
+        if setup:
+            setup(fx)
+        blob = os.path.join(d, "stdout.bin")
+        open(blob, "wb").write(b"".join(records) if isinstance(records, list) else records)
+        fake = os.path.join(d, "findall")
+        open(fake, "w").write(f'#!/usr/bin/env python3\nimport os,sys\nassert sys.argv[1:3]==["--porcelain","-c"], sys.argv\n'
+                              f'R=os.environ["FINDALL_ROOTS"].encode()\n'
+                              f'sys.stdout.buffer.write(open({blob!r},"rb").read().replace(b"{{R}}",R))\nsys.exit({rc})\n')
+        os.chmod(fake, 0o755)
+        readers.run_findall(out, fx, {"topics": [{"id": "t1", "kw": "codex"}]}, fake)
+        rec = [r for r in (json.loads(ln) for ln in open(os.path.join(out, "runs.jsonl"))) if r["set"] == "small"][0]
+        return rec, score.score_paths(T1, rec, os.path.realpath(os.path.join(fx, "small")))
 
 
-rec, sc = fcase(["  {R}/a.md:1:codex default is now gpt-6-sol", "  {R}/a.md:5:codex default again"])
-check("F1 a hit line 'ROOT/a.md:1:text' records the path a.md, once, and a clean run scores correct",
-      rec["hits"] == ["a.md"] and not rec["error"] and sc["correct"], (rec["hits"], rec["error"], sc))
-rec, sc = fcase(["  {R}/a.md:1:new", "  [SUPERSEDED; replacement not stated] {R}/b.md:4:old"])
-check("F2 a [SUPERSEDED ...] hit is kept, with its flag", "b.md" in rec["hits"]
-      and rec.get("flags", {}).get("b.md") == ["SUPERSEDED; replacement not stated"], (rec["hits"], rec.get("flags")))
-rec, sc = fcase(["  {R}/x:2:y.md:3:a colon-digit-colon run in a file name"], files=("x:2:y.md",))
-check("F3 a file name containing ':2:' resolves to the real file", rec["hits"] == ["x:2:y.md"] and not rec["error"], rec)
+def fails_for(rec, sc, reason):
+    """The run must fail closed FOR THIS REASON: an error naming it, and no credit. A check that only asked for "some
+    error" would pass on a reader that errors on every input."""
+    return bool(rec["error"]) and reason in rec["error"].lower() and not sc["correct"]
+
+
+def hit(kind, flag, rel, line):
+    return kind + b"\0" + flag + b"\0{R}/" + rel + b"\0" + line + b"\0\n"
+
+
+def trailer(shown, hidden=b"0", pdf=b"0"):
+    return b"T\0" + shown + b"\0" + hidden + b"\0" + pdf + b"\0"
+
+
 OUTSIDE = lambda fx: open(os.path.join(os.path.dirname(fx), "elsewhere.md"), "w").write("x\n")
-rec, sc = fcase(["  {R}/a.md:1:ok", "  {R}/../../elsewhere.md:1:a REAL file outside the record"], setup=OUTSIDE)
-check("F4 a hit outside the record fails the run (error set; scorer gives no credit)",
-      bool(rec["error"]) and not sc["correct"], (rec["error"], sc))
-rec, sc = fcase(["  {R}/a.md:1:ok"])
-check("F5 PDF-coverage and footer lines are not hits", rec["hits"] == ["a.md"], rec["hits"])
-base, bsc = fcase(["  {R}/a.md:1:ok"])
-rec, sc = fcase(["  {R}/a.md:1:ok", "  {R}/../../elsewhere.md:1:outside"], setup=OUTSIDE)
-check("F6 with a correct baseline, adding only an outside hit removes the credit", bsc["correct"] and not sc["correct"],
-      (bsc, sc))
-rec, sc = fcase(["  {R}/a.md"])
-check("F7 a bare path with no :LINE: is not a hit: the run fails closed", bool(rec["error"]) and not sc["correct"], rec)
-rec, sc = fcase(["  {R}/a.md:0:line zero"])
-check("F8 line number 0 is not valid hit syntax: the run fails closed", bool(rec["error"]) and not sc["correct"], rec)
-rec, sc = fcase(["  {R}/a.md:2:old.md:3:text"], files=("a.md", "a.md:2:old.md"))
-check("F9 a line that names two real files (a.md and a.md:2:old.md) is ambiguous: the run fails closed",
-      bool(rec["error"]) and not sc["correct"], rec)
-rec, sc = fcase(["  {R}/tail:2:3:text"], files=("tail:2",))
-check("F10 a file named 'tail:2' with hit ':3:' resolves (delimiters may share a colon)",
-      rec["hits"] == ["tail:2"] and not rec["error"], rec)
-for i, ln in enumerate(("  C:\\notes\\a.md:1:x", "  C:/notes/a.md:1:x", "  \\\\server\\share\\a.md:1:x")):
-    rec, sc = fcase(["  {R}/a.md:1:ok", ln])
-    check(f"F11.{i} a Windows/UNC hit path fails the run instead of disappearing", bool(rec["error"]) and not sc["correct"],
-          (ln, rec))
-rec, sc = fcase(["  {R}/a.md:1:new", "  [SUPERSEDED; replacement: notes/x]y.md] {R}/b.md:4:old"])
-check("F12 a flag whose replacement path holds ']' still keeps the flagged hit",
-      "b.md" in rec["hits"] and rec.get("flags", {}).get("b.md") == ["SUPERSEDED; replacement: notes/x]y.md"], rec)
-rec, sc = fcase(["  {R}/../padded/a.md:1:x"])
-check("F13 a REAL file reached by climbing out (../padded/a.md, a sibling set) fails the run", bool(rec["error"]) and not sc["correct"], rec)
-rec, sc = fcase(["  some prose that is not a hit"])
-check("F14 an unparseable line inside HITS fails the run", bool(rec["error"]) and not sc["correct"], rec)
-rec, sc = fcase(["  (none)"])
-check("F15 findall's '(none)' is zero hits, not an error (guard)", rec["hits"] == [] and not rec["error"], rec)
-# F16-F24: third panel (codex, gemini at c7626df). Written before the strict rewrite; each failed on c7626df.
-rec, sc = fcase(["  [SUPERSEDED] {R}/../../elsewhere.md:1:payload ] {R}/a.md:1:ok"], setup=OUTSIDE)
-check("F16 a flagged line whose first split is outside and a later split inside fails the run",
-      bool(rec["error"]) and not sc["correct"], rec)
-rec, sc = fcase(["  [SUPERSEDED; replacement: x] {R}/b.md:4:old ] {R}/a.md:1:ok"])
-check("F17 a flagged line with two '] /' splits fails the run (no guessing which is the hit)",
-      bool(rec["error"]) and not sc["correct"], rec)
-rec, sc = fcase([], raw="=== HITS ===\n  {R}/a.md:1:ok\n=== WARNING ===\n  {R}/../../elsewhere.md:1:x\n", setup=OUTSIDE)
-check("F18 an outside hit after a non-HITS header is not hidden: unexpected lines fail the run",
-      bool(rec["error"]) and not sc["correct"], rec)
-rec, sc = fcase([], raw="=== HITS forged ===\n  {R}/a.md:1:ok\n=== 1 hit(s) ===\n")
-check("F19 only the exact '=== HITS ===' header opens the hit list (no HITS section = error)",
-      bool(rec["error"]) and not sc["correct"], rec)
-rec, sc = fcase([], raw="=== HITS ===\n  {R}/a.md:1:ok \v=== WARNING ===\n  {R}/../../elsewhere.md:1:x\n", setup=OUTSIDE)
-check("F20 a vertical tab in an excerpt cannot fake a section break", bool(rec["error"]) and not sc["correct"], rec)
-rec, sc = fcase(["  {R}/a.md:2:old.md"], files=("a.md", "a.md:2:old.md"))
-check("F21 a line where a longer prefix is also a real file is ambiguous", bool(rec["error"]) and not sc["correct"], rec)
-def SYMLINK(fx):
-    for st in readers.SETS:
-        os.symlink(os.path.join(fx, st, "b.md"), os.path.join(fx, st, "a.md:2:old.md"))
-rec, sc = fcase(["  {R}/a.md:2:old.md:3:text"], setup=SYMLINK)
-check("F22 a symlink among the candidate prefixes fails the run (not silently skipped)",
-      bool(rec["error"]) and not sc["correct"], rec)
-rec, sc = fcase(["  /proc/self/root{R}/a.md:1:x"])
-check("F23 a path that does not start with the record root literally fails the run", bool(rec["error"]) and not sc["correct"], rec)
-rec, sc = fcase([], raw="=== roots enumerated this run: 1 ===\n  {R}\n=== 0 hit(s) (0 from PDFs) across 1 enumerated local roots ===\n")
-check("F24 output with no HITS section at all is an error, not a valid zero", bool(rec["error"]) and not sc["correct"], rec)
-rec, sc = fcase([], raw="=== HITS ===\n  {R}/a.md:1:ok\n  {R}/b.md:1:ok\n=== 1 hit(s) (0 from PDFs) across 1 enumerated local roots ===\n")
-check("F25 hit lines that do not reconcile with findall's own total fail the run",
-      bool(rec["error"]) and not sc["correct"], rec)
-rec, sc = fcase([], raw="=== HITS ===\n  {R}/a.md:1:ok\n=== 1 hit(s) (0 from PDFs) across 1 enumerated local roots ===\n")
-check("F26 a minimal real-shaped output (HITS, one hit, matching total) scores correct (guard)",
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), trailer(b"1")])
+check("P0 one current record and a matching trailer: hit a.md, no error, scored correct (guard)",
       rec["hits"] == ["a.md"] and not rec["error"] and sc["correct"], rec)
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), hit(b"S", b"SUPERSEDED; replacement: a.md", b"b.md", b"4"), trailer(b"2")])
+check("P0b a superseded record is kept, with its flag (guard)",
+      rec["hits"] == ["a.md", "b.md"] and rec["flags"] == {"b.md": ["SUPERSEDED; replacement: a.md"]} and not rec["error"], rec)
+rec, sc = pcase([hit(b"C", b"", b"../../elsewhere.md", b"1"), hit(b"C", b"", b"a.md", b"1"), trailer(b"2")], setup=OUTSIDE)
+check("P10 a record path outside the record (a REAL file, via ..) fails the run", fails_for(rec, sc, "outside"), rec)
+rec, sc = pcase([b"C\0\0/etc/hostname\0" + b"1\0\n", hit(b"C", b"", b"a.md", b"1"), trailer(b"2")])
+check("P10b an absolute path outside the root fails the run", fails_for(rec, sc, "outside"), rec)
+def LINK(fx):
+    for st in readers.SETS:
+        os.symlink(os.path.join(fx, st, "a.md"), os.path.join(fx, st, "link.md"))
+rec, sc = pcase([hit(b"C", b"", b"link.md", b"1"), trailer(b"1")], setup=LINK)
+check("P10c a record path that is a symbolic link fails the run", fails_for(rec, sc, "link"), rec)
+rec, sc = pcase([hit(b"C", b"", b"missing.md", b"1"), trailer(b"1")])
+check("P10d a record path that is not a regular file fails the run", fails_for(rec, sc, "regular file"), rec)
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1")])
+check("P11 a missing trailer fails the run", fails_for(rec, sc, "trailer"), rec)
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), b"T\x000\x000\x000\x00\n", trailer(b"1")])
+check("P11b two trailers fail the run", fails_for(rec, sc, "trailer"), rec)
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), hit(b"C", b"", b"b.md", b"1"), trailer(b"1")])
+check("P11c a trailer that does not reconcile with the records fails the run", fails_for(rec, sc, "reconcile"), rec)
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), trailer(b"1", hidden=b"1")])
+check("P11d a hidden count without --current fails the run", fails_for(rec, sc, "hidden"), rec)
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), trailer(b"1", pdf=b"1")])
+check("P11e a non-zero PDF count fails the run (not representable)", fails_for(rec, sc, "pdf"), rec)
+rec, sc = pcase(hit(b"C", b"", b"a.md", b"1") + b"C\0\0{R}/b.md\0")
+check("P12 a truncated stream (a partial record, no trailer) fails the run", fails_for(rec, sc, "truncated"), rec)
+rec, sc = pcase([hit(b"X", b"", b"a.md", b"1"), trailer(b"1")])
+check("P12b a KIND outside {C, S} fails the run", fails_for(rec, sc, "kind"), rec)
+for i, ln in enumerate((b"0", b"-1", b"1a", b"")):
+    rec, sc = pcase([hit(b"C", b"", b"a.md", ln), trailer(b"1")])
+    check(f"P12c.{i} an invalid LINE ({ln!r}) fails the run", fails_for(rec, sc, "invalid line"), rec)
+rec, sc = pcase([b"C\0\0{R}/a.md\0" + b"1\0extra\0\n", trailer(b"1")])
+check("P12d a record with extra fields fails the run", fails_for(rec, sc, "fields"), rec)
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), trailer(b"1")], rc=2)
+check("P12e a non-zero exit fails the run even with well-formed stdout", fails_for(rec, sc, "rc="), rec)
+rec, sc = pcase([trailer(b"0")])
+check("P12f an empty result with a valid trailer is zero hits, not an error (guard)", rec["hits"] == [] and not rec["error"], rec)
 sys.exit(1 if fails else 0)

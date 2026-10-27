@@ -2,7 +2,7 @@
 """Run one reader over the Ferngate record and append its raw answers to OUT/runs.jsonl.
 
   readers.py OUT grep                         the plain baseline: grep -rin -C2 <keyword>
-  readers.py OUT findall --findall PATH       a findall executable: findall -c <keyword>, FINDALL_ROOTS=<the set>
+  readers.py OUT findall --findall PATH       a findall executable: findall --porcelain -c <keyword>, FINDALL_ROOTS=<the set>
   readers.py OUT model [--prompt r1|r2-neutral] [--repeats 3] [--max-cost 4] [--est 0.15] [--model claude-haiku-5-5] [--only TOPIC]
 
 OUT must be outside any git repository (the model seat runs with the set as its working directory).
@@ -117,109 +117,70 @@ def run_grep(out, fx, man):
                          "output": r.stdout, "error": None if r.returncode in (0, 1) else r.stderr[:300]})
 
 
-# bin/findall's section headers, as printed by rivendale/overseer bin/findall (a381a8e). Any other "=== " line at
-# column 0 is a problem: the parser does not guess at a format it has not seen.
-FINDALL_HEADERS = [re.compile(x) for x in (
-    r"=== HITS ===$",
-    r"=== EXCLUDED BY POLICY \(never searched, never read\) ===$",
-    r"=== FINDALL_ROOTS override in effect — this is a NARROWED search, not the estate ===$",
-    r"=== NOT REACHABLE FROM HERE \(a miss here is NOT a global absence\) ===$",
-    r"=== PDF COVERAGE \(this is the numerator and denominator, not a reassurance\) ===$",
-    r"=== WHAT THIS SEARCH NEVER OPENED ===$",
-    r"=== roots enumerated this run: [0-9]+ ===$",
-    r"=== [0-9]+ superseded hit\(s\) hidden \(--current\) ===$")]
-FINDALL_TOTAL = re.compile(r"=== ([0-9]+) hit\(s\) \([0-9]+ from PDFs\) across [0-9]+ enumerated local roots ===$")
-LINE_NO = re.compile(r":([1-9][0-9]*):")
-
-
-def _hit_path(body, root):
-    """One hit body ("ROOT/PATH:LINE:excerpt", no flag) -> (path relative to root, None) or (None, problem).
-    The body must start with the record root LITERALLY; exactly one prefix of it (cut at any ":", or the whole body)
-    may exist on disk; that prefix must be a regular file reached through no link, inside root by realpath; and a
-    ":N:" (N >= 1) must follow it. Anything else is a problem, never a guess."""
-    lead = root.rstrip("/") + "/"
-    if not body.startswith(lead):
-        return None, "does not start with the record root"
-    rest = body[len(lead):]
-    prefixes = {rest[:i] for i, ch in enumerate(rest) if ch == ":"} | {rest}
-    real = sorted(p for p in prefixes if p and os.path.lexists(os.path.join(lead, p)))
-    if len(real) != 1:
-        return None, ("no real path before a :LINE: delimiter" if not real else "ambiguous: " + " | ".join(real))
-    p = real[0]
-    if ".." in p.split("/"):
-        return None, "climbs out of the record (..)"
-    parts = p.split("/")
-    for k in range(1, len(parts) + 1):
-        if os.path.islink(os.path.join(lead, *parts[:k])):
-            return None, "reached through a symbolic link"
-    full = os.path.join(lead, p)
-    if not os.path.isfile(full):
-        return None, "not a regular file"
-    if not os.path.realpath(full).startswith(os.path.realpath(root) + "/"):
-        return None, "outside the record"
-    if not LINE_NO.match(rest[len(p):]):
-        return None, "no :LINE: (a positive line number) after the path"
-    return p, None
-
-
-def parse_findall_hits(stdout, root):
-    """bin/findall's hit lines (rivendale/overseer #55): "  ROOT/PATH:LINE:excerpt", optionally led by a flag such as
-    "[SUPERSEDED; replacement: notes/x.md] ". Returns (paths, flags, problems). Excerpts and flag text are record
-    CONTENT, so the parser trusts structure only: lines split on "\n" alone, headers only at column 0 and only the
-    known ones, exactly one HITS section, and the hit lines must reconcile with findall's own total. Any problem fails
-    the run (fail closed). A machine format from findall would remove this parsing altogether."""
-    hits, flags, problems, section, lines, total, n_hits = [], {}, [], None, [], None, 0
-    for ln in stdout.split("\n"):
-        if ln.startswith("=== "):
-            m = FINDALL_TOTAL.match(ln)
-            if m:
-                total, section = int(m.group(1)), "total"
-            elif any(h.match(ln) for h in FINDALL_HEADERS):
-                if ln == "=== HITS ===":
-                    if section == "hits" or n_hits or "hits" in [x for x, _ in lines]:
-                        problems.append("more than one HITS section")
-                    section = "hits"
-                    lines.append(("hits", None))
-                else:
-                    section = "other"
-            else:
-                problems.append(f"unknown section header: {ln[:120]}")
-                section = "other"
+def parse_porcelain(data, root):
+    """bin/findall --porcelain (rivendale/overseer T83, #64): records KIND\0FLAG\0PATH\0LINE\0\n, then a final trailer
+    T\0shown\0hidden\0pdf\0 with no newline. Returns (paths relative to root in first-seen order, {path: [flag]},
+    problems). Every field is checked; any problem fails the run (fail closed). No excerpt or prose is parsed."""
+    hits, flags, problems = [], {}, []
+    rroot = os.path.realpath(root)
+    parts = data.split(b"\n")
+    tail, body = parts[-1], parts[:-1]
+    t = tail.split(b"\0")
+    if not tail.startswith(b"T\0"):
+        problems.append("truncated stream: no trailer after the last record" if tail else "missing trailer")
+        t = None
+    elif len(t) != 5 or t[4] != b"" or not all(x.isdigit() for x in t[1:4]):
+        problems.append("malformed trailer")
+        t = None
+    records = 0
+    for rec in body:
+        if rec.startswith(b"T\0"):
+            problems.append("more than one trailer")
             continue
-        if section == "hits" and ln.strip():
-            if not ln.startswith("  "):
-                problems.append(f"unindented line inside HITS: {ln[:120]}")
-                continue
-            lines.append(("hit", ln[2:]))
-    if not any(k == "hits" for k, _ in lines):
-        problems.append("no HITS section")
-    bodies = [b for k, b in lines if k == "hit"]
-    if bodies == ["(none)"]:
-        bodies = []
-    if total is None:
-        problems.append("no hit total line")
-    elif total != len(bodies):
-        problems.append(f"{len(bodies)} hit line(s) but findall's total says {total}")
-    for body in bodies:
-        flag, path, problem = None, None, None
-        if body.startswith("["):
-            splits = [m for m in re.finditer(r"\] (?=/)", body)]
-            if len(splits) != 1:
-                problem = f"flagged line has {len(splits)} '] /' splits (exactly one is required)"
-            else:
-                flag = body[1:splits[0].start()]
-                path, problem = _hit_path(body[splits[0].end():], root)
-        else:
-            path, problem = _hit_path(body, root)
-        if problem:
-            problems.append(f"{problem}: {body[:160]}")
+        f = rec.split(b"\0")
+        if len(f) != 5 or f[4] != b"":
+            problems.append(f"wrong number of fields in a record ({len(f) - 1})")
             continue
-        if path not in hits:
-            hits.append(path)
-        if flag:
-            flags.setdefault(path, [])
-            if flag not in flags[path]:
-                flags[path].append(flag)
+        records += 1
+        kind, flag, raw, line = f[0], f[1], f[2], f[3]
+        if kind not in (b"C", b"S"):
+            problems.append(f"invalid kind {kind[:8]!r}")
+            continue
+        if not (line.isdigit() and int(line) >= 1):
+            problems.append(f"invalid line {line[:12]!r}")
+            continue
+        path = os.fsdecode(raw)
+        lead = rroot + "/"
+        rel = path[len(lead):] if path.startswith(lead) else None
+        if rel is None or not rel or ".." in rel.split("/"):
+            problems.append(f"outside the record: {path[:160]}")
+            continue
+        comps = rel.split("/")
+        if any(os.path.islink(os.path.join(rroot, *comps[:k])) for k in range(1, len(comps) + 1)):
+            problems.append(f"reached through a symbolic link: {rel[:160]}")
+            continue
+        full = os.path.join(rroot, rel)
+        if not os.path.isfile(full):
+            problems.append(f"not a regular file: {rel[:160]}")
+            continue
+        if not os.path.realpath(full).startswith(lead):
+            problems.append(f"outside the record by realpath: {rel[:160]}")
+            continue
+        if rel not in hits:
+            hits.append(rel)
+        if kind == b"S":
+            label = flag.decode("utf-8", "replace")
+            flags.setdefault(rel, [])
+            if label not in flags[rel]:
+                flags[rel].append(label)
+    if t is not None:
+        shown, hidden, pdf = int(t[1]), int(t[2]), int(t[3])
+        if shown != records:
+            problems.append(f"trailer does not reconcile: {records} record(s), trailer says {shown}")
+        if hidden != 0:
+            problems.append(f"hidden count {hidden} without --current")
+        if pdf != 0:
+            problems.append(f"pdf count {pdf} is not representable here")
     return hits, flags, problems
 
 
@@ -227,14 +188,16 @@ def run_findall(out, fx, man, findall):
     for s in SETS:
         root = os.path.join(fx, s)
         for t in man["topics"]:
-            env = dict(os.environ, FINDALL_ROOTS=root)
-            r = subprocess.run([findall, "-c", t["kw"]], env=env, capture_output=True, text=True, timeout=300)
-            hits, flags, problems = parse_findall_hits(r.stdout, root)
-            err = f"rc={r.returncode} {r.stderr[:300]}" if r.returncode != 0 else None
+            # Porcelain refuses a symlinked root, so pass the realpath.
+            env = dict(os.environ, FINDALL_ROOTS=os.path.realpath(root))
+            r = subprocess.run([findall, "--porcelain", "-c", t["kw"]], env=env, capture_output=True, timeout=300)
+            hits, flags, problems = parse_porcelain(r.stdout, root)
+            err = f"rc={r.returncode} {r.stderr.decode('utf-8', 'replace')[:300]}" if r.returncode != 0 else None
             if problems:   # fail closed: the scorer gives an errored run no credit
-                err = (err + "; " if err else "") + f"{len(problems)} unplaceable hit line(s): " + " || ".join(problems[:3])
+                err = (err + "; " if err else "") + f"{len(problems)} porcelain problem(s): " + " || ".join(problems[:3])
             record(out, {"reader": "findall", "set": s, "topic": t["id"], "repeat": 0, "kind": "paths",
-                         "hits": hits, "flags": flags, "output": r.stdout[-4000:], "error": err})
+                         "hits": hits, "flags": flags,
+                         "output": r.stdout.decode("utf-8", "replace").replace("\0", "|")[-4000:], "error": err})
 
 
 def spent(out):
