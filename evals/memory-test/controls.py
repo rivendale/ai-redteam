@@ -401,7 +401,7 @@ check("P12f an empty result with a valid trailer is zero hits, not an error (gua
 # Q: fourth panel (codex, gemini at a075d09). Written before the fix; Q1-Q6 failed on a075d09.
 rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), trailer(b"1")])
 check("Q0 the reader calls findall with exactly --porcelain -c <keyword> (argv contract, kept apart from the fixtures)",
-      bool(rec["_argv"]) and all(x.startswith("['--porcelain', '-c', ") for x in rec["_argv"]), rec["_argv"])
+      rec["_argv"] == [repr(["--porcelain", "-c", "codex"])] * len(readers.SETS), rec["_argv"])
 def OUTLINK(fx):   # an OUTSIDE symlink that points back INTO the record: realpath alone would accept it
     os.symlink(os.path.join(fx, "small", "a.md"), os.path.join(os.path.dirname(fx), "outlink.md"))
 for i, rel in enumerate((b"/{D}/outlink.md", b"./a.md", b"x/../a.md", b"/a.md")):
