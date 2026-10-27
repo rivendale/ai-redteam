@@ -117,6 +117,9 @@ def run_grep(out, fx, man):
                          "output": r.stdout, "error": None if r.returncode in (0, 1) else r.stderr[:300]})
 
 
+DIGITS = re.compile(rb"[0-9]{1,9}")   # counts and lines stay far below 10**9; longer fields are malformed, not big
+
+
 def parse_porcelain(data, root):
     """bin/findall --porcelain (rivendale/overseer T83, #64): records KIND\0FLAG\0PATH\0LINE\0\n, then a final trailer
     T\0shown\0hidden\0pdf\0 with no newline. Returns (paths relative to root in first-seen order, {path: [flag]},
@@ -129,7 +132,7 @@ def parse_porcelain(data, root):
     if not tail.startswith(b"T\0"):
         problems.append("truncated stream: no trailer after the last record" if tail else "missing trailer")
         t = None
-    elif len(t) != 5 or t[4] != b"" or not all(x.isdigit() for x in t[1:4]):
+    elif len(t) != 5 or t[4] != b"" or not all(DIGITS.fullmatch(x) for x in t[1:4]):
         problems.append("malformed trailer")
         t = None
     records = 0
@@ -146,13 +149,18 @@ def parse_porcelain(data, root):
         if kind not in (b"C", b"S"):
             problems.append(f"invalid kind {kind[:8]!r}")
             continue
-        if not (line.isdigit() and int(line) >= 1):
+        if (kind == b"S") != bool(flag):
+            problems.append("flag does not match kind (C carries none, S must carry one)")
+            continue
+        if not (DIGITS.fullmatch(line) and int(line) >= 1):
             problems.append(f"invalid line {line[:12]!r}")
             continue
         path = os.fsdecode(raw)
         lead = rroot + "/"
         rel = path[len(lead):] if path.startswith(lead) else None
-        if rel is None or not rel or ".." in rel.split("/"):
+        # Every component must be a plain name: "", "." or ".." (a "//" restart, a "./" or a climb) is refused even
+        # when it would resolve inside, because os.path.join restarts at an absolute component.
+        if rel is None or any(c in ("", ".", "..") for c in rel.split("/")):
             problems.append(f"outside the record: {path[:160]}")
             continue
         comps = rel.split("/")
