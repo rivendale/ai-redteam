@@ -310,4 +310,114 @@ with tempfile.TemporaryDirectory() as d:
     check("H empty reader scores 0", res["scores"].get("empty/small") == [0], res["scores"])
     old = [r["checks"] for r in res["rows"] if r["reader"] == "old"]
     check("H always-old reader fails correct and flagged on every hard topic", all(not c["correct"] and not c["flagged"] for c in old))
+
+# P: the findall reader against bin/findall --porcelain (rivendale/overseer T83, #64): NUL-terminated records
+# KIND\0FLAG\0PATH\0LINE\0\n and a final trailer T\0shown\0hidden\0pdf\0. P10-P13 of the T83 failure list
+# (threads/2026-10-27-findall-porcelain.md), written before the reader switch; P10-P12 failed on the prose parser.
+import readers  # noqa: E402
+T1 = {"planted": ["a.md"], "current_files": ["a.md"], "current": "v", "checks": [], "wrong": []}
+
+
+def pcase(records, rc=0, files=("a.md", "b.md"), setup=None):
+    """records: list of bytes records ({R} = the set's realpath root), joined as findall --porcelain would print
+    them. Returns (record for the 'small' set, score)."""
+    with tempfile.TemporaryDirectory() as d:
+        fx, out = os.path.join(d, "fx"), os.path.join(d, "out")
+        os.makedirs(out)
+        for st in readers.SETS:
+            for f in files:
+                os.makedirs(os.path.dirname(os.path.join(fx, st, f)), exist_ok=True)
+                open(os.path.join(fx, st, f), "w").write("x\n")
+        if setup:
+            setup(fx)
+        blob, argv = os.path.join(d, "stdout.bin"), os.path.join(d, "argv.log")
+        open(blob, "wb").write(b"".join(records) if isinstance(records, list) else records)
+        fake = os.path.join(d, "findall")
+        open(fake, "w").write(f'#!/usr/bin/env python3\nimport os,sys\nopen({argv!r},"a").write(repr(sys.argv[1:])+"\\n")\n'
+                              f'R=os.environ["FINDALL_ROOTS"].encode()\n'
+                              f'sys.stdout.buffer.write(open({blob!r},"rb").read().replace(b"{{R}}",R).replace(b"{{D}}",os.path.dirname(os.path.dirname(R))))\nsys.exit({rc})\n')
+        os.chmod(fake, 0o755)
+        readers.run_findall(out, fx, {"topics": [{"id": "t1", "kw": "codex"}]}, fake)
+        rec = [r for r in (json.loads(ln) for ln in open(os.path.join(out, "runs.jsonl"))) if r["set"] == "small"][0]
+        rec["_argv"] = open(argv).read().splitlines() if os.path.exists(argv) else []
+        return rec, score.score_paths(T1, rec, os.path.realpath(os.path.join(fx, "small")))
+
+
+def fails_for(rec, sc, reason):
+    """The run must fail closed FOR THIS REASON: an error naming it, and no credit. A check that only asked for "some
+    error" would pass on a reader that errors on every input."""
+    return bool(rec["error"]) and reason in rec["error"].lower() and not sc["correct"]
+
+
+def hit(kind, flag, rel, line):
+    return kind + b"\0" + flag + b"\0{R}/" + rel + b"\0" + line + b"\0\n"
+
+
+def trailer(shown, hidden=b"0", pdf=b"0"):
+    return b"T\0" + shown + b"\0" + hidden + b"\0" + pdf + b"\0"
+
+
+OUTSIDE = lambda fx: open(os.path.join(os.path.dirname(fx), "elsewhere.md"), "w").write("x\n")
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), trailer(b"1")])
+check("P0 one current record and a matching trailer: hit a.md, no error, scored correct (guard)",
+      rec["hits"] == ["a.md"] and not rec["error"] and sc["correct"], rec)
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), hit(b"S", b"SUPERSEDED; replacement: a.md", b"b.md", b"4"), trailer(b"2")])
+check("P0b a superseded record is kept, with its flag (guard)",
+      rec["hits"] == ["a.md", "b.md"] and rec["flags"] == {"b.md": ["SUPERSEDED; replacement: a.md"]} and not rec["error"], rec)
+rec, sc = pcase([hit(b"C", b"", b"../../elsewhere.md", b"1"), hit(b"C", b"", b"a.md", b"1"), trailer(b"2")], setup=OUTSIDE)
+check("P10 a record path outside the record (a REAL file, via ..) fails the run", fails_for(rec, sc, "outside"), rec)
+rec, sc = pcase([b"C\0\0/etc/hostname\0" + b"1\0\n", hit(b"C", b"", b"a.md", b"1"), trailer(b"2")])
+check("P10b an absolute path outside the root fails the run", fails_for(rec, sc, "outside"), rec)
+def LINK(fx):
+    for st in readers.SETS:
+        os.symlink(os.path.join(fx, st, "a.md"), os.path.join(fx, st, "link.md"))
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), hit(b"C", b"", b"link.md", b"1"), trailer(b"2")], setup=LINK)
+check("P10c a record path that is a symbolic link fails the run", fails_for(rec, sc, "link"), rec)
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), hit(b"C", b"", b"missing.md", b"1"), trailer(b"2")])
+check("P10d a record path that is not a regular file fails the run", fails_for(rec, sc, "regular file"), rec)
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1")])
+check("P11 a missing trailer fails the run", fails_for(rec, sc, "missing trailer"), rec)
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), b"T\x000\x000\x000\x00\n", trailer(b"1")])
+check("P11b two trailers fail the run", fails_for(rec, sc, "more than one trailer"), rec)
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), hit(b"C", b"", b"b.md", b"1"), trailer(b"1")])
+check("P11c a trailer that does not reconcile with the records fails the run", fails_for(rec, sc, "reconcile"), rec)
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), trailer(b"1", hidden=b"1")])
+check("P11d a hidden count without --current fails the run", fails_for(rec, sc, "hidden"), rec)
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), trailer(b"1", pdf=b"1")])
+check("P11e a non-zero PDF count fails the run (not representable)", fails_for(rec, sc, "pdf"), rec)
+rec, sc = pcase(hit(b"C", b"", b"a.md", b"1") + b"C\0\0{R}/b.md\0")
+check("P12 a truncated stream (a partial record, no trailer) fails the run", fails_for(rec, sc, "truncated"), rec)
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), hit(b"X", b"", b"b.md", b"1"), trailer(b"2")])
+check("P12b a KIND outside {C, S} fails the run", fails_for(rec, sc, "kind"), rec)
+for i, ln in enumerate((b"0", b"-1", b"1a", b"")):
+    rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), hit(b"C", b"", b"b.md", ln), trailer(b"2")])
+    check(f"P12c.{i} an invalid LINE ({ln!r}) fails the run", fails_for(rec, sc, "invalid line"), rec)
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), b"C\0\0{R}/b.md\0" + b"1\0extra\0\n", trailer(b"2")])
+check("P12d a record with extra fields fails the run", fails_for(rec, sc, "fields"), rec)
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), trailer(b"1")], rc=2)
+check("P12e a non-zero exit fails the run even with well-formed stdout", fails_for(rec, sc, "rc="), rec)
+rec, sc = pcase([trailer(b"0")])
+check("P12f an empty result with a valid trailer is zero hits, not an error (guard)", rec["hits"] == [] and not rec["error"], rec)
+# Q: fourth panel (codex, gemini at a075d09). Written before the fix; Q1-Q6 failed on a075d09.
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), trailer(b"1")])
+check("Q0 the reader calls findall with exactly --porcelain -c <keyword> (argv contract, kept apart from the fixtures)",
+      bool(rec["_argv"]) and all(x.startswith("['--porcelain', '-c', ") for x in rec["_argv"]), rec["_argv"])
+def OUTLINK(fx):   # an OUTSIDE symlink that points back INTO the record: realpath alone would accept it
+    os.symlink(os.path.join(fx, "small", "a.md"), os.path.join(os.path.dirname(fx), "outlink.md"))
+for i, rel in enumerate((b"/{D}/outlink.md", b"./a.md", b"x/../a.md", b"/a.md")):
+    rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), b"C\0\0{R}/" + rel + b"\0" + b"1\0\n", trailer(b"2")], setup=OUTLINK)
+    check(f"Q1.{i} an empty, '.' or '..' path component ({rel!r}) fails the run, even when it resolves inside",
+          fails_for(rec, sc, "outside"), rec.get("error"))
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), hit(b"C", b"", b"b.md", b"9" * 5000), trailer(b"2")])
+check("Q2 a 5,000-digit LINE is an invalid line, recorded as an errored run (not an exception)",
+      fails_for(rec, sc, "invalid line"), rec.get("error"))
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), b"T\0" + b"9" * 5000 + b"\x000\x000\x00"])
+check("Q3 a 5,000-digit trailer count is a malformed trailer, recorded as an errored run",
+      fails_for(rec, sc, "malformed trailer"), rec.get("error"))
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), b"T\x001\x000\x00"])
+check("Q4 a trailer with a missing field is a malformed trailer", fails_for(rec, sc, "malformed trailer"), rec.get("error"))
+rec, sc = pcase([hit(b"C", b"SUPERSEDED; replacement not stated", b"a.md", b"1"), trailer(b"1")])
+check("Q5 a C record that carries a flag fails the run", fails_for(rec, sc, "flag"), rec.get("error"))
+rec, sc = pcase([hit(b"C", b"", b"a.md", b"1"), hit(b"S", b"", b"b.md", b"1"), trailer(b"2")])
+check("Q6 an S record with no flag fails the run", fails_for(rec, sc, "flag"), rec.get("error"))
 sys.exit(1 if fails else 0)

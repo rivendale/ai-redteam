@@ -2,7 +2,7 @@
 """Run one reader over the Ferngate record and append its raw answers to OUT/runs.jsonl.
 
   readers.py OUT grep                         the plain baseline: grep -rin -C2 <keyword>
-  readers.py OUT findall --findall PATH       a findall executable: findall -c <keyword>, FINDALL_ROOTS=<the set>
+  readers.py OUT findall --findall PATH       a findall executable: findall --porcelain -c <keyword>, FINDALL_ROOTS=<the set>
   readers.py OUT model [--prompt r1|r2-neutral] [--repeats 3] [--max-cost 4] [--est 0.15] [--model claude-haiku-5-5] [--only TOPIC]
 
 OUT must be outside any git repository (the model seat runs with the set as its working directory).
@@ -12,6 +12,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 
@@ -116,22 +117,95 @@ def run_grep(out, fx, man):
                          "output": r.stdout, "error": None if r.returncode in (0, 1) else r.stderr[:300]})
 
 
+DIGITS = re.compile(rb"[0-9]{1,9}")   # counts and lines stay far below 10**9; longer fields are malformed, not big
+
+
+def parse_porcelain(data, root):
+    """bin/findall --porcelain (rivendale/overseer T83, #64): records KIND\0FLAG\0PATH\0LINE\0\n, then a final trailer
+    T\0shown\0hidden\0pdf\0 with no newline. Returns (paths relative to root in first-seen order, {path: [flag]},
+    problems). Every field is checked; any problem fails the run (fail closed). No excerpt or prose is parsed."""
+    hits, flags, problems = [], {}, []
+    rroot = os.path.realpath(root)
+    parts = data.split(b"\n")
+    tail, body = parts[-1], parts[:-1]
+    t = tail.split(b"\0")
+    if not tail.startswith(b"T\0"):
+        problems.append("truncated stream: no trailer after the last record" if tail else "missing trailer")
+        t = None
+    elif len(t) != 5 or t[4] != b"" or not all(DIGITS.fullmatch(x) for x in t[1:4]):
+        problems.append("malformed trailer")
+        t = None
+    records = 0
+    for rec in body:
+        if rec.startswith(b"T\0"):
+            problems.append("more than one trailer")
+            continue
+        f = rec.split(b"\0")
+        if len(f) != 5 or f[4] != b"":
+            problems.append(f"wrong number of fields in a record ({len(f) - 1})")
+            continue
+        records += 1
+        kind, flag, raw, line = f[0], f[1], f[2], f[3]
+        if kind not in (b"C", b"S"):
+            problems.append(f"invalid kind {kind[:8]!r}")
+            continue
+        if (kind == b"S") != bool(flag):
+            problems.append("flag does not match kind (C carries none, S must carry one)")
+            continue
+        if not (DIGITS.fullmatch(line) and int(line) >= 1):
+            problems.append(f"invalid line {line[:12]!r}")
+            continue
+        path = os.fsdecode(raw)
+        lead = rroot + "/"
+        rel = path[len(lead):] if path.startswith(lead) else None
+        # Every component must be a plain name: "", "." or ".." (a "//" restart, a "./" or a climb) is refused even
+        # when it would resolve inside, because os.path.join restarts at an absolute component.
+        if rel is None or any(c in ("", ".", "..") for c in rel.split("/")):
+            problems.append(f"outside the record: {path[:160]}")
+            continue
+        comps = rel.split("/")
+        if any(os.path.islink(os.path.join(rroot, *comps[:k])) for k in range(1, len(comps) + 1)):
+            problems.append(f"reached through a symbolic link: {rel[:160]}")
+            continue
+        full = os.path.join(rroot, rel)
+        if not os.path.isfile(full):
+            problems.append(f"not a regular file: {rel[:160]}")
+            continue
+        if not os.path.realpath(full).startswith(lead):
+            problems.append(f"outside the record by realpath: {rel[:160]}")
+            continue
+        if rel not in hits:
+            hits.append(rel)
+        if kind == b"S":
+            label = flag.decode("utf-8", "replace")
+            flags.setdefault(rel, [])
+            if label not in flags[rel]:
+                flags[rel].append(label)
+    if t is not None:
+        shown, hidden, pdf = int(t[1]), int(t[2]), int(t[3])
+        if shown != records:
+            problems.append(f"trailer does not reconcile: {records} record(s), trailer says {shown}")
+        if hidden != 0:
+            problems.append(f"hidden count {hidden} without --current")
+        if pdf != 0:
+            problems.append(f"pdf count {pdf} is not representable here")
+    return hits, flags, problems
+
+
 def run_findall(out, fx, man, findall):
     for s in SETS:
         root = os.path.join(fx, s)
         for t in man["topics"]:
-            env = dict(os.environ, FINDALL_ROOTS=root)
-            r = subprocess.run([findall, "-c", t["kw"]], env=env, capture_output=True, text=True, timeout=300)
-            hits, on = [], False
-            for ln in r.stdout.splitlines():
-                if ln.startswith("=== "):
-                    on = ln.startswith("=== HITS")
-                    continue
-                if on and ln.strip().startswith(root + "/"):
-                    hits.append(os.path.relpath(ln.strip(), root))
+            # Porcelain refuses a symlinked root, so pass the realpath.
+            env = dict(os.environ, FINDALL_ROOTS=os.path.realpath(root))
+            r = subprocess.run([findall, "--porcelain", "-c", t["kw"]], env=env, capture_output=True, timeout=300)
+            hits, flags, problems = parse_porcelain(r.stdout, root)
+            err = f"rc={r.returncode} {r.stderr.decode('utf-8', 'replace')[:300]}" if r.returncode != 0 else None
+            if problems:   # fail closed: the scorer gives an errored run no credit
+                err = (err + "; " if err else "") + f"{len(problems)} porcelain problem(s): " + " || ".join(problems[:3])
             record(out, {"reader": "findall", "set": s, "topic": t["id"], "repeat": 0, "kind": "paths",
-                         "hits": hits, "output": r.stdout[-4000:],
-                         "error": None if r.returncode == 0 else f"rc={r.returncode} {r.stderr[:300]}"})
+                         "hits": hits, "flags": flags,
+                         "output": r.stdout.decode("utf-8", "replace").replace("\0", "|")[-4000:], "error": err})
 
 
 def spent(out):
