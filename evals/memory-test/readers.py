@@ -12,6 +12,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 
@@ -116,21 +117,58 @@ def run_grep(out, fx, man):
                          "output": r.stdout, "error": None if r.returncode in (0, 1) else r.stderr[:300]})
 
 
+HIT_FLAG = re.compile(r"^\[([^\]]*)\]\s+")
+HIT_LINE = re.compile(r":\d+:")
+
+
+def parse_findall_hits(stdout, root):
+    """bin/findall's hit lines (rivendale/overseer #55): "  PATH:LINE:excerpt", optionally led by a flag such as
+    "[SUPERSEDED; replacement not stated] ". Returns (paths, flags): paths relative to root in first-seen order, and
+    {path: [flag, ...]}. A path can itself hold ":N:", so the path is the shortest ":N:"-prefix that is a real file.
+    A hit outside root is kept ABSOLUTE, so the scorer fails the run rather than the reader silently dropping it."""
+    hits, flags, on = [], {}, False
+    for ln in stdout.splitlines():
+        if ln.startswith("=== "):
+            on = ln.startswith("=== HITS")
+            continue
+        body = ln.strip()
+        if not on or not body:
+            continue
+        flag = None
+        m = HIT_FLAG.match(body)
+        if m:
+            flag, body = m.group(1), body[m.end():]
+        if not body.startswith("/"):
+            continue
+        path = None
+        for mm in HIT_LINE.finditer(body):
+            cand = body[:mm.start()]
+            if os.path.isfile(cand):
+                path = cand
+                break
+        if path is None:
+            mm = HIT_LINE.search(body)
+            path = body[:mm.start()] if mm else body
+        under = path.startswith(root.rstrip("/") + "/")
+        key = os.path.relpath(path, root) if under else path
+        if key not in hits:
+            hits.append(key)
+        if flag:
+            flags.setdefault(key, [])
+            if flag not in flags[key]:
+                flags[key].append(flag)
+    return hits, flags
+
+
 def run_findall(out, fx, man, findall):
     for s in SETS:
         root = os.path.join(fx, s)
         for t in man["topics"]:
             env = dict(os.environ, FINDALL_ROOTS=root)
             r = subprocess.run([findall, "-c", t["kw"]], env=env, capture_output=True, text=True, timeout=300)
-            hits, on = [], False
-            for ln in r.stdout.splitlines():
-                if ln.startswith("=== "):
-                    on = ln.startswith("=== HITS")
-                    continue
-                if on and ln.strip().startswith(root + "/"):
-                    hits.append(os.path.relpath(ln.strip(), root))
+            hits, flags = parse_findall_hits(r.stdout, root)
             record(out, {"reader": "findall", "set": s, "topic": t["id"], "repeat": 0, "kind": "paths",
-                         "hits": hits, "output": r.stdout[-4000:],
+                         "hits": hits, "flags": flags, "output": r.stdout[-4000:],
                          "error": None if r.returncode == 0 else f"rc={r.returncode} {r.stderr[:300]}"})
 
 
