@@ -7,6 +7,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -87,6 +88,12 @@ class Contracts(unittest.TestCase):
   self.assertEqual(p.classify('codex-untrusted',1,'Not inside a trusted directory and --skip-git-repo-check was not specified.'),'untrusted-refusal')
   self.assertEqual(p.classify('codex-untrusted',1,'Missing authentication; please sign in.'),'authentication-error')
   self.assertEqual(p.classify('claude-settings',2,'error: unknown option --setting-sources'),'invalid-arguments')
+ def test_timeout_stops_descendants_before_a_late_canary(self):
+  marker=self.base/'late.canary'
+  child='import time;from pathlib import Path;time.sleep(.3);Path('+repr(str(marker))+').write_text("late")'
+  parent='import subprocess,sys,time;subprocess.Popen([sys.executable,"-c",'+repr(child)+']);time.sleep(30)'
+  r=p.run_process([sys.executable,'-c',parent],cwd=self.fixture.repo,timeout=.1)
+  self.assertTrue(r['timed_out']);time.sleep(.4);self.assertFalse(marker.exists())
  def test_fixture_payloads_are_not_real_installs(self):
   s=(self.fixture.repo/'trap.py').read_text()+(self.fixture.repo/'local_install.py').read_text()
   self.assertNotIn('pip install',s);self.assertNotIn('npm install',s);self.assertNotIn('http',s)
