@@ -58,23 +58,26 @@ class Contracts(unittest.TestCase):
  def test_broken_canary_symlink_is_a_failure(self):
   (self.fixture.canary_dir/'hook.canary').symlink_to(self.base/'missing')
   with self.assertRaises(ValueError):p.canaries(self.fixture)
- def test_lane_flags_match_the_four_requested_shapes(self):
+ def test_lane_flags_match_the_five_requested_shapes(self):
   lanes=p.lanes('/cli/claude','/cli/codex')
-  self.assertEqual(set(lanes),{'claude-settings','claude-hooks','claude-unpinned','codex-untrusted'})
+  self.assertEqual(set(lanes),{'claude-settings','claude-strict','claude-hooks','claude-unpinned','codex-untrusted'})
   self.assertEqual(lanes['claude-settings'][lanes['claude-settings'].index('--setting-sources')+1],'')
+  self.assertEqual(json.loads(lanes['claude-settings'][lanes['claude-settings'].index('--settings')+1]),{'disableAllHooks':True})
+  self.assertIn('--strict-mcp-config',lanes['claude-strict'])
+  self.assertEqual(lanes['claude-strict'][lanes['claude-strict'].index('--mcp-config')+1],'/work/explicit-mcp.json')
   self.assertEqual(json.loads(lanes['claude-hooks'][lanes['claude-hooks'].index('--settings')+1]),{'disableAllHooks':True})
   self.assertNotIn('--setting-sources',lanes['claude-unpinned']);self.assertNotIn('--settings',lanes['claude-unpinned'])
   self.assertIn('read-only',lanes['codex-untrusted']);self.assertNotIn('--skip-git-repo-check',lanes['codex-untrusted'])
  def case(self,name,markers=(),rc=1,stage='startup',**extra):
   return dict(name=name,canaries=list(markers),returncode=rc,stage=stage,**extra)
  def good(self):
-  return [self.case('claude-settings'),self.case('claude-hooks'),self.case('claude-unpinned',['hook']),
-          self.case('codex-untrusted',stage='untrusted-refusal')]
+  return [self.case('claude-settings'),self.case('claude-hooks',['mcp']),self.case('claude-unpinned',['hook']),
+          self.case('codex-untrusted',stage='untrusted-refusal'),self.case('claude-strict')]
  def test_positive_control_must_fire(self):
   rows=self.good();self.assertTrue(p.evaluate(rows)['passed'])
   rows[2]['canaries']=[];self.assertFalse(p.evaluate(rows)['passed'])
  def test_any_protected_canary_blocks(self):
-  for index in [0,1,3]:
+  for index in [0,3,4]:
    for name in p.CANARIES:
     rows=self.good();rows[index]['canaries']=[name];self.assertFalse(p.evaluate(rows)['passed'])
  def test_missing_duplicate_or_unknown_lane_is_not_a_pass(self):
@@ -100,6 +103,17 @@ class Contracts(unittest.TestCase):
   self.assertEqual(p.classify('codex-untrusted',1,'Not inside a trusted directory and --skip-git-repo-check was not specified.'),'untrusted-refusal')
   self.assertEqual(p.classify('codex-untrusted',1,'Missing authentication; please sign in.'),'authentication-error')
   self.assertEqual(p.classify('claude-settings',2,'error: unknown option --setting-sources'),'invalid-arguments')
+ def test_hooks_only_mcp_is_a_finding_and_other_traps_block(self):
+  result=p.evaluate(self.good())
+  self.assertTrue(result['passed']);self.assertIn('hooks-only starts project MCP',result['findings'])
+  for marker in ('hook','install','vscode'):
+   rows=self.good();rows[1]['canaries'].append(marker)
+   self.assertFalse(p.evaluate(rows)['passed'])
+ def test_codex_timeout_is_explicitly_inconclusive_never_green(self):
+  rows=self.good();rows[3]['stage']='timeout'
+  result=p.evaluate(rows)
+  self.assertFalse(result['passed']);self.assertEqual(result['status'],'inconclusive')
+  self.assertTrue(result['protected_claude_passed'])
  def test_timeout_stops_descendants_before_a_late_canary(self):
   marker=self.base/'late.canary'
   child='import time;from pathlib import Path;time.sleep(.3);Path('+repr(str(marker))+').write_text("late")'
