@@ -47,6 +47,11 @@ class Contracts(unittest.TestCase):
   with self.assertRaises(ValueError):p.create_fixture(self.fixture.root)
   link=self.base/'alias';link.symlink_to(self.fixture.root,target_is_directory=True)
   with self.assertRaises(ValueError):p.create_fixture(link)
+ def test_refused_output_does_not_overwrite_an_old_receipt(self):
+  output=self.base/'old-output';(output/'preflight').mkdir(parents=True)
+  receipt=output/'result.json';receipt.write_text('keep this receipt')
+  rc=p.main(['--output',str(output),'--claude',sys.executable,'--codex',sys.executable,'--bwrap',sys.executable])
+  self.assertEqual(rc,2);self.assertEqual(receipt.read_text(),'keep this receipt')
  def test_payload_cannot_select_an_arbitrary_output(self):
   r=subprocess.run([sys.executable,str(self.fixture.repo/'trap.py'),'../escape'],cwd=self.fixture.repo,capture_output=True,text=True)
   self.assertNotEqual(r.returncode,0);self.assertFalse((self.fixture.root/'escape').exists())
@@ -84,6 +89,13 @@ class Contracts(unittest.TestCase):
   self.assertIn('--die-with-parent',cmd);self.assertIn('--ro-bind',cmd)
   self.assertIn('/work/home',cmd);self.assertNotIn(str(Path.home()),cmd)
   self.assertIn('/work/fixture',cmd)
+ def test_codex_bundled_helpers_are_mounted_individually(self):
+  bindir=self.base/'package/bin';bindir.mkdir(parents=True)
+  binary=bindir/'codex';binary.write_text('fixture executable')
+  helper=bindir/'codex-code-mode-host';helper.write_text('fixture helper')
+  cmd=p.sandbox_command(self.fixture,binary,['/cli/codex'],kind='codex',bwrap='/usr/bin/bwrap')
+  self.assertIn(str(helper),cmd);self.assertIn('/cli/codex-code-mode-host',cmd)
+  self.assertNotIn(str(bindir),cmd)
  def test_classifier_does_not_confuse_authentication_with_trust_refusal(self):
   self.assertEqual(p.classify('codex-untrusted',1,'Not inside a trusted directory and --skip-git-repo-check was not specified.'),'untrusted-refusal')
   self.assertEqual(p.classify('codex-untrusted',1,'Missing authentication; please sign in.'),'authentication-error')
