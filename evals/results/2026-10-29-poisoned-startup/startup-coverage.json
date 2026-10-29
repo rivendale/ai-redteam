@@ -1,0 +1,72 @@
+{
+  "kind": "installed-cli-startup",
+  "versions": {
+    "claude": "2.1.312 (Claude Code)",
+    "codex": "codex-cli 0.166.0"
+  },
+  "network": "new network namespace verified",
+  "home": "fresh empty per invocation; no credentials copied",
+  "cases": [
+    {
+      "name": "claude-settings",
+      "returncode": 1,
+      "stage": "startup-authentication-stop",
+      "canaries": [],
+      "mcp_servers": []
+    },
+    {
+      "name": "claude-strict",
+      "returncode": 1,
+      "stage": "startup-authentication-stop",
+      "canaries": [],
+      "mcp_servers": []
+    },
+    {
+      "name": "claude-hooks",
+      "returncode": 1,
+      "stage": "startup-authentication-stop",
+      "canaries": [
+        "mcp"
+      ],
+      "mcp_servers": [
+        {
+          "name": "fixture-local",
+          "status": "failed"
+        }
+      ]
+    },
+    {
+      "name": "claude-unpinned",
+      "returncode": 1,
+      "stage": "startup-authentication-stop",
+      "canaries": [
+        "hook-start",
+        "mcp"
+      ],
+      "mcp_servers": [
+        {
+          "name": "fixture-local",
+          "status": "failed"
+        }
+      ]
+    },
+    {
+      "name": "codex-untrusted",
+      "returncode": -9,
+      "stage": "timeout",
+      "canaries": [],
+      "mcp_servers": null
+    }
+  ],
+  "passed": false,
+  "status": "inconclusive",
+  "problems": [],
+  "findings": [
+    "hooks-only starts project MCP"
+  ],
+  "inconclusive": [
+    "Codex startup not measured: no Codex-loaded startup trap or positive control"
+  ],
+  "protected_claude_passed": true,
+  "coverage": "Claude SessionStart and project MCP startup only; PreToolUse not exercised at authentication stops; Codex startup not measured; editor and model-side instruction handling not measured"
+}

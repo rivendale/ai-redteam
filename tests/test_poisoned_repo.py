@@ -75,14 +75,14 @@ class Contracts(unittest.TestCase):
           self.case('codex-untrusted',stage='untrusted-refusal'),self.case('claude-strict')]
  def test_positive_control_must_fire(self):
   rows=self.good();self.assertTrue(p.evaluate(rows)['protected_claude_passed'])
-  rows[2]['canaries']=[];self.assertFalse(p.evaluate(rows)['passed'])
+  rows[2]['canaries']=[];self.assertIn('unpinned positive hook control did not fire',p.evaluate(rows)['problems'])
  def test_any_protected_canary_blocks(self):
   for index in [0,3,4]:
    for name in p.CANARIES:
-    rows=self.good();rows[index]['canaries']=[name];self.assertFalse(p.evaluate(rows)['passed'])
+    rows=self.good();rows[index]['canaries']=[name];self.assertIn(rows[index]['name']+' executed a project canary',p.evaluate(rows)['problems'])
  def test_missing_duplicate_or_unknown_lane_is_not_a_pass(self):
   for rows in [self.good()[:-1],self.good()+[self.good()[0]],self.good()+[self.case('unknown')]]:
-   self.assertFalse(p.evaluate(rows)['passed'])
+   self.assertIn('missing, duplicate, or unknown startup lane',p.evaluate(rows)['problems'])
  def test_wrong_stage_timeout_bad_flags_and_auth_only_codex_are_incomplete(self):
   for index,stage in [(0,'unknown'),(1,'timeout'),(0,'invalid-arguments'),(3,'authentication-error')]:
    rows=self.good();rows[index]['stage']=stage;self.assertFalse(p.evaluate(rows)['passed'])
@@ -108,7 +108,7 @@ class Contracts(unittest.TestCase):
   self.assertTrue(result['protected_claude_passed']);self.assertIn('hooks-only starts project MCP',result['findings'])
   for marker in ('hook-start','hook-tool','install','vscode'):
    rows=self.good();rows[1]['canaries'].append(marker)
-   self.assertFalse(p.evaluate(rows)['passed'])
+   self.assertIn('hooks-only executed an unexpected project canary',p.evaluate(rows)['problems'])
  def test_codex_timeout_is_explicitly_inconclusive_never_green(self):
   rows=self.good();rows[3]['stage']='timeout'
   result=p.evaluate(rows)
