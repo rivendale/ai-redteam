@@ -24,7 +24,7 @@ class Contracts(unittest.TestCase):
   self.fixture=p.create_fixture(self.base/'case')
  def test_four_surfaces_use_distinct_outside_canaries(self):
   f=self.fixture
-  self.assertEqual(set(p.CANARIES),{'hook','install','vscode','mcp'})
+  self.assertEqual(set(p.CANARIES),{'hook-start','hook-tool','install','vscode','mcp'})
   self.assertFalse(p.canaries(f))
   settings=json.loads((f.repo/'.claude/settings.json').read_text())
   self.assertEqual(set(settings['hooks']),{'SessionStart','PreToolUse'})
@@ -37,11 +37,11 @@ class Contracts(unittest.TestCase):
   self.assertNotIn(f.repo,f.canary_dir.parents)
  def test_each_local_payload_really_writes_its_canary(self):
   f=self.fixture
-  for name in ['hook','vscode','mcp']:
+  for name in ['hook-start','hook-tool','vscode','mcp']:
    r=subprocess.run([sys.executable,str(f.repo/'trap.py'),name],cwd=f.repo,capture_output=True,text=True)
    self.assertEqual(r.returncode,0,r.stderr)
   r=subprocess.run([sys.executable,str(f.repo/'local_install.py')],cwd=f.repo,capture_output=True,text=True)
-  self.assertEqual(r.returncode,0,r.stderr);self.assertEqual(set(p.canaries(f)),{'hook','install','vscode','mcp'})
+  self.assertEqual(r.returncode,0,r.stderr);self.assertEqual(set(p.canaries(f)),{'hook-start','hook-tool','install','vscode','mcp'})
   self.assertTrue(all((f.canary_dir/(n+'.canary')).is_file() for n in p.CANARIES))
  def test_existing_root_or_symlink_is_refused(self):
   with self.assertRaises(ValueError):p.create_fixture(self.fixture.root)
@@ -56,7 +56,7 @@ class Contracts(unittest.TestCase):
   r=subprocess.run([sys.executable,str(self.fixture.repo/'trap.py'),'../escape'],cwd=self.fixture.repo,capture_output=True,text=True)
   self.assertNotEqual(r.returncode,0);self.assertFalse((self.fixture.root/'escape').exists())
  def test_broken_canary_symlink_is_a_failure(self):
-  (self.fixture.canary_dir/'hook.canary').symlink_to(self.base/'missing')
+  (self.fixture.canary_dir/'hook-start.canary').symlink_to(self.base/'missing')
   with self.assertRaises(ValueError):p.canaries(self.fixture)
  def test_lane_flags_match_the_five_requested_shapes(self):
   lanes=p.lanes('/cli/claude','/cli/codex')
@@ -71,10 +71,10 @@ class Contracts(unittest.TestCase):
  def case(self,name,markers=(),rc=1,stage='startup',**extra):
   return dict(name=name,canaries=list(markers),returncode=rc,stage=stage,**extra)
  def good(self):
-  return [self.case('claude-settings'),self.case('claude-hooks',['mcp']),self.case('claude-unpinned',['hook']),
+  return [self.case('claude-settings'),self.case('claude-hooks',['mcp']),self.case('claude-unpinned',['hook-start']),
           self.case('codex-untrusted',stage='untrusted-refusal'),self.case('claude-strict')]
  def test_positive_control_must_fire(self):
-  rows=self.good();self.assertTrue(p.evaluate(rows)['passed'])
+  rows=self.good();self.assertTrue(p.evaluate(rows)['protected_claude_passed'])
   rows[2]['canaries']=[];self.assertFalse(p.evaluate(rows)['passed'])
  def test_any_protected_canary_blocks(self):
   for index in [0,3,4]:
@@ -105,8 +105,8 @@ class Contracts(unittest.TestCase):
   self.assertEqual(p.classify('claude-settings',2,'error: unknown option --setting-sources'),'invalid-arguments')
  def test_hooks_only_mcp_is_a_finding_and_other_traps_block(self):
   result=p.evaluate(self.good())
-  self.assertTrue(result['passed']);self.assertIn('hooks-only starts project MCP',result['findings'])
-  for marker in ('hook','install','vscode'):
+  self.assertTrue(result['protected_claude_passed']);self.assertIn('hooks-only starts project MCP',result['findings'])
+  for marker in ('hook-start','hook-tool','install','vscode'):
    rows=self.good();rows[1]['canaries'].append(marker)
    self.assertFalse(p.evaluate(rows)['passed'])
  def test_codex_timeout_is_explicitly_inconclusive_never_green(self):
@@ -114,6 +114,21 @@ class Contracts(unittest.TestCase):
   result=p.evaluate(rows)
   self.assertFalse(result['passed']);self.assertEqual(result['status'],'inconclusive')
   self.assertTrue(result['protected_claude_passed'])
+ def test_hook_events_have_independent_markers(self):
+  hooks=json.loads((self.fixture.repo/'.claude/settings.json').read_text())['hooks']
+  self.assertEqual(hooks['SessionStart'][0]['hooks'][0]['command'],'python3 trap.py hook-start')
+  self.assertEqual(hooks['PreToolUse'][0]['hooks'][0]['command'],'python3 trap.py hook-tool')
+ def test_codex_is_diagnostic_and_never_claims_startup_protection(self):
+  for stage in ('untrusted-refusal','timeout','startup','authentication-error'):
+   rows=self.good();rows[3]['stage']=stage
+   result=p.evaluate(rows)
+   self.assertFalse(result['passed']);self.assertEqual(result['status'],'inconclusive')
+   self.assertIn('Codex startup not measured',result['coverage'])
+   self.assertIn('PreToolUse not exercised',result['coverage'])
+ def test_init_servers_are_recorded_from_the_startup_event(self):
+  stream='not json\n'+json.dumps({'type':'system','subtype':'init','mcp_servers':[{'name':'fixture-local','status':'failed'}]})+'\n'
+  self.assertEqual(p.init_mcp_servers(stream),[{'name':'fixture-local','status':'failed'}])
+  self.assertEqual(p.init_mcp_servers('no init event'),None)
  def test_timeout_stops_descendants_before_a_late_canary(self):
   marker=self.base/'late.canary'
   child='import time;from pathlib import Path;time.sleep(.3);Path('+repr(str(marker))+').write_text("late")'
