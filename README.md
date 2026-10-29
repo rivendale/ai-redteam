@@ -116,6 +116,12 @@ or treat a sender's summary as evidence.
 
 ## Reference material
 
+The [poisoned repository startup fixture](docs/tests/poisoned-repo.md) exercises
+local hooks, install instructions, editor tasks and MCP startup with distinct
+canaries. Its offline runner contracts and installed-CLI startup receipts are
+separate evidence. The real drill fails closed without isolation or its
+positive hook control.
+
 | File | Use |
 |---|---|
 | [`docs/capabilities.md`](docs/capabilities.md) | Everything the repo does, grouped, with the file that owns each part |
