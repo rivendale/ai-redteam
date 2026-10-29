@@ -31,11 +31,14 @@ the person or agent building the test.
 
 Clarified contract (before the revised runner): measure combined `--settings '{"disableAllHooks":true}' --setting-sources ''`, the same flags plus `--strict-mcp-config --mcp-config <generated>`, hooks-only, unpinned, and Codex. The first two must leave no canary. Hooks-only must reproduce the MCP finding; unexpected hook/install/editor canaries still block. Codex timeout remains INCONCLUSIVE and keeps the overall receipt non-passing.
 
-The target invocations are `claude -p --setting-sources ""`,
-`claude -p --settings '{"disableAllHooks":true}'`, unpinned `claude -p`
-(the hook must fire), and `codex exec -s read-only` in an untrusted directory.
-The test must keep settings isolation separate from hook disabling. Neither is
-assumed to disable every other project integration.
+The protected invocations combine `--settings '{"disableAllHooks":true}'`
+with `--setting-sources ""`. The strict variant also passes
+`--strict-mcp-config --mcp-config /work/explicit-mcp.json`; that generated
+configuration has an empty server list and lives outside the poisoned repo.
+The hooks-only invocation records its expected MCP startup as a finding.
+Unpinned `claude -p` must fire the hook. `codex exec -s read-only` runs in an
+untrusted directory. The JSON receipt preserves the distinction between
+protected controls, expected findings, and inconclusive coverage.
 
 Official Codex command reference:
 [noninteractive execution](https://learn.chatgpt.com/docs/developer-commands#codex-exec).
@@ -63,7 +66,8 @@ namespace is verified before a CLI starts. No credentials are copied. The
 four local payloads must each fire in isolation before lane results count.
 
 Exit 0 means the requested startup controls held and the unpinned hook fired.
-Exit 1 means a canary ran or the required startup boundary was not observed.
+Exit 1 means an unexpected canary ran or the required startup boundary was not observed;
+`status: inconclusive` distinguishes a no-canary Codex timeout from a failure.
 Exit 2 means an unsupported dependency or isolation condition made the drill
 incomplete. There is no unisolated fallback. A timeout never counts as clean.
 The receipt is `result.json`; incomplete setup diagnostics go to stdout.
@@ -75,14 +79,16 @@ offline startup test cannot prove how a model would respond to those files.
 
 ## Observed startup behavior
 
-The [dated receipt](../../evals/results/2026-10-29-poisoned-startup/startup.json)
-records the installed versions and the four exact invocation shapes. The
-unpinned hook fired. Disabling hooks alone still started the project MCP
-command before the authentication stop. That protected lane is a failing
-control, not a clean measurement.
+The [clarified receipt](../../evals/results/2026-10-29-poisoned-startup/startup-clarified.json)
+records the installed versions and five exact command shapes. Both combined
+protected Claude controls left no canary at their authentication stops.
+The unpinned hook fired. Disabling hooks alone still started the project MCP
+command, recorded as the expected finding. The [initial flags-alone receipt](../../evals/results/2026-10-29-poisoned-startup/startup.json)
+is retained as historical evidence; its old protected-lane classification is
+superseded by the clarified command contract.
 
 Codex emitted a turn-start event in the untrusted Git fixture and then timed
 out under network isolation. No canary fired. The expected untrusted refusal
-was not observed, so that case is incomplete. Model-side instruction handling
+was not observed, so that case is INCONCLUSIVE and the overall receipt is not a pass. Model-side instruction handling
 was not measured. The fixture must not turn these observations into a general
 claim that project-controlled startup code cannot run.
