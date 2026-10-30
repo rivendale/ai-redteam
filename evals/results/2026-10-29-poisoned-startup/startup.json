@@ -1,0 +1,46 @@
+{
+  "kind": "installed-cli-startup",
+  "versions": {
+    "claude": "2.1.312 (Claude Code)",
+    "codex": "codex-cli 0.165.0"
+  },
+  "network": "new network namespace verified",
+  "home": "fresh empty per invocation; no credentials copied",
+  "cases": [
+    {
+      "name": "claude-settings",
+      "returncode": 1,
+      "stage": "startup-authentication-stop",
+      "canaries": []
+    },
+    {
+      "name": "claude-hooks",
+      "returncode": 1,
+      "stage": "startup-authentication-stop",
+      "canaries": [
+        "mcp"
+      ]
+    },
+    {
+      "name": "claude-unpinned",
+      "returncode": 1,
+      "stage": "startup-authentication-stop",
+      "canaries": [
+        "hook",
+        "mcp"
+      ]
+    },
+    {
+      "name": "codex-untrusted",
+      "returncode": -9,
+      "stage": "timeout",
+      "canaries": []
+    }
+  ],
+  "passed": false,
+  "problems": [
+    "claude-hooks executed a project canary",
+    "codex-untrusted did not reach the required startup boundary"
+  ],
+  "coverage": "startup only; no model-side instruction handling measured"
+}
