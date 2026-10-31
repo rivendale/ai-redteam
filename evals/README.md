@@ -18,6 +18,8 @@ All material is invented: code, companies, people, figures and documents. Person
 | `score.py` | reads reports, prints recall, false alarms on controls and failure-list violations per case |
 | `tools/prepare.py` | copies request, context and work (no `expected.json`) to a directory for the reviewer |
 | `tools/verify_cases.py` | for each case, runs the `proof` in `expected.json` (a snippet that shows the planted defect really is there, or that a control's tests pass) |
+| `tools/stats.py` | 95% intervals for recall and false alarms, clustered by case, and a paired comparison of two texts (see "Error bars" below) |
+| `tools/run_reviews.sh` | the sealed review lane; writes `_meta/prereg.json` before the first review (see "Pre-registration" below) |
 | `selfcheck/reports/` | three hand-written reports in a different key style, used by `score.py --self-check` |
 
 Case folders have neutral names so the folder does not give the defect away. `expected.json` carries a descriptive `slug`.
@@ -498,6 +500,62 @@ Run and score as the other sets, for example `python3 evals/score.py --cases eva
 A scoring run of these development sets (two repeats, baseline against the new lens texts, 192 reviews) showed that the sets are saturated: the baseline texts already find almost every planted defect, so they cannot show an improvement. It also showed that models rate an instruction aimed at reviewers as a High finding when it sits in a clean control, which the scorer counts as a false alarm, and that they found real remaining gaps in four of the clean controls. The injection now lives in three separate planted cases (SE05, EX05, SC12: the instruction is the defect) and the controls are free of it; the fixture that is supposed to be inert no longer runs anything when imported; the four controls were corrected (a rotation that tested rejection of the old secret while the service still accepted it, a contractor access path with no expiry mechanism and no advisory feed for the host and VPN software, a refusal check that matched wording instead of the provider's refusal signal, a scope check with no way to apply a stop-test, and test credentials with no handling rule). The tracked in-repository hold-out sets were not changed. The author reports the same SC07 fixture-hygiene edit in an off-repository copy, with no expected-answer change; that external claim was not independently verified in the [correction review](https://github.com/rivendale/ai-redteam/pull/92#issuecomment-6341603245).
 
 The [public aggregate record](https://github.com/rivendale/ai-redteam/blob/120f1fbbf2ca698419b1111e0177b507d568e757/evals/results/2026-10-22-week1021-lenses/README.md) publishes the as-run paired recall, control counts, safety stops and model identities. Its 192 reviews include development and host-only hold-out cases; the original reports and hold-out contents are not published. The totals span repeats and do not establish a benefit on the corrected cases.
+## Error bars and paired comparisons (evals/tools/stats.py, added 2026-10-31)
+
+**A three-hit recall floor is smaller than the noise on the hold-out set.** Read the gate result as "no detectable change", not
+as "within three of the baseline, so no loss".
+
+`stats.py` reads the scorer's JSON (one file per repeat) and gives 95% intervals for recall and the false-alarm rate, and a paired
+comparison of two texts on the same cases. It resamples cases, not planted defects or repeats: the repeats of one case share its
+fixture and its difficulty, so they are not independent draws (Miller, "Adding Error Bars to Evals",
+[arXiv 2411.00640](https://arxiv.org/abs/2411.00640)). The naive Wilson interval, which treats every detection as independent, is
+printed beside the clustered one. The comparison also gives an exact sign test over the cases where one text did better (McNemar's
+exact test when each case has one defect and one repeat). Standard library only; nothing calls a model.
+
+```
+for i in 1 2 3; do python3 evals/score.py --reports RUN-base-$i --json /tmp/base-$i.json; done      # and the same for the candidate
+python3 evals/tools/stats.py summary /tmp/base-1.json /tmp/base-2.json /tmp/base-3.json
+python3 evals/tools/stats.py --json /tmp/cmp.json compare --base /tmp/base-*.json --cand /tmp/cand-*.json --margin 3
+python3 evals/tools/stats.py --self-check        # must end "all checks hold"; also run by the offline checks workflow
+```
+
+Global options (`--resamples`, default 10000; `--seed`, fixed so a result can be reproduced; `--json`) go before `summary` or
+`compare`. `--margin K` reports what a "base minus K" floor means against the interval; it does not change a gate. The runs on
+both sides must score the same cases with the same keys, or the tool refuses. A false-alarm rate is the share of control runs with
+at least one open Critical or High; the raw count of such findings, which the published gate uses, is printed beside it.
+
+The self-check uses synthetic runs. It must find a 3-hit loss of 60 (20 one-defect cases, three repeats, the shape of the published
+hold-out gap) NOT significant, a 30-of-40-case loss significant, identical runs at exactly zero, and a clustered interval wider than
+the naive one when repeats agree. It also checks the Wilson and sign-test arithmetic against known values and refuses unpaired input.
+
+**The v2.3.2 hold-out gate with this lens.** The [gate record](results/2026-10-09-gate-v232/README.md) owns the rule and the as-run
+totals. Re-scoring its hold-out reports with the current scorer (the secret-in-history alias above) and reading the per-case counts:
+the two texts differ on two of 16 defect cases. v2.3.2 is one hit better on case 05 and two hits worse on case 15; the other 14
+agree in every repeat. That is one case better and one worse, so the exact sign test gives p = 1.0. A case-resampled interval
+over 16 cases with that pattern runs from below -3 hits to above zero, so the -3 floor sits inside the noise. The bootstrap
+interval from `stats.py compare` on these files has not been published yet; add it here from the tool's output, not by hand.
+The rule itself is unchanged; whether a floor should be stated as an interval is the gate owner's decision.
+
+## Pre-registration (added 2026-10-31)
+
+Before the first review starts, `run_reviews.sh` writes `OUTDIR/_meta/prereg.json`: the skill path, its sha256, its git blob, the
+last commit that touched it and whether it matches HEAD; the sha256 of every file each reviewer will be given (from the prepared
+copy, so `expected.json` is never in it), plus one hash per case; the requested model and the CLI version; the gate rule text; the
+runner's own hash; and the UTC start time. Pass the rule with `GATE_RULE='...'` or `GATE_RULE_FILE=path` (the file's hash is
+recorded too); without one the record says no rule was given and the runner warns. The CLI version comes from the installed files,
+never from running the CLI; set `CLI_VERSION=` to override. A resumed run keeps the first record and adds
+`prereg-resume-<time>.json`, and is refused if the skill text or a case's inputs changed. This is the "actual run-start timestamp"
+and pre-run lock that [catalog-status.json](../docs/catalog-status.json) lists as missing for past runs; it does not make a past
+run verifiable.
+
+Test it without a model: `DRY_RUN=1` writes the record and exits before any review, and
+`python3 tests/test_run_reviews_prereg.py` runs the lane against a stub `claude` on `PATH` (also in the offline checks workflow).
+
+```
+cd "$(mktemp -d)" && DRY_RUN=1 GATE_RULE='recall >= base - 3; false alarms <= base' ONLY=case-01 \
+  /path/to/repo/evals/tools/run_reviews.sh /path/to/repo/skills/redteam/SKILL.md /tmp/prereg-test && cat /tmp/prereg-test/_meta/prereg.json
+```
+
 ## Offline case-health recommendations
 
 `python3 evals/tools/case_health.py --repo . --output-dir evals --as-of 2026-10-22`

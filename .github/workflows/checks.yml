@@ -1,5 +1,5 @@
 # Offline checks on every pull request and every push to main. No model is called and no secret is used.
-# What runs: the scorer's self-check, the findings validator's self-check, every eval case's ground-truth
+# What runs: the scorer's self-check, the eval statistics self-check, the findings validator's self-check, every eval case's ground-truth
 # proof, a byte-compile of every Python file, and a parse of every JSON file. Three Python versions,
 # because a check that passes on one version is evidence about that version only.
 name: checks
@@ -83,6 +83,10 @@ jobs:
         run: python3 tests/test_case_health.py
       - name: Review lane cost cap
         run: python3 tests/test_run_reviews_cost_cap.py
+      - name: Review lane pre-registration (stub CLI and DRY_RUN; no model)
+        run: python3 tests/test_run_reviews_prereg.py
+      - name: Eval statistics self-check (clustered intervals, paired comparison)
+        run: python3 evals/tools/stats.py --self-check
       - name: Clean-control material
         run: python3 tests/test_clean_controls.py
       - name: Codex lane isolation and token shapes

@@ -87,7 +87,7 @@ Start at the [documentation index](README.md) for current Action, install, evalu
 | [`privacy-checklist.md`](privacy-checklist.md) | 12 questions in four groups: where data goes, what is kept, how it is shown, tools that cut both ways |
 | [`why-reviews-fail.md`](why-reviews-fail.md) | 11 ways reviews of AI work fail, each with the habit that prevents it |
 | [`workflow.md`](workflow.md) | the build-and-review loop: spec, build, independent tests, pr-review, adjudication, redteam, merge |
-| [`SPEC.md`](SPEC.md) | the v2 and v2.2 design, and failure-list items 1-20 |
+| [`SPEC.md`](SPEC.md) | the redteam design and failure list, version by version (the file owns its versions and item numbers) |
 
 ### Attack catalog entries by number
 
@@ -156,7 +156,8 @@ and FL20 are measured through recall and the verdict rules. The rest are read fr
 |---|---|
 | [`evals/tools/verify_cases.py`](../evals/tools/verify_cases.py) | runs each case's proof: the planted defect is real, or the control's tests pass |
 | [`evals/tools/prepare.py`](../evals/tools/prepare.py) | copies what a reviewer may see, leaving `expected.json` behind |
-| [`evals/tools/run_reviews.sh`](../evals/tools/run_reviews.sh) | runs one skill over the cases in a sealed `claude -p` lane: no tools, no MCP servers, no settings |
+| [`evals/tools/run_reviews.sh`](../evals/tools/run_reviews.sh) | runs one skill over the cases in a sealed `claude -p` lane: no tools, no MCP servers, no settings; writes `_meta/prereg.json` before the first review |
+| [`evals/tools/stats.py`](../evals/tools/stats.py) | 95% intervals for recall and false alarms, clustered by case, and a paired comparison of two texts |
 | [`evals/score.py`](../evals/score.py) | recall, false alarms, violations; `--self-check` proves it tells good reports from bad |
 | [`evals/tools/map_pr_severity.py`](../evals/tools/map_pr_severity.py) | maps pr-review's P0-P3 to Critical-Low for scoring |
 | [`evals/tools/summarize_usage.py`](../evals/tools/summarize_usage.py) | sums tokens, cost and time over a run folder |
