@@ -4,6 +4,10 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Latest release](https://img.shields.io/github/v/release/rivendale/ai-redteam)](https://github.com/rivendale/ai-redteam/releases/latest)
 
+> Part of a set of public repos maintained separately. Start at
+> [hsi-operator](https://github.com/rivendale/hsi-operator): it says what each one is for and
+> when to read it.
+
 **A second opinion for work produced with AI.** Review a plan, challenge a claim, check a pull request,
 or decide whether an incoming tool is useful. For developers, analysts and people who need evidence
 before relying on an answer. Findings name the location, what can fail and how to check it.
