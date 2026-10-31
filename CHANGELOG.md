@@ -1,5 +1,30 @@
 # Release notes
 
+## Unreleased, October 31, 2026: eval statistics, pre-registration, doc drift
+
+No skill or prompt text changed. No paid evaluation was run.
+
+| Area | Change |
+|---|---|
+| Eval statistics | `evals/tools/stats.py`: 95% intervals for recall and false-alarm rate clustered by case, a paired case bootstrap and an exact sign test between two texts, and a self-check that the offline checks workflow runs. Method, commands and what the v2.3.2 hold-out gate looks like with it: [evals/README.md](evals/README.md#error-bars-and-paired-comparisons-evalstoolsstatspy-added-2026-10-31). The gate rule is unchanged. |
+| Pre-registration | `run_reviews.sh` writes `_meta/prereg.json` (skill and case-input hashes, model, CLI version, gate rule, UTC start) before the first review; `DRY_RUN=1` stops after it; `tests/test_run_reviews_prereg.py` tests it with a stub CLI. See [evals/README.md](evals/README.md#pre-registration-added-2026-10-31). |
+| Doc drift | `AGENTS.md`, `README.md`, `llms.txt` and `docs/capabilities.md` no longer restate SPEC's version range or item count; they point to [docs/SPEC.md](docs/SPEC.md), which owns them. |
+| Framework mapping | [docs/framework-mapping.md](docs/framework-mapping.md): LLM05, LLM07, LLM10, ASI05 and ASI09 now covered and LLM08, ASI08 partial, each with its skill section; ATLAS agent-tool and propagation techniques from the 2026.10 data release; the OWASP LLM 2026 list is marked unverified. |
+
+### Open: skill sections marked "This candidate is unscored"
+
+AGENTS.md rule 3 says no unscored change to a skill ships, yet these sections are in the skill text on main. Each has an
+independent eval request and development cases; none has a scored, gated comparison. Owner: whoever runs the next gated
+evaluation of each lens (or removes the section). Close a row by linking its gate record.
+
+| Skill section | Eval request | Development cases |
+|---|---|---|
+| redteam, "Secrets placement and rotation" | [secrets](docs/eval-requests/week-1021-secrets-eval-request.md) | `evals/secrets/cases` |
+| redteam, "Self-hosted service exposure" | [exposure](docs/eval-requests/week-1021-exposure-eval-request.md) | `evals/exposure/cases` |
+| redteam, "Authorization pretexts and refusal fallback" | [pretext](docs/eval-requests/week-1021-pretext-eval-request.md) | `evals/pretext/cases` |
+| pr-review, "Release age, install hooks and credential egress" (under "Dependency, plugin and update-payload changes") | [supply chain](docs/eval-requests/week-1021-supply-chain-eval-request.md) | `evals/supplychain/cases` |
+| pr-review, "Runtime and TLS trust changes" | [runtime trust](docs/eval-requests/week-1021-runtime-trust-eval-request.md) | `evals/runtime/cases` |
+
 ## Unreleased, documentation updated October 22, 2026
 
 This inventory reconciles every first-parent PR merged since the prior release-notes entry,
