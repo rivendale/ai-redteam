@@ -125,7 +125,7 @@ positive hook control.
 | File | Use |
 |---|---|
 | [`docs/capabilities.md`](docs/capabilities.md) | Everything the repo does, grouped, with the file that owns each part |
-| [`docs/SPEC.md`](docs/SPEC.md) | v2 and v2.2 design and failure list (each written before its skill text) |
+| [`docs/SPEC.md`](docs/SPEC.md) | redteam design and failure list, version by version, each written before its skill text (the file owns its versions and item numbers) |
 | [`docs/attack-catalog.md`](docs/attack-catalog.md) | Twenty-eight ways AI-built systems fail under attack, each with the question a reviewer should ask |
 | [`docs/framework-mapping.md`](docs/framework-mapping.md) | The catalog and skills against OWASP LLM Top 10 2025, OWASP Agentic Top 10 2026 and MITRE ATLAS |
 | [`docs/why-reviews-fail.md`](docs/why-reviews-fail.md) | How reviews of AI work go wrong, and the habit that prevents each |
