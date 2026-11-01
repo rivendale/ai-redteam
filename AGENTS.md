@@ -1,5 +1,9 @@
 # AGENTS.md: how to use this repository as an AI agent
 
+> Part of a set of public repos maintained separately. Start at
+> [hsi-operator](https://github.com/rivendale/hsi-operator): it says what each one is for and
+> when to read it.
+
 You are an AI coding agent (Claude Code, Codex, Gemini CLI, Grok or another) reading this repo. This file is the
 one instruction file; there is no `CLAUDE.md`, `GEMINI.md` or other copy (two copies drift, and a `CLAUDE.md`
 silently switches `AGENTS.md` off in Claude Code from 2.1.277, when native `AGENTS.md` support began; see
