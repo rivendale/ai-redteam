@@ -1,8 +1,11 @@
 {
   "_comment": "Schema: rivendale/opensource tools/hygiene/README.md. Keys starting with _ are comments.",
   "invisible_allow": [
-    {"glob": "evals/cases/**", "why": "eval fixtures plant raw tag, bidi and zero-width characters on purpose (cases 62 and 63)"},
-    {"glob": "evals/results/**", "why": "recorded runs quote those fixtures verbatim"}
+    {"glob": "evals/cases/case-6[23]/work/**", "why": "planted tag, bidi and zero-width characters (cases 62 and 63)"},
+    {"glob": "evals/results/2026-10-09-gate-v232/*/case-62.md", "why": "reports quote the case 62 fixture"},
+    {"glob": "evals/results/2026-10-09-gate-v232/*/prompts/case-6[23].prompt", "why": "prompts quote the case 62/63 fixtures"},
+    {"glob": "evals/results/2026-10-07/reports-v[12]/*.prompt", "why": "prompts embed raw .pyc bytes from the 2026-10-07 work dirs"},
+    {"glob": "evals/results/2026-10-07-pr9/redteam-reports/*.prompt", "why": "same .pyc bytes"}
   ],
   "claims": [
     {"file": "evals/README.md", "pattern": "The baseline suite contains (\\d+) cases", "count_glob": "evals/cases/*/expected.json"},
