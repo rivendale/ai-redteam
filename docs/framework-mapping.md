@@ -58,7 +58,41 @@ ATLAS techniques overlap the entries above. The clear matches, with names as of 
 
 Other techniques touch the catalog less directly; this page does not map them.
 
+## NIST
+
+Two NIST publications, read from their PDFs on 2026-11-01. Each row points at the OWASP rows above instead of repeating
+them, so a status changes in one place. A section with no row is outside what these reviews ask about.
+
+### NIST AI 600-1, Generative AI Profile (July 2024)
+
+Source: [doi:10.6028/NIST.AI.600-1](https://doi.org/10.6028/NIST.AI.600-1), section 2 (the twelve risks).
+
+| Section | Risk | Where |
+|---|---|---|
+| 2.2 | Confabulation | as LLM09 |
+| 2.4 | Data Privacy | as LLM02 |
+| 2.7 | Human-AI Configuration (automation bias, over-reliance) | as ASI09; the [README](../README.md) states that a review is evidence to examine, not an approval |
+| 2.9 | Information Security | the attack-surface half: prompt injection as LLM01, data poisoning as LLM04. Not asked: the section's other half, AI lowering the cost of offensive cyber operations |
+| 2.12 | Value Chain and Component Integration | as LLM03 |
+
+Not mapped: 2.1 CBRN, 2.3 dangerous, violent or hateful content, 2.5 environmental impacts, 2.6 harmful bias and
+homogenization, 2.8 information integrity, 2.10 intellectual property, 2.11 obscene, degrading or abusive content.
+
+### NIST AI 100-2 E2025, Adversarial Machine Learning taxonomy
+
+Source: [doi:10.6028/NIST.AI.100-2e2025](https://doi.org/10.6028/NIST.AI.100-2e2025), section 3 (generative AI).
+
+| Section | Attack class | Where |
+|---|---|---|
+| 3.2 | Supply chain attacks (data and model poisoning) | as LLM03 and LLM04 |
+| 3.3.2 | Information extraction (training data, RAG contents, system prompt, model weights) | as LLM02, LLM07 and LLM08 |
+| 3.4 | Indirect prompt injection | as LLM01 and ASI01 |
+| 3.5 | Security of agents | as LLM06, ASI02 and ASI03 |
+
+Not mapped: section 2 (predictive AI), and the jailbreak techniques of 3.3.1, which concern a model's own safety
+training rather than the work under review.
+
 ## Keeping this current
 
 When a catalog entry or a skill section is added, update the rows it affects in the same pull request. When either OWASP list
-is revised, re-read it from the official page and date the change here.
+or either NIST publication is revised, re-read it from the official page and date the change here.
