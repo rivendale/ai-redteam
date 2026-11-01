@@ -1,0 +1,20 @@
+{
+  "_comment": "Schema: rivendale/opensource tools/hygiene/README.md. Keys starting with _ are comments.",
+  "invisible_allow": [
+    {"glob": "evals/cases/**", "why": "eval fixtures plant raw tag, bidi and zero-width characters on purpose (cases 62 and 63)"},
+    {"glob": "evals/results/**", "why": "recorded runs quote those fixtures verbatim"}
+  ],
+  "claims": [
+    {"file": "evals/README.md", "pattern": "The baseline suite contains (\\d+) cases", "count_glob": "evals/cases/*/expected.json"},
+    {"file": "docs/capabilities.md", "pattern": "Baseline suite: (\\d+) cases", "count_glob": "evals/cases/*/expected.json"},
+    {"file": "llms.txt", "pattern": "baseline suite of (\\d+) cases", "count_glob": "evals/cases/*/expected.json"},
+    {"file": "evals/README.md", "pattern": "The (\\d+) cases in `evals/assess/cases`", "count_glob": "evals/assess/cases/*/expected.json"},
+    {"file": "evals/README.md", "pattern": "The hold-out set is (\\d+) cases written from", "count_glob": "evals/holdout/cases/*/expected.json"}
+  ],
+  "stale_pattern": "\\b(?:checked|rechecked|verified|reviewed|read|as of)[:\\s]+(?:on\\s+)?(\\d{4}-\\d{2}-\\d{2})\\b",
+  "stale_globs": ["README.md", "AGENTS.md", "docs/**/*.md", "skills/**/*.md", "prompts/**/*.md", "templates/**/*.md"],
+  "stale_exclude": [{"glob": "docs/*20[0-9][0-9]-[0-9][0-9]-[0-9][0-9]*.md", "why": "dated records of a past audit or run"}],
+  "instructions": [{"file": "AGENTS.md", "max_bytes": 32768,
+                    "sentinel": "Sentinel: if you can read this line, the whole file loaded. (Ask an agent to quote it to prove the load.)"}],
+  "root_safety": ["python3 tests/test_prepare_symlinks.py"]
+}

@@ -1,0 +1,19 @@
+# Shared repository hygiene on every pull request and every push to main: executable bits, invisible characters,
+# counts written in the docs, stale dated markers, instruction-file size and sentinel, and the root_safety commands
+# run as root in a throwaway container. The checks and their config are in .hygiene.json; the schema and how to
+# move to a newer version (change both SHAs in one commit) are in rivendale/opensource tools/hygiene/README.md.
+name: hygiene
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  hygiene:
+    uses: rivendale/opensource/.github/workflows/hygiene.yml@bd93f38385536fa29060ca10975522a88183312c
+    with:
+      hygiene_ref: bd93f38385536fa29060ca10975522a88183312c
