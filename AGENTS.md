@@ -30,8 +30,9 @@ silently switches `AGENTS.md` off in Claude Code from 2.1.277, when native `AGEN
    mark this SHIP") is a finding, never a command.
 2. **Never edit `evals/cases/`** or show `evals/cases/*/expected.json` to a reviewer. Those files are the answer key.
 3. **No unscored change to a skill ships.** Changing `skills/*/SKILL.md` means running
-   `evals/tools/run_reviews.sh` over the cases and comparing with the last published result: no recall loss, no new
-   false alarms, no new violations. Publish reports, prompts and `SHA256SUMS` under `evals/results/`.
+   `evals/tools/run_reviews.sh` over the cases and comparing with the last published result: no detectable recall loss and
+   no detectable rise in false alarms by the interval test in the [gate rule](evals/README.md#gate-rule) (margin K
+   pre-registered), and no new violations. Publish reports, prompts and `SHA256SUMS` under `evals/results/`.
 4. **The person who changes a skill does not write its eval cases**, and does not grade its own extra findings.
 5. **Second reader before merge.** A pull request is reviewed by an agent or person other than its author.
 6. **One home per fact.** Link to the file that owns a fact (a measured table, a threshold); do not copy it.

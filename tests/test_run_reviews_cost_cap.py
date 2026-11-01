@@ -28,10 +28,13 @@ STUB = textwrap.dedent("""\
     cat > /dev/null
     [ -n "${STUB_SLEEP:-}" ] && sleep "$STUB_SLEEP"
     if [ -n "${STUB_FAIL:-}" ]; then echo "boom" >&2; exit 1; fi
-    cat <<JSON
-    {"result": "report\\n```json\\n{\\"verdict\\": \\"SHIP\\", \\"findings\\": []}\\n```", "total_cost_usd": ${STUB_COST:-0.40}, "is_error": false,
+    # the heredoc is quoted (nothing in it expands); the cost is put in afterwards as a plain string replacement
+    body=$(cat <<'JSON'
+    {"result": "report\\n```json\\n{\\"verdict\\": \\"SHIP\\", \\"findings\\": []}\\n```", "total_cost_usd": @COST@, "is_error": false,
      "modelUsage": {"stub-model": {"outputTokens": 10}}, "duration_ms": 1, "num_turns": 1}
     JSON
+    )
+    printf '%s\\n' "${body/@COST@/${STUB_COST:-0.40}}"
 """)
 
 

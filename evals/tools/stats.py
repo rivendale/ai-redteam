@@ -6,6 +6,7 @@ score the same cases; a comparison needs the same cases on both sides (repeat co
 
     python3 evals/tools/stats.py summary RUN1.json RUN2.json RUN3.json
     python3 evals/tools/stats.py compare --base B1.json B2.json B3.json --cand C1.json C2.json C3.json [--margin 3]
+    python3 evals/tools/stats.py gate --base B*.json --cand C*.json --prereg CAND_OUTDIR/_meta/prereg.json   # or --margin K
     python3 evals/tools/stats.py --self-check
 
 The unit of resampling is the CASE, not the planted defect or the repeat: the repeats of one case share its fixture, its
@@ -19,15 +20,22 @@ interval too narrow; the naive Wilson interval is printed beside the clustered o
   `false_alarm` > 0). The raw count is reported too, because the published gate counts findings, not control runs.
 - A comparison resamples cases jointly for both texts (paired), so a hard case is hard on both sides. It also gives an exact sign
   test on the cases where one text did better than the other (McNemar's exact test when each case has one planted defect and one
-  repeat). "Not significant" means the 95% interval of the difference contains zero.
-- `--margin K` states what a "baseline minus K" recall floor means against that interval, in summed hits. It reports; it does not
-  change any gate.
+  repeat). The verdict is SIGNIFICANT only when the 95% interval excludes zero AND the sign test gives p < 0.05, NOT SIGNIFICANT
+  when neither does, and WEAK EVIDENCE when they disagree. A WARNING is printed (and written to --json) whenever an interval rests
+  on fewer than 10 clusters (cases or controls), where a percentile bootstrap is too narrow.
+- With the same repeats on both sides, the difference is also given in summed counts (hits; control runs with a false alarm), the
+  gate's unit. That interval is bootstrapped directly as the summed difference in each resample, not by scaling a rate interval.
+- `gate` applies the gate rule that evals/README.md (section "Gate rule") owns, with the margin K pre-registered in the candidate
+  run's prereg.json (GATE_MARGIN; GATE_FA_MARGIN for false alarms), and prints PASS or FAIL (exit 0 or 1; bad input exits 2). `--margin K` on `compare` only reports what a
+  "baseline minus K" floor means against the interval.
 
 Standard library only. Nothing here calls a model.
 """
-import argparse, json, math, pathlib, random, sys, tempfile
+import argparse, json, math, pathlib, random, subprocess, sys, tempfile
 
 Z95 = 1.959963984540054
+ALPHA = 0.05
+MIN_CLUSTERS = 10          # below this many cases (or controls) the clustered interval is flagged as too narrow to lean on
 DEFAULT_B = 10000
 DEFAULT_SEED = 20261031
 
@@ -112,8 +120,11 @@ def cluster_bootstrap(clusters, b=DEFAULT_B, seed=DEFAULT_SEED):
 def describe(clusters, b, seed):
     k = sum(c[1] for c in clusters); n = sum(c[2] for c in clusters)
     est = k / n if n else None
+    warns = []
+    if 0 < len(clusters) < MIN_CLUSTERS:
+        warns.append(f"WARNING: only {len(clusters)} cluster(s), fewer than {MIN_CLUSTERS}: the clustered interval is too narrow to lean on")
     return {"k": k, "n": n, "clusters": len(clusters), "estimate": est, "ci95_cluster_bootstrap": list(cluster_bootstrap(clusters, b, seed)),
-            "ci95_wilson_naive": list(wilson(k, n))}
+            "ci95_wilson_naive": list(wilson(k, n)), "warnings": warns}
 
 
 def binom_two_sided(k, n):
@@ -134,26 +145,49 @@ def paired(base_clusters, cand_clusters, b=DEFAULT_B, seed=DEFAULT_SEED):
         return None
     bk = [bd[i][1] for i in ids]; bn = [bd[i][2] for i in ids]; ck = [cd[i][1] for i in ids]; cn = [cd[i][2] for i in ids]
     obs = sum(ck) / sum(cn) - sum(bk) / sum(bn)
+    # Same denominator in every case (same planted count and same repeats on both sides): the difference is also stated in summed
+    # counts (hits, or control runs with a false alarm), the gate's unit. That interval is bootstrapped directly, as the summed
+    # difference in each resample, not by scaling the rate interval by the observed total (the total itself varies between
+    # resamples when cases plant different numbers of defects).
+    same_n = bn == cn
     rng = random.Random(seed)
-    m = len(ids); vals = []
+    m = len(ids); vals = []; sums = []
     for _ in range(b):
         sbk = sbn = sck = scn = 0
         for _ in range(m):
             j = rng.randrange(m)
             sbk += bk[j]; sbn += bn[j]; sck += ck[j]; scn += cn[j]
         vals.append(sck / scn - sbk / sbn)
-    vals.sort()
+        sums.append(sck - sbk)
+    vals.sort(); sums.sort()
     lo, hi = _pct(vals, 0.025), _pct(vals, 0.975)
     better = sum(1 for i in range(m) if ck[i] * bn[i] > bk[i] * cn[i])
     worse = sum(1 for i in range(m) if ck[i] * bn[i] < bk[i] * cn[i])
+    p = binom_two_sided(better, better + worse)
     out = {"cases": m, "base_rate": sum(bk) / sum(bn), "cand_rate": sum(ck) / sum(cn), "diff": obs, "ci95_paired_bootstrap": [lo, hi],
            "significant": not (lo <= 0 <= hi), "cases_cand_better": better, "cases_cand_worse": worse,
-           "sign_test_p": binom_two_sided(better, better + worse), "base_k": sum(bk), "cand_k": sum(ck), "base_n": sum(bn), "cand_n": sum(cn)}
-    if sum(bn) == sum(cn):   # same repeats on both sides: the difference is also stated in summed hits, the gate's unit
-        n = sum(bn)
+           "sign_test_p": p, "sign_test_significant": p < ALPHA,
+           "base_k": sum(bk), "cand_k": sum(ck), "base_n": sum(bn), "cand_n": sum(cn)}
+    if same_n:
         out["diff_hits"] = sum(ck) - sum(bk)
-        out["ci95_hits"] = [lo * n, hi * n]
+        out["ci95_hits"] = [_pct(sums, 0.025), _pct(sums, 0.975)]
+    out["verdict"], out["warnings"] = judge(out)
     return out
+
+
+def judge(r):
+    """(verdict, warnings) for a paired difference. SIGNIFICANT only when the bootstrap interval excludes zero AND the exact sign test
+    agrees; WEAK EVIDENCE when the two disagree; a warning whenever the interval rests on fewer than MIN_CLUSTERS clusters."""
+    warns = []
+    if r["cases"] < MIN_CLUSTERS:
+        warns.append(f"WARNING: only {r['cases']} cluster(s), fewer than {MIN_CLUSTERS}: a percentile bootstrap over so few cases is too narrow; "
+                     "read the interval as indicative and rely on the sign test")
+    boot, sign = r["significant"], r["sign_test_significant"]
+    if boot != sign:
+        warns.append(f"WARNING: the tests disagree: the bootstrap interval {'excludes' if boot else 'contains'} zero but the exact sign test gives "
+                     f"p = {r['sign_test_p']:.3f} ({r['cases_cand_better']} vs {r['cases_cand_worse']} discordant): WEAK EVIDENCE")
+        return "WEAK EVIDENCE", warns
+    return ("SIGNIFICANT" if boot else "NOT SIGNIFICANT"), warns
 
 
 # ------------------------------------------------------------------------------------------------------------------ reports
@@ -171,7 +205,8 @@ def summary(paths, b, seed):
     rec = describe(recall_clusters(cases), b, seed)
     fa = describe(fa_clusters(cases), b, seed)
     fa["false_alarm_findings"] = sum(sum(c["fa_count"]) for c in cases.values() if c["control"])
-    return {"repeats": reps, "cases": len(cases), "recall": rec, "false_alarm_rate": fa}
+    return {"repeats": reps, "cases": len(cases), "recall": rec, "false_alarm_rate": fa,
+            "warnings": [f"recall: {w}" for w in rec["warnings"]] + [f"false-alarm rate: {w}" for w in fa["warnings"]]}
 
 
 def print_summary(s):
@@ -183,6 +218,8 @@ def print_summary(s):
               f"95% CI {ci(f['ci95_cluster_bootstrap'])} clustered by case (naive Wilson {ci(f['ci95_wilson_naive'])})")
     else:
         print("false-alarm rate: n/a (no controls in these runs)")
+    for w in s["warnings"]:
+        print(f"  {w}")
 
 
 def compare(base_paths, cand_paths, b, seed, margin=None):
@@ -195,6 +232,8 @@ def compare(base_paths, cand_paths, b, seed, margin=None):
     out = {"base": summary(base_paths, b, seed), "cand": summary(cand_paths, b, seed),
            "recall": paired(recall_clusters(bc), recall_clusters(cc), b, seed),
            "false_alarm_rate": paired(fa_clusters(bc), fa_clusters(cc), b, seed)}
+    out["warnings"] = [f"recall difference: {w}" for w in (out["recall"] or {}).get("warnings", [])] + \
+                      [f"false-alarm difference: {w}" for w in (out["false_alarm_rate"] or {}).get("warnings", [])]
     if margin is not None and out["recall"] and "ci95_hits" in out["recall"]:
         r = out["recall"]
         lo, hi = r["ci95_hits"]
@@ -206,15 +245,19 @@ def compare(base_paths, cand_paths, b, seed, margin=None):
 
 def print_compare(c):
     r, f = c["recall"], c["false_alarm_rate"]
-    verdict = "SIGNIFICANT" if r["significant"] else "NOT SIGNIFICANT"
-    print(f"recall difference: {verdict} (candidate - base = {r['diff']:+.3f}, 95% paired CI {ci(r['ci95_paired_bootstrap'])}, "
+    print(f"recall difference: {r['verdict']} (candidate - base = {r['diff']:+.3f}, 95% paired CI {ci(r['ci95_paired_bootstrap'])}, "
           f"{r['cases']} cases; sign test {r['cases_cand_better']} better / {r['cases_cand_worse']} worse, p = {r['sign_test_p']:.3f})")
     if "diff_hits" in r:
         print(f"  in summed hits: {r['diff_hits']:+d} ({r['cand_k']} vs {r['base_k']} of {r['base_n']}), 95% CI {ci(r['ci95_hits'], 1)}")
+    for w in r["warnings"]:
+        print(f"  {w}")
     if f:
-        fv = "SIGNIFICANT" if f["significant"] else "NOT SIGNIFICANT"
-        print(f"false-alarm rate difference: {fv} (candidate - base = {f['diff']:+.3f}, 95% paired CI {ci(f['ci95_paired_bootstrap'])}, "
+        print(f"false-alarm rate difference: {f['verdict']} (candidate - base = {f['diff']:+.3f}, 95% paired CI {ci(f['ci95_paired_bootstrap'])}, "
               f"{f['cases']} controls; sign test {f['cases_cand_better']} more / {f['cases_cand_worse']} fewer, p = {f['sign_test_p']:.3f})")
+        if "diff_hits" in f:
+            print(f"  in summed control runs with a false alarm: {f['diff_hits']:+d} ({f['cand_k']} vs {f['base_k']} of {f['base_n']}), 95% CI {ci(f['ci95_hits'], 1)}")
+        for w in f["warnings"]:
+            print(f"  {w}")
     if "margin" in c:
         m = c["margin"]
         print(f"floor 'base minus {m['margin_hits']}': observed {m['observed_diff_hits']:+d} hits ({'passes' if m['passes_floor'] else 'fails'}); "
@@ -222,6 +265,80 @@ def print_compare(c):
               f"{'INSIDE' if m['floor_inside_ci'] else 'outside'} the interval")
     print("  base:  ", end=""); print_summary(c["base"])
     print("  cand:  ", end=""); print_summary(c["cand"])
+
+
+# --------------------------------------------------------------------------------------------------------------------- gate
+def _is_margin(k):
+    return isinstance(k, (int, float)) and not isinstance(k, bool) and math.isfinite(k) and k >= 0
+
+
+def _tidy(k):
+    """A validated margin as an int when integral (3.0 -> 3), so printed rules read naturally."""
+    return int(k) if k == int(k) else k
+
+
+def margin_from_prereg(path):
+    """(K for recall, K for false alarms) pre-registered in a lane's _meta/prereg.json (GATE_MARGIN, and GATE_FA_MARGIN, which falls
+    back to GATE_MARGIN; a record without fa_margin uses the recall K). ValueError for a record that is not one or has no usable K."""
+    rec = json.loads(pathlib.Path(path).read_text())
+    if not isinstance(rec, dict) or not isinstance(rec.get("gate_rule"), dict):
+        raise ValueError(f"{path} is not a pre-registration record (no gate_rule object)")
+    k = rec["gate_rule"].get("margin")
+    if not _is_margin(k):
+        raise ValueError(f"{path} pre-registers no usable margin (gate_rule.margin = {k!r}); start the run with GATE_MARGIN=<K>")
+    fk = rec["gate_rule"].get("fa_margin", k)
+    if fk is None:
+        fk = k
+    if not _is_margin(fk):
+        raise ValueError(f"{path} pre-registers an unusable false-alarm margin (gate_rule.fa_margin = {fk!r})")
+    return k, fk
+
+
+def gate(c, k, fa_k=None):
+    """The statistical gate (owned by evals/README.md, section "Gate rule"), on one compare() result and a pre-registered K >= 0
+    (summed hits, for recall) and fa_k >= 0 (summed control runs, for false alarms; defaults to K).
+    Recall passes when the lower bound of the paired 95% case-clustered interval of (candidate - base) summed hits is above -K AND the
+    exact sign test shows no significant loss. False alarms (control runs with an open Critical/High) pass when the upper bound of
+    the same interval is below +K AND the sign test shows no significant rise. The gate passes when both pass."""
+    fa_k = k if fa_k is None else fa_k
+    for name, v in (("K", k), ("the false-alarm K", fa_k)):
+        if not _is_margin(v):
+            raise ValueError(f"{name} must be a finite number >= 0, not {v!r}")
+    parts = {}
+    for name, key, loss_dir in (("recall", "recall", "worse"), ("false_alarms", "false_alarm_rate", "better")):
+        r = c[key]
+        if not r:
+            parts[name] = {"pass": False, "reason": "no cases of this kind in the runs: this half of the gate cannot be tested"}
+            continue
+        if "ci95_hits" not in r:
+            raise ValueError(f"{name}: the two sides ran different repeat counts, so summed counts are not comparable; run the same repeats")
+        lo, hi = r["ci95_hits"]
+        losses, gains = (r["cases_cand_worse"], r["cases_cand_better"]) if loss_dir == "worse" else (r["cases_cand_better"], r["cases_cand_worse"])
+        sign_loss = r["sign_test_significant"] and losses > gains
+        kk = k if name == "recall" else fa_k
+        bound_ok = lo > -kk if name == "recall" else hi < kk
+        parts[name] = {"pass": bound_ok and not sign_loss, "bound": lo if name == "recall" else hi, "margin": kk,
+                       "bound_rule": f"lower bound > -{kk}" if name == "recall" else f"upper bound < +{kk}", "bound_ok": bound_ok,
+                       "sign_test_loss": sign_loss, "sign_test_p": r["sign_test_p"], "losing_cases": losses, "gaining_cases": gains,
+                       "observed_diff": r["diff_hits"], "ci95": [lo, hi], "warnings": r["warnings"]}
+    return {"margin": k, "fa_margin": fa_k, "pass": all(v["pass"] for v in parts.values()), "recall": parts["recall"], "false_alarms": parts["false_alarms"],
+            "warnings": c.get("warnings", [])}
+
+
+def print_gate(g):
+    labels = {"recall": "recall (summed hits)", "false_alarms": "false alarms (summed control runs with an open Critical/High)"}
+    for name in ("recall", "false_alarms"):
+        v = g[name]
+        if "reason" in v:
+            print(f"{labels[name]}: FAIL ({v['reason']})"); continue
+        why = [f"95% CI {ci(v['ci95'], 1)}, {v['bound_rule']}: {'yes' if v['bound_ok'] else 'NO'}",
+               f"sign test {v['losing_cases']} worse / {v['gaining_cases']} better, p = {v['sign_test_p']:.3f}: "
+               f"{'SIGNIFICANT LOSS' if v['sign_test_loss'] else 'no significant loss'}"]
+        print(f"{labels[name]}: {'PASS' if v['pass'] else 'FAIL'} (observed {v['observed_diff']:+d}; " + "; ".join(why) + ")")
+    for w in g["warnings"]:
+        print(f"  {w}")
+    ks = f"K = {g['margin']}" if g["fa_margin"] == g["margin"] else f"K = {g['margin']} hits, false-alarm K = {g['fa_margin']} control runs"
+    print(f"gate ({ks}): {'PASS' if g['pass'] else 'FAIL'}")
 
 
 # --------------------------------------------------------------------------------------------------------------- self-check
@@ -319,6 +436,101 @@ def self_check():
         s = summary(ps, b, DEFAULT_SEED)
         expect("files on disk load: 56/60 over 20 cases x 3 repeats", s["recall"]["k"] == 56 and s["recall"]["n"] == 60 and s["repeats"] == 3, s["recall"])
 
+    # 9. the summed-hit interval is bootstrapped directly. With equal-size clusters it equals the rate interval times the total; with
+    #    unequal ones it must not: 10 cases, one planting 10 defects and lost entirely by the candidate, nine planting one each.
+    c = compare(base, cand, b, DEFAULT_SEED)
+    rl, rh = c["recall"]["ci95_paired_bootstrap"]; hl, hh = c["recall"]["ci95_hits"]
+    expect("equal-size cases: the hit interval equals the rate interval x 60", abs(hl - 60 * rl) < 1e-6 and abs(hh - 60 * rh) < 1e-6, (rl, rh, hl, hh))
+    ub = [_run([("case-01", False, 10, 10, 0)] + [(f"case-{i:02d}", False, 1, 1, 0) for i in range(2, 11)])]
+    uc = [_run([("case-01", False, 10, 0, 0)] + [(f"case-{i:02d}", False, 1, 1, 0) for i in range(2, 11)])]
+    r = compare(ub, uc, b, DEFAULT_SEED)["recall"]
+    expect("unequal cases: the hit interval reaches -30 (case 1 drawn 3 times), which scaling the rate interval cannot (about -15)",
+           r["ci95_hits"][0] <= -29 and r["ci95_hits"][1] == 0 and r["ci95_paired_bootstrap"][0] * 19 > -20, r)
+
+    # 10. few clusters and disagreeing tests. The plain-prompt hold-out shape: 6 controls, 4 of them flagged by the base and none by
+    #     the candidate. The bootstrap interval excludes zero; the sign test (0 more, 4 fewer) gives p = 0.125. Not a bare SIGNIFICANT.
+    pb = arm([set()] * 3, n=5, controls=[(1, 1, 1), (1, 1, 0), (1, 0, 1), (0, 1, 1), (0, 0, 0), (0, 0, 0)])
+    pc = arm([set()] * 3, n=5, controls=[(0, 0, 0)] * 6)
+    c = compare(pb, pc, b, DEFAULT_SEED)
+    f = c["false_alarm_rate"]
+    expect("6 controls, 4 discordant: bootstrap excludes zero, sign test p = 0.125", f["significant"] and abs(f["sign_test_p"] - 0.125) < 1e-12, f)
+    expect("  and the verdict is WEAK EVIDENCE, not SIGNIFICANT", f["verdict"] == "WEAK EVIDENCE", f["verdict"])
+    expect("  with a fewer-than-10-clusters warning and a disagreement warning",
+           any("fewer than 10" in w for w in f["warnings"]) and any("disagree" in w for w in f["warnings"]), f["warnings"])
+    expect("  carried to the top-level warnings", any(w.startswith("false-alarm difference:") for w in c["warnings"]), c["warnings"])
+    expect("20 cases, both tests agree: no warning", compare(big_b, big_c, b, DEFAULT_SEED)["recall"]["warnings"] == [] and
+           compare(big_b, big_c, b, DEFAULT_SEED)["recall"]["verdict"] == "SIGNIFICANT")
+    expect("summary warns on 6 controls and not on 20 defect cases",
+           summary(pb, b, DEFAULT_SEED)["false_alarm_rate"]["warnings"] and not summary(base, b, DEFAULT_SEED)["recall"]["warnings"])
+    with tempfile.TemporaryDirectory() as t:
+        ps = {}
+        for side, runs in (("b", pb), ("c", pc)):
+            ps[side] = []
+            for i, rr in enumerate(runs):
+                q = pathlib.Path(t) / f"{side}{i}.json"; q.write_text(json.dumps(rr)); ps[side].append(str(q))
+        out = pathlib.Path(t) / "cmp.json"
+        res = subprocess.run([sys.executable, __file__, "--resamples", "2000", "--json", str(out), "compare", "--base", *ps["b"], "--cand", *ps["c"]],
+                             capture_output=True, text=True)
+        js = json.loads(out.read_text()) if out.exists() else {}
+        expect("the CLI prints WEAK EVIDENCE and WARNING, and --json carries the warnings",
+               "false-alarm rate difference: WEAK EVIDENCE" in res.stdout and "WARNING" in res.stdout and "difference: SIGNIFICANT" not in res.stdout
+               and js.get("false_alarm_rate", {}).get("verdict") == "WEAK EVIDENCE" and js.get("warnings"), res.stdout + res.stderr)
+
+    # 11. the gate: lower bound of the summed-hit interval above -K and no significant sign-test loss; false alarms the same way up.
+    wc = arm([{1, 2}, {3}, {4}], controls=[(0, 0, 0)] * 8 + [(1, 0, 0), (0, 1, 1)])     # base with 10 controls, two of them flagged
+    g = gate(compare(wc, wc, b, DEFAULT_SEED), 3)
+    expect("gate: identical runs pass at K = 3", g["pass"] and g["recall"]["pass"] and g["false_alarms"]["pass"], g)
+    expect("gate: identical runs fail at K = 0 (the bound must be strictly above -K)", not gate(compare(wc, wc, b, DEFAULT_SEED), 0)["pass"])
+    c3 = compare(base, cand, b, DEFAULT_SEED)
+    g = gate(c3, 3)
+    expect("gate: the 3-hit loss of 60 FAILS at K = 3 (the interval reaches below -3)", not g["recall"]["pass"] and c3["recall"]["ci95_hits"][0] <= -3, g["recall"])
+    k_ok = math.floor(-c3["recall"]["ci95_hits"][0]) + 1
+    expect(f"gate: the same loss passes at K = {k_ok}, just beyond its lower bound", gate(c3, k_ok)["recall"]["pass"], gate(c3, k_ok)["recall"])
+    expect("gate: a 30-of-40-case loss fails", not gate(compare(big_b, big_c, b, DEFAULT_SEED), 3)["pass"])
+    sb = arm([set()] * 1, n=40); sc = arm([set(range(1, 11))], n=40)          # 10 cases lose their one hit, nothing gains
+    g = gate(compare(sb, sc, b, DEFAULT_SEED), 20)
+    expect("gate: inside a wide margin (K = 20) but 10 worse / 0 better (p = 0.002) still fails on the sign test",
+           g["recall"]["bound_ok"] and g["recall"]["sign_test_loss"] and not g["recall"]["pass"], g["recall"])
+    fl = arm([set()] * 3, n=5, controls=[(0, 0, 0)] * 10); fh = arm([set()] * 3, n=5, controls=[(1, 1, 1)] * 10)
+    g = gate(compare(fl, fh, b, DEFAULT_SEED), 3)
+    expect("gate: every control newly flagged fails the false-alarm half", g["recall"]["pass"] and not g["false_alarms"]["pass"], g)
+    g = gate(compare(fh, fl, b, DEFAULT_SEED), 3)
+    expect("gate: fewer false alarms pass the false-alarm half", g["false_alarms"]["pass"], g["false_alarms"])
+    g = gate(compare(base, base, b, DEFAULT_SEED), 3)
+    expect("gate: runs with no controls fail, with a reason", not g["pass"] and "reason" in g["false_alarms"] and g["recall"]["pass"], g)
+    expect("gate: a negative or non-numeric K is refused", refused(lambda: gate(c3, -1)) and refused(lambda: gate(c3, "3")))
+    with tempfile.TemporaryDirectory() as t:
+        good = pathlib.Path(t) / "p.json"; good.write_text(json.dumps({"gate_rule": {"margin": 3}}))
+        none = pathlib.Path(t) / "n.json"; none.write_text(json.dumps({"gate_rule": {"margin": None}}))
+        expect("gate: K is read from a prereg.json, and a record with no margin is refused",
+               margin_from_prereg(good) == (3, 3) and refused(lambda: margin_from_prereg(none)))
+        two = pathlib.Path(t) / "t.json"; two.write_text(json.dumps({"gate_rule": {"margin": 3, "fa_margin": 6}}))
+        lst = pathlib.Path(t) / "l.json"; lst.write_text("[1, 2]")
+        expect("gate: a separate false-alarm K is read, and a record that is not a JSON object is refused",
+               margin_from_prereg(two) == (3, 6) and refused(lambda: margin_from_prereg(lst)))
+        # the false-alarm half uses its own K: 10 controls each newly flagged in one of 3 runs (+10 control runs)
+        fm = arm([set()] * 3, n=5, controls=[(1, 0, 0)] * 10)
+        cfm = compare(fl, fm, b, DEFAULT_SEED)
+        expect("gate: +10 control runs fails at false-alarm K = 3 and the bound passes at false-alarm K = 11",
+               not gate(cfm, 3)["false_alarms"]["bound_ok"] and gate(cfm, 3, 11)["false_alarms"]["bound_ok"] and gate(cfm, 3, 11)["false_alarms"]["margin"] == 11,
+               (gate(cfm, 3)["false_alarms"], gate(cfm, 3, 11)["false_alarms"]))
+        # bad input exits 2 (refused), never 1 (FAIL)
+        rb = []
+        for i, rr in enumerate(wc):
+            q = pathlib.Path(t) / f"w{i}.json"; q.write_text(json.dumps(rr)); rb.append(str(q))
+        def cli(*extra):
+            return subprocess.run([sys.executable, __file__, "--resamples", "1000", "gate", "--base", *rb, "--cand", *rb, *extra],
+                                  capture_output=True, text=True)
+        codes = {name: cli(*args).returncode for name, args in (
+            ("pass", ["--margin", "3"]), ("fail", ["--margin", "0"]), ("inf", ["--margin", "inf"]), ("nan", ["--margin", "nan"]),
+            ("negative", ["--margin", "-1"]), ("fa-inf", ["--margin", "3", "--fa-margin", "inf"]), ("list", ["--prereg", str(lst)]),
+            ("no-margin", ["--prereg", str(none)]), ("not-json", ["--prereg", __file__]), ("differs", ["--prereg", str(two), "--fa-margin", "5"]),
+            ("prereg", ["--prereg", str(two)]))}
+        expect("gate CLI: PASS exits 0, FAIL exits 1, and every bad input (inf, nan, negative, non-object or non-JSON record, no K, "
+               "a K that differs from the record) exits 2",
+               codes == {"pass": 0, "fail": 1, "inf": 2, "nan": 2, "negative": 2, "fa-inf": 2, "list": 2, "no-margin": 2, "not-json": 2,
+                         "differs": 2, "prereg": 0}, codes)
+
     print("all checks hold" if not fails else f"{len(fails)} check(s) FAILED")
     return 0 if not fails else 1
 
@@ -337,6 +549,12 @@ def main():
     cp.add_argument("--base", nargs="+", required=True)
     cp.add_argument("--cand", nargs="+", required=True)
     cp.add_argument("--margin", type=int, help="state what a 'base minus MARGIN' recall floor (summed hits) means against the interval")
+    gp = sub.add_parser("gate", help="PASS or FAIL under the statistical gate rule (evals/README.md, section 'Gate rule')")
+    gp.add_argument("--base", nargs="+", required=True)
+    gp.add_argument("--cand", nargs="+", required=True)
+    gp.add_argument("--margin", type=float, help="the pre-registered margin K in summed hits (or give --prereg)")
+    gp.add_argument("--fa-margin", type=float, help="the pre-registered false-alarm margin in summed control runs (default: --margin)")
+    gp.add_argument("--prereg", help="the candidate run's _meta/prereg.json; K is read from gate_rule.margin and fa_margin (GATE_MARGIN, GATE_FA_MARGIN)")
     a = ap.parse_args()
     if a.self_check:
         return self_check()
@@ -347,15 +565,30 @@ def main():
             res = summary(a.runs, a.resamples, a.seed); print_summary(res)
         elif a.cmd == "compare":
             res = compare(a.base, a.cand, a.resamples, a.seed, a.margin); print_compare(res)
+        elif a.cmd == "gate":
+            k, fk = a.margin, a.fa_margin
+            for opt, v in (("--margin", k), ("--fa-margin", fk)):
+                if v is not None and not _is_margin(v):
+                    raise ValueError(f"{opt} {v} must be a finite number >= 0")
+            if a.prereg:
+                kp, fkp = margin_from_prereg(a.prereg)
+                for opt, given, pre in (("--margin", k, kp), ("--fa-margin", fk, fkp)):
+                    if given is not None and given != pre:
+                        raise ValueError(f"{opt} {given} differs from the pre-registered value {pre} in {a.prereg}; the pre-registered value is the rule")
+                k, fk = kp, fkp
+            if k is None:
+                ap.error("gate needs the pre-registered K: --prereg OUTDIR/_meta/prereg.json or --margin K")
+            k = _tidy(k); fk = _tidy(fk) if fk is not None else k
+            res = gate(compare(a.base, a.cand, a.resamples, a.seed), k, fk); print_gate(res)
         else:
-            ap.error("give summary, compare or --self-check")
+            ap.error("give summary, compare, gate or --self-check")
     except (ValueError, OSError, KeyError) as e:
         print(f"refused: {e}", file=sys.stderr)
         return 2
     res["method"] = {"resamples": a.resamples, "seed": a.seed, "cluster": "case", "interval": "percentile", "reference": "arXiv 2411.00640"}
     if a.json:
         pathlib.Path(a.json).write_text(json.dumps(res, indent=2) + "\n")
-    return 0
+    return 0 if a.cmd != "gate" or res["pass"] else 1
 
 
 if __name__ == "__main__":

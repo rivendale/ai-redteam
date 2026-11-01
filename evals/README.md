@@ -502,35 +502,46 @@ A scoring run of these development sets (two repeats, baseline against the new l
 The [public aggregate record](https://github.com/rivendale/ai-redteam/blob/120f1fbbf2ca698419b1111e0177b507d568e757/evals/results/2026-10-22-week1021-lenses/README.md) publishes the as-run paired recall, control counts, safety stops and model identities. Its 192 reviews include development and host-only hold-out cases; the original reports and hold-out contents are not published. The totals span repeats and do not establish a benefit on the corrected cases.
 ## Error bars and paired comparisons (evals/tools/stats.py, added 2026-10-31)
 
-**A three-hit recall floor is smaller than the noise on the hold-out set.** Read the gate result as "no detectable change", not
-as "within three of the baseline, so no loss".
+**A three-hit recall floor is smaller than the noise on the hold-out set.** Read the v2.3.2 gate result as "no detectable
+change", not as "within three of the baseline, so no loss". Gates from 2026-11-01 use the interval form in [Gate rule](#gate-rule).
 
 `stats.py` reads the scorer's JSON (one file per repeat) and gives 95% intervals for recall and the false-alarm rate, and a paired
 comparison of two texts on the same cases. It resamples cases, not planted defects or repeats: the repeats of one case share its
 fixture and its difficulty, so they are not independent draws (Miller, "Adding Error Bars to Evals",
 [arXiv 2411.00640](https://arxiv.org/abs/2411.00640)). The naive Wilson interval, which treats every detection as independent, is
 printed beside the clustered one. The comparison also gives an exact sign test over the cases where one text did better (McNemar's
-exact test when each case has one defect and one repeat). Standard library only; nothing calls a model.
+exact test when each case has one defect and one repeat). A difference is called SIGNIFICANT only when the interval excludes zero
+and the sign test gives p < 0.05; when the two disagree it is called WEAK EVIDENCE. Any interval over fewer than 10 clusters (cases
+or controls) carries a WARNING, in the printed output and in the `--json` file (`warnings`). With the same repeats on both sides
+the difference is also given in summed hits (and, for false alarms, summed control runs), bootstrapped directly as the summed
+difference in each resample. Standard library only; nothing calls a model.
 
 ```
 for i in 1 2 3; do python3 evals/score.py --reports RUN-base-$i --json /tmp/base-$i.json; done      # and the same for the candidate
 python3 evals/tools/stats.py summary /tmp/base-1.json /tmp/base-2.json /tmp/base-3.json
 python3 evals/tools/stats.py --json /tmp/cmp.json compare --base /tmp/base-*.json --cand /tmp/cand-*.json --margin 3
+python3 evals/tools/stats.py gate --base /tmp/base-*.json --cand /tmp/cand-*.json --prereg RUN-cand-1/_meta/prereg.json   # PASS/FAIL
 python3 evals/tools/stats.py --self-check        # must end "all checks hold"; also run by the offline checks workflow
 ```
 
-Global options (`--resamples`, default 10000; `--seed`, fixed so a result can be reproduced; `--json`) go before `summary` or
-`compare`. `--margin K` reports what a "base minus K" floor means against the interval; it does not change a gate. The runs on
+Global options (`--resamples`, default 10000; `--seed`, fixed so a result can be reproduced; `--json`) go before `summary`,
+`compare` or `gate`. `compare --margin K` only reports what a "base minus K" floor means against the interval; `gate` applies the
+[gate rule](#gate-rule) and exits 0 on PASS, 1 on FAIL. The runs on
 both sides must score the same cases with the same keys, or the tool refuses. A false-alarm rate is the share of control runs with
 at least one open Critical or High; the raw count of such findings, which the published gate uses, is printed beside it.
 
 The self-check uses synthetic runs. It must find a 3-hit loss of 60 (20 one-defect cases, three repeats, the shape of the published
 hold-out gap) NOT significant, a 30-of-40-case loss significant, identical runs at exactly zero, and a clustered interval wider than
 the naive one when repeats agree. It also checks the Wilson and sign-test arithmetic against known values and refuses unpaired input.
+It checks that the summed-hit interval is bootstrapped directly (on cases that plant different numbers of defects it reaches a loss
+that a scaled rate interval cannot), that the plain-prompt shape below (6 controls, 4 discordant) prints WEAK EVIDENCE with both
+warnings, and the gate: identical runs pass, the 3-hit loss of 60 fails at K = 3, a loss inside a wide margin still fails when the
+sign test finds it, new false alarms fail, and a record with no pre-registered K is refused.
 
 **The v2.3.2 gate with this lens (run 2026-11-01).** The [gate record](results/2026-10-09-gate-v232/README.md) owns the rule and the
 as-run totals. Its reports were re-scored with the current scorer, which includes the secret-in-history alias above, so hold-out
-recall reads 55 against 56, not the as-run 53 against 56. They were then compared with the default 10,000 resamples and fixed seed:
+recall reads 55 against 56, not the as-run 53 against 56. They were then compared with the default 10,000 resamples and fixed seed
+(re-run 2026-11-01 after the summed-hit interval was changed to a direct bootstrap; the earlier figures scaled a rate interval):
 
 ```
 R=evals/results/2026-10-09-gate-v232; T=$(mktemp -d)
@@ -547,18 +558,20 @@ and which the gate never ran.
 
 | set | measure | v2.3.2 minus v2.2 | 95% paired CI | sign test | "base minus 3" |
 |---|---|---|---|---|---|
-| hold-out (16 defect cases, 6 controls) | recall, summed hits | -1 (55 vs 56 of 60) | [-5.0, +3.3] hits | 1 better, 1 worse, p = 1.000 | passes; -3 is inside the interval |
-| | false-alarm rate (control runs) | 0.000 (2 of 18 each) | [0.000, 0.000] | 0 more, 0 fewer | |
-| development (52 defect cases, 33 controls) | recall, summed hits | +5 (240 vs 235 of 252) | [-3.6, +15.7] hits | 3 better, 1 worse, p = 0.625 | passes; -3 is inside the interval |
+| hold-out (16 defect cases, 6 controls) | recall, summed hits | -1 (55 vs 56 of 60) | [-6.0, +3.0] hits | 1 better, 1 worse, p = 1.000 | passes; -3 is inside the interval |
+| | false-alarm rate (control runs) | 0.000 (2 of 18 each) | [0.000, 0.000] (fewer than 10 clusters: WARNING) | 0 more, 0 fewer | |
+| development (52 defect cases, 33 controls) | recall, summed hits | +5 (240 vs 235 of 252) | [-4.0, +16.0] hits | 3 better, 1 worse, p = 0.625 | passes; -3 is inside the interval |
 | | false-alarm rate (control runs) | -0.020 (8 vs 10 of 99) | [-0.091, +0.051] | 4 more, 4 fewer, p = 1.000 | |
 
 The false-alarm rows count control runs with at least one open Critical or High. The gate counts findings (3 vs 4 and 8 vs 11);
 see the gate record.
 
-Neither set shows a detectable difference in either direction. On the hold-out set the interval's half-width is 4.2 hits, larger
-than the 3-hit floor, so this gate cannot tell a 3-hit loss from no change; on the development set the half-width is 9.6 hits.
-Read the gate as "no detectable change". The rule itself is unchanged; whether a floor should be stated as an interval is the
-gate owner's decision (AGENTS.md rule 3 says "no recall loss"; the gate allows three).
+Neither set shows a detectable difference in either direction. On the hold-out set the interval's half-width is 4.5 hits, larger
+than the 3-hit floor, so this gate cannot tell a 3-hit loss from no change; on the development set the half-width is 10.0 hits.
+Read the v2.3.2 gate as "no detectable change". Its record stays as run. For comparison only: under the [gate rule](#gate-rule)
+with K = 3 (not pre-registered for that run), `stats.py gate` prints FAIL on both sets, because both recall intervals reach below
+-3; the development false-alarm interval ([-9, +5] control runs) also reaches above +3. The interval rule needs a K chosen for
+the noise of the set, stated before the run.
 
 **Few clusters: report both tests and call the evidence weak.** The plain-prompt hold-out runs show the limit:
 
@@ -569,28 +582,63 @@ done; done
 python3 evals/tools/stats.py compare --base $T/ho-pl22-*.json --cand $T/ho-pl231-*.json
 ```
 
-The bootstrap calls the false-alarm drop significant (-0.389, CI [-0.667, -0.111]); the exact sign test over the same 6 controls
-gives 0 more and 4 fewer, p = 0.125. With 6 clusters a percentile bootstrap is too narrow, and with 4 discordant controls the sign
-test cannot go below p = 0.125. Neither settles it. `stats.py` still prints SIGNIFICANT here; a warning below about 10 clusters is
-an open follow-up.
+The bootstrap interval excludes zero for the false-alarm drop (-0.389, CI [-0.667, -0.111]); the exact sign test over the same 6
+controls gives 0 more and 4 fewer, p = 0.125. With 6 clusters a percentile bootstrap is too narrow, and with 4 discordant controls
+the sign test cannot go below p = 0.125. Neither settles it. `stats.py` prints WEAK EVIDENCE here, not SIGNIFICANT, with a warning
+that the interval rests on fewer than 10 clusters and one that the two tests disagree (added 2026-11-01; both are in `--json`).
+
+## Gate rule
+
+**This section owns the recall and false-alarm gate for a skill change from 2026-11-01** (approved by the maintainer). AGENTS.md
+rule 3, [docs/SPEC.md](../docs/SPEC.md#measure) and `stats.py gate` link here. Gate records under `results/` keep the rule they
+were run under.
+
+On each set separately (development, each hold-out set), with the same cases and the same number of repeats on both sides, and
+two margins written into the candidate run's pre-registration record before the run:
+
+- **K** (`GATE_MARGIN=K`) for recall, in **summed hits** (planted defects found at minimum severity, summed over cases and repeats);
+- **K_FA** (`GATE_FA_MARGIN=K_FA`, defaulting to K) for false alarms, in **summed control runs** (control x repeat runs with at
+  least one open Critical or High; not a count of findings).
+
+1. **Recall: no detectable loss.** The lower bound of the paired 95% case-clustered bootstrap interval of (candidate - baseline)
+   summed hits at minimum severity is above -K, and the exact sign test over cases shows no significant loss (it fails when p < 0.05
+   and more cases got worse than better).
+2. **False alarms: no detectable rise.** The upper bound of the same interval of (candidate - baseline) control runs with an open
+   Critical or High is below +K_FA, and the sign test shows no significant rise.
+3. **Violations:** no new violations (AGENTS.md rule 3), counted by `score.py`; this section does not restate them as an interval.
+
+`python3 evals/tools/stats.py gate --base ... --cand ... --prereg CAND/_meta/prereg.json` prints PASS or FAIL for 1 and 2 (exit 0 or 1;
+bad input, such as a non-finite or negative margin or a record that is not one, exits 2). A `--margin` or `--fa-margin` that
+differs from the pre-registered value is refused. A set with no controls fails half 2, because it cannot test it. An
+interval over fewer than 10 clusters is printed with a WARNING: the percentile bootstrap is then too narrow, so a PASS over few
+clusters is weak; say so in the gate record. Choose K before the run from the set's noise (the v2.3.2 half-widths above are 4.5
+hits on the hold-out set and 10.0 on the development set): a K below the half-width fails a candidate that is no worse.
 
 ## Pre-registration (added 2026-10-31)
 
-Before the first review starts, `run_reviews.sh` writes `OUTDIR/_meta/prereg.json`: the skill path, its sha256, its git blob, the
+Before the first review starts, `run_reviews.sh` and `run_reviews_codex.sh` write `OUTDIR/_meta/prereg.json` (both through
+`evals/tools/prereg.py`, so the record has one shape): the skill path, its sha256, its git blob, the
 last commit that touched it and whether it matches HEAD; the sha256 of every file each reviewer will be given (from the prepared
-copy, so `expected.json` is never in it), plus one hash per case; the requested model and the CLI version; the gate rule text; the
-runner's own hash; and the UTC start time. Pass the rule with `GATE_RULE='...'` or `GATE_RULE_FILE=path` (the file's hash is
-recorded too); without one the record says no rule was given and the runner warns. The CLI version comes from the installed files,
+copy, so `expected.json` is never in it), plus one hash per case; the CLI (`claude` or `codex`), the requested model and the CLI
+version; the gate rule text and its margins; the hashes of the runner, `prereg.py` and `prepare.py`; and the UTC start time. Pass the rule with `GATE_RULE='...'`
+or `GATE_RULE_FILE=path` (the file's hash is recorded too) and the margins with `GATE_MARGIN=K` (summed hits) and optionally
+`GATE_FA_MARGIN=K_FA` (summed control runs; defaults to K), each a finite number of zero or more (anything else is refused before
+any review), which `stats.py gate --prereg` reads ([Gate rule](#gate-rule)). Without a rule
+or a K the record says so and the runner warns. The CLI version comes from the installed files,
 never from running the CLI; set `CLI_VERSION=` to override. A resumed run keeps the first record and adds
-`prereg-resume-<time>.json`, and is refused if the skill text or a case's inputs changed. This is the "actual run-start timestamp"
+`prereg-resume-<time>.json`, and is refused if the skill text, a case's inputs, the runner (its name or its bytes), `prereg.py`, `prepare.py`,
+the gate rule text, `GATE_MARGIN` or `GATE_FA_MARGIN` changed. Resume records are named to the microsecond, with a counter if two
+still collide. This is the "actual run-start timestamp"
 and pre-run lock that [catalog-status.json](../docs/catalog-status.json) lists as missing for past runs; it does not make a past
 run verifiable.
 
-Test it without a model: `DRY_RUN=1` writes the record and exits before any review, and
-`python3 tests/test_run_reviews_prereg.py` runs the lane against a stub `claude` on `PATH` (also in the offline checks workflow).
+Test it without a model: `DRY_RUN=1` (or `true`, `yes`, `on`) writes the record and exits before any review; `DRY_RUN=0`, empty
+or unset means off, and any other value is refused. The Codex lane writes the record before it copies the sign-in.
+`python3 tests/test_run_reviews_prereg.py` runs both lanes against a stub `claude` or `codex` on `PATH` (also in the offline checks
+workflow).
 
 ```
-cd "$(mktemp -d)" && DRY_RUN=1 GATE_RULE='recall >= base - 3; false alarms <= base' ONLY=case-01 \
+cd "$(mktemp -d)" && DRY_RUN=1 GATE_RULE='evals/README.md#gate-rule' GATE_MARGIN=5 ONLY=case-01 \
   /path/to/repo/evals/tools/run_reviews.sh /path/to/repo/skills/redteam/SKILL.md /tmp/prereg-test && cat /tmp/prereg-test/_meta/prereg.json
 ```
 

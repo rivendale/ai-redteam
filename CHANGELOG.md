@@ -1,14 +1,20 @@
 # Release notes
 
-## Unreleased, October 31, 2026: eval statistics, pre-registration, doc drift
+## Unreleased, October 31, 2026: eval statistics, pre-registration, doc drift, statistical gate rule
 
 No skill or prompt text changed. No paid evaluation was run.
 
 | Area | Change |
 |---|---|
-| Eval statistics | `evals/tools/stats.py`: 95% intervals for recall and false-alarm rate clustered by case, a paired case bootstrap and an exact sign test between two texts, and a self-check that the offline checks workflow runs. Method, commands and what the v2.3.2 hold-out gate looks like with it: [evals/README.md](evals/README.md#error-bars-and-paired-comparisons-evalstoolsstatspy-added-2026-10-31). The gate rule is unchanged. |
-| Gate re-read | `stats.py compare` run on the published v2.3.2 gate reports: no detectable difference on either set, and the 3-hit floor is inside both intervals. Table, commands and a note on few-cluster bootstraps: [evals/README.md](evals/README.md#error-bars-and-paired-comparisons-evalstoolsstatspy-added-2026-10-31). The gate rule is unchanged. |
+| Eval statistics | `evals/tools/stats.py`: 95% intervals for recall and false-alarm rate clustered by case, a paired case bootstrap and an exact sign test between two texts, and a self-check that the offline checks workflow runs. Method, commands and what the v2.3.2 hold-out gate looks like with it: [evals/README.md](evals/README.md#error-bars-and-paired-comparisons-evalstoolsstatspy-added-2026-10-31). |
+| Gate re-read | `stats.py compare` run on the published v2.3.2 gate reports: no detectable difference on either set, and the 3-hit floor is inside both intervals. Table, commands and a note on few-cluster bootstraps: [evals/README.md](evals/README.md#error-bars-and-paired-comparisons-evalstoolsstatspy-added-2026-10-31). The v2.3.2 gate record stays as run. |
 | Pre-registration | `run_reviews.sh` writes `_meta/prereg.json` (skill and case-input hashes, model, CLI version, gate rule, UTC start) before the first review; `DRY_RUN=1` stops after it; `tests/test_run_reviews_prereg.py` tests it with a stub CLI. See [evals/README.md](evals/README.md#pre-registration-added-2026-10-31). |
+| Gate rule | Recall and false alarms are now gated by an interval test with pre-registered margins (approved by the maintainer); past gate records keep their rule. The rule, its units and `stats.py gate`: [evals/README.md](evals/README.md#gate-rule). |
+| Eval statistics warnings | `stats.py` prints a WARNING (also in `--json`) when an interval rests on fewer than 10 clusters, and WEAK EVIDENCE instead of SIGNIFICANT when the bootstrap and the exact sign test disagree (the plain-prompt hold-out false-alarm drop). Self-check extended. |
+| Summed-hit interval | The interval of the summed-hit difference is now bootstrapped directly; it used to scale the rate interval by the planted count, which is wrong when cases plant different numbers of defects. The v2.3.2 re-read moves from [-5.0, +3.3] to [-6.0, +3.0] hits (hold-out) and from [-3.6, +15.7] to [-4.0, +16.0] (development). |
+| Codex pre-registration | `run_reviews_codex.sh` writes the same `_meta/prereg.json` as `run_reviews.sh`, through the shared `evals/tools/prereg.py`, before it copies the sign-in; `GATE_MARGIN` and `GATE_FA_MARGIN` record the margins in both, and a resume is refused when the runner's bytes, `prereg.py`, `prepare.py` or the gate rule or margins changed. Tested with a stub `codex` in `tests/test_run_reviews_prereg.py`. |
+| `DRY_RUN` | `DRY_RUN=0` (or `false`, `no`, `off`, empty) now means off in both runners; it used to turn the dry run on. Any other value is refused. |
+| Test stubs | The stub CLIs' heredocs in the lane tests are quoted, so nothing in them expands. |
 | Doc drift | `AGENTS.md`, `README.md`, `llms.txt` and `docs/capabilities.md` no longer restate SPEC's version range or item count; they point to [docs/SPEC.md](docs/SPEC.md), which owns them. |
 | Framework mapping | [docs/framework-mapping.md](docs/framework-mapping.md): LLM05, LLM07, LLM10, ASI05 and ASI09 now covered and LLM08, ASI08 partial, each with its skill section; ATLAS agent-tool and propagation techniques from the 2026.10 data release; the OWASP LLM 2026 list is marked unverified. |
 
