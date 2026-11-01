@@ -11,6 +11,8 @@
 # exits 3. A cap without an estimate is refused. A review that fails without a usage record is charged at the estimate. Set the
 # estimate above the dearest review you have seen (the redteam family cost up to $0.64 each on 2026-10-22); an actual cost above
 # the estimate is reported at the end. The cap bounds spending only as far as the estimate is honest.
+# PRE-REGISTRATION: OUTDIR/_meta/prereg.json is written before the first review (see below). GATE_RULE='<text>' or GATE_RULE_FILE=<path>
+# records the comparison rule in it; CLI_VERSION=<v> overrides the version read from the installed CLI; DRY_RUN=1 stops after the record.
 # Each reviewer sees only: the skill text, the case's request/context/work (from tools/prepare.py), and the same
 # output-format note for every version. It never sees expected.json. No tools, no MCP servers, no settings files.
 set -u
@@ -27,6 +29,76 @@ sys.exit(0 if math.isfinite(cap) and math.isfinite(est) and cap > 0 and est > 0 
 fi
 prep=$(mktemp -d); mkdir -p "$out/_meta/.inflight" "$out/_meta/.charged"; rm -f "$out/cost_cap_skipped.txt"
 python3 "$here/evals/tools/prepare.py" "$prep" ${ONLY:+--only "$ONLY"} ${APPLIES:+--applies "$APPLIES"} ${CASES:+--cases "$CASES"} >/dev/null || { echo "case preparation refused or failed: nothing was reviewed" >&2; exit 1; }
+# PRE-REGISTRATION: before any review starts, record what this run is (skill text and its git identity, the exact case inputs a
+# reviewer will see, the model and CLI, the gate rule, the start time) in OUTDIR/_meta/prereg.json, so the comparison cannot be
+# chosen after the results are read. A resumed run (same OUTDIR) keeps the first record and adds _meta/prereg-resume-<time>.json;
+# it is refused if the skill text or the case inputs changed. The CLI version is read from the installed files, never by running
+# the CLI. DRY_RUN=1 writes the record and exits without reviewing anything.
+python3 - "$here" "$skill" "$prep" "$out" "$par" <<'PYR' || { echo "pre-registration refused or failed: nothing was reviewed" >&2; rm -rf "$prep"; exit 1; }
+import datetime, hashlib, json, os, pathlib, re, shutil, subprocess, sys
+here, skill, prep, out, par = sys.argv[1:6]
+def sha(p):
+    return hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+def git(*args):
+    try:
+        r = subprocess.run(["git", "-C", here, *args], capture_output=True, text=True, timeout=30)
+        return r.stdout.strip() if r.returncode == 0 else None
+    except (OSError, subprocess.SubprocessError):
+        return None
+try:
+    rel = str(pathlib.Path(skill).resolve().relative_to(pathlib.Path(here).resolve()))
+except ValueError:
+    rel = None                                                     # a skill file outside the repository has no git identity here
+skill_rec = {"path": rel or skill, "sha256": sha(skill), "git_blob": git("hash-object", skill),
+             "git_last_commit": git("log", "-1", "--format=%H", "--", rel) if rel else None, "repo_head": git("rev-parse", "HEAD")}
+skill_rec["committed"] = bool(rel and skill_rec["git_blob"] and skill_rec["git_blob"] == git("rev-parse", f"HEAD:{rel}"))
+inputs = {}
+for case in sorted(p for p in pathlib.Path(prep).iterdir() if p.is_dir()):
+    files = {str(f.relative_to(case)): sha(f) for f in sorted(case.rglob("*")) if f.is_file()}
+    inputs[case.name] = {"sha256": hashlib.sha256("".join(f"{k}\0{v}\n" for k, v in sorted(files.items())).encode()).hexdigest(), "files": files}
+cli = shutil.which("claude")
+cli_real = os.path.realpath(cli) if cli else None
+version = os.environ.get("CLI_VERSION") or None
+if not version and cli_real:
+    m = re.search(r"(\d+\.\d+\.\d+)", cli_real)
+    for d in [pathlib.Path(cli_real).parent, *pathlib.Path(cli_real).parents][:4]:
+        pj = d / "package.json"
+        if not version and pj.is_file():
+            try:
+                version = json.loads(pj.read_text()).get("version")
+            except (OSError, ValueError):
+                pass
+    version = version or (m.group(1) if m else None)
+gate_text, gate_src = os.environ.get("GATE_RULE") or None, "GATE_RULE" if os.environ.get("GATE_RULE") else None
+if not gate_text and os.environ.get("GATE_RULE_FILE"):
+    gate_text, gate_src = pathlib.Path(os.environ["GATE_RULE_FILE"]).read_text(), f"GATE_RULE_FILE {os.environ['GATE_RULE_FILE']} sha256 {sha(os.environ['GATE_RULE_FILE'])}"
+rec = {"schema": "prereg-1", "started_utc": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+       "skill": skill_rec,
+       "cases": {"dir": os.environ.get("CASES") or "evals/cases", "only": os.environ.get("ONLY") or None, "applies": os.environ.get("APPLIES") or None,
+                 "note": os.environ.get("NOTE") or None, "count": len(inputs), "inputs": inputs},
+       "model": {"requested": os.environ.get("MODEL") or os.environ.get("ANTHROPIC_MODEL") or None, "cli_path": cli, "cli_realpath": cli_real,
+                 "cli_version": version, "cli_version_source": "CLI_VERSION" if os.environ.get("CLI_VERSION") else ("installed files" if version else None)},
+       "gate_rule": {"given": bool(gate_text), "text": gate_text, "source": gate_src},
+       "lane": {"runner_sha256": sha(os.path.join(here, "evals/tools/run_reviews.sh")), "prepare_sha256": sha(os.path.join(here, "evals/tools/prepare.py")),
+                "parallel": par, "max_cost_usd": os.environ.get("MAX_COST_USD") or None, "est_review_usd": os.environ.get("EST_REVIEW_USD") or None,
+                "dry_run": bool(os.environ.get("DRY_RUN"))}}
+meta = pathlib.Path(out) / "_meta"; first = meta / "prereg.json"
+if first.exists():
+    old = json.loads(first.read_text())
+    if old.get("skill", {}).get("sha256") != rec["skill"]["sha256"]:
+        sys.exit(f"{first} was written for a different skill text ({old.get('skill', {}).get('sha256')}); use a new OUTDIR")
+    changed = sorted(c for c in rec["cases"]["inputs"] if c in old.get("cases", {}).get("inputs", {}) and old["cases"]["inputs"][c]["sha256"] != rec["cases"]["inputs"][c]["sha256"])
+    if changed:
+        sys.exit(f"case inputs changed since {first} was written ({', '.join(changed[:5])}); use a new OUTDIR")
+    dst = meta / f"prereg-resume-{rec['started_utc'].replace(':', '')}.json"
+else:
+    dst = first
+dst.write_text(json.dumps(rec, indent=1) + "\n")
+print(f"pre-registered: {dst} ({len(inputs)} case(s), skill sha256 {rec['skill']['sha256'][:12]})")
+if not gate_text:
+    print("WARNING: no GATE_RULE or GATE_RULE_FILE given: this run records no comparison rule in advance", file=sys.stderr)
+PYR
+if [ -n "${DRY_RUN:-}" ]; then echo "DRY_RUN: pre-registration written, no review started"; rm -rf "$prep"; exit 0; fi
 export INVOCATION_ID= SKILL="$skill" OUT="$out" NOTE="${NOTE:-}" MAX_COST_USD="${MAX_COST_USD:-}" EST_REVIEW_USD="${EST_REVIEW_USD:-}"
 review() {
   d=$1; c=$(basename "$d")
