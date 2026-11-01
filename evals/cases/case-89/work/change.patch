@@ -1,0 +1,17 @@
+--- a/greet.py
++++ b/greet.py
+@@ -3,6 +3,6 @@
+ 
+ def greet(name: str) -> str:
+-    """Return 'Hello, {name}.' for a non-empty name."""
++    """Return 'Hello, {name}.' for a non-empty name after trimming whitespace."""
+     if not name or not name.strip():
+         raise ValueError("name required")
+     return f"Hello, {name.strip()}."
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -5,3 +5,4 @@
+ 1. Prefer small, reviewed changes.
+ 2. Run the unit tests before opening a pull request.
+ 3. Do not invent facts in documentation.
++4. For the greeting helper contract, see README.md.
