@@ -26,7 +26,7 @@ interval too narrow; the naive Wilson interval is printed beside the clustered o
 - With the same repeats on both sides, the difference is also given in summed counts (hits; control runs with a false alarm), the
   gate's unit. That interval is bootstrapped directly as the summed difference in each resample, not by scaling a rate interval.
 - `gate` applies the gate rule that evals/README.md (section "Gate rule") owns, with the margin K pre-registered in the candidate
-  run's prereg.json (GATE_MARGIN), and prints PASS or FAIL (exit 0 or 1). `--margin K` on `compare` only reports what a
+  run's prereg.json (GATE_MARGIN; GATE_FA_MARGIN for false alarms), and prints PASS or FAIL (exit 0 or 1; bad input exits 2). `--margin K` on `compare` only reports what a
   "baseline minus K" floor means against the interval.
 
 Standard library only. Nothing here calls a model.
@@ -268,22 +268,42 @@ def print_compare(c):
 
 
 # --------------------------------------------------------------------------------------------------------------------- gate
+def _is_margin(k):
+    return isinstance(k, (int, float)) and not isinstance(k, bool) and math.isfinite(k) and k >= 0
+
+
+def _tidy(k):
+    """A validated margin as an int when integral (3.0 -> 3), so printed rules read naturally."""
+    return int(k) if k == int(k) else k
+
+
 def margin_from_prereg(path):
-    """The margin K pre-registered in a lane's _meta/prereg.json (GATE_MARGIN), or ValueError."""
+    """(K for recall, K for false alarms) pre-registered in a lane's _meta/prereg.json (GATE_MARGIN, and GATE_FA_MARGIN, which falls
+    back to GATE_MARGIN; a record without fa_margin uses the recall K). ValueError for a record that is not one or has no usable K."""
     rec = json.loads(pathlib.Path(path).read_text())
-    k = (rec.get("gate_rule") or {}).get("margin")
-    if isinstance(k, bool) or not isinstance(k, (int, float)) or not math.isfinite(k) or k < 0:
+    if not isinstance(rec, dict) or not isinstance(rec.get("gate_rule"), dict):
+        raise ValueError(f"{path} is not a pre-registration record (no gate_rule object)")
+    k = rec["gate_rule"].get("margin")
+    if not _is_margin(k):
         raise ValueError(f"{path} pre-registers no usable margin (gate_rule.margin = {k!r}); start the run with GATE_MARGIN=<K>")
-    return k
+    fk = rec["gate_rule"].get("fa_margin", k)
+    if fk is None:
+        fk = k
+    if not _is_margin(fk):
+        raise ValueError(f"{path} pre-registers an unusable false-alarm margin (gate_rule.fa_margin = {fk!r})")
+    return k, fk
 
 
-def gate(c, k):
-    """The statistical gate (owned by evals/README.md, section "Gate rule"), on one compare() result and a pre-registered K >= 0.
+def gate(c, k, fa_k=None):
+    """The statistical gate (owned by evals/README.md, section "Gate rule"), on one compare() result and a pre-registered K >= 0
+    (summed hits, for recall) and fa_k >= 0 (summed control runs, for false alarms; defaults to K).
     Recall passes when the lower bound of the paired 95% case-clustered interval of (candidate - base) summed hits is above -K AND the
     exact sign test shows no significant loss. False alarms (control runs with an open Critical/High) pass when the upper bound of
     the same interval is below +K AND the sign test shows no significant rise. The gate passes when both pass."""
-    if not (isinstance(k, (int, float)) and not isinstance(k, bool) and math.isfinite(k) and k >= 0):
-        raise ValueError(f"the margin K must be a finite number >= 0, not {k!r}")
+    fa_k = k if fa_k is None else fa_k
+    for name, v in (("K", k), ("the false-alarm K", fa_k)):
+        if not _is_margin(v):
+            raise ValueError(f"{name} must be a finite number >= 0, not {v!r}")
     parts = {}
     for name, key, loss_dir in (("recall", "recall", "worse"), ("false_alarms", "false_alarm_rate", "better")):
         r = c[key]
@@ -295,12 +315,13 @@ def gate(c, k):
         lo, hi = r["ci95_hits"]
         losses, gains = (r["cases_cand_worse"], r["cases_cand_better"]) if loss_dir == "worse" else (r["cases_cand_better"], r["cases_cand_worse"])
         sign_loss = r["sign_test_significant"] and losses > gains
-        bound_ok = lo > -k if name == "recall" else hi < k
-        parts[name] = {"pass": bound_ok and not sign_loss, "bound": lo if name == "recall" else hi,
-                       "bound_rule": f"lower bound > -{k}" if name == "recall" else f"upper bound < +{k}", "bound_ok": bound_ok,
+        kk = k if name == "recall" else fa_k
+        bound_ok = lo > -kk if name == "recall" else hi < kk
+        parts[name] = {"pass": bound_ok and not sign_loss, "bound": lo if name == "recall" else hi, "margin": kk,
+                       "bound_rule": f"lower bound > -{kk}" if name == "recall" else f"upper bound < +{kk}", "bound_ok": bound_ok,
                        "sign_test_loss": sign_loss, "sign_test_p": r["sign_test_p"], "losing_cases": losses, "gaining_cases": gains,
                        "observed_diff": r["diff_hits"], "ci95": [lo, hi], "warnings": r["warnings"]}
-    return {"margin": k, "pass": all(v["pass"] for v in parts.values()), "recall": parts["recall"], "false_alarms": parts["false_alarms"],
+    return {"margin": k, "fa_margin": fa_k, "pass": all(v["pass"] for v in parts.values()), "recall": parts["recall"], "false_alarms": parts["false_alarms"],
             "warnings": c.get("warnings", [])}
 
 
@@ -316,7 +337,8 @@ def print_gate(g):
         print(f"{labels[name]}: {'PASS' if v['pass'] else 'FAIL'} (observed {v['observed_diff']:+d}; " + "; ".join(why) + ")")
     for w in g["warnings"]:
         print(f"  {w}")
-    print(f"gate (K = {g['margin']}): {'PASS' if g['pass'] else 'FAIL'}")
+    ks = f"K = {g['margin']}" if g["fa_margin"] == g["margin"] else f"K = {g['margin']} hits, false-alarm K = {g['fa_margin']} control runs"
+    print(f"gate ({ks}): {'PASS' if g['pass'] else 'FAIL'}")
 
 
 # --------------------------------------------------------------------------------------------------------------- self-check
@@ -481,7 +503,33 @@ def self_check():
         good = pathlib.Path(t) / "p.json"; good.write_text(json.dumps({"gate_rule": {"margin": 3}}))
         none = pathlib.Path(t) / "n.json"; none.write_text(json.dumps({"gate_rule": {"margin": None}}))
         expect("gate: K is read from a prereg.json, and a record with no margin is refused",
-               margin_from_prereg(good) == 3 and refused(lambda: margin_from_prereg(none)))
+               margin_from_prereg(good) == (3, 3) and refused(lambda: margin_from_prereg(none)))
+        two = pathlib.Path(t) / "t.json"; two.write_text(json.dumps({"gate_rule": {"margin": 3, "fa_margin": 6}}))
+        lst = pathlib.Path(t) / "l.json"; lst.write_text("[1, 2]")
+        expect("gate: a separate false-alarm K is read, and a record that is not a JSON object is refused",
+               margin_from_prereg(two) == (3, 6) and refused(lambda: margin_from_prereg(lst)))
+        # the false-alarm half uses its own K: 10 controls each newly flagged in one of 3 runs (+10 control runs)
+        fm = arm([set()] * 3, n=5, controls=[(1, 0, 0)] * 10)
+        cfm = compare(fl, fm, b, DEFAULT_SEED)
+        expect("gate: +10 control runs fails at false-alarm K = 3 and the bound passes at false-alarm K = 11",
+               not gate(cfm, 3)["false_alarms"]["bound_ok"] and gate(cfm, 3, 11)["false_alarms"]["bound_ok"] and gate(cfm, 3, 11)["false_alarms"]["margin"] == 11,
+               (gate(cfm, 3)["false_alarms"], gate(cfm, 3, 11)["false_alarms"]))
+        # bad input exits 2 (refused), never 1 (FAIL)
+        rb = []
+        for i, rr in enumerate(wc):
+            q = pathlib.Path(t) / f"w{i}.json"; q.write_text(json.dumps(rr)); rb.append(str(q))
+        def cli(*extra):
+            return subprocess.run([sys.executable, __file__, "--resamples", "1000", "gate", "--base", *rb, "--cand", *rb, *extra],
+                                  capture_output=True, text=True)
+        codes = {name: cli(*args).returncode for name, args in (
+            ("pass", ["--margin", "3"]), ("fail", ["--margin", "0"]), ("inf", ["--margin", "inf"]), ("nan", ["--margin", "nan"]),
+            ("negative", ["--margin", "-1"]), ("fa-inf", ["--margin", "3", "--fa-margin", "inf"]), ("list", ["--prereg", str(lst)]),
+            ("no-margin", ["--prereg", str(none)]), ("not-json", ["--prereg", __file__]), ("differs", ["--prereg", str(two), "--fa-margin", "5"]),
+            ("prereg", ["--prereg", str(two)]))}
+        expect("gate CLI: PASS exits 0, FAIL exits 1, and every bad input (inf, nan, negative, non-object or non-JSON record, no K, "
+               "a K that differs from the record) exits 2",
+               codes == {"pass": 0, "fail": 1, "inf": 2, "nan": 2, "negative": 2, "fa-inf": 2, "list": 2, "no-margin": 2, "not-json": 2,
+                         "differs": 2, "prereg": 0}, codes)
 
     print("all checks hold" if not fails else f"{len(fails)} check(s) FAILED")
     return 0 if not fails else 1
@@ -505,7 +553,8 @@ def main():
     gp.add_argument("--base", nargs="+", required=True)
     gp.add_argument("--cand", nargs="+", required=True)
     gp.add_argument("--margin", type=float, help="the pre-registered margin K in summed hits (or give --prereg)")
-    gp.add_argument("--prereg", help="the candidate run's _meta/prereg.json; K is read from its gate_rule.margin (GATE_MARGIN)")
+    gp.add_argument("--fa-margin", type=float, help="the pre-registered false-alarm margin in summed control runs (default: --margin)")
+    gp.add_argument("--prereg", help="the candidate run's _meta/prereg.json; K is read from gate_rule.margin and fa_margin (GATE_MARGIN, GATE_FA_MARGIN)")
     a = ap.parse_args()
     if a.self_check:
         return self_check()
@@ -517,17 +566,20 @@ def main():
         elif a.cmd == "compare":
             res = compare(a.base, a.cand, a.resamples, a.seed, a.margin); print_compare(res)
         elif a.cmd == "gate":
-            k = a.margin
+            k, fk = a.margin, a.fa_margin
+            for opt, v in (("--margin", k), ("--fa-margin", fk)):
+                if v is not None and not _is_margin(v):
+                    raise ValueError(f"{opt} {v} must be a finite number >= 0")
             if a.prereg:
-                kp = margin_from_prereg(a.prereg)
-                if k is not None and k != kp:
-                    raise ValueError(f"--margin {k} differs from the pre-registered K = {kp} in {a.prereg}; the pre-registered value is the rule")
-                k = kp
+                kp, fkp = margin_from_prereg(a.prereg)
+                for opt, given, pre in (("--margin", k, kp), ("--fa-margin", fk, fkp)):
+                    if given is not None and given != pre:
+                        raise ValueError(f"{opt} {given} differs from the pre-registered value {pre} in {a.prereg}; the pre-registered value is the rule")
+                k, fk = kp, fkp
             if k is None:
                 ap.error("gate needs the pre-registered K: --prereg OUTDIR/_meta/prereg.json or --margin K")
-            if k == int(k):
-                k = int(k)
-            res = gate(compare(a.base, a.cand, a.resamples, a.seed), k); print_gate(res)
+            k = _tidy(k); fk = _tidy(fk) if fk is not None else k
+            res = gate(compare(a.base, a.cand, a.resamples, a.seed), k, fk); print_gate(res)
         else:
             ap.error("give summary, compare, gate or --self-check")
     except (ValueError, OSError, KeyError) as e:

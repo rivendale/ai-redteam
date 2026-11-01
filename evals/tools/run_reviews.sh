@@ -12,7 +12,7 @@
 # estimate above the dearest review you have seen (the redteam family cost up to $0.64 each on 2026-10-22); an actual cost above
 # the estimate is reported at the end. The cap bounds spending only as far as the estimate is honest.
 # PRE-REGISTRATION: OUTDIR/_meta/prereg.json is written before the first review (see below). GATE_RULE='<text>' or GATE_RULE_FILE=<path>
-# records the comparison rule in it and GATE_MARGIN=<K> the margin `stats.py gate` reads; CLI_VERSION=<v> overrides the version read
+# records the comparison rule in it and GATE_MARGIN=<K> (GATE_FA_MARGIN=<K> for false alarms) the margins `stats.py gate` reads; CLI_VERSION=<v> overrides the version read
 # from the installed CLI; DRY_RUN=1 stops after the record (DRY_RUN=0, empty or unset means off; any other value is refused).
 # Each reviewer sees only: the skill text, the case's request/context/work (from tools/prepare.py), and the same
 # output-format note for every version. It never sees expected.json. No tools, no MCP servers, no settings files.

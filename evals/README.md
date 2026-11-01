@@ -593,18 +593,23 @@ that the interval rests on fewer than 10 clusters and one that the two tests dis
 rule 3, [docs/SPEC.md](../docs/SPEC.md#measure) and `stats.py gate` link here. Gate records under `results/` keep the rule they
 were run under.
 
-On each set separately (development, each hold-out set), with the same cases and the same number of repeats on both sides, and a
-margin K in summed hits written into the candidate run's pre-registration record before the run (`GATE_MARGIN=K`):
+On each set separately (development, each hold-out set), with the same cases and the same number of repeats on both sides, and
+two margins written into the candidate run's pre-registration record before the run:
+
+- **K** (`GATE_MARGIN=K`) for recall, in **summed hits** (planted defects found at minimum severity, summed over cases and repeats);
+- **K_FA** (`GATE_FA_MARGIN=K_FA`, defaulting to K) for false alarms, in **summed control runs** (control x repeat runs with at
+  least one open Critical or High; not a count of findings).
 
 1. **Recall: no detectable loss.** The lower bound of the paired 95% case-clustered bootstrap interval of (candidate - baseline)
    summed hits at minimum severity is above -K, and the exact sign test over cases shows no significant loss (it fails when p < 0.05
    and more cases got worse than better).
 2. **False alarms: no detectable rise.** The upper bound of the same interval of (candidate - baseline) control runs with an open
-   Critical or High is below +K, and the sign test shows no significant rise.
+   Critical or High is below +K_FA, and the sign test shows no significant rise.
 3. **Violations:** no new violations (AGENTS.md rule 3), counted by `score.py`; this section does not restate them as an interval.
 
-`python3 evals/tools/stats.py gate --base ... --cand ... --prereg CAND/_meta/prereg.json` prints PASS or FAIL for 1 and 2; a
-`--margin` that differs from the pre-registered K is refused. A set with no controls fails half 2, because it cannot test it. An
+`python3 evals/tools/stats.py gate --base ... --cand ... --prereg CAND/_meta/prereg.json` prints PASS or FAIL for 1 and 2 (exit 0 or 1;
+bad input, such as a non-finite or negative margin or a record that is not one, exits 2). A `--margin` or `--fa-margin` that
+differs from the pre-registered value is refused. A set with no controls fails half 2, because it cannot test it. An
 interval over fewer than 10 clusters is printed with a WARNING: the percentile bootstrap is then too narrow, so a PASS over few
 clusters is weak; say so in the gate record. Choose K before the run from the set's noise (the v2.3.2 half-widths above are 4.5
 hits on the hold-out set and 10.0 on the development set): a K below the half-width fails a candidate that is no worse.
@@ -615,12 +620,15 @@ Before the first review starts, `run_reviews.sh` and `run_reviews_codex.sh` writ
 `evals/tools/prereg.py`, so the record has one shape): the skill path, its sha256, its git blob, the
 last commit that touched it and whether it matches HEAD; the sha256 of every file each reviewer will be given (from the prepared
 copy, so `expected.json` is never in it), plus one hash per case; the CLI (`claude` or `codex`), the requested model and the CLI
-version; the gate rule text and its margin K; the runner's own hash; and the UTC start time. Pass the rule with `GATE_RULE='...'`
-or `GATE_RULE_FILE=path` (the file's hash is recorded too) and K with `GATE_MARGIN=K` (summed hits, a finite number of zero or
-more; anything else is refused before any review), which `stats.py gate --prereg` reads ([Gate rule](#gate-rule)). Without a rule
+version; the gate rule text and its margins; the hashes of the runner, `prereg.py` and `prepare.py`; and the UTC start time. Pass the rule with `GATE_RULE='...'`
+or `GATE_RULE_FILE=path` (the file's hash is recorded too) and the margins with `GATE_MARGIN=K` (summed hits) and optionally
+`GATE_FA_MARGIN=K_FA` (summed control runs; defaults to K), each a finite number of zero or more (anything else is refused before
+any review), which `stats.py gate --prereg` reads ([Gate rule](#gate-rule)). Without a rule
 or a K the record says so and the runner warns. The CLI version comes from the installed files,
 never from running the CLI; set `CLI_VERSION=` to override. A resumed run keeps the first record and adds
-`prereg-resume-<time>.json`, and is refused if the skill text, a case's inputs or the runner changed. This is the "actual run-start timestamp"
+`prereg-resume-<time>.json`, and is refused if the skill text, a case's inputs, the runner (its name or its bytes), `prereg.py`, `prepare.py`,
+the gate rule text, `GATE_MARGIN` or `GATE_FA_MARGIN` changed. Resume records are named to the microsecond, with a counter if two
+still collide. This is the "actual run-start timestamp"
 and pre-run lock that [catalog-status.json](../docs/catalog-status.json) lists as missing for past runs; it does not make a past
 run verifiable.
 

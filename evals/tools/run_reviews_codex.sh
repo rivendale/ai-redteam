@@ -19,7 +19,7 @@
 # per-user npm install under $HOME and the global npm install that starts with an EMPTY HOME is used. A launcher that only starts
 # with the real HOME is refused (the model process never gets the real HOME); none usable stops the lane at once.
 # Each run also writes _meta/<case>.usage.json (CLI version, model, tokens) with no paths; the raw log stays local.
-# PRE-REGISTRATION: _meta/prereg.json as in run_reviews.sh (GATE_RULE, GATE_RULE_FILE, GATE_MARGIN, CLI_VERSION); DRY_RUN=1 writes it
+# PRE-REGISTRATION: _meta/prereg.json as in run_reviews.sh (GATE_RULE, GATE_RULE_FILE, GATE_MARGIN, GATE_FA_MARGIN, CLI_VERSION); DRY_RUN=1 writes it
 # and stops before any review (DRY_RUN=0, empty or unset means off; any other value is refused).
 set -u
 skill=$(realpath "$1"); out=$(realpath -m "$2"); par=${3:-2}
@@ -75,7 +75,8 @@ done
 prep=$(mktemp -d); mkdir -p "$out/_meta"
 python3 "$here/evals/tools/prepare.py" "$prep" ${ONLY:+--only "$ONLY"} ${APPLIES:+--applies "$APPLIES"} ${CASES:+--cases "$CASES"} >/dev/null || { echo "case preparation refused or failed: nothing was reviewed" >&2; exit 1; }
 # PRE-REGISTRATION: the same _meta/prereg.json record run_reviews.sh writes (evals/tools/prereg.py, shared), before any review and
-# before the sign-in is copied; DRY_RUN=1 stops here. The CLI version is read from the launcher's installed files, not by running it.
+# before the sign-in is copied; DRY_RUN=1 stops here. The record's CLI version is read from the launcher's installed files; note that
+# the launcher probe above has already run `<launcher> --version` (with an empty HOME), so the CLI is executed once even on a dry run.
 python3 "$here/evals/tools/prereg.py" write --repo "$here" --skill "$skill" --prep "$prep" --out "$out" --parallel "$par" \
   --runner "$here/evals/tools/run_reviews_codex.sh" --cli codex --cli-cmd "$launch" --model "$CODEX_MODEL" \
   || { echo "pre-registration refused or failed: nothing was reviewed" >&2; exit 1; }

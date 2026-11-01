@@ -12,15 +12,19 @@ of every case input the reviewer will see, the model and CLI version when known,
   P5 no gate rule given: recorded as not given, with a warning; GATE_RULE_FILE records the file's text and hash
   P6 a skill file in the repository records its git blob and last commit, and says whether it matches HEAD
   P7 DRY_RUN=0 (and false, no, off, empty) means off: the reviews run; a value that is neither on nor off is refused before anything
-  P8 GATE_MARGIN is recorded as gate_rule.margin; a negative or non-numeric margin is refused and nothing is reviewed
+  P8 GATE_MARGIN is recorded as gate_rule.margin; a negative or non-numeric margin is refused and nothing is reviewed;
+     GATE_FA_MARGIN is recorded as gate_rule.fa_margin and falls back to GATE_MARGIN
+  P9 a resume is refused when the runner's bytes (a copied runner, edited) or prereg.py changed, not only its name
+  P10 a resume is refused when GATE_RULE, GATE_MARGIN or GATE_FA_MARGIN differs from the first record
+  P11 resume records never overwrite one another, even when two are written in the same clock tick
   Codex lane (a stub `codex` on PATH; the real CLI is never executed):
   Q1 DRY_RUN=1 writes the same record shape (cli codex, the CODEX_MODEL, the codex runner's hash) and calls the stub only for
-     its --version probe; no sign-in copy is made
-  Q2 a real run writes the record before the first review; DRY_RUN=0 runs the reviews
+     its --version probe; the sign-in is never copied (a `cp` wrapper on PATH logs every copy)
+  Q2 a real run writes the record before the first review and before the sign-in is copied; DRY_RUN=0 runs the reviews
   Q3 a codex run into an OUTDIR pre-registered by the claude lane is refused
 The stubs' heredocs are quoted (<<'JSON'), so nothing in them expands.
 """
-import hashlib, json, os, pathlib, subprocess, tempfile, textwrap, unittest
+import datetime, hashlib, importlib.util, json, os, pathlib, shutil, subprocess, sys, tempfile, textwrap, types, unittest
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 LANE = ROOT / "evals" / "tools" / "run_reviews.sh"
@@ -35,6 +39,14 @@ STUB = textwrap.dedent("""\
     JSON
 """)
 CODEX_LANE = ROOT / "evals" / "tools" / "run_reviews_codex.sh"
+REAL_CP = shutil.which("cp")
+# logs every copy the lane makes, and whether the pre-registration record existed at that moment, then copies
+CP_WRAPPER = textwrap.dedent("""\
+    #!/usr/bin/env bash
+    . "@CONF@"
+    if [ -f "$STUB_OUT/_meta/prereg.json" ]; then echo cp:prereg >> "$STUB_CALLS"; else echo cp:none >> "$STUB_CALLS"; fi
+    exec "@CP@" "$@"
+""")
 CODEX_STUB = textwrap.dedent("""\
     #!/usr/bin/env bash
     # stand-in for the codex CLI: answers the launcher probe, notes whether the record existed, writes a report to the -o file
@@ -120,7 +132,8 @@ class T(unittest.TestCase):
             self.assertEqual(h, sha(self.cases / "case-02" / rel), rel)
         self.assertNotIn("expected.json", json.dumps(p))
         self.assertNotEqual(p["cases"]["inputs"]["case-01"]["sha256"], p["cases"]["inputs"]["case-02"]["sha256"])
-        self.assertEqual(p["gate_rule"], {"given": True, "text": "recall >= base - 3", "source": "GATE_RULE", "margin": None, "margin_source": None})
+        self.assertEqual(p["gate_rule"], {"given": True, "text": "recall >= base - 3", "source": "GATE_RULE", "margin": None, "margin_source": None,
+                                          "fa_margin": None, "fa_margin_source": None})
         self.assertEqual(p["model"]["cli"], "claude")
         self.assertEqual(p["lane"]["runner"], "run_reviews.sh")
         self.assertIn("no GATE_MARGIN", r.stderr)
@@ -210,6 +223,81 @@ class T(unittest.TestCase):
             self.assertFalse((self.out / "_meta" / "prereg.json").exists(), bad)
             self.assertEqual(self.calls(), [], bad)
 
+    def test_p8_fa_margin(self):
+        self.run_lane(DRY_RUN="1", GATE_MARGIN="5")
+        g = self.rec()["gate_rule"]
+        self.assertEqual((g["fa_margin"], g["fa_margin_source"]), (5, "GATE_MARGIN"))
+        self.out = self.t / "out-fa"
+        r = self.run_lane(DRY_RUN="1", GATE_MARGIN="5", GATE_FA_MARGIN="2.5")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        g = self.rec()["gate_rule"]
+        self.assertEqual((g["margin"], g["fa_margin"], g["fa_margin_source"]), (5, 2.5, "GATE_FA_MARGIN"))
+        self.out = self.t / "out-fa-bad"
+        r = self.run_lane(GATE_MARGIN="5", GATE_FA_MARGIN="inf")
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("GATE_FA_MARGIN", r.stderr)
+        self.assertEqual(self.calls(), [])
+
+    def scratch_repo(self):
+        """A copy of the lane's own files, so a test can edit the runner or prereg.py without touching the checkout."""
+        repo = self.t / "repo"; (repo / "evals" / "tools").mkdir(parents=True)
+        for f in ("run_reviews.sh", "prereg.py", "prepare.py"):
+            shutil.copy2(ROOT / "evals" / "tools" / f, repo / "evals" / "tools" / f)
+        return repo
+
+    def test_p9_resume_refused_when_runner_or_prereg_bytes_change(self):
+        for edited in ("run_reviews.sh", "prereg.py"):
+            repo = self.scratch_repo(); lane = repo / "evals" / "tools" / "run_reviews.sh"
+            self.out = self.t / f"out-{edited}"; self.calls_file.unlink(missing_ok=True)
+            r = self.run_lane(lane=lane, DRY_RUN="1", GATE_RULE="x")
+            self.assertEqual(r.returncode, 0, r.stderr)
+            self.assertEqual(self.rec()["lane"]["runner_sha256"], sha(lane))
+            r = self.run_lane(lane=lane, DRY_RUN="1", GATE_RULE="x")             # unchanged: the resume is accepted
+            self.assertEqual(r.returncode, 0, r.stderr)
+            with open(repo / "evals" / "tools" / edited, "a") as fh:
+                fh.write("\n# edited after the first record\n")
+            r = self.run_lane(lane=lane, GATE_RULE="x")
+            self.assertNotEqual(r.returncode, 0, edited)
+            self.assertIn("changed since", r.stderr, edited)
+            self.assertIn("run_reviews.sh" if edited == "run_reviews.sh" else "prereg.py", r.stderr)
+            self.assertEqual(self.calls(), [], edited)
+            self.assertEqual(list(self.out.glob("case-*.md")), [], edited)
+            shutil.rmtree(repo)
+
+    def test_p10_resume_refused_when_rule_or_margin_differs(self):
+        base = {"GATE_RULE": "evals/README.md#gate-rule", "GATE_MARGIN": "5"}
+        self.run_lane(DRY_RUN="1", **base)
+        for change in ({"GATE_RULE": "something else"}, {"GATE_MARGIN": "6"}, {"GATE_MARGIN": ""}, {"GATE_FA_MARGIN": "2"}):
+            r = self.run_lane(**{**base, **change})
+            self.assertNotEqual(r.returncode, 0, change)
+            self.assertIn("differs from the pre-registered value", r.stderr, change)
+        self.assertEqual(self.calls(), [])
+        r = self.run_lane(DRY_RUN="1", **base)
+        self.assertEqual(r.returncode, 0, r.stderr)
+
+    def test_p11_resume_records_do_not_collide(self):
+        spec = importlib.util.spec_from_file_location("prereg_under_test", ROOT / "evals" / "tools" / "prereg.py")
+        mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+        frozen = datetime.datetime(2026, 11, 1, 12, 0, 0, 123456, tzinfo=datetime.timezone.utc)
+        class Frozen(datetime.datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return frozen
+        mod.datetime = types.SimpleNamespace(datetime=Frozen, timezone=datetime.timezone)
+        prep = self.t / "prep"; shutil.copytree(self.cases / "case-01", prep / "case-01", ignore=shutil.ignore_patterns("expected.json"))
+        a = types.SimpleNamespace(repo=str(ROOT), skill=str(self.skill), prep=str(prep), out=str(self.out), parallel="1",
+                                  runner=str(LANE), cli="claude", cli_cmd="", model="")
+        env = {k: os.environ.pop(k) for k in ("GATE_RULE", "GATE_RULE_FILE", "GATE_MARGIN", "GATE_FA_MARGIN", "DRY_RUN") if k in os.environ}
+        try:
+            for _ in range(4):
+                mod.write(a)
+        finally:
+            os.environ.update(env)
+        names = sorted(p.name for p in (self.out / "_meta").glob("prereg-resume-*.json"))
+        self.assertEqual(len(names), 3, names)
+        self.assertEqual(len(set(names)), 3)
+        self.assertIn("prereg-resume-2026-11-01T120000.123456Z.json", names)
+
 
 class Codex(unittest.TestCase):
     def setUp(self):
@@ -217,6 +305,7 @@ class Codex(unittest.TestCase):
         self.cases = t / "cases"; self.cases.mkdir(); make_cases(self.cases, 2)
         self.bin = t / "bin"; self.bin.mkdir(); self.conf = self.bin / "stub.conf"; self.calls_file = t / "calls"
         s = self.bin / "codex"; s.write_text(CODEX_STUB.replace("@CONF@", str(self.conf))); s.chmod(0o755)
+        w = self.bin / "cp"; w.write_text(CP_WRAPPER.replace("@CONF@", str(self.conf)).replace("@CP@", REAL_CP)); w.chmod(0o755)
         self.out = t / "out"; self.skill = t / "skill.md"; self.skill.write_text("skill v1\n")
         self.real = t / "codex-home"; self.real.mkdir(); (self.real / "auth.json").write_text('{"note": "not a token"}\n')
         self.tmpdir = t / "tmp"; self.tmpdir.mkdir(); (t / "home").mkdir()
@@ -226,7 +315,7 @@ class Codex(unittest.TestCase):
 
     def run_lane(self, lane=CODEX_LANE, **env):
         self.conf.write_text(f"export STUB_CALLS={self.calls_file} STUB_OUT={self.out}\n")
-        e = {k: v for k, v in os.environ.items() if k not in ("GATE_RULE", "GATE_RULE_FILE", "GATE_MARGIN", "DRY_RUN", "ONLY", "CODEX_CMD",
+        e = {k: v for k, v in os.environ.items() if k not in ("GATE_RULE", "GATE_RULE_FILE", "GATE_MARGIN", "GATE_FA_MARGIN", "DRY_RUN", "ONLY", "CODEX_CMD",
                                                                "CLI_VERSION", "MODEL", "ANTHROPIC_MODEL", "MAX_COST_USD", "EST_REVIEW_USD")}
         e.update(PATH=f"{self.bin}:{os.environ['PATH']}", CASES=str(self.cases), CODEX_HOME=str(self.real), HOME=str(self.t / "home"),
                  TMPDIR=str(self.tmpdir), CODEX_MODEL="stub-model", **env)
@@ -243,7 +332,7 @@ class Codex(unittest.TestCase):
         r = self.run_lane(DRY_RUN="1", GATE_RULE="evals/README.md#gate-rule", GATE_MARGIN="4", CLI_VERSION="0.0.1")
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertIn("DRY_RUN", r.stdout)
-        self.assertEqual(self.calls(), ["version"])                      # only the launcher probe; no review
+        self.assertEqual(self.calls(), ["version"])                      # only the launcher probe: no review and no sign-in copy
         self.assertEqual(list(self.out.glob("case-*.md")), [])
         self.assertEqual([p for p in self.tmpdir.iterdir() if p.name.startswith("codex-lane-")], [], "no sign-in copy on a dry run")
         p = self.rec()
@@ -273,7 +362,7 @@ class Codex(unittest.TestCase):
     def test_q2_written_before_first_review(self):
         r = self.run_lane(DRY_RUN="0", GATE_RULE="x", GATE_MARGIN="3")
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
-        self.assertEqual(self.calls(), ["version", "yes", "yes"])
+        self.assertEqual(self.calls(), ["version", "cp:prereg", "yes", "yes"])   # the sign-in is copied only after the record exists
         self.assertEqual(len(list(self.out.glob("case-*.md"))), 2)
         self.assertFalse(self.rec()["lane"]["dry_run"])
         r = self.run_lane(DRY_RUN="2")

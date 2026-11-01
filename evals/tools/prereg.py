@@ -7,11 +7,13 @@
 
 `write` records, before any review starts, what this run is: the skill text and its git identity, the exact case inputs a
 reviewer will see (hashed from the prepared copy, so expected.json is never in it), the model and CLI, the gate rule and its
-pre-registered margin K (GATE_MARGIN), and the UTC start time, in OUT/_meta/prereg.json. A resumed run (same OUT) keeps the
-first record and adds _meta/prereg-resume-<time>.json; it is refused if the skill text, the case inputs or the runner changed.
+pre-registered margins (GATE_MARGIN, K for recall in summed hits; GATE_FA_MARGIN, K for false alarms in control runs,
+defaulting to GATE_MARGIN), and the UTC start time, in OUT/_meta/prereg.json. A resumed run (same OUT) keeps the
+first record and adds _meta/prereg-resume-<time>.json; it is refused if the skill text, the case inputs, the runner's name or
+bytes, prereg.py, prepare.py, the gate rule text, GATE_MARGIN or GATE_FA_MARGIN changed.
 The CLI version is read from the installed files, never by running the CLI; CLI_VERSION=<v> overrides it.
 
-Environment read: CASES, ONLY, APPLIES, NOTE, GATE_RULE, GATE_RULE_FILE, GATE_MARGIN, CLI_VERSION, MAX_COST_USD, EST_REVIEW_USD,
+Environment read: CASES, ONLY, APPLIES, NOTE, GATE_RULE, GATE_RULE_FILE, GATE_MARGIN, GATE_FA_MARGIN, CLI_VERSION, MAX_COST_USD, EST_REVIEW_USD,
 DRY_RUN. Exit 0 on success, 1 when the record is refused, 2 on a bad flag value. Standard library only.
 """
 import argparse, datetime, hashlib, json, math, os, pathlib, re, shlex, shutil, subprocess, sys
@@ -30,9 +32,10 @@ def flag(name):
     raise ValueError(f"{name}={os.environ.get(name)!r} is neither on (1, true, yes, on) nor off (unset, empty, 0, false, no, off)")
 
 
-def margin_from_env():
-    """GATE_MARGIN as a finite number >= 0 (an int when integral), or None when unset. ValueError otherwise."""
-    raw = os.environ.get("GATE_MARGIN", "").strip()
+def margin_from_env(name="GATE_MARGIN"):
+    """An environment margin (GATE_MARGIN, GATE_FA_MARGIN) as a finite number >= 0 (an int when integral), or None when unset.
+    ValueError otherwise."""
+    raw = os.environ.get(name, "").strip()
     if not raw:
         return None
     try:
@@ -40,7 +43,7 @@ def margin_from_env():
     except ValueError:
         k = float("nan")
     if not math.isfinite(k) or k < 0:
-        raise ValueError(f"GATE_MARGIN={raw!r} must be a finite number of summed hits, zero or more")
+        raise ValueError(f"{name}={raw!r} must be a finite number, zero or more")
     return int(k) if k == int(k) else k
 
 
@@ -99,6 +102,9 @@ def build(a):
         gf = os.environ["GATE_RULE_FILE"]
         gate_text, gate_src = pathlib.Path(gf).read_text(), f"GATE_RULE_FILE {gf} sha256 {sha(gf)}"
     k = margin_from_env()
+    fk = margin_from_env("GATE_FA_MARGIN")
+    fk_src = "GATE_FA_MARGIN" if fk is not None else ("GATE_MARGIN" if k is not None else None)
+    fk = fk if fk is not None else k
     return {"schema": "prereg-1", "started_utc": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "skill": skill_rec,
             "cases": {"dir": os.environ.get("CASES") or "evals/cases", "only": os.environ.get("ONLY") or None, "applies": os.environ.get("APPLIES") or None,
@@ -106,7 +112,8 @@ def build(a):
             "model": {"cli": a.cli, "requested": a.model or None, "cli_command": a.cli_cmd or None, "cli_path": path, "cli_realpath": real,
                       "cli_version": version, "cli_version_source": "CLI_VERSION" if os.environ.get("CLI_VERSION") else ("installed files" if version else None)},
             "gate_rule": {"given": bool(gate_text), "text": gate_text, "source": gate_src,
-                          "margin": k, "margin_source": "GATE_MARGIN" if k is not None else None},
+                          "margin": k, "margin_source": "GATE_MARGIN" if k is not None else None,
+                          "fa_margin": fk, "fa_margin_source": fk_src},
             "lane": {"runner": os.path.basename(a.runner), "runner_sha256": sha(a.runner), "prereg_sha256": sha(__file__),
                      "prepare_sha256": sha(os.path.join(here, "evals/tools/prepare.py")),
                      "parallel": a.parallel, "max_cost_usd": os.environ.get("MAX_COST_USD") or None, "est_review_usd": os.environ.get("EST_REVIEW_USD") or None,
@@ -120,16 +127,36 @@ def write(a):
         old = json.loads(first.read_text())
         if old.get("skill", {}).get("sha256") != rec["skill"]["sha256"]:
             raise ValueError(f"{first} was written for a different skill text ({old.get('skill', {}).get('sha256')}); use a new OUTDIR")
-        old_runner = old.get("lane", {}).get("runner", "run_reviews.sh")
-        if old_runner != rec["lane"]["runner"]:
-            raise ValueError(f"{first} was written by {old_runner}, not {rec['lane']['runner']}; use a new OUTDIR")
+        ol, nl = old.get("lane", {}), rec["lane"]
+        old_runner = ol.get("runner", "run_reviews.sh")
+        if old_runner != nl["runner"]:
+            raise ValueError(f"{first} was written by {old_runner}, not {nl['runner']}; use a new OUTDIR")
+        for key, what in (("runner_sha256", f"the runner ({nl['runner']})"), ("prereg_sha256", "evals/tools/prereg.py"),
+                          ("prepare_sha256", "evals/tools/prepare.py")):
+            if ol.get(key) != nl[key]:
+                raise ValueError(f"{what} changed since {first} was written (sha256 {str(ol.get(key))[:12]} -> {nl[key][:12]}); use a new OUTDIR")
+        og, ng = old.get("gate_rule", {}), rec["gate_rule"]
+        for key, what in (("text", "GATE_RULE / GATE_RULE_FILE text"), ("margin", "GATE_MARGIN"), ("fa_margin", "GATE_FA_MARGIN")):
+            if og.get(key) != ng[key]:
+                raise ValueError(f"{what} differs from the pre-registered value in {first} ({og.get(key)!r} -> {ng[key]!r}); "
+                                 "the rule is fixed before the run: resume with the same value or use a new OUTDIR")
         changed = sorted(c for c in rec["cases"]["inputs"] if c in old.get("cases", {}).get("inputs", {}) and old["cases"]["inputs"][c]["sha256"] != rec["cases"]["inputs"][c]["sha256"])
         if changed:
             raise ValueError(f"case inputs changed since {first} was written ({', '.join(changed[:5])}); use a new OUTDIR")
-        dst = meta / f"prereg-resume-{rec['started_utc'].replace(':', '')}.json"
+        stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H%M%S.%fZ")
+        for n in range(1000):                                      # unique even for two resumes in the same microsecond
+            dst = meta / f"prereg-resume-{stamp}{'' if n == 0 else f'-{n}'}.json"
+            try:
+                with open(dst, "x") as fh:
+                    fh.write(json.dumps(rec, indent=1) + "\n")
+                break
+            except FileExistsError:
+                continue
+        else:
+            raise ValueError(f"could not find a free resume record name under {meta}")
     else:
         dst = first
-    dst.write_text(json.dumps(rec, indent=1) + "\n")
+        dst.write_text(json.dumps(rec, indent=1) + "\n")
     print(f"pre-registered: {dst} ({rec['cases']['count']} case(s), skill sha256 {rec['skill']['sha256'][:12]})")
     if not rec["gate_rule"]["given"]:
         print("WARNING: no GATE_RULE or GATE_RULE_FILE given: this run records no comparison rule in advance", file=sys.stderr)
@@ -152,7 +179,7 @@ def main():
         if a.cmd == "flag":
             print("1" if flag(a.name) else "0")
             return 0
-        flag("DRY_RUN"); margin_from_env()                        # refuse a bad value before reading any file
+        flag("DRY_RUN"); margin_from_env(); margin_from_env("GATE_FA_MARGIN")                      # refuse a bad value before reading any file
     except ValueError as e:
         print(f"refused: {e}", file=sys.stderr)
         return 2
