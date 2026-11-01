@@ -528,13 +528,36 @@ The self-check uses synthetic runs. It must find a 3-hit loss of 60 (20 one-defe
 hold-out gap) NOT significant, a 30-of-40-case loss significant, identical runs at exactly zero, and a clustered interval wider than
 the naive one when repeats agree. It also checks the Wilson and sign-test arithmetic against known values and refuses unpaired input.
 
-**The v2.3.2 hold-out gate with this lens.** The [gate record](results/2026-10-09-gate-v232/README.md) owns the rule and the as-run
-totals. Re-scoring its hold-out reports with the current scorer (the secret-in-history alias above) and reading the per-case counts:
-the two texts differ on two of 16 defect cases. v2.3.2 is one hit better on case 05 and two hits worse on case 15; the other 14
-agree in every repeat. That is one case better and one worse, so the exact sign test gives p = 1.0. A case-resampled interval
-over 16 cases with that pattern runs from below -3 hits to above zero, so the -3 floor sits inside the noise. The bootstrap
-interval from `stats.py compare` on these files has not been published yet; add it here from the tool's output, not by hand.
-The rule itself is unchanged; whether a floor should be stated as an interval is the gate owner's decision.
+**The v2.3.2 gate with this lens (run 2026-11-01).** The [gate record](results/2026-10-09-gate-v232/README.md) owns the rule and the
+as-run totals. Its reports were re-scored with the current scorer (which includes the secret-in-history alias above, so hold-out
+recall reads 55 against 56, not the as-run 53 against 56), then compared with the default 10,000 resamples and fixed seed:
+
+```
+R=evals/results/2026-10-09-gate-v232
+for s in v22 v232; do for i in 1 2 3; do
+  python3 evals/score.py --cases evals/holdout/cases --reports $R/ho-$s-$i --json /tmp/ho-$s-$i.json
+  python3 evals/score.py --cases evals/cases --reports $R/dev-$s-$i --json /tmp/dev-$s-$i.json
+done; done
+python3 evals/tools/stats.py compare --base /tmp/ho-v22-*.json --cand /tmp/ho-v232-*.json --margin 3
+python3 evals/tools/stats.py compare --base /tmp/dev-v22-*.json --cand /tmp/dev-v232-*.json --margin 3
+```
+
+| set | measure | v2.3.2 minus v2.2 | 95% paired CI | sign test | "base minus 3" |
+|---|---|---|---|---|---|
+| hold-out (16 defect cases, 6 controls) | recall, summed hits | -1 (55 vs 56 of 60) | [-5.0, +3.3] hits | 1 better, 1 worse, p = 1.000 | passes; -3 is inside the interval |
+| | false-alarm rate (control runs) | 0.000 (2 of 18 each) | [0.000, 0.000] | 0 more, 0 fewer | |
+| development (53 defect cases, 34 controls) | recall, summed hits | +5 (240 vs 235 of 255) | [-3.8, +15.9] hits | 3 better, 1 worse, p = 0.625 | passes; -3 is inside the interval |
+| | false-alarm rate (control runs) | -0.020 (8 vs 10 of 102) | [-0.098, +0.049] | 4 more, 4 fewer, p = 1.000 | |
+
+Neither set shows a detectable difference in either direction. On the hold-out set the interval's half-width is 4.2 hits, larger
+than the 3-hit floor, so this gate cannot tell a 3-hit loss from no change; on the development set the half-width is 9.9 hits.
+Read the gate as "no detectable change". The rule itself is unchanged; whether a floor should be stated as an interval is the
+gate owner's decision (AGENTS.md rule 3 says "no recall loss"; the gate allows three).
+
+**Few clusters: trust the sign test.** The plain-prompt hold-out runs (`ho-pl22-*` against `ho-pl231-*`, scored with
+`--skill plain`) show why. The bootstrap calls the false-alarm drop significant (-0.389, CI [-0.667, -0.111]), but the exact
+sign test over the same 6 controls gives 0 more and 4 fewer, p = 0.125. With 6 clusters a percentile bootstrap is too narrow;
+when the two disagree, the sign test is the one to report.
 
 ## Pre-registration (added 2026-10-31)
 
