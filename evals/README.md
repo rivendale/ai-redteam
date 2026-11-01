@@ -529,35 +529,50 @@ hold-out gap) NOT significant, a 30-of-40-case loss significant, identical runs 
 the naive one when repeats agree. It also checks the Wilson and sign-test arithmetic against known values and refuses unpaired input.
 
 **The v2.3.2 gate with this lens (run 2026-11-01).** The [gate record](results/2026-10-09-gate-v232/README.md) owns the rule and the
-as-run totals. Its reports were re-scored with the current scorer (which includes the secret-in-history alias above, so hold-out
-recall reads 55 against 56, not the as-run 53 against 56), then compared with the default 10,000 resamples and fixed seed:
+as-run totals. Its reports were re-scored with the current scorer, which includes the secret-in-history alias above, so hold-out
+recall reads 55 against 56, not the as-run 53 against 56. They were then compared with the default 10,000 resamples and fixed seed:
 
 ```
-R=evals/results/2026-10-09-gate-v232
+R=evals/results/2026-10-09-gate-v232; T=$(mktemp -d)
 for s in v22 v232; do for i in 1 2 3; do
-  python3 evals/score.py --cases evals/holdout/cases --reports $R/ho-$s-$i --json /tmp/ho-$s-$i.json
-  python3 evals/score.py --cases evals/cases --reports $R/dev-$s-$i --json /tmp/dev-$s-$i.json
+  python3 evals/score.py --skill redteam --cases evals/holdout/cases --reports $R/ho-$s-$i --json $T/ho-$s-$i.json
+  python3 evals/score.py --skill redteam --cases evals/cases --reports $R/dev-$s-$i --json $T/dev-$s-$i.json
 done; done
-python3 evals/tools/stats.py compare --base /tmp/ho-v22-*.json --cand /tmp/ho-v232-*.json --margin 3
-python3 evals/tools/stats.py compare --base /tmp/dev-v22-*.json --cand /tmp/dev-v232-*.json --margin 3
+python3 evals/tools/stats.py compare --base $T/ho-v22-*.json --cand $T/ho-v232-*.json --margin 3
+python3 evals/tools/stats.py compare --base $T/dev-v22-*.json --cand $T/dev-v232-*.json --margin 3
 ```
+
+`--skill redteam` matters: without it the development set also counts cases 60 and 61, which apply only to pr-review and plain
+and which the gate never ran.
 
 | set | measure | v2.3.2 minus v2.2 | 95% paired CI | sign test | "base minus 3" |
 |---|---|---|---|---|---|
 | hold-out (16 defect cases, 6 controls) | recall, summed hits | -1 (55 vs 56 of 60) | [-5.0, +3.3] hits | 1 better, 1 worse, p = 1.000 | passes; -3 is inside the interval |
 | | false-alarm rate (control runs) | 0.000 (2 of 18 each) | [0.000, 0.000] | 0 more, 0 fewer | |
-| development (53 defect cases, 34 controls) | recall, summed hits | +5 (240 vs 235 of 255) | [-3.8, +15.9] hits | 3 better, 1 worse, p = 0.625 | passes; -3 is inside the interval |
-| | false-alarm rate (control runs) | -0.020 (8 vs 10 of 102) | [-0.098, +0.049] | 4 more, 4 fewer, p = 1.000 | |
+| development (52 defect cases, 33 controls) | recall, summed hits | +5 (240 vs 235 of 252) | [-3.6, +15.7] hits | 3 better, 1 worse, p = 0.625 | passes; -3 is inside the interval |
+| | false-alarm rate (control runs) | -0.020 (8 vs 10 of 99) | [-0.091, +0.051] | 4 more, 4 fewer, p = 1.000 | |
+
+The false-alarm rows count control runs with at least one open Critical or High. The gate counts findings (3 vs 4 and 8 vs 11);
+see the gate record.
 
 Neither set shows a detectable difference in either direction. On the hold-out set the interval's half-width is 4.2 hits, larger
-than the 3-hit floor, so this gate cannot tell a 3-hit loss from no change; on the development set the half-width is 9.9 hits.
+than the 3-hit floor, so this gate cannot tell a 3-hit loss from no change; on the development set the half-width is 9.6 hits.
 Read the gate as "no detectable change". The rule itself is unchanged; whether a floor should be stated as an interval is the
 gate owner's decision (AGENTS.md rule 3 says "no recall loss"; the gate allows three).
 
-**Few clusters: trust the sign test.** The plain-prompt hold-out runs (`ho-pl22-*` against `ho-pl231-*`, scored with
-`--skill plain`) show why. The bootstrap calls the false-alarm drop significant (-0.389, CI [-0.667, -0.111]), but the exact
-sign test over the same 6 controls gives 0 more and 4 fewer, p = 0.125. With 6 clusters a percentile bootstrap is too narrow;
-when the two disagree, the sign test is the one to report.
+**Few clusters: report both tests and call the evidence weak.** The plain-prompt hold-out runs show the limit:
+
+```
+for s in pl22 pl231; do for i in 1 2 3; do
+  python3 evals/score.py --skill plain --cases evals/holdout/cases --reports $R/ho-$s-$i --json $T/ho-$s-$i.json
+done; done
+python3 evals/tools/stats.py compare --base $T/ho-pl22-*.json --cand $T/ho-pl231-*.json
+```
+
+The bootstrap calls the false-alarm drop significant (-0.389, CI [-0.667, -0.111]); the exact sign test over the same 6 controls
+gives 0 more and 4 fewer, p = 0.125. With 6 clusters a percentile bootstrap is too narrow, and with 4 discordant controls the sign
+test cannot go below p = 0.125. Neither settles it. `stats.py` still prints SIGNIFICANT here; a warning below about 10 clusters is
+an open follow-up.
 
 ## Pre-registration (added 2026-10-31)
 
