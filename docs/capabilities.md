@@ -168,6 +168,11 @@ Python 3.12, 3.13 and 3.14. It runs the scorer self-check, the validator self-ch
 JSON parse.
 No model is called and no secret is used. Actions are pinned by SHA with a read-only token.
 
+**Hygiene** ([`.github/workflows/hygiene.yml`](../.github/workflows/hygiene.yml)) calls the shared check from
+[rivendale/opensource](https://github.com/rivendale/opensource/blob/main/tools/hygiene/README.md), pinned by SHA, with the
+config in [`.hygiene.json`](../.hygiene.json): executable bits, invisible characters, the case counts in the docs, stale
+dated markers, the `AGENTS.md` size and sentinel, and `tests/test_prepare_symlinks.py` run as root in a throwaway container.
+
 ### Published results
 
 Each folder holds reports, prompts and `SHA256SUMS`; the numbers below are headlines, and the folder README is the source.
