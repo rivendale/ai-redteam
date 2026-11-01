@@ -157,7 +157,8 @@ and FL20 are measured through recall and the verdict rules. The rest are read fr
 | [`evals/tools/verify_cases.py`](../evals/tools/verify_cases.py) | runs each case's proof: the planted defect is real, or the control's tests pass |
 | [`evals/tools/prepare.py`](../evals/tools/prepare.py) | copies what a reviewer may see, leaving `expected.json` behind |
 | [`evals/tools/run_reviews.sh`](../evals/tools/run_reviews.sh) | runs one skill over the cases in a sealed `claude -p` lane: no tools, no MCP servers, no settings; writes `_meta/prereg.json` before the first review |
-| [`evals/tools/stats.py`](../evals/tools/stats.py) | 95% intervals for recall and false alarms, clustered by case, and a paired comparison of two texts |
+| [`evals/tools/prereg.py`](../evals/tools/prereg.py) | the pre-registration record both lanes write (`run_reviews.sh` and `run_reviews_codex.sh`), and their `DRY_RUN` parsing |
+| [`evals/tools/stats.py`](../evals/tools/stats.py) | 95% intervals for recall and false alarms, clustered by case, a paired comparison of two texts with few-cluster and disagreement warnings, and `gate` (PASS or FAIL under the [gate rule](../evals/README.md#gate-rule)) |
 | [`evals/score.py`](../evals/score.py) | recall, false alarms, violations; `--self-check` proves it tells good reports from bad |
 | [`evals/tools/map_pr_severity.py`](../evals/tools/map_pr_severity.py) | maps pr-review's P0-P3 to Critical-Low for scoring |
 | [`evals/tools/summarize_usage.py`](../evals/tools/summarize_usage.py) | sums tokens, cost and time over a run folder |

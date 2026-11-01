@@ -61,7 +61,9 @@ not the work's framing of it; diagnose, do not rewrite; a self-check pass; a ver
 Each eval case states: the original request, the work, the context, the planted defects (or "none" for a control),
 and what a correct report must and must not contain. Score per case: planted defects caught (recall), invented
 Critical/High findings on controls (false alarms), and rule violations from the failure list. v1 and v2 are both
-scored on the same set; v2 ships only if it is better on recall without more false alarms.
+scored on the same set; v2 ships only if it is better on recall without more false alarms. (Gates from 2026-11-01 use the
+interval form in the [gate rule](../evals/README.md#gate-rule); the rules in this file stay as written for the versions they
+gated.)
 
 The eval cases are written by a different agent than the one that writes the skill, from this file only.
 
@@ -219,6 +221,8 @@ Each item names the failure behind it.
 
 Cases are written by a different agent than the one that writes the v2.3 skill text, from this section only.
 ### Ship rule (measured, three runs per skill)
+
+As written for v2.3; later gates use the [gate rule](../evals/README.md#gate-rule).
 
 Both v2.2 and v2.3 run three times on every case in the sealed lane, scored with the current scorer. Cases 1-49 use
 the v2.2 profile for both skills (the v2.2 failure list). The v2.3 cases use the v2.3 profile for both. Totals are

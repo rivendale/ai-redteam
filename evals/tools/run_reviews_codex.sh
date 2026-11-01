@@ -19,9 +19,12 @@
 # per-user npm install under $HOME and the global npm install that starts with an EMPTY HOME is used. A launcher that only starts
 # with the real HOME is refused (the model process never gets the real HOME); none usable stops the lane at once.
 # Each run also writes _meta/<case>.usage.json (CLI version, model, tokens) with no paths; the raw log stays local.
+# PRE-REGISTRATION: _meta/prereg.json as in run_reviews.sh (GATE_RULE, GATE_RULE_FILE, GATE_MARGIN, CLI_VERSION); DRY_RUN=1 writes it
+# and stops before any review (DRY_RUN=0, empty or unset means off; any other value is refused).
 set -u
 skill=$(realpath "$1"); out=$(realpath -m "$2"); par=${3:-2}
 here=$(cd "$(dirname "$0")/../.." && pwd)
+dry=$(python3 "$here/evals/tools/prereg.py" flag DRY_RUN) || exit 2
 [ -n "${CODEX_MODEL:-}" ] || { echo "set CODEX_MODEL (the model to pin); the lane no longer lets the CLI default choose" >&2; exit 2; }
 real_home="${CODEX_HOME:-$HOME/.codex}"
 prep=; chome=; probe_home=; snap_sum=
@@ -69,11 +72,17 @@ for cand in ${CODEX_CMD:+"$CODEX_CMD"} codex "node $HOME/.local/share/codex-npm/
   if probe "$probe_home" "$cand"; then launch=$cand; break; fi
 done
 [ -n "$launch" ] || { echo "no codex launcher starts with an empty HOME (tried CODEX_CMD, codex, the npm installs); set CODEX_CMD to a command that does not need HOME, for example: node /path/to/codex.js" >&2; exit 2; }
+prep=$(mktemp -d); mkdir -p "$out/_meta"
+python3 "$here/evals/tools/prepare.py" "$prep" ${ONLY:+--only "$ONLY"} ${APPLIES:+--applies "$APPLIES"} ${CASES:+--cases "$CASES"} >/dev/null || { echo "case preparation refused or failed: nothing was reviewed" >&2; exit 1; }
+# PRE-REGISTRATION: the same _meta/prereg.json record run_reviews.sh writes (evals/tools/prereg.py, shared), before any review and
+# before the sign-in is copied; DRY_RUN=1 stops here. The CLI version is read from the launcher's installed files, not by running it.
+python3 "$here/evals/tools/prereg.py" write --repo "$here" --skill "$skill" --prep "$prep" --out "$out" --parallel "$par" \
+  --runner "$here/evals/tools/run_reviews_codex.sh" --cli codex --cli-cmd "$launch" --model "$CODEX_MODEL" \
+  || { echo "pre-registration refused or failed: nothing was reviewed" >&2; exit 1; }
+if [ "$dry" = 1 ]; then echo "DRY_RUN: pre-registration written, no review started"; exit 0; fi
 chome=$(mktemp -d "${TMPDIR:-/tmp}/codex-lane-XXXXXX"); chmod 700 "$chome"
 ( umask 077; cp "$real_home/auth.json" "$chome/auth.json" )
 snap_sum=$(sha256sum < "$chome/auth.json")   # of the bytes actually copied
-prep=$(mktemp -d); mkdir -p "$out/_meta"
-python3 "$here/evals/tools/prepare.py" "$prep" ${ONLY:+--only "$ONLY"} ${APPLIES:+--applies "$APPLIES"} ${CASES:+--cases "$CASES"} >/dev/null || { echo "case preparation refused or failed: nothing was reviewed" >&2; exit 1; }
 export SKILL="$skill" OUT="$out" LAUNCH="$launch" RUN_CODEX_HOME="$chome"
 review() {
   d=$1; c=$(basename "$d"); [ -s "$OUT/$c.md" ] && return 0
