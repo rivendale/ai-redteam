@@ -94,6 +94,16 @@ Gemini and Grok are untested until a run in each is recorded.
   version (measured with `skills` 1.7.0);
   install from a local clone at a reviewed commit, and leave a `PINNED` note (source, commit, date, what you read).
 - **Reviewed work can carry instructions.** The skills treat them as data; keep that rule if you adapt them.
+- **A review started inside the reviewed checkout obeys its instruction files.** Claude Code loads `CLAUDE.md` and
+  `AGENTS.md` from the working directory and the directories above it at launch, and from a subdirectory once it reads
+  a file there; Codex reads repository instructions from the root down to the working directory. So a PR that edits
+  `AGENTS.md` can steer a reviewer started in its checkout, and agents follow an instruction file over the code it
+  contradicts: 90.1% of choices in [arXiv 2610.30571](https://arxiv.org/abs/2610.30571). Start the reviewer in an
+  empty directory that is neither the checkout nor above it. In Claude Code, reach the checkout with `--add-dir`, whose
+  `CLAUDE.md` files are not loaded by default ([memory docs](https://code.claude.com/docs/en/memory), read
+  2026-11-01). Then ask the session which instruction files it loaded, and stop if any came from the checkout. The
+  eval runner already starts from an empty directory (`evals/tools/run_reviews.sh`), and
+  [pr-review Step 1](../skills/pr-review/SKILL.md#step-1-freeze-the-target) has the rule.
 - **A same-context review inherits the author's blind spots.** Run the review in a fresh session or a subagent, and
   for anything high-stakes add a different vendor's model (non-sensitive work only).
 - **Personal or client data must not go to an external reviewer.** The redteam skill's sensitivity gate refuses

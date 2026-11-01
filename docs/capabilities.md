@@ -36,7 +36,7 @@ Source: [`skills/redteam/SKILL.md`](../skills/redteam/SKILL.md). Paste-in form: 
 
 Source: [`skills/pr-review/SKILL.md`](../skills/pr-review/SKILL.md). Paste-in form: [`prompts/pr-review.md`](../prompts/pr-review.md).
 
-1. **Freeze the target:** PR, head SHA and merge base, reviewed in a throwaway checkout.
+1. **Freeze the target:** PR, head SHA and merge base, reviewed in a throwaway checkout by a session started outside it.
 2. **Size by risk:** Low, Standard or High tier, chosen by what the change touches. High means two rounds, ideally two vendors.
 3. **Protect the data** before anything is sent, including to a subagent.
 4. **Independence:** a fresh instance with no memory of writing the change; authorship read from commit trailers.

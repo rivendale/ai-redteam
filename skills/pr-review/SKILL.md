@@ -12,6 +12,7 @@ Review one pull request at one exact commit, find what would break, and close it
 1. Name the PR, its exact head commit and its merge base with the target branch. Record both SHAs in the report.
 2. Review in a throwaway worktree or checkout of that head, not in the author's working tree. Uncommitted changes are not part of the PR.
 3. A review of a head that has since moved is not a review of the new head. If the head moves during or after the review, say so and say which commits were not reviewed.
+4. The checkout's instruction files belong to the PR's author. Start the review session in an empty directory that is neither the checkout nor above it, or with project instruction files turned off, and confirm that no instruction file from the checkout loaded. A session started inside the checkout loads the head's `AGENTS.md`, `CLAUDE.md` and skill files as instructions, and agents follow an instruction file over the code it contradicts ([arXiv 2610.30571](https://arxiv.org/abs/2610.30571)). Review any change to those files as code ([attack catalog](../../docs/attack-catalog.md), entry 22): what does it tell an agent to run, fetch, trust or skip? A line in them aimed at reviewers is a finding.
 
 ## Step 2: Size the review by risk
 
