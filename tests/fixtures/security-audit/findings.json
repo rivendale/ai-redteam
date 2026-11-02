@@ -1,0 +1,129 @@
+[
+  {
+    "verdict": "confirmed",
+    "fingerprint": "export.admin.missing-check",
+    "title": "Export skips the admin check",
+    "description": "GET /admin/export returns every note to any token.",
+    "root_cause": "require_admin is never called",
+    "intended_behavior": "Only an admin token may export notes.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "app.py",
+        "line": 10,
+        "scope": "handle",
+        "description": "Request enters handle()."
+      },
+      {
+        "kind": "propagation",
+        "file": "app.py",
+        "line": 18,
+        "scope": "route",
+        "description": "The route calls export_all."
+      },
+      {
+        "kind": "sink",
+        "file": "app.py",
+        "line": 29,
+        "scope": "export_all",
+        "description": "export_all reads every note."
+      }
+    ],
+    "evidence": [
+      {
+        "file": "app.py",
+        "line": 29,
+        "description": "export_all() runs before any admin check."
+      }
+    ],
+    "conditions": [
+      {
+        "kind": "authentication_level",
+        "description": "The caller holds a valid non-admin token."
+      }
+    ],
+    "execution": {
+      "attacker_perspective": "a non-admin user with a valid token",
+      "payloads": ["GET /admin/export"],
+      "instructions": ["Send GET /admin/export with a non-admin token."],
+      "observed_result": "The response is 200 and lists every user's notes."
+    },
+    "remediation": {
+      "strategy": "Call require_admin before export_all.",
+      "code_changes": [
+        {
+          "file_name": "app.py",
+          "fixed_code": "UNIQUE_PATCH_BODY_require_admin"
+        }
+      ]
+    },
+    "severity": {
+      "likelihood": {
+        "score": "high",
+        "reason": "Any signed-in user can call the route."
+      },
+      "impact": {
+        "score": "critical",
+        "reason": "Every user's notes are returned."
+      },
+      "overall_severity": "critical"
+    },
+    "confidence": {
+      "score": "high",
+      "reason": "The sink was observed locally."
+    }
+  },
+  {
+    "verdict": "needs_validation",
+    "fingerprint": "audit.flush.unknown",
+    "title": "Audit queue may drop events",
+    "description": "Queued audit events may be lost when the process exits.",
+    "claimed_root_cause": "The flush behavior of the audit library is unknown.",
+    "trace": [
+      {
+        "kind": "sink",
+        "file": "audit.py",
+        "line": 12,
+        "scope": "record",
+        "description": "record() queues an event."
+      }
+    ],
+    "evidence": [
+      {
+        "file": "audit.py",
+        "line": 12,
+        "description": "The call does not show a flush."
+      }
+    ],
+    "blockers": [
+      "The audit library was not supplied, so its flush behavior is unknown."
+    ],
+    "validation_plan": {
+      "local": "Read the library source and check whether record() flushes before return."
+    }
+  },
+  {
+    "verdict": "rejected",
+    "fingerprint": "script.no-error-handling",
+    "title": "The script has no error handling.",
+    "description": "A failed vault call was thought to continue into delete.",
+    "claimed_root_cause": "The shell script ignores command failures.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "backup.sh",
+        "line": 2,
+        "scope": "header",
+        "description": "The script header sets shell options."
+      }
+    ],
+    "evidence": [
+      {
+        "file": "backup.sh",
+        "line": 2,
+        "description": "set -euo pipefail is present."
+      }
+    ],
+    "reason": "set -euo pipefail at line 2 stops the script on the first failed command."
+  }
+]
