@@ -1,0 +1,26 @@
+{
+  "tools": [
+    {
+      "name": "lookup_sku",
+      "title": "Look up a stock code",
+      "description": "Look up one stock code in the local catalog and return the product name and the on-hand count.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "sku": {
+            "type": "string",
+            "description": "The stock code to look up, such as NL-1001."
+          },
+          "context_lines": {
+            "type": "integer",
+            "description": "How many catalog rows to print around the match."
+          }
+        },
+        "required": [
+          "sku"
+        ],
+        "additionalProperties": false
+      }
+    }
+  ]
+}
