@@ -1,5 +1,13 @@
 # Release notes
 
+## Unreleased, November 2, 2026: security-audit findings mapping
+
+No skill or prompt text changed. No paid evaluation was run.
+
+| Area | Change |
+|---|---|
+| Findings mapping | [`tools/map_audit_findings.py`](tools/map_audit_findings.py) converts a Cloudflare security-audit `findings.json` array into a schema 2.3 report. The field table is [`docs/security-audit-mapping.md`](docs/security-audit-mapping.md). Tests: [`tests/test_map_audit_findings.py`](tests/test_map_audit_findings.py). |
+
 ## Unreleased, October 31, 2026: eval statistics, pre-registration, doc drift, statistical gate rule
 
 No skill or prompt text changed. No paid evaluation was run.

@@ -30,6 +30,7 @@ Agents: start at AGENTS.md. People: start at README.md.
 - [docs/SPEC.md](docs/SPEC.md): redteam design and failure list, version by version (the file owns its versions and item numbers)
 - [docs/attack-catalog.md](docs/attack-catalog.md): ways AI-built systems fail under attack, as reviewer questions
 - [docs/framework-mapping.md](docs/framework-mapping.md): the catalog and skills against the OWASP LLM and Agentic Top 10 lists and MITRE ATLAS
+- [docs/security-audit-mapping.md](docs/security-audit-mapping.md): Cloudflare security-audit findings.json mapped into the findings schema
 - [docs/why-reviews-fail.md](docs/why-reviews-fail.md): how reviews of AI work go wrong
 - [docs/privacy-checklist.md](docs/privacy-checklist.md): questions for work that touches personal data
 

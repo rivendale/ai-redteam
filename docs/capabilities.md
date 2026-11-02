@@ -74,6 +74,7 @@ Sources: redteam "Output format"; [`schema/findings.schema.json`](../schema/find
 - **Validator:** checks the schema plus the cross-field rules a schema cannot state. Examples: no SHIP with an open High, and no
   REWORK or REJECT without a confirmed Medium or above. Refuted ids may not stay in findings. Standard library only. Its
   self-check runs invalid and valid fixtures from [`schema/examples/`](../schema/examples/).
+- **Security-audit import:** [`tools/map_audit_findings.py`](../tools/map_audit_findings.py) converts a Cloudflare security-audit `findings.json` array into this report. The field table lives in [`security-audit-mapping.md`](security-audit-mapping.md).
 - pr-review has its own prose format (review report, then close-out) and P0 to P3 severities.
 
 ## Reference documents
@@ -88,6 +89,7 @@ Start at the [documentation index](README.md) for current Action, install, evalu
 | [`why-reviews-fail.md`](why-reviews-fail.md) | 11 ways reviews of AI work fail, each with the habit that prevents it |
 | [`workflow.md`](workflow.md) | the build-and-review loop: spec, build, independent tests, pr-review, adjudication, redteam, merge |
 | [`SPEC.md`](SPEC.md) | the redteam design and failure list, version by version (the file owns its versions and item numbers) |
+| [`security-audit-mapping.md`](security-audit-mapping.md) | field mapping from Cloudflare security-audit `findings.json` into the findings schema |
 
 ### Attack catalog entries by number
 
@@ -161,6 +163,7 @@ and FL20 are measured through recall and the verdict rules. The rest are read fr
 | [`evals/tools/stats.py`](../evals/tools/stats.py) | 95% intervals for recall and false alarms, clustered by case, a paired comparison of two texts with few-cluster and disagreement warnings, and `gate` (PASS or FAIL under the [gate rule](../evals/README.md#gate-rule)) |
 | [`evals/score.py`](../evals/score.py) | recall, false alarms, violations; `--self-check` proves it tells good reports from bad |
 | [`evals/tools/map_pr_severity.py`](../evals/tools/map_pr_severity.py) | maps pr-review's P0-P3 to Critical-Low for scoring |
+| [`tools/map_audit_findings.py`](../tools/map_audit_findings.py) | maps a security-audit `findings.json` array into a schema 2.3 report |
 | [`evals/tools/summarize_usage.py`](../evals/tools/summarize_usage.py) | sums tokens, cost and time over a run folder |
 
 **CI** ([`.github/workflows/checks.yml`](../.github/workflows/checks.yml)) runs on every pull request and push to main, on

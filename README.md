@@ -132,6 +132,7 @@ positive hook control.
 | [`docs/SPEC.md`](docs/SPEC.md) | redteam design and failure list, version by version, each written before its skill text (the file owns its versions and item numbers) |
 | [`docs/attack-catalog.md`](docs/attack-catalog.md) | Twenty-eight ways AI-built systems fail under attack, each with the question a reviewer should ask |
 | [`docs/framework-mapping.md`](docs/framework-mapping.md) | The catalog and skills against OWASP LLM Top 10 2025, OWASP Agentic Top 10 2026 and MITRE ATLAS |
+| [`docs/security-audit-mapping.md`](docs/security-audit-mapping.md) | Cloudflare security-audit `findings.json` mapped into the findings schema |
 | [`docs/why-reviews-fail.md`](docs/why-reviews-fail.md) | How reviews of AI work go wrong, and the habit that prevents each |
 | [`docs/workflow.md`](docs/workflow.md) | Where these reviews sit in a build-and-review loop |
 | [`docs/using-with-ai-agents.md`](docs/using-with-ai-agents.md) | How AI CLIs read a repo, install and invoke, proving the load, pitfalls |
@@ -214,7 +215,7 @@ code was copied. Licenses were read from each repository on 2026-10-08.
 
 | Source | What was taken | License | Used in |
 |---|---|---|---|
-| Cloudflare, [security-audit-skill](https://github.com/cloudflare/security-audit-skill) | ideas: finding states, a coverage ledger, a schema-validated findings file; comparison for catalog entries 12-28 | MIT | [SPEC v2.2](docs/SPEC.md), [redteam](skills/redteam/SKILL.md) output format, [catalog](docs/attack-catalog.md#sources) |
+| Cloudflare, [security-audit-skill](https://github.com/cloudflare/security-audit-skill) | ideas: finding states, a coverage ledger, a schema-validated findings file; comparison for catalog entries 12-28; field names in the security-audit mapping | MIT | [SPEC v2.2](docs/SPEC.md), [redteam](skills/redteam/SKILL.md) output format, [catalog](docs/attack-catalog.md#sources), [security-audit mapping](docs/security-audit-mapping.md) |
 | Garry Tan, [gstack](https://github.com/garrytan/gstack) `/cso` skill | ideas: comparison for catalog entries 12-28 | MIT | [catalog](docs/attack-catalog.md#sources) |
 | Trail of Bits, [skills](https://github.com/trailofbits/skills) | ideas only: comparison for entries 12-28; variant analysis (entry 28) | CC-BY-SA-4.0 | [catalog](docs/attack-catalog.md#sources) |
 

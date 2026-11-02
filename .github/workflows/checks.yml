@@ -1,6 +1,7 @@
 # Offline checks on every pull request and every push to main. No model is called and no secret is used.
-# What runs: the scorer's self-check, the eval statistics self-check, the findings validator's self-check, every eval case's ground-truth
-# proof, a byte-compile of every Python file, and a parse of every JSON file. Three Python versions,
+# What runs: the scorer's self-check, the eval statistics self-check, the findings validator's self-check, the security-audit
+# findings mapping tests, every eval case's ground-truth proof, a byte-compile of every Python file, and a parse of every JSON
+# file. Three Python versions,
 # because a check that passes on one version is evidence about that version only.
 name: checks
 
@@ -45,6 +46,8 @@ jobs:
           python3 tests/test_variance_published.py --source .
       - name: Findings validator self-check
         run: python3 tools/validate_findings.py --self-check
+      - name: Security-audit findings mapping
+        run: python3 tests/test_map_audit_findings.py
       - name: Assess validator self-check
         run: python3 tools/validate_assess.py --self-check
       - name: Assess scorer self-check
