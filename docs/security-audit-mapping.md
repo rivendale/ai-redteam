@@ -22,9 +22,9 @@ The six-phase audit writes `findings.json` in phase 4. Phase 5 may replace recor
 
 Track is `B`. `location` is the sink `file:line`. When the trace has no sink, the location is the last step.
 
-`scenario` joins `description` and `execution.observed_result`. `fix` is `remediation.strategy`. When `code_changes` lists files, their names are appended. The `fixed_code` bodies stay out of the report.
+`scenario` joins `description` and `execution.observed_result`, then appends each `conditions` kind and description. `fix` is `remediation.strategy`. When `code_changes` lists files, their names are appended. The `fixed_code` bodies stay out of the report.
 
-`reproduction` joins `execution.instructions` and `observed_result`.
+`reproduction` joins `execution.instructions` and `observed_result`, then appends the same conditions text.
 
 `security` is true when `impact.score` is `low`, `medium`, `high`, or `critical`. Informational impact maps to severity `Low` with `security` false.
 

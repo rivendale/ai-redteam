@@ -211,7 +211,7 @@ def _parse_record(raw, index):
     if "verdict" not in raw:
         raise MapError(f"{path}.verdict", "missing required property")
     verdict = raw["verdict"]
-    if verdict not in _KEYS:
+    if not isinstance(verdict, str) or verdict not in _KEYS:
         raise MapError(f"{path}.verdict", "must be confirmed, needs_validation, or rejected")
     obj = _object(raw, path, _KEYS[verdict])
     fingerprint = _text(obj["fingerprint"], f"{path}.fingerprint")
@@ -312,6 +312,14 @@ def _boundary(record, path):
     return parts
 
 
+
+def _condition_text(conditions):
+    if not conditions:
+        return ""
+    parts = [f"{row['kind']}: {row['description']}" for row in conditions]
+    return " Conditions: " + "; ".join(parts)
+
+
 def _confirmed_finding(record, siblings):
     path = record["fingerprint"]
     answers = _answers(record)
@@ -329,10 +337,16 @@ def _confirmed_finding(record, siblings):
         "evidence_level": "CONFIRMED" if answers["b"] else "PROBABLE",
         "track": "B",
         "location": f"{sink['file']}:{sink['line']}",
-        "scenario": f"{record['description']} Observed: {execution['observed_result']}",
+        "scenario": (
+            f"{record['description']} Observed: {execution['observed_result']}"
+            f"{_condition_text(record['conditions'])}"
+        ),
         "fix": fix,
         "answers": answers,
-        "reproduction": f"{' '.join(execution['instructions'])} Observed: {execution['observed_result']}",
+        "reproduction": (
+            f"{' '.join(execution['instructions'])} Observed: {execution['observed_result']}"
+            f"{_condition_text(record['conditions'])}"
+        ),
         "security": record["severity"]["impact"]["score"] != "informational",
     }
     if finding["security"]:

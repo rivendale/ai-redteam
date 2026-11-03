@@ -101,12 +101,12 @@ class MappingTests(unittest.TestCase):
         self.assertEqual(confirmed_f["location"], "app.py:29")
         self.assertEqual(
             confirmed_f["scenario"],
-            "GET /admin/export returns every note to any token. Observed: The response is 200 and lists every user's notes.",
+            "GET /admin/export returns every note to any token. Observed: The response is 200 and lists every user's notes. Conditions: authentication_level: The caller holds a valid non-admin token.",
         )
         self.assertEqual(confirmed_f["fix"], "Call require_admin before export_all. Change app.py.")
         self.assertEqual(
             confirmed_f["reproduction"],
-            "Send GET /admin/export with a non-admin token. Observed: The response is 200 and lists every user's notes.",
+            "Send GET /admin/export with a non-admin token. Observed: The response is 200 and lists every user's notes. Conditions: authentication_level: The caller holds a valid non-admin token.",
         )
         self.assertEqual(confirmed_f["answers"], {"a": True, "b": True, "c": True, "d": True})
         self.assertTrue(confirmed_f["security"])
