@@ -12,6 +12,7 @@ This index was checked October 22, 2026. The linked records keep their own dates
 | Read dated results and their limits | [Published results](../README.md#results), [variance](variance-2026-10-16.md), [catalog provenance](catalog-provenance.md) |
 | Author independent evaluation cases | [Evaluation requests](eval-requests/README.md), [eval guide](../evals/README.md) |
 | Check design intent and historical coverage | [Redteam specification](SPEC.md), [assess specification](SPEC-assess.md), [dated framework mapping](framework-mapping.md) |
+| Convert a security-audit findings file | [Security-audit findings mapping](security-audit-mapping.md) |
 | Inspect the sources behind the October 21 lenses | [Incident map](incidents/2026-10-21-week.md) |
 | Audit this documentation update | [Dated stale-content audit](stale-audit-2026-10-22.md), [failure list](failures/polish-2026-10.md) |
 
