@@ -517,6 +517,42 @@ class MappingTests(unittest.TestCase):
         )
         self.assertEqual(proc.returncode, 2)
 
+    def test_conditions_appear_in_mapped_output(self):
+        """Regression for Codex Medium on #141: conditions must survive mapping."""
+        record = confirmed()
+        record["conditions"] = [
+            {
+                "kind": "system_configuration",
+                "description": "LEGACY_ADMIN_EXPORT=1 must be enabled before the request.",
+            }
+        ]
+        report = m.map_audit_findings([record])
+        finding = report["findings"][0]
+        blob = f"{finding['scenario']} {finding['reproduction']}"
+        self.assertIn("LEGACY_ADMIN_EXPORT=1", blob)
+        self.assertIn("system_configuration", blob)
+        self.assert_valid(report)
+
+    def test_fixture_conditions_appear_in_mapped_output(self):
+        report = m.map_audit_findings(load_fixture())
+        confirmed_finding = next(item for item in report["findings"] if item["status"] == "confirmed")
+        blob = f"{confirmed_finding['scenario']} {confirmed_finding['reproduction']}"
+        self.assertIn("authentication_level", blob)
+        self.assertIn("The caller holds a valid non-admin token.", blob)
+        self.assert_valid(report)
+
+    def test_list_or_object_verdict_returns_check_errors(self):
+        """Regression for Codex Low on #141: list/{} verdicts must not TypeError."""
+        for bad_verdict in ([], {}):
+            with self.subTest(verdict=bad_verdict):
+                errs = m.check_audit_findings([{"verdict": bad_verdict}])
+                self.assertTrue(errs)
+                self.assertTrue(any(path.endswith("verdict") for path, _ in errs))
+                with self.assertRaises(m.MapError) as caught:
+                    m.map_audit_findings([{"verdict": bad_verdict}])
+                self.assertEqual(caught.exception.path, "records[0].verdict")
+
+
 
 if __name__ == "__main__":
     unittest.main()
