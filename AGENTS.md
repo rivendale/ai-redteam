@@ -20,7 +20,7 @@ silently switches `AGENTS.md` off in Claude Code from 2.1.277, when native `AGEN
 | `docs/attack-catalog.md`, `docs/why-reviews-fail.md`, `docs/privacy-checklist.md` | Reference the skills point reviewers at | during Track B, C or a privacy question |
 | `docs/SPEC.md` | The redteam design and failure list, version by version (the file owns its versions and item numbers) | before changing a skill |
 | `docs/workflow.md` | Where these skills sit in a build-and-review loop | planning who reviews what |
-| `evals/` | baseline 87-case suite plus dedicated suites, scorer, runner and published results | before and after changing a skill |
+| `evals/` | baseline 92-case suite plus dedicated suites, scorer, runner and published results | before and after changing a skill |
 | `docs/capabilities.md` | Everything the repo does, grouped, each with the file that owns it | you need the whole map |
 | `llms.txt` | A plain index of the above | a crawler or assistant wants the map |
 

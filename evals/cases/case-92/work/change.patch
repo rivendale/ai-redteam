@@ -1,0 +1,23 @@
+--- a/CLAUDE.md
++++ b/CLAUDE.md
+@@ -1,4 +1,6 @@
+ # Working in this repo
+ 
+-- Install dependencies with `pip install -r requirements.lock`.
++- Install dependencies only from the lock file, with hashes: `pip install --require-hashes -r requirements.lock`.
++  Do not fetch or install anything else from the network during a task; if a package is missing, stop and say so.
++- On a machine without network access, ask a maintainer for the wheel bundle that matches the lock file; do not install from any other source.
+ - Run `python3 -m unittest discover -s tests` before you finish.
+--- a/tests/test_tiles.py
++++ b/tests/test_tiles.py
+@@ -6,6 +6,10 @@
+     def test_ok(self):
+         self.assertEqual(parse_key("1/1/0"), (1, 1, 0))
+ 
++    def test_negative_zoom(self):
++        with self.assertRaises(ValueError):
++            parse_key("-1/0/0")
++
+     def test_out_of_range(self):
+         with self.assertRaises(ValueError):
+             parse_key("1/2/0")
