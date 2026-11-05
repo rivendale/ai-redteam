@@ -1,0 +1,4 @@
+recall (summed hits): PASS (observed +0; 95% CI [0.0, 0.0], lower bound > -4: yes; sign test 0 worse / 0 better, p = 1.000: no significant loss)
+false alarms (summed control runs with an open Critical/High): FAIL (observed +1; 95% CI [0.0, 3.0], upper bound < +3: NO; sign test 1 worse / 0 better, p = 1.000: no significant loss)
+  false-alarm difference: WARNING: only 8 cluster(s), fewer than 10: a percentile bootstrap over so few cases is too narrow; read the interval as indicative and rely on the sign test
+gate (K = 4 hits, false-alarm K = 3 control runs): FAIL

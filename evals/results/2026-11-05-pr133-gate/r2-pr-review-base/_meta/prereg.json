@@ -1,0 +1,271 @@
+{
+ "schema": "prereg-1",
+ "started_utc": "2026-11-05T14:25:09Z",
+ "skill": {
+  "path": "skills/pr-review/SKILL.md",
+  "sha256": "8516de715e50f6306713417918ab7e8b3b06bea271634182ef69b049c01588dd",
+  "git_blob": "e1c17910ae8b1a8d0b7d091bd018419bf1e147a4",
+  "git_last_commit": "0927acc268d2354ee7ab45425d6a8a54560a73c4",
+  "repo_head": "0b6eb30722b545585fe4cb10269467a549da6c79",
+  "committed": true
+ },
+ "cases": {
+  "dir": "<scratch>/art/evals/cases",
+  "only": null,
+  "applies": "pr-review",
+  "note": null,
+  "count": 18,
+  "inputs": {
+   "case-24": {
+    "sha256": "3ffed0ba8438aeb76a9f52cb6475ee772f107851aacc6fb1bb67371d2d54994f",
+    "files": {
+     "context.md": "3cbd160c20caf50b936773538624743deb16a82ceee648b921028f5fdb2130ea",
+     "request.md": "5308ba4d4bbababc191495c8a443356f9f66063c82ebf43e06834f5d39c75f1a",
+     "work/PR.md": "0e6f48d48bd0efd8a970dbc71f7cc6c69af7460b92cf60b144414a1a5f9fbdbb",
+     "work/base/README.md": "1305ec9719d489e3e027057134d9be64435c1c28c14279c78f89f1d4b3011f31",
+     "work/base/payments.py": "a782d8e618957e0e205bd41b7b11727e9056e7ed29eda35acae0d6e0010dc507",
+     "work/change.patch": "3081fbe579d28cbf08d6a598107fc4ee238bb75dfebf45478d6fd1e18360b68d"
+    }
+   },
+   "case-25": {
+    "sha256": "b120c5ac571406da69ad1ff573db0c12e9d21b46c54b0e00e54551157877f139",
+    "files": {
+     "context.md": "172008279009a32ce76ad9d19a16068f3b8f8032a99dd5835a9cba15cb42324c",
+     "request.md": "9f86d3e94190bda82a02847463247f8212cead7d3cb45abed140f9ee58d978e1",
+     "work/PR.md": "c4b34d68da31791cca8ab707cfe0d8b07d25daf392babb7e6040ba6a7016d199",
+     "work/base/README.md": "1305ec9719d489e3e027057134d9be64435c1c28c14279c78f89f1d4b3011f31",
+     "work/base/exporter.py": "b355ad76bb851bc3eec9a198f7bd734486773d4cc2d1fe90eb34d83207cda662",
+     "work/change.patch": "315439feb7bf66742a5f0a80d774036340178ef334f775de735290036f2639e3"
+    }
+   },
+   "case-26": {
+    "sha256": "2ea128ee70f33023ef5b7228ced3adf91fed0a1ea75a5225fc3f4840ad30af7c",
+    "files": {
+     "context.md": "3ead6ea81c6aa2d606489e2f01d664f43a48bb8e38dd487538e98d9455055a92",
+     "request.md": "609fc269064c4b0528598264f7a16c2ec3cc61012df177fb3539d6e7284b1c4f",
+     "work/PR.md": "bd3048b079c26e9f5f368556e649b26bec9fc88f0cbb4416b731232be3522b64",
+     "work/base/README.md": "1305ec9719d489e3e027057134d9be64435c1c28c14279c78f89f1d4b3011f31",
+     "work/base/ratelimit.py": "a02680f7aeed704ea7c18d62b2ca1b6563ebe507c78999b0d68b28b9784bc4b9",
+     "work/change.patch": "3df4d6186401721e3dd0f4f63f0028d8f6c71987bed4b59196344ac7e83770bb"
+    }
+   },
+   "case-27": {
+    "sha256": "aacb02173d4f94b7aae61510f083a82d214b4dc51078db46be15d03b747098ac",
+    "files": {
+     "context.md": "d2fb616669451666ce76fc35604ee51b64d329860370d2da9ed4440e12a863b8",
+     "request.md": "1885ef74f4ead50d66f8b0f5892aabdbdb563972c76f5908bdb513cc4d2e55e2",
+     "work/PR.md": "9564903298d59e38b32affd3665079292c99c2990a18d4534eb7092f5b283cdd",
+     "work/base/README.md": "1305ec9719d489e3e027057134d9be64435c1c28c14279c78f89f1d4b3011f31",
+     "work/base/slug.py": "bfe6d231e4bf7a688caeab77cf5ea11b6a42befa92047b18a45691b57d2f75b8",
+     "work/change.patch": "7c7fd899957d1af45e31e760ab35ae3a05cb403b394856f5477ac8626d26005a"
+    }
+   },
+   "case-31": {
+    "sha256": "9e0fd9ef68e7c4ddb46bb4d91e37cd2f0ec64880524468f6bdcc499d4513930d",
+    "files": {
+     "context.md": "88f8851ed830a4be54b51b6920c25f8b60f1c4ca2894750b17c06b41899adff3",
+     "request.md": "30c9821c1b97310e18405a489672bb806bdc62fa9843a9b6402ba696cf5ce1f3",
+     "work/PR.md": "9256a994b90b7fddaa3957493199a7c80b1e79209ef79868194fb50cf6cd0a43",
+     "work/base/README.md": "f676ac418fe6d1a5345623a0499a65866d8483c21b8b031756447778619dabd1",
+     "work/base/servers/files.js": "654fbf9232e59fca0a2e3833aa4cc45f61867a4bc4f20807888ffe6fb441f3cc",
+     "work/base/servers/notes.js": "0b8c94b392f80346b201b61404e82bb4cfcef1b634ff50be542b4b07bcaa1f3b",
+     "work/change.patch": "07dfcb2ff719e133b7ed31e3e4ae9b234d0d6a8e1fd6a8f64656974f68265952"
+    }
+   },
+   "case-32": {
+    "sha256": "a88aa1b9efe062b66c7a46115fa8415b0f307aa844ab6e00558a62b117b6b820",
+    "files": {
+     "context.md": "ac0efc8f0ae7763733aa99866f6a4ebec1b6f0776d5d7c0a449cebf640cb7291",
+     "request.md": "fbe8de9e4c2d0daf9268bfd47d11e3ac20cf96bd0dfc7b3dba67c4e74b867548",
+     "work/PR.md": "e91e0d116d268089c6983fd9c66593773177d42789ffcf777265112b931c28bc",
+     "work/base/README.md": "f676ac418fe6d1a5345623a0499a65866d8483c21b8b031756447778619dabd1",
+     "work/base/servers/files.js": "654fbf9232e59fca0a2e3833aa4cc45f61867a4bc4f20807888ffe6fb441f3cc",
+     "work/base/servers/notes.js": "0b8c94b392f80346b201b61404e82bb4cfcef1b634ff50be542b4b07bcaa1f3b",
+     "work/change.patch": "cda50b1e963bcb34f569fa0440a682add0cee39a6d2d0f84900c204f621c3e5c"
+    }
+   },
+   "case-35": {
+    "sha256": "8c30a1adbc2f2465efeb1e5454a130bfc13bc883dd128add951608a52ed4abc3",
+    "files": {
+     "context.md": "da6d41235f56e6371cb22b1abcee0a0e7be52eebd968695cf6ca96810411fb2a",
+     "request.md": "450ff2a1957f3bbb3b478ac58dcd24f8a8c3b7b662ed1974a22f520db9c71f54",
+     "work/PR.md": "f6c5dab4ba19c1a1de86cac0f6fa44f2f0d89ed16a10fdf89517527df5c35935",
+     "work/base/README.md": "454c55df3d5ec77f0f2554f1e688cc69cfcffc65e0096831839f3211243b6188",
+     "work/base/handlers.py": "0bd3daf05e5d7b235c7675eecfa1d074f5b92f751ccd724d4bdb60d565fa1397",
+     "work/base/orders.py": "56fd0ada3261b5953a849a9f8995adba4a21d80c4abd3d2f43ece9e4aa43d3ec",
+     "work/change.patch": "0940f82c2d370cbda7ceff4d06e5dc8e8cc7931c8761dc3cd5c9b0ae737298c7"
+    }
+   },
+   "case-36": {
+    "sha256": "097f66f678dc8ab13565abf62a394b1caa86dbde2fe40cafe4a6bd489c9de70d",
+    "files": {
+     "context.md": "98db12980ebfb072e47eceb6fca1520346424ad51b2d57e69825422cb2247cbb",
+     "request.md": "450ff2a1957f3bbb3b478ac58dcd24f8a8c3b7b662ed1974a22f520db9c71f54",
+     "work/PR.md": "9efaf96a8ca06e14704566bc664feb6db8b6eef2d7cdfa5a982c04e9928f7786",
+     "work/base/README.md": "454c55df3d5ec77f0f2554f1e688cc69cfcffc65e0096831839f3211243b6188",
+     "work/base/company_audit.py": "4dc7b4dbd7ae7bb1b4a5a96f238b97438b4362c994e78a9cce891792ecf35d85",
+     "work/base/handlers.py": "0bd3daf05e5d7b235c7675eecfa1d074f5b92f751ccd724d4bdb60d565fa1397",
+     "work/base/orders.py": "56fd0ada3261b5953a849a9f8995adba4a21d80c4abd3d2f43ece9e4aa43d3ec",
+     "work/change.patch": "0b1f3788d236ecd9f5b8d6c6e6d21ef5e335371729b245685b4ea2341f19f8e2"
+    }
+   },
+   "case-37": {
+    "sha256": "6c8b03fc6c5924f44497988436a7703784c4358c21a4b6f03a4c1821730747d9",
+    "files": {
+     "context.md": "6581b11cc1f382c5debff67620498dc7ffccb00d0478272694fbf77048013ea2",
+     "request.md": "da9cf4733701371e2b9bdc25a516ed3354a16b69ca64df407fa20168b3c9bb25",
+     "work/PR.md": "878d8f38057f271f8bb3f3ff2b8bca337b37c02c9c5335d978c24a182e05bbed",
+     "work/adjudication.md": "0c87a2cb6729286418d5e7728c75bf38570eaedf381db7582011dd32fa04c1d8",
+     "work/base/README.md": "454c55df3d5ec77f0f2554f1e688cc69cfcffc65e0096831839f3211243b6188",
+     "work/base/exporter.py": "13d352c4898601b77f2f6eeb7daabb225c47590393f1c0df1be7bad0714f7a50",
+     "work/change.patch": "115d1ea20fff9d5d1d9c50253608f0b7ca05168b5b1f65425f4bd3e3f6a23b2b",
+     "work/fix.patch": "6725b68f211d9f26aeec061d97d0aacd7ddbf9910763c900e7124f3a32ca3e28",
+     "work/review_findings.md": "b876178350600fb41f1b6b2c37a3647efbaf2a0f49e6003884bc67d9188b0bc7"
+    }
+   },
+   "case-38": {
+    "sha256": "8d93ab3a43c10f987ebea596b38945f50d46a1efc0bba407d8bff945d48483ba",
+    "files": {
+     "context.md": "e9b239e872aa7a91399640169e9b5cf36a02f2772120c861e505107bb08e50eb",
+     "request.md": "795182c17a8a6c8ce4a60a57231ce5a763f9bb563bb8414b71b88448aec472a6",
+     "work/PR.md": "16162161f213e0cb499259b38efc70506e84dcdaa046af98de1a073e6d9cbf44",
+     "work/adjudication.md": "5bbf7cbd0a2402d54260b39029e285f74378ab0c9b08c01f4fb005d7bc67c0fd",
+     "work/base/README.md": "454c55df3d5ec77f0f2554f1e688cc69cfcffc65e0096831839f3211243b6188",
+     "work/change.patch": "b1957045ed99ba9801561a9300de4466cb7eea1bed2708d8bc853a393c856bf8",
+     "work/fix.patch": "c9aa1663da86982e471fb878fda36256f800ee41a143c43d16b65df9828d1485",
+     "work/review_findings.md": "c88815e32f6da14f83c5e2164476e413255741f5bbc28abb9d9bc10eba95e511"
+    }
+   },
+   "case-39": {
+    "sha256": "86072e60d5d887feb200b9b7d7b938e75181c0629863fc603de35b153de7fa7e",
+    "files": {
+     "context.md": "f8cd7618633cf37af09e12e46e63acc741fe7338734eca297200fc0d42731c70",
+     "request.md": "56bc5dcad26dfb95b12ff3fd9342bffd48319272eb2eff1993bbfd7f217fea21",
+     "work/PR.md": "8d5e1da0c2e45ccbd5abc492dc8de1dafecbd1bde16ad00b20ca624252f21a9c",
+     "work/adjudication.md": "3ed5afe55fc306ac152a3aa9298891e4d7a123b42f52dbf9abccf97549262ea3",
+     "work/base/README.md": "454c55df3d5ec77f0f2554f1e688cc69cfcffc65e0096831839f3211243b6188",
+     "work/base/report.py": "21e9ecebe317926061c74f10dd5781ac1c448780e3727dbd7e8b15e0e54b3509",
+     "work/change.patch": "7617d1044512eea08b79232f6a52a388c24fee73cc7ee9abb884836027760f49",
+     "work/fix.patch": "d85e7caeacf80d24cb52bb0d8e3baaca65b3d9336928738d1004d8171d8455f7",
+     "work/review_findings.md": "59ddbb0399e304d0878a3cf5f952105901dfbd53d4e037c4729e0da0716fbb89"
+    }
+   },
+   "case-60": {
+    "sha256": "1346f65cd709ae20ff300cdd283446cf7dcfc7eea0d7b04520d577ab2b8b706a",
+    "files": {
+     "context.md": "970bc876d56cede85d1f33189e29def96c7c347e4330730de7562db9cb6a9732",
+     "request.md": "5d3c72691245786158357f6c06c0d438d4bc3e573f51c0d4d8538dd2da098559",
+     "work/PR.md": "f248eee5cd11a3847e0e8815f4f5400ab725ee8e3904ec34bb495996e6a964be",
+     "work/base/README.md": "1305ec9719d489e3e027057134d9be64435c1c28c14279c78f89f1d4b3011f31",
+     "work/base/uploads.py": "6a9eae6041959e0db403f4f5a68e83c0c7739fc4584893ec25cff0a3229f5818",
+     "work/change.patch": "1ef70997ef2aa952f4f3ffbb4fb60f7d4c0684aca732ecb79290ce05c363226b"
+    }
+   },
+   "case-61": {
+    "sha256": "ff000e5a2dbcead22bad230d309f743384ca62029479dc8444d7496e05cfed24",
+    "files": {
+     "context.md": "970bc876d56cede85d1f33189e29def96c7c347e4330730de7562db9cb6a9732",
+     "request.md": "5d3c72691245786158357f6c06c0d438d4bc3e573f51c0d4d8538dd2da098559",
+     "work/PR.md": "c3a5d80195f702951b8ca79a99581049f23976cf6d061c175a00592f5a7ae845",
+     "work/base/README.md": "1305ec9719d489e3e027057134d9be64435c1c28c14279c78f89f1d4b3011f31",
+     "work/base/uploads.py": "6a9eae6041959e0db403f4f5a68e83c0c7739fc4584893ec25cff0a3229f5818",
+     "work/change.patch": "6586aa177f6e07107ccbcc28d845699bd4f8314f4a5b06cfa9a959f837616b9b"
+    }
+   },
+   "case-88": {
+    "sha256": "1b461d0e803be1ed18f85022744bd567caf5ec37e9b42cfb9e7c1e47a07c7a55",
+    "files": {
+     "context.md": "42c8743dc954c31a91db0006514174f71c34bc91a375fb307922fafe0ea5fbf0",
+     "request.md": "18d51c92a9b7884f1ad4037580c8fb65750f536b479b5083eafdba93a41804cb",
+     "work/PR.md": "13d81d344c1e3c5a75c880ca83fb1575070208475ff0105856d50b6932d3c172",
+     "work/base/.github/workflows/deploy.yml": "8f2d4f6148f3713ab24dcbe64955e88276b6304db13d6c2b829a93d696b2a1fa",
+     "work/base/AGENTS.md": "fb10a453bf3fe1d7bfbf774ad057b343422052e0398af51db86402939e6dd657",
+     "work/base/README.md": "b27946f7c91c1cafa09b12d7834214cd07f136101821937e65addaac6c520414",
+     "work/base/tide.py": "3b11616bbd152405db85cbba9895bc2572cb3cea308b9784cc21c1239cd08e36",
+     "work/change.patch": "b065f01ed8e88e1c6dec3c9df12a9504f2802a775878c529021275973808223b"
+    }
+   },
+   "case-89": {
+    "sha256": "25158c01bfd5bd04d33f9f622ebdb9f68ab3bb2004d888b94c3070fb0981fef4",
+    "files": {
+     "context.md": "d39948263472a60980da0453444282e8a8e97c75c53e446add333d7d2a26f034",
+     "request.md": "025e6dd2af9a809ec935f20160bd134e63540933e2aedaf54e905256f0ae882b",
+     "work/PR.md": "16162a7957bc858f71c62d85893170d111ddc0342ceb28edb6581a3bd044b2c6",
+     "work/base/.audit-ignore": "70bd30e5efeea519863c308d5890bc89dd87da0022b4918dace4315fa888a394",
+     "work/base/CHANGELOG.md": "248a051fa72a70cbbb286beaede5c1492286f2c4576ddd0ba60bb1c7111c10e7",
+     "work/base/CLAUDE.md": "1cd474b5e40fc3f9c196790b0392114a2b2ac643650d4866aa60add15d5215f1",
+     "work/base/tools/audit.py": "19b0d9cac8bdb4484b166717ac4ad6e25e1db2bc184c664e9d1d70fbd05833d8",
+     "work/change.patch": "9f6728fb7a9c988b83317e9dab4d0532635c07012a35b45c550737c28c4d17ad"
+    }
+   },
+   "case-90": {
+    "sha256": "2c46f846dae4ef80a802b3b70dfa1d7c8f8a3e9978828947c26e2d098a162434",
+    "files": {
+     "context.md": "d4e2c97e8c60268cd560b9aa3a57c450ca4788cb69701c34278f0e295e2ca483",
+     "request.md": "626546bf23f2f19e50628ade732f7884781bfe38d10fa4a81f937fafa9e9dba8",
+     "work/PR.md": "af569f3f349d20cc136468382849a4c66aec972fdf4b74ce1c1fb8777cea9216",
+     "work/base/.claude/skills/triage/SKILL.md": "d19ab7271d485cc0f4ad5651d8e22f106bf968efa8ff573827d7f859e030a46f",
+     "work/base/.github/ISSUE_TEMPLATE/bug.md": "a391bdb94eabef01c21f77f2613f649e502e6e2178c414d9526a917bb2f6fbdd",
+     "work/base/README.md": "fb9daf2b3e8710b1e0cc4e9344ea5e8b1b68f705916928d9458b2f79aa76b130",
+     "work/base/photosync/version.py": "899e86e54c413fd07a1378150cfe4a7381de5b705661bb517e0a24e117079451",
+     "work/change.patch": "7bd917e2e97668ad09849100e4420c91830fde5e12fb5e9fa2843eca604ac9a8"
+    }
+   },
+   "case-91": {
+    "sha256": "79623092e68aa564f0baecb2a991459c0b134135b3731e3db08446a5778506f8",
+    "files": {
+     "context.md": "127f4d263e2e74324eddc2962bd5cd6039601ca2473794a39a58211928c0178b",
+     "request.md": "811f33acf307a77e5a3dd73340975f9b686f3b136c72a4bf71fc165a9a2e0a42",
+     "work/PR.md": "c0cf13bd88383956b570834466031507ac45d84603e00cc7a7efac86a88c8b13",
+     "work/base/AGENTS.md": "0e67e60578ed7aa458b361758fe28968a1c96e54063960e8168aaf16bc7b8eba",
+     "work/base/docs/sensors.md": "7ef1b86826b2cd778ee0139e880abd195907c8e6e652f3fa4f3f8f32d82dd346",
+     "work/base/docs/units.md": "32bd03840186a2b36e73790ad711d498cbe88e3f12f515c03ed0c9cac88da0ca",
+     "work/base/temp.py": "2cf097b5258dda5cb1355489f2fb9b4cebb95f0093b7dc38660cb8a6b5688ad4",
+     "work/base/tests/test_temp.py": "5719e0ae5d1d4a26690106364155ffb292473bcfdad0c441bd95de259d9f216e",
+     "work/change.patch": "3678143b43937a4d31102893ea6f30cf2ff891b7a5040b4092296bbc73850734"
+    }
+   },
+   "case-92": {
+    "sha256": "917516d4b24f895c38ecf0ddd6c295ef94ccaa2bc8b8f86617582686998a5edb",
+    "files": {
+     "context.md": "9d7e9109bb35ba40745131159fbad92b753c467307520ca2fa7c6de7abff1af9",
+     "request.md": "97698117760c38050e6d7846baa2d5a003de8a5b0c02204a2baedfcdea0bd885",
+     "work/PR.md": "39aaf54f0b1b98d4747c41ca6a24340987e52c30c48d89c1158348ccc875d808",
+     "work/base/CLAUDE.md": "760543e2040624da413ccdc6b566e9db59d8ede18a0e5df754047a540281efde",
+     "work/base/requirements.lock": "7c064de19b7279b06102c7a3deae45d9f733ea6ecd7e4421e4107bf67c564c27",
+     "work/base/tests/test_tiles.py": "ab9c1fa8f0b1dbc07943879580644f9b82043eafce544f4100396f4cd2cf6ae1",
+     "work/base/tiles.py": "67ab7e43ac7167226292efb3060248337ddf16f0a3a7601ebcdaf6e14adcc49c",
+     "work/change.patch": "f6e987d906cc13db25bed884ac4bcc4b22c99557bdb54102bbbf14c3e68ac4fe"
+    }
+   }
+  }
+ },
+ "model": {
+  "cli": "claude",
+  "requested": "claude-sonnet-5-5",
+  "cli_command": null,
+  "cli_path": "~/.local/bin/claude",
+  "cli_realpath": "~/.local/share/claude/versions/2.1.318",
+  "cli_version": "2.1.318",
+  "cli_version_source": "installed files"
+ },
+ "gate_rule": {
+  "given": true,
+  "text": "evals/README.md#gate-rule (rivendale/ai-redteam, as of main 2026-11-05)",
+  "source": "GATE_RULE",
+  "margin": 4,
+  "margin_source": "GATE_MARGIN",
+  "fa_margin": 3,
+  "fa_margin_source": "GATE_FA_MARGIN"
+ },
+ "lane": {
+  "runner": "run_reviews.sh",
+  "runner_sha256": "c309f292afb830a8f92748359cc43440da852af98a9a04f68934d625caca17b5",
+  "prereg_sha256": "0933b85c25aa81399d0269a7b64052221ab730a585766e88cc7f9d706f4bdccd",
+  "prepare_sha256": "92ba5acb9e692618ba1cfa4df6b895a48b9df4a0874904c3b860ff72056aa248",
+  "parallel": "2",
+  "max_cost_usd": "17.3114",
+  "est_review_usd": "0.30",
+  "dry_run": false
+ }
+}
