@@ -36,7 +36,7 @@ Agents: start at AGENTS.md. People: start at README.md.
 
 ## Evals
 
-- [evals/README.md](evals/README.md): baseline suite of 87 cases plus dedicated suites; scorer, runner and scoring limits
+- [evals/README.md](evals/README.md): baseline suite of 92 cases plus dedicated suites; scorer, runner and scoring limits
 - [evals/results/](evals/results/): published runs with reports, prompts and SHA256SUMS
 
 - [docs/variance-2026-10-16.md](docs/variance-2026-10-16.md): dated descriptive variance, not new model runs
