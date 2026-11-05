@@ -65,4 +65,4 @@ Violations are mostly `malformed` verdict text (17 BASE, 19 NEW). The rest are `
   - r2 new `607b364321760d618ad2ec5acb131a333e0a754b0107fe2265283a82a1bb22b7`
   - r3 base `3faa6e5da1144b3baf2da29745b43e9e9748fb1dded9f28d93513a80f2635444`
   - r3 new `e7372f6109cec94cb0a368b24edebd9836dd2938626d23cdf2f3009ce2056803`
-- `SHA256SUMS` covers every other file here.
+- `SHA256SUMS` covers every file here except this README.
