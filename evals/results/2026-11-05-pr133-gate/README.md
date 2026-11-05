@@ -1,6 +1,11 @@
 # #133 pr-review text, rule-3 gate (2026-11-05)
 
-**Verdict: FAIL, by the pre-registered gate rule, on false alarms, by the margin's edge.** Recall passes. The false-alarm evidence is weak: one extra control run, on 8 clusters, sign test p = 1.0. The margin was fixed before the first review, so this record reports the rule's answer and does not reinterpret it.
+**Verdict: FAIL, by the pre-registered gate rule, on two of its three criteria.**
+- **Criterion 1, recall: PASS.**
+- **Criterion 2, false alarms: FAIL by the margin's edge.** The evidence is weak: one extra control run, on 8 clusters, sign test p = 1.0.
+- **Criterion 3, "no new violations": FAIL.** `score.py` counts 29 against 26.
+
+The margins were fixed before the first review, so this record reports the rule's answer and doesn't reinterpret it.
 
 ## What was run
 - **Texts.**
@@ -25,6 +30,7 @@
 - **False alarms: FAIL.** Observed +1, 95% CI [0.0, 3.0]. The rule needs the upper bound below +3. Sign test 1 worse / 0 better, p = 1.000.
   - A WARNING applies: only 8 clusters, so the interval is indicative and the sign test carries more weight.
 - **Gate: FAIL** (exit 1).
+- **Criterion 3, "no new violations"** (the gate rule's third item, counted by `score.py`; `stats.py gate` doesn't test it): BASE 26, NEW 29. **FAIL.**
 
 **Where the difference is.** Per control, control runs with an open Critical or High over the 3 repeats:
 
@@ -46,7 +52,11 @@ Violations are mostly `malformed` verdict text (17 BASE, 19 NEW). The rest are `
 ## Files
 - `r{1,2,3}-pr-review-{base,new}/`: one report (`.md`) and the exact prompt (`.prompt`) per case, plus `_meta/` with the usage records and the prereg record.
 - `scores/`: `score.py --skill pr-review` output (JSON and text) per run, scored after `map_pr_severity.py`.
-- `gate.txt`, `drive.sh` (the staged driver), `score.sh`.
+- `gate.txt`, `drive.sh` (the staged driver) and `score.sh`. To re-score: `A=<ai-redteam checkout with cases 88-92> ./score.sh`. It writes to `./rescored/` and exits 1 unless all six runs are scored; the JSON should equal `scores/`.
+- **Layout and path changes in this published copy:**
+  - The run directories sit directly here. The original run wrote them under `runs/`, and `drive.sh` and `score.sh` here use this flattened layout.
+  - The local scratch path in both scripts is now a required environment variable (`SR`, `A`).
+  - Nothing else in the scripts changed.
 - **Edits to the prereg records:** three fields in each published `prereg.json` held local paths (the case directory and the CLI path). They are shown as `<scratch>/…` and `~/…`. Nothing else was changed.
 - The originals' sha256, so the author can show the published copies differ only in those fields:
   - r1 base `be1acc88ce441b5cb6ca2a1e9b0325e1c484acbb5222e93f7f6ddbdb94d9a7c4`
